@@ -8,7 +8,6 @@ import flash from "connect-flash";
 import expressSession from "express-session";
 import { MemoryStore } from "express-session";
 import fileUpload from "express-fileupload";
-import helmet from "helmet";
 import { v4 as uuid } from "uuid";
 import { MongoClient } from "mongodb";
 import cookieParser from "cookie-parser";
@@ -27,6 +26,7 @@ import overallController from "./controllers/overall.js";
 //import availabilityController from "./controllers/availability.js";
 //import loginController from "./controllers/loginController.js";
 import resultsController from "./controllers/results.js";
+import skinsController from "./controllers/skins.js";
 import * as dbmodel from "./models/dbModel.js";
 
 const app = new express();
@@ -42,16 +42,21 @@ app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
 
-app.use(helmet());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      scriptSrc: ["'self' data:", "fonts.gstatic.com", "fonts.googleapis.com", "static.elfsight.com", "cdn.jsdelivr.net"],
-      connectSrc: ["'self'", "core.service.elfsight.com", "cdn.jsdelivr.net"],
-      imgSrc: ["'self' data:", "'self'", "fonts.gstatic.com", "fonts.googleapis.com", "cdn.jsdelivr.net/npm/bootstrap@5.3.3", "static.elfsight.com", "files.elfsightcdn.com", "www.w3.org"],
-    },
-  })
-);
+app.use((req, res, next) => {
+  res.setHeader("Permission-Policy", "fullscreen=('*')");
+  next();
+});
+
+//app.use(helmet());
+//app.use(
+//helmet.contentSecurityPolicy({
+//directives: {
+//scriptSrc: ["'self' data:", "fonts.gstatic.com", "fonts.googleapis.com", "static.elfsight.com", "cdn.jsdelivr.net"],
+//connectSrc: ["'self'", "core.service.elfsight.com", "cdn.jsdelivr.net"],
+//imgSrc: ["'self' data:", "'self'", "fonts.gstatic.com", "fonts.googleapis.com", "cdn.jsdelivr.net/npm/bootstrap@5.3.3", "static.elfsight.com", "files.elfsightcdn.com", "www.w3.org"],
+//},
+//})
+//);
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -124,6 +129,7 @@ app.get("/tee-times", teetimesController);
 app.get("/second-half", secondHalfController);
 app.get("/first-half", firstHalfController);
 app.get("/overall", overallController);
+app.get("/skins", skinsController);
 app.get("/form", showForm);
 app.post("/submit", submitForm);
 //app.get("/availability", availabilityController);

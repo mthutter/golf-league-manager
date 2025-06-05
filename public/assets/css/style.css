@@ -13,7 +13,7 @@ body {
   background-color: rgb(47, 138, 47);
   background-position: center;
   background-size: 80% 80%;
-  font-family: Arial, Helvetica, sans-serif; 
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .main-schedule {
@@ -35,7 +35,7 @@ body {
   border-radius: 12px;
 }
 
-@media only screen and (min-width: 414px){
+@media only screen and (min-width: 414px) {
   body {
     background-image: none !important;
   }
@@ -46,13 +46,14 @@ body {
     height: auto;
     min-height: 65px;
   }
-  h5, p {
+  h5,
+  p {
     font-size: large !important;
   }
 }
 
-@media only screen and (min-height: 896px){
-body {
+@media only screen and (min-height: 896px) {
+  body {
     background-image: none !important;
   }
   .main-schedule {
@@ -73,13 +74,14 @@ body {
     background-image: none !important;
   }
   .main-schedule {
-   max-height: 250px;
+    max-height: 250px;
   }
   .main-thanks {
     height: auto;
     min-height: 65px;
   }
-  h5, p {
+  h5,
+  p {
     font-size: large !important;
   }
 }
@@ -89,7 +91,7 @@ body {
     background-image: none !important;
   }
   .main-schedule {
-   max-height: 200px;
+    max-height: 200px;
   }
   .main-thanks {
     height: auto;
@@ -130,7 +132,7 @@ video {
 
 .main-small {
   max-height: 400px;
-  border: solid rgb(40, 54, 13) .25rem;
+  border: solid rgb(40, 54, 13) 0.25rem;
   border-radius: 10px;
 }
 
@@ -167,6 +169,10 @@ footer {
   text-align: right;
 }
 
+h2 {
+  text-decoration: none;
+}
+
 td a {
   color: rgb(47, 5, 114);
 }
@@ -174,12 +180,12 @@ td a {
 a {
   color: rgb(212, 47, 29);
   text-decoration: none;
-
 }
 
-video:hover, img:hover {
+video:hover,
+img:hover {
   border: solid rgb(66, 179, 56) 0.25rem;
-}  
+}
 
 p {
   color: black;
@@ -201,7 +207,8 @@ h4 {
   color: black;
 }
 
-h5, h6 {
+h5,
+h6 {
   color: cyan;
 }
 
@@ -225,4 +232,56 @@ td {
 ul {
   text-align: justify;
   list-style-type: none;
+}
+
+.button-3 {
+  appearance: none;
+  background-color: #2ea44f;
+  border: 3px solid black;
+  border-radius: 6px;
+  box-shadow: rgba(27, 31, 35, 0.1) 0 1px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  margin: 5px;
+  padding: 6px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.button-3:focus:not(:focus-visible):not(.focus-visible) {
+  box-shadow: none;
+  outline: none;
+}
+
+.button-3:hover {
+  background-color: #2c974b;
+}
+
+.button-3:focus {
+  box-shadow: rgba(46, 164, 79, 0.4) 0 0 0 3px;
+  outline: none;
+}
+
+.button-3:disabled {
+  background-color: #94d3a2;
+  border-color: rgba(27, 31, 35, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: default;
+}
+
+.button-3:active {
+  background-color: #298e46;
+  box-shadow: rgba(20, 70, 32, 0.2) 0 1px 0 inset;
 }
