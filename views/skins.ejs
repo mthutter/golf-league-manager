@@ -24,7 +24,7 @@
               <button style="background-color: gray" class="button-3">Week 1 - May 5 (No Skins)</button>
             </li>
             <li>
-              <button class="button-3" role="button" onclick="openPDF('Week 2 Skins.pdf')">Week 2 - May 12</button>
+              <button class="button-3" role="button" onclick="openPDF('Week%202%20Skins.pdf')">Week 2 - May 12</button>
             </li>
             <li>
               <button style="background-color: gray" class="button-3">Week 3 - May 19 (No Skins)</button>
@@ -63,6 +63,9 @@
       var header = document.getElementById("skins-header");
       var timestamp = new Date().getTime();
       var week = filename.slice(7, 8);
+      if (filename === "TBD.pdf") {
+        week = "8";
+      }
       omyFrame.data = "results/2025/" + filename + "?t=" + timestamp;
       omyFrame.type = "application/pdf";
       header.innerHTML = "Week " + week + " Skins Results";
