@@ -1,84 +1,103 @@
 <!doctype html>
 <html lang="en">
-  <%- include('./layouts/header'); -%> <%- include('./layouts/navbar'); -%>
-  <style>
-    a {
-      color: rgb(8, 70, 6);
-      font-size: larger;
-      font-weight: bolder;
-    }
+<%- include('./layouts/header'); -%> <%- include('./layouts/navbar'); -%>
+    <style>
+      a {
+        color: rgb(8, 70, 6);
+        font-size: larger;
+        font-weight: bolder;
+      }
 
-    h2 {
-      text-decoration: none;
-    }
-  </style>
+      h2 {
+        text-decoration: none;
+      }
+    </style>
 
-  <body>
-    <div class="container-fluid">
-      <div style="margin: 25px" class="row">
-        <div class="col-4 text-center" style="text-align: center">
-          <h2>2025 Skins Results</h2>
-          <br />
-          <ul style="list-style-type: none; padding: 0; text-align: center">
-            <li>
-              <button style="width: 220px; background-color: gray" class="button-3">Week 1 - May 5 (No Skins)</button>
-            </li>
-            <li>
-              <button style="width: 220px" class="button-3" role="button" onclick="openPDF('Week%202%20Skins.pdf')">Week 2 - May 12</button>
-            </li>
-            <li>
-              <button style="width: 220px; background-color: gray" class="button-3">Week 3 - May 19 (No Skins)</button>
-            </li>
-            <li>
-              <button style="width: 220px; background-color: gray" class="button-3">Week 4 - May 26 (No Skins)</button>
-            </li>
-            <li>
-              <button style="width: 220px" class="button-3" role="button" onclick="openPDF('Week%205%20Skins.pdf')">Week 5 - June 2</button>
-            </li>
-            <li>
-              <button style="width: 220px" class="button-3" role="button" onclick="openPDF('Week%206%20Skins.pdf')">Week 6 - June 9</button>
-            </li>
-            <li>
-              <button style="width: 220px" class="button-3" role="button" onclick="openPDF('Week%207%20Skins.pdf')">Week 7 - June 16</button>
-            </li>
-            <li>
-              <button style="width: 220px" class="button-3" role="button" onclick="openPDF('Week%208%20Skins.pdf')">Week 8 - June 23</button>
-            </li>
-            <li>
-              <button style="width: 220px" class="button-3" role="button" onclick="openPDF('Week%209%20Skins.pdf')">Week 9 - June 30</button>
-            </li>
-            <li>
-              <button style="width: 220px" class="button-3" role="button" onclick="openPDF('Week%2010%20Skins.pdf')">Week 10 - July 7</button>
-            </li>
-          </ul>
-        </div>
+    <body>
+      <div class="container-fluid">
+        <div style="margin: 25px" class="row">
+          <div class="col-4 text-center" style="text-align: center">
+            <h2>2025 Skins Results</h2>
+            <br />
+            <ul style="list-style-type: none; padding: 0; text-align: center">
+              <li>
+                <button style="width: 220px; background-color: gray" class="button-3">Week 1 - May 5 (No Skins)</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%202%20Skins.pdf')">Week 2 - May 12</button>
+              </li>
+              <li>
+                <button style="width: 220px; background-color: gray" class="button-3">Week 3 - May 19 (No
+                  Skins)</button>
+              </li>
+              <li>
+                <button style="width: 220px; background-color: gray" class="button-3">Week 4 - May 26 (No
+                  Skins)</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%205%20Skins.pdf')">Week 5 - June 2</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%206%20Skins.pdf')">Week 6 - June 9</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%207%20Skins.pdf')">Week 7 - June 16</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%208%20Skins.pdf')">Week 8 - June 23</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%209%20Skins.pdf')">Week 9 - June 30</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%2010%20Skins.pdf')">Week 10 - July 7</button>
+              </li>
+              <li>
+                <button style="width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%2011%20Skins.pdf')">Week 11 - July
+                  14</button>
+              </li>
+            </ul>
+          </div>
 
-        <div style="display: grid; grid-template-columns: 1fr; border: solid black 5px" class="col">
-          <div style="grid-row-start: 1; grid-column-start: 1; text-align: center">
-            <h2 id="skins-header">Week 10 Skins Results</h2>
-            <object style="height: 87vh; width: 60vw" id="myFrame" data="/results/2025/Week%2010%20Skins.pdf?t=" type="application/pdf"></object>
+          <div style="display: grid; grid-template-columns: 1fr; border: solid black 5px" class="col">
+            <div style="grid-row-start: 1; grid-column-start: 1; text-align: center">
+              <h2 id="skins-header">Week 11 Skins Results</h2>
+              <object style="height: 87vh; width: 60vw" id="myFrame" data="/results/2025/Week%2011%20Skins.pdf?t="
+                type="application/pdf"></object>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </body>
+    </body>
 
-  <script type="text/javascript">
-    function openPDF(filename) {
-      var omyFrame = document.getElementById("myFrame");
-      var header = document.getElementById("skins-header");
-      var timestamp = new Date().getTime();
-      var week = filename.slice(7, 8);
-      if (filename === "Week%2010%20Skins.pdf") {
-        week = "10";
+    <script type="text/javascript">
+      function openPDF(filename) {
+        var omyFrame = document.getElementById("myFrame");
+        var header = document.getElementById("skins-header");
+        var timestamp = new Date().getTime();
+        var week = filename.slice(7, 8);
+        if (filename === "Week%2010%20Skins.pdf") {
+          week = "10";
+        }
+        if (filename === "Week%2011%20Skins.pdf") {
+          week = "11";
+        }
+        omyFrame.data = "results/2025/" + filename + "?t=" + timestamp;
+        omyFrame.type = "application/pdf";
+        header.innerHTML = "Week " + week + " Skins Results";
       }
-      omyFrame.data = "results/2025/" + filename + "?t=" + timestamp;
-      omyFrame.type = "application/pdf";
-      header.innerHTML = "Week " + week + " Skins Results";
-    }
-  </script>
+    </script>
 
-  <%- include('layouts/scripts'); %>
+    <%- include('layouts/scripts'); %>
+
 </html>
 
 <%- include('layouts/footer'); %>
