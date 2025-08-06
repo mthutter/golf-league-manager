@@ -76,8 +76,10 @@
           <div style="display: grid; grid-template-columns: 1fr; border: solid black 5px" class="col-9">
             <div style="grid-row-start: 1; grid-column-start: 1; text-align: center">
               <h2 id="skins-header">Week 14 Skins Results</h2>
-              <object style="width: 100%; height: 100%; display: block;" id="myFrame"
-                data="/results/2025/Week%2014%20Skins.pdf?t=" type="application/pdf"></object>
+              <!--<object style="width: 100%; height: 100%; display: block;" id="myFrame"
+                data="/results/2025/Week%2014%20Skins.pdf?t=" type="application/pdf"></object> -->
+              <iframe style="width: 100%; height: 100%; display: block;" id="myFrame"
+                src="/results/2025/Week%2014%20Skins.pdf?t=" frameborder="0"></iframe>
             </div>
           </div>
         </div>
@@ -105,7 +107,7 @@
         if (filename === "Week%2014%20Skins.pdf") {
           week = "14";
         }
-        omyFrame.data = "results/2025/" + filename + "?t=" + timestamp;
+        omyFrame.src = "results/2025/" + filename + "?t=" + timestamp;
         omyFrame.type = "application/pdf";
         header.innerHTML = "Week " + week + " Skins Results";
       }
