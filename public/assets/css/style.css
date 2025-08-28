@@ -35,7 +35,7 @@ body {
   border-radius: 12px;
 }
 
-@media only screen and (min-width: 414px) {
+@media only screen and (max-width: 414px) {
   body {
     background-image: none !important;
   }
@@ -58,61 +58,17 @@ body {
   }
 }
 
-@media only screen and (min-height: 896px) {
+@media only screen and (max-width: 1000px) {
   body {
     background-image: none !important;
   }
+
   #squatch {
     display: none;
   }
 
   .main-schedule {
     max-height: 250px;
-    max-width: 300px;
-  }
-  .main-thanks {
-    height: auto;
-    min-height: 65px;
-  }
-  h5,
-  p {
-    font-size: large !important;
-  }
-}
-
-@media only screen and (max-width: 896px) and (orientation: landscape) {
-  body {
-    background-image: none !important;
-  }
-
-  #squatch {
-    display: none;
-  }
-  .main-schedule {
-    max-height: 250px;
-    max-width: 300px;
-  }
-  .main-thanks {
-    height: auto;
-    min-height: 65px;
-  }
-  h5,
-  p {
-    font-size: large !important;
-  }
-}
-
-@media only screen and (max-width: 414px) and (orientation: landscape) {
-  body {
-    background-image: none !important;
-  }
-
-  #squatch {
-    display: none;
-  }
-
-  .main-schedule {
-    max-height: 200px;
     max-width: 300px;
   }
   .main-thanks {
