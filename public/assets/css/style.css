@@ -39,6 +39,11 @@ body {
   body {
     background-image: none !important;
   }
+
+  .squatch {
+    display: none;
+  }
+
   .main-schedule {
     max-height: 225px;
   }
@@ -56,6 +61,10 @@ body {
   body {
     background-image: none !important;
   }
+  .squatch {
+    display: none;
+  }
+
   .main-schedule {
     max-height: 250px;
   }
@@ -72,6 +81,10 @@ body {
 @media only screen and (max-width: 896px) and (orientation: landscape) {
   body {
     background-image: none !important;
+  }
+
+  .squatch {
+    display: none;
   }
   .main-schedule {
     max-height: 250px;
@@ -90,6 +103,11 @@ body {
   body {
     background-image: none !important;
   }
+
+  .squatch {
+    display: none;
+  }
+
   .main-schedule {
     max-height: 200px;
   }
