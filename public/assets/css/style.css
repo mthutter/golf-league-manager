@@ -40,12 +40,13 @@ body {
     background-image: none !important;
   }
 
-  .squatch {
+  #squatch {
     display: none;
   }
 
   .main-schedule {
     max-height: 225px;
+    max-width: 300px;
   }
   .main-thanks {
     height: auto;
@@ -61,12 +62,13 @@ body {
   body {
     background-image: none !important;
   }
-  .squatch {
+  #squatch {
     display: none;
   }
 
   .main-schedule {
     max-height: 250px;
+    max-width: 300px;
   }
   .main-thanks {
     height: auto;
@@ -83,11 +85,12 @@ body {
     background-image: none !important;
   }
 
-  .squatch {
+  #squatch {
     display: none;
   }
   .main-schedule {
     max-height: 250px;
+    max-width: 300px;
   }
   .main-thanks {
     height: auto;
@@ -104,12 +107,13 @@ body {
     background-image: none !important;
   }
 
-  .squatch {
+  #squatch {
     display: none;
   }
 
   .main-schedule {
     max-height: 200px;
+    max-width: 300px;
   }
   .main-thanks {
     height: auto;
