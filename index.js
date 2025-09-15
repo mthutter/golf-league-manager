@@ -135,7 +135,7 @@ app.post("/submit", submitForm);
 //app.get("/availability", availabilityController);
 //app.get("/login", loginController);
 
-let port = process.env.PORT || 4000;
+let port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log("app listening on ", port);
