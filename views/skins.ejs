@@ -88,16 +88,20 @@
                 <button style="font-size: small; width: 250px; background-color: gray" class="button-3">Week 19 -
                   September 8 (No Skins)</button>
               </li>
+              <li>
+                <button style="font-size: small; width: 220px" class="button-3" role="button"
+                  onclick="openPDF('Week%2020%20Skins.pdf')">Week 20 - September 15</button>
+              </li>
             </ul>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr" class="col-9">
             <div style="grid-row-start: 1; grid-column-start: 1; text-align: center">
-              <h2 id="skins-header">Week 16 Skins Results</h2>
+              <h2 id="skins-header">Week 20 Skins Results</h2>
               <!--<object style="width: 100%; height: 100%; display: block;" id="myFrame"
                 data="/results/2025/Week%2014%20Skins.pdf?t=" type="application/pdf"></object> -->
               <iframe style="width: 100%; height: 100%; display: block" id="myFrame"
-                src="/results/2025/Week%2016%20Skins.pdf?t=" frameborder="0"></iframe>
+                src="/results/2025/Week%2020%20Skins.pdf?t=" frameborder="0"></iframe>
             </div>
           </div>
         </div>
@@ -130,6 +134,9 @@
         }
         if (filename === "Week%2016%20Skins.pdf") {
           week = "16";
+        }
+        if (filename === "Week%2020%20Skins.pdf") {
+          week = "20";
         }
         omyFrame.src = "results/2025/" + filename + "?t=" + timestamp;
         omyFrame.type = "application/pdf";
