@@ -20,7 +20,7 @@ body {
   background-color: rgb(30, 188, 90);
   color: darkgreen;
   height: 230px;
-  width: 400px;
+  max-width: 400px;
   border: solid black 3px;
   border-radius: 12px;
 }
