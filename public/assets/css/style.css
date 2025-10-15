@@ -19,7 +19,7 @@ body {
 .main-schedule {
   background-color: rgb(30, 188, 90);
   color: darkgreen;
-  height: 230px;
+  height: 350px;
   max-width: 400px;
   border: solid black 3px;
   border-radius: 12px;
@@ -45,7 +45,7 @@ body {
   }
 
   .main-schedule {
-    max-height: 225px;
+    max-height: 350px;
     max-width: 400px;
   }
   .main-thanks {
@@ -68,7 +68,7 @@ body {
   }
 
   .main-schedule {
-    max-height: 250px;
+    max-height: 350px;
     max-width: 400px;
   }
 
