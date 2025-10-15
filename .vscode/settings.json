@@ -8,6 +8,8 @@
   "files.autoSave": "onFocusChange", // optional but recommended
   "vs-code-prettier-eslint.prettierLast": false,
   "cSpell.words": [
-    "CTTP"
+    "CTTP",
+    "Hutter",
+    "Shirola"
   ], // set as "true" to run 'prettier' last not first
  }
