@@ -19,18 +19,18 @@ body {
 .main-schedule {
   background-color: rgb(30, 188, 90);
   color: darkgreen;
-  height: 350px;
-  max-width: 400px;
+  height: 25vh;
+  width: 33vw;
   border: solid black 3px;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .main-thanks {
   background-color: rgb(138, 136, 20);
   color: darkgreen;
   height: auto;
-  min-height: 85px;
-  width: 600px;
+  min-height: 25%;
+  width: 33%;
   border: solid black 2px;
   border-radius: 12px;
 }
@@ -44,15 +44,11 @@ body {
     display: none;
   }
 
-  .main-schedule {
-    max-height: 350px;
-    max-width: 400px;
-  }
   .main-thanks {
     height: auto;
     min-height: 65px;
   }
-  h5,
+
   p {
     font-size: large !important;
   }
@@ -67,16 +63,11 @@ body {
     display: none;
   }
 
-  .main-schedule {
-    max-height: 350px;
-    max-width: 400px;
-  }
-
   .main-thanks {
     height: auto;
     min-height: 65px;
   }
-  h5,
+
   p {
     font-size: large !important;
   }
@@ -188,6 +179,7 @@ h4 {
 
 h5,
 h6 {
+  font-size: 40%;
   color: cyan;
 }
 
