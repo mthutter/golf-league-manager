@@ -19,10 +19,21 @@ body {
 .main-schedule {
   background-color: rgb(30, 188, 90);
   color: darkgreen;
-  height: 25vh;
-  width: 33vw;
+  height: auto;
+  width: 40vw;
   border: solid black 3px;
   border-radius: 10px;
+  h5 {
+    font-size: clamp(1rem, 2vw, 2rem);
+  }
+  h6 {
+    font-size: clamp(1rem, 2vw, 2rem);
+  }
+}
+
+h5,
+h6 {
+  font-size: clamp(2rem, 5vw, 4rem);
 }
 
 .main-thanks {
@@ -36,41 +47,9 @@ body {
 }
 
 @media only screen and (max-width: 414px) {
-  body {
-    background-image: none !important;
-  }
-
-  #squatch {
-    display: none;
-  }
-
-  .main-thanks {
-    height: auto;
-    min-height: 65px;
-  }
-
-  p {
-    font-size: large !important;
-  }
 }
 
 @media only screen and (max-width: 1000px) {
-  body {
-    background-image: none !important;
-  }
-
-  #squatch {
-    display: none;
-  }
-
-  .main-thanks {
-    height: auto;
-    min-height: 65px;
-  }
-
-  p {
-    font-size: large !important;
-  }
 }
 
 video {
@@ -175,12 +154,6 @@ h3 {
 h4 {
   font-weight: bold;
   color: black;
-}
-
-h5,
-h6 {
-  font-size: 40%;
-  color: cyan;
 }
 
 table {
