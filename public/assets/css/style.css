@@ -4,13 +4,14 @@ html {
   height: auto;
   overflow-x: hidden;
   overflow: scroll;
+  background-color: rgb(47, 138, 47);
 }
 
 body {
   width: 100%;
   margin: 0;
   height: 100vh;
-  background-color: rgb(47, 138, 47);
+  background-color: rgb(47, 138, 47) !important;
   background-position: center;
   background-size: 80% 80%;
   font-family: Arial, Helvetica, sans-serif;
@@ -166,11 +167,12 @@ table {
   margin-right: auto;
 }
 
+th,
+tr,
 td {
-  border: 2px solid black;
-  white-space: nowrap;
-  padding-left: 5px;
-  padding-right: 5px;
+  border: 2px solid black !important; /* Adds a border to each cell */
+  padding: 3px;
+  text-align: left;
 }
 
 ul {
