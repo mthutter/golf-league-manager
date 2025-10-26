@@ -172,7 +172,7 @@ tr,
 td {
   border: 2px solid black !important; /* Adds a border to each cell */
   padding: 3px;
-  text-align: left;
+  text-align: center;
 }
 
 ul {
