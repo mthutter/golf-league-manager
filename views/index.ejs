@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="en">
-<!-- header section -->
-<%- include('./layouts/header'); -%>
+  <!-- header section -->
+  <%- include('./layouts/header'); -%>
   <style>
     img {
       width: 10vw;
+      height: auto;
       border: black solid 3px;
-      border-radius: .5rem;
+      border-radius: 0.75rem;
     }
 
     h5,
@@ -16,34 +17,33 @@
   </style>
 
   <body>
-
     <section id="navbar"><%- include('./layouts/navbar'); -%></section>
 
-    <section style="place-items: center;;">
+    <section style="place-items: center">
       <br />
-      <h4>
+      <h5 style="font-size: clamp(2rem, 1rem, 0.75rem)" ;>
         2025 Final Weekly Standings/Stats:
         <a href=" /results/2025/2025 Overall Standings - All Weeks.xlsx">CLICK HERE</a>
-      </h4>
+      </h5>
       <br />
-      <div style="place-items: center; display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px;">
-        <div style="grid-column: span 4;">
-          <a href=""><img style="width: 20vw;" src="/images/2025/Bottom's%20Up%20Squatch.webp" alt="" /></a>
+      <div style="place-items: center; display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px">
+        <div style="grid-column: span 4">
+          <a href=""><img style="width: 20vw" src="/images/2025/Bottom's%20Up%20Squatch.webp" alt="" /></a>
         </div>
 
-        <div style="grid-column: span 4;" class="main-schedule">
-          <br>
-          <h4 style="color: red; text-align: center;">2025 WINNERS</h5>
-            <br>
-            <h5 style="color:aqua; font-weight: bolder;">First Place - Jon Dickey (20.18)</h5>
-            <h6>Second Place - Matthew Shirola (19.92)</h6>
-            <h6>Third Place - Jeff Vest (19.89)</h6>
-            <h6>Closest to the Pin - Ryan Miller (4)</h6>
-            <br />
+        <div style="grid-column: span 4" class="main-schedule">
+          <br />
+          <h5 style="color: red; text-align: center">2025 WINNERS</h5>
+          <br />
+          <h5 style="color: aqua; font-weight: bolder">First Place - Jon Dickey (20.18)</h5>
+          <h6>Second Place - Matthew Shirola (19.92)</h6>
+          <h6>Third Place - Jeff Vest (19.89)</h6>
+          <h6>Closest to the Pin - Ryan Miller (4)</h6>
+          <br />
         </div>
 
-        <div style=" grid-column: span 4;">
-          <a href=""><img style="width: 20vw;" src="/images/2025/Bottom's%20Up%20Squatch.webp" alt="" /></a>
+        <div style="grid-column: span 4">
+          <a href=""><img style="width: 20vw" src="/images/2025/Bottom's%20Up%20Squatch.webp" alt="" /></a>
         </div>
         <!--
         <div style="grid-column: span 3;">
@@ -66,11 +66,9 @@
           <a href="/images2024"><img src="/images/2024/IMG_p1372.webp" loading="lazy" alt="Shayne Ige" srcset=""
               title="second half winner" /></a>
         </div>
-      -->
-      </div>
+      --></div>
     </section>
 
     <section id="footer"><%- include('./layouts/footer'); -%></section>
   </body>
-
 </html>
