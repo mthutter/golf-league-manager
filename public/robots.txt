@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://bottoms-up-cos.org/sitemap.xml
