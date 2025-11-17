@@ -6,16 +6,30 @@
   <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Bottoms Up Golf League",
-        "alternateName": "Bottoms Up",
-        "url": "https://bottoms-up-cos.org",
-        "geo": {
+        "@graph": [
+            {
+                  "@type": "WebSite",
+                  "name": "Bottoms Up Golf League",
+                  "alternateName": "Bottoms Up",
+                  "url": "https://bottoms-up-cos.org"
+            },
+            {
+              "@type": "LocalBusiness",
+              "name": "Bottoms Up Golf League",
+              "url": "https://bottoms-up-cos.org",
+              "address": {
+                 "@type": "PostalAddress",
+                 "addressLocality": "Colorado Springs",
+                 "addressRegion": "Colorado",
+              },
+            "geo": {
                  "@type": "GeoCoordinates",
                  "latitude": "38.8339",
                  "longitude": "104.8214"
-               }
-      }
+                }
+              }
+            ]
+    }
     </script>
   <link rel="icon" href="/icons/icons8-golf-lineal-color-32.png" />
   <!--  <link
