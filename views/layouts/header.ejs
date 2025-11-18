@@ -20,10 +20,20 @@
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
+      "@type": "Organization",
       "name": "Bottoms Up Golf League",
       "alternateName": "Bottoms Up",
-      "url": "https://bottoms-up-cos.org"
+      "url": "https://bottoms-up-cos.org",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Colorado Springs",
+        "addressRegion": "CO",
+        "addressCountry": "US"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "mark.hutter@icloud.com"
+      }
     }
   </script>
   <link rel="icon" href="/icons/icons8-golf-lineal-color-32.png" />
@@ -39,7 +49,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-B9K0F2MMX1"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
 
   gtag('config', 'G-B9K0F2MMX1');
