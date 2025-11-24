@@ -1,15 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://bottoms-up-cos.org/tee-times</loc>
-    <lastmod>2025-11-14</lastmod>
-  </url>
-  <url>
-    <loc>https://bottoms-up-cos.org/results</loc>
-    <lastmod>2025-08-16</lastmod>
-  </url>
-  <url>
-    <loc>https://bottoms-up-cos.org/overall</loc>
-    <lastmod>2025-11-12</lastmod>
-  </url>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://bottoms-up-cos.org/</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/tee-times</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/overall</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/results/</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/skins</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/images2024</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/images2025</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/videos2024</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/videos2025</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/course</loc>
+  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/results/2025/2025%20Overall%20Standings.pdf</loc>
+  <lastmod>2025-11-18T00:32:06+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/results/2025/Week%2021%20Skins.pdf?t=</loc>
+  <lastmod>2025-11-18T00:32:06+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
 </urlset>
