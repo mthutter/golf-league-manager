@@ -55,7 +55,7 @@ h6 {
 }
 
 video {
-  width: 300px;
+  width: auto;
   height: auto;
   border: solid rgb(21, 46, 7) 5px;
   border-radius: 10px;
