@@ -1,4 +1,9 @@
 /** @format */
+@font-face {
+  font-family: rubik;
+  src: url('https://fonts.bunny.net/rubik/files/rubik-latin-400-normal.woff2') format('woff2');
+  font-display: optional; /* Or optional, fallback, block, auto */
+}
 
 html {
   height: auto;
