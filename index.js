@@ -79,21 +79,52 @@ app.use(
   })
 );
 
-const directoryPath2024 = "public/images/2024";
-const imageFiles2024 = [];
-var index2024 = 0;
+import ftp from "basic-ftp";
 
-fs.readdir(directoryPath2024, (err, files) => {
-  if (err) {
-    console.error("Error reading directory:", err);
-    return;
-  }
-  files.forEach((file) => {
-    console.log(file);
-    imageFiles2024[index2024] = file;
-    index2024++;
-  });
-});
+var imageFiles2024 = [];
+async function getFilenames() {
+    const client = new ftp.Client();
+
+    try {
+        await client.access({
+            host: "la.storage.bunnycdn.com",
+            user: "bottoms-up",
+            password: "ac5c1048-f353-4655-8dbe4c573ee9-85ec-4a40",
+            secure: false
+        });
+
+        const list = await client.list("2024/"); // remote directory
+
+        // Extract filenames into a JS array
+        const filenames = list.map(item => item.name);
+
+        console.log(filenames);
+        return filenames;
+
+    } catch (err) {
+        console.error("FTP Error:", err);
+    } finally {
+        client.close();
+    }
+}
+
+imageFiles2024 = getFilenames();
+
+//const directoryPath2024 = "/2024";
+//const imageFiles2024 = [];
+//var index2024 = 0;
+
+//fs.readdir(directoryPath2024, (err, files) => {
+//if (err) {
+//console.error("Error reading directory:", err);
+//return;
+// }
+//files.forEach((file) => {
+// console.log(file);
+//imageFiles2024[index2024] = file;
+//index2024++;
+//});
+//});
 
 const directoryPath2025 = "public/images/2025";
 const imageFiles2025 = [];

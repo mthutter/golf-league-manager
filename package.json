@@ -11,7 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@bunny.net/edgescript-sdk": "^0.12.0",
+    "@bunny.net/storage-sdk": "^0.3.0",
     "@cloudinary/url-gen": "^1.21.0",
+    "basic-ftp": "^5.0.5",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "chat": "^0.6.0",
