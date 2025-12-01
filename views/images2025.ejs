@@ -3,39 +3,13 @@
 
 <%- include('./layouts/header'); -%>
 
-  <style>
-    #holder {
-      max-width: 350px;
-      max-height: 350px;
-      overflow: visible;
-    }
-
-    #holder img {
-      width: 100%;
-      height: auto;
-      object-fit: scale-down;
-      -webkit-transition: all 0.2s ease;
-      -moz-transition: all 0.2s ease;
-      transition: all 0.5s ease;
-      border: solid black 3px;
-      border-radius: 5px;
-    }
-
-    #holder img:hover {
-      transform: scale(2, 2);
-    }
-  </style>
-
-
-  <body>
+   <body>
 
     <section>
       <%- include('./layouts/navbar'); -%>
     </section>
 
-    <section id="images">
-      <!--<div style="border-radius: 10%;" class="elfsight-app-550a1f27-8160-46fa-b254-1050f8b9f4eb" data-elfsight-app-lazy>
-      </div> -->
+    <section id="images">    
       <div>
         <br>
         <h1 style="text-align: center;">2025 Images</h1>
@@ -57,8 +31,6 @@
       </div>
     </section>
 
-
-
     <section>
       <div>
         <%- include('./layouts/footer'); -%>
@@ -70,13 +42,6 @@
         <%- include('./layouts/scripts'); -%>
       </div>
     </section>
-
-    <!-- <script>
-      $(document).on('click', '[data-toggle="lightbox"]', function (event) {
-        event.preventDefault();
-        $(this).ekkoLightbox();
-      });
-    </script>-->
 
   </body>
 
