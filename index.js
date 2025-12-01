@@ -1,6 +1,4 @@
-/** @format */
-//import jQuery from "jquery";
-//import mongoose from "mongoose";
+import ftp from "basic-ftp";
 import fs from "fs";
 import express from "express";
 import bodyParser from "body-parser";
@@ -13,7 +11,6 @@ import { MongoClient } from "mongodb";
 import cookieParser from "cookie-parser";
 import homeController from "./controllers/home.js";
 import courseController from "./controllers/course.js";
-//import contactsController from './controllers/contacts.js';
 import videos2024Controller from "./controllers/videos2024.js";
 import videos2025Controller from "./controllers/videos2025.js";
 import teetimesController from "./controllers/tee-times.js";
@@ -23,25 +20,15 @@ import { submitForm } from "./controllers/formController.js";
 import firstHalfController from "./controllers/first-half.js";
 import secondHalfController from "./controllers/second-half.js";
 import overallController from "./controllers/overall.js";
-//import availabilityController from "./controllers/availability.js";
-//import loginController from "./controllers/loginController.js";
 import resultsController from "./controllers/results.js";
 import skinsController from "./controllers/skins.js";
 import * as dbmodel from "./models/dbModel.js";
 
 const app = new express();
 
-//const uri =
-//  "mongodb+srv://golfUser:LJbTwTYnKJZmgIqM@cluster0.ovmegqj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-//const client = new MongoClient(uri);
-
-//dbmodel.connect(client);
-
 app.disable("x-powered-by");
-
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
-
 app.use((req, res, next) => {
   res.setHeader("Permission-Policy", "fullscreen=('*')");
   next();
@@ -78,8 +65,6 @@ app.use(
     },
   })
 );
-
-import ftp from "basic-ftp";
 
 async function getFilenames(year) {
     const client = new ftp.Client();
@@ -130,8 +115,6 @@ app.get("/overall", overallController);
 app.get("/skins", skinsController);
 app.get("/form", showForm);
 app.post("/submit", submitForm);
-//app.get("/availability", availabilityController);
-//app.get("/login", loginController);
 
 let port = process.env.PORT || 3000;
 

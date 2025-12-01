@@ -9,7 +9,14 @@
   "vs-code-prettier-eslint.prettierLast": false,
   "cSpell.words": [
     "CTTP",
+    "dbmodel",
+    "ekko",
+    "elfsightcdn",
+    "genid",
+    "gstatic",
     "Hutter",
-    "Shirola"
+    "Shirola",
+    "teetimes",
+    "woot"
   ], // set as "true" to run 'prettier' last not first
  }
