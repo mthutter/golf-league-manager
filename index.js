@@ -81,9 +81,8 @@ app.use(
 
 import ftp from "basic-ftp";
 
-async function getFilenames() {
+async function getFilenames(year) {
     const client = new ftp.Client();
-
     try {
         await client.access({
             host: "la.storage.bunnycdn.com",
@@ -92,7 +91,7 @@ async function getFilenames() {
             secure: false
         });
 
-        const list = await client.list("2024/");     // FTP folder
+        const list = await client.list(year + "/");     // FTP folder
         return list.map(item => item.name);      // Get names only
 
     } catch (err) {
@@ -104,48 +103,18 @@ async function getFilenames() {
 }
 
 app.get("/images2024", async (req, res) => {
-    const filenames = await getFilenames();
+    const filenames = await getFilenames("2024");
     res.render("images2024", { filenames });
 });
 
-//const directoryPath2024 = "/2024";
-//const imageFiles2024 = [];
-//var index2024 = 0;
-
-//fs.readdir(directoryPath2024, (err, files) => {
-//if (err) {
-//console.error("Error reading directory:", err);
-//return;
-// }
-//files.forEach((file) => {
-// console.log(file);
-//imageFiles2024[index2024] = file;
-//index2024++;
-//});
-//});
-
-const directoryPath2025 = "public/images/2025";
-const imageFiles2025 = [];
-var index2025 = 0;
-
-fs.readdir(directoryPath2025, (err, files) => {
-  if (err) {
-    console.error("Error reading directory:", err);
-    return;
-  }
-  files.forEach((file) => {
-    console.log(file);
-    imageFiles2025[index2025] = file;
-    index2025++;
-  });
+app.get("/images2025", async (req, res) => {
+    const filenames = await getFilenames("2025");
+    res.render("images2025", { filenames });
 });
 
 app.get("/", homeController);
 app.get("/course", courseController);
 
-//app.get("/images2024", async (req, res) => {
-//  res.render("images2024", { items: imageFiles2024, async: true });
-//});
 app.get("/images2025", async (req, res) => {
   res.render("images2025", { items: imageFiles2025 });
 });
