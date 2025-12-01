@@ -81,7 +81,6 @@ app.use(
 
 import ftp from "basic-ftp";
 
-var imageFiles2024 = [];
 async function getFilenames() {
     const client = new ftp.Client();
 
@@ -93,22 +92,21 @@ async function getFilenames() {
             secure: false
         });
 
-        const list = await client.list("2024/"); // remote directory
-
-        // Extract filenames into a JS array
-        const filenames = list.map(item => item.name);
-
-        console.log(filenames);
-        return filenames;
+        const list = await client.list("2024/");     // FTP folder
+        return list.map(item => item.name);      // Get names only
 
     } catch (err) {
         console.error("FTP Error:", err);
+        return [];
     } finally {
         client.close();
     }
 }
 
-imageFiles2024 = getFilenames();
+app.get("/images2024", async (req, res) => {
+    const filenames = await getFilenames();
+    res.render("images2024", { filenames });
+});
 
 //const directoryPath2024 = "/2024";
 //const imageFiles2024 = [];
@@ -145,9 +143,9 @@ fs.readdir(directoryPath2025, (err, files) => {
 app.get("/", homeController);
 app.get("/course", courseController);
 
-app.get("/images2024", async (req, res) => {
-  res.render("images2024", { items: imageFiles2024 });
-});
+//app.get("/images2024", async (req, res) => {
+//  res.render("images2024", { items: imageFiles2024, async: true });
+//});
 app.get("/images2025", async (req, res) => {
   res.render("images2025", { items: imageFiles2025 });
 });
