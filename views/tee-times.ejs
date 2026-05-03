@@ -3,18 +3,6 @@
 <html lang="en">
   <%- include('layouts/header');%>
 
-  <style>
-    .table-row {
-      color: white;
-      height: 21px;
-    }
-
-    td {
-      padding-left: 15px;
-      padding-right: 15px;
-    }
-  </style>
-
   <body>
     <section><%- include('layouts/navbar'); %></section>
     <div class="text-center">
@@ -27,44 +15,49 @@
       <br />
     </div>
     <section>
-      <div class="justify-content-center">
-        <table style="table-layout: auto; font-size: 0.75rem">
-          <tr style="font-size: medium">
-            <td colspan="4">May 4&nbsp&nbsp(Week 1 of 22)</td>
-          </tr>
-          <tr style="font-size: medium">
-            <td>4:40p</td>
-            <td>4:50p</td>
-            <td>5:00p</td>
-            <td>5:10p</td>
-          </tr>
-          <tr class="table-row">
-            <td>Russ W</td>
-            <td>Jon D</td>
-            <td>Ryan M</td>
-            <td>John B</td>
-          </tr>
-          <tr class="table-row">
-            <td>Mark Y</td>
-            <td>Matthew S</td>
-            <td>Aaron J</td>
-            <td>Ami B</td>
-          </tr>
-          <tr class="table-row">
-            <td>Shayne I</td>
-            <td>John R</td>
-            <td>Mario P</td>
-            <td>Mark H</td>
-          </tr>
-          <tr class="table-row">
-            <td>Jim N</td>
-            <td>Perry D</td>
-            <td></td>
-            <td></td>
-          </tr>
+      <div style="margin: 0 auto" class="table-wrapper">
+        <table class="tee-table">
+          <thead>
+            <tr class="table-date">
+              <th colspan="4">May 4 (Week 1 of 22)</th>
+            </tr>
+            <tr class="table-times">
+              <th>4:40p</th>
+              <th>4:50p</th>
+              <th>5:00p</th>
+              <th>5:10p</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>Russ W</td>
+              <td>Jon D</td>
+              <td>Ryan M</td>
+              <td>John B</td>
+            </tr>
+            <tr>
+              <td>Mark Y</td>
+              <td>Matthew S</td>
+              <td>Aaron J</td>
+              <td>Ami B</td>
+            </tr>
+            <tr>
+              <td>Shayne I</td>
+              <td>John R</td>
+              <td>Mario P</td>
+              <td>Mark H</td>
+            </tr>
+            <tr>
+              <td>Jim N</td>
+              <td>Perry D</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
         </table>
-        <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
       </div>
+      <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
     </section>
 
     <section><%- include('layouts/footer'); %></section>

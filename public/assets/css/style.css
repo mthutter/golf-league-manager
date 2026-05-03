@@ -253,3 +253,62 @@ html, body {
       height: 32px;
     }
   }
+
+  .table-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.course-table {
+  width: min(95%, 900px);
+  font-size: 0.75rem;
+
+  border-collapse: collapse;   /* 👈 KEY FIX */
+}
+
+.course-table th,
+.course-table td {
+  border: 2px solid black;
+  padding: 4px;
+  text-align: center;
+}
+
+.tee-table {
+  width: min(95%, 800px);   /* 👈 slightly wider */
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+/* cells */
+.tee-table th,
+.tee-table td {
+  border: 2px solid black;
+  padding: 10px 12px;       /* 👈 more spacing */
+  text-align: center;
+  font-size: clamp(14px, 2vw, 18px);  /* 👈 better readability */
+}
+
+/* date row */
+.table-date th {
+  background: rgba(0,0,0,0.1);
+  font-size: 1rem;
+}
+
+/* time row */
+.table-times th {
+  background: rgba(0,0,0,0.05);
+  font-weight: 600;
+}
+
+/* alternating rows */
+.tee-table tbody tr:nth-child(even) {
+  background: rgba(0,0,0,0.03);
+}
+
+.table-wrapper {
+   display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+}
