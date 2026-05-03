@@ -1,303 +1,254 @@
-/** @format */
-@font-face {
-  font-family: rubik;
-  src: url('https://fonts.bunny.net/rubik/files/rubik-latin-400-normal.woff2') format('woff2');
-  font-display: optional; /* Or optional, fallback, block, auto */
-}
-
-html {
-  height: auto;
-  overflow-x: hidden;
-  overflow: scroll;
+/* ========================
+   RESET / BASE
+======================== */
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
   background-color: rgb(47, 138, 47);
 }
 
-body {
+html {
+  overflow-x: hidden;
+}
+
+html, body {
+  background: linear-gradient(
+    180deg,
+    rgb(47, 138, 47),
+    rgb(30, 110, 30)
+  );
+}
+
+/* ========================
+   LAYOUT
+======================== */
+.main-wrapper {
   width: 100%;
-  margin: 0;
-  height: 100vh;
-  background-color: rgb(47, 138, 47) !important;
-  background-position: center;
-  background-size: 80% 80%;
-  font-family: Arial, Helvetica, sans-serif;
+  padding: 10px;
 }
 
-.main-schedule {
-  background-color: rgb(30, 188, 90);
-  color: darkgreen;
-  height: auto;
-  width: 40vw;
-  border: solid black 3px;
-  border-radius: 10px;
-  h5 {
-    font-size: clamp(1rem, 2vw, 2rem);
-  }
-  h6 {
-    font-size: clamp(1rem, 2vw, 2rem);
-  }
-}
-
-h4,
-h5,
-h6 {
-  font-size: clamp(2rem, 5vw, 4rem);
-}
-
-.main-thanks {
-  background-color: rgb(138, 136, 20);
-  color: darkgreen;
-  height: auto;
-  min-height: 25%;
-  width: 33%;
-  border: solid black 2px;
-  border-radius: 12px;
-}
-
-@media only screen and (max-width: 414px) {
-}
-
-@media only screen and (max-width: 1000px) {
-}
-
-video {
-  width: auto;
-  height: auto;
-  border: solid rgb(21, 46, 7) 5px;
-  border-radius: 10px;
-  margin: 5px;
-}
-
-.navbar-brand {
-  margin-right: 10%;
-}
-
-.navbar {
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bolder;
-  border: solid green 5px;
-  color: lightgreen;
-  margin-top: 25px;
-  padding: 5px;
-}
-
-.main-page {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-start;
-}
-
-.main-small {
-  max-height: 400px;
-  border: solid rgb(40, 54, 13) 0.25rem;
-  border-radius: 10px;
-}
-
-.main-large {
-  max-height: 480px;
-  border: solid rgb(40, 54, 13) 3px;
-  border-radius: 5%;
-}
-
-.file-list {
-  background-color: rgb(14, 122, 56);
-  color: darkgreen;
-  height: 450px;
-  width: 450px;
-  border: solid black 5px;
-  border-radius: 15px;
-}
-
-.main-images {
-  background-color: rgb(14, 122, 56);
-  color: darkgreen;
-  height: 500px;
-  width: 1000px;
-  border: solid black 5px;
-  border-radius: 15px;
-}
-
-footer {
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  text-align: right;
-}
-
-h2 {
-  text-decoration: none;
-}
-
-td a {
-  color: rgb(47, 5, 114);
-}
-
-a {
-  color: rgb(212, 47, 29);
-  text-decoration: none;
-}
-
-video:hover,
-img:hover {
-  border: solid rgb(66, 179, 56) 0.25rem;
-}
-
-p {
-  color: black;
-}
-
-h2 {
-  color: rgb(9, 10, 9);
-  font-weight: bold;
-  text-decoration: underline;
-}
-
-h3 {
-  margin-top: 25px;
-  color: black;
-}
-
-h4 {
-  font-weight: bold;
-  color: black;
-}
-
-table {
-  background-color: rgb(38, 168, 38);
-  border: 2px solid black;
-  text-align: center;
-  font-weight: bold;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-th,
-tr,
-td {
-  border: 2px solid black !important; /* Adds a border to each cell */
-  padding: 3px;
+.center-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
   text-align: center;
 }
 
-ul {
-  text-align: justify;
-  list-style-type: none;
-}
-
-.button-3 {
-  appearance: none;
-  background-color: #2ea44f;
-  border: 3px solid black;
-  border-radius: 6px;
-  box-shadow: rgba(27, 31, 35, 0.1) 0 1px 0;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  margin: 3px;
-  padding: 1px 5px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.button-3:focus:not(:focus-visible):not(.focus-visible) {
-  box-shadow: none;
-  outline: none;
-}
-
-.button-3:hover {
-  background-color: #0a441a;
-}
-
-.button-3:focus {
-  box-shadow: rgba(46, 164, 79, 0.4) 0 0 0 3px;
-  outline: none;
-}
-
-.button-3:disabled {
-  background-color: #94d3a2;
-  border-color: rgba(27, 31, 35, 0.1);
-  color: rgba(255, 255, 255, 0.8);
-  cursor: default;
-}
-
-.button-3:active {
-  background-color: #041308;
-  box-shadow: rgba(20, 70, 32, 0.2) 0 1px 0 inset;
-}
-
-.hero-container {
-  position: relative; /* Parent container for absolute positioning */
-  width: 100%;
-  max-height: 100vh;
-  overflow: hidden;
-}
-
-.panoramic-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensures the image covers the container */
-  display: block;
-}
-
-.overlay-footer {
-  position: absolute; /* Positions the footer relative to the .hero-container */
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  color: white;
-  text-align: center;
-  padding: 1rem;
-}
-
+/* ========================
+   HERO LOGO
+======================== */
 .page-logo {
   display: flex;
   justify-content: center;
   margin: 20px 0 10px;
+   user-select: none;
 }
 
 .page-logo img {
-  width: clamp(140px, 22vw, 260px);
-  height: auto;
+  width: clamp(160px, 22vw, 280px);
   border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  user-select: none;
+  pointer-events: none;  
 }
 
+/* remove focus outline */
+.page-logo a {
+  outline: none;
+}
+
+/* ========================
+   TAGLINE
+======================== */
 .tagline {
   text-align: center;
-
-  font-size: clamp(14px, 2.5vw, 18px); 
-    font-size: 22px;
-  font-weight: 600;  
+  font-size: clamp(15px, 2.7vw, 20px);
+  font-weight: 600;
+  color: #1e4d1e;
   letter-spacing: 0.5px;
-
-  margin-top: 8px;
-  margin-bottom: 10px;
-
+  margin: 8px 0 10px;
   position: relative;
-
-  /* fallback color */
-  color: #1e4d1e; 
 }
 
 .tagline::after {
   content: "";
   display: block;
-  width: 50px;              /* slightly shorter = tighter feel */
+  width: 50px;
   height: 2px;
-  margin: 4px auto 0;      /* closer to text */
-  background: rgba(0, 0, 0, 0.15); /* softer */
+  margin: 4px auto 0;
+  background: rgba(0,0,0,0.15);
   border-radius: 2px;
 }
+
+/* ========================
+   SCHEDULE BLOCK
+======================== */
+.main-schedule {
+  background-color: rgb(30, 188, 90);
+  color: darkgreen;
+  border: 3px solid black;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.center-content .title {
+  color: red;
+  font-size: clamp(16px, 4.5vw, 28px);
+  margin-bottom: 12px;
+}
+
+.center-content p {
+  font-size: clamp(12px, 3.5vw, 20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 4px 0;
+}
+
+.center-content .first {
+  color: aqua;
+  font-weight: bold;
+}
+
+/* ========================
+   NAVBAR
+======================== */
+.navbar {
+  font-weight: bold;
+  border: 5px solid green;
+  margin-top: 25px;
+}
+
+/* ========================
+   FOOTER
+======================== */
+.site-footer {
+  margin-top: 40px;
+  padding: 14px 20px;
+  background: rgba(144, 238, 144, 0.15);
+  border-top: 1px solid rgba(30, 77, 30, 0.2);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  max-width: 1200px;
+  margin: 0 auto;
+
+  font-size: 15px;      /* was ~14px */
+  font-weight: 700;     /* stronger presence */
+  color: #1e4d1e;
+}
+.footer-content a {
+  color: #1e4d1e;
+  transition: color 0.2s ease;
+}
+
+.footer-content a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ========================
+   MEDIA QUERIES
+======================== */
+@media (max-width: 600px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .center-content {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .center-content p {
+    font-size: clamp(10px, 2.5vw, 14px);
+  }
+
+  .page-logo img {
+    width: clamp(120px, 20vw, 200px);
+  }
+}
+
+ /* NAV LINKS */
+  .navbar .nav-link {
+    text-align: center;
+  }
+
+  .navbar .nav-link:hover {
+    background-color: rgba(89, 195, 62, 0.7); /* slightly softer */
+    border-radius: 5px;
+  }
+
+  /* DROPDOWN (softened) */
+  .custom-dropdown {
+    background-color: rgb(88, 199, 61);
+    border: none; /* 🚫 removed hard border */
+    border-radius: 10px;
+
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12); /* 👈 soft depth */
+    padding: 6px 0;
+
+    transform: translateY(4px); /* subtle “drop” feel */
+  }
+
+  .custom-dropdown .dropdown-item {
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+
+  .custom-dropdown .dropdown-item:hover {
+    background-color: rgba(67, 150, 44, 0.6); /* softened hover */
+  }
+
+  /* NAVBAR TYPOGRAPHY */
+  .navbar {
+    font-weight: 500;
+  }
+
+  .navbar-brand {
+    font-weight: bold;
+  }
+
+  /* MOBILE MENU */
+  .navbar-collapse {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 1200px) {
+    .navbar-collapse {
+      background: rgba(144, 238, 144, 0.95);
+      margin-top: 8px;
+      padding: 12px 10px;
+      border-radius: 12px;
+
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+
+      transition: all 0.25s ease;
+    }
+
+    .navbar-nav .nav-link {
+      padding: 10px 0;
+    }
+  }
+
+  .nav-logo {
+    height: 42px;
+    width: auto;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    .nav-logo {
+      height: 32px;
+    }
+  }
