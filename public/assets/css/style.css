@@ -312,3 +312,22 @@ html, body {
   width: 100%;
   overflow-x: auto;
 }
+
+.tee-table tbody td {
+  color: white;
+}
+
+/* date row */
+.table-date th {
+  background: rgba(0,0,0,0.2);
+  color: white;
+}
+
+/* time row */
+.table-times th {
+  background: rgba(0,0,0,0.1);
+  color: white;
+}
+.tee-table tbody tr:nth-child(even) {
+  background: rgba(0,0,0,0.1);
+}
