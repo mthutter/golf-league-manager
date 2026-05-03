@@ -20,6 +20,7 @@ import { submitForm } from "./controllers/formController.js";
 import firstHalfController from "./controllers/first-half.js";
 import secondHalfController from "./controllers/second-half.js";
 import overallController from "./controllers/overall.js";
+import rulesController from "./controllers/rules.js";
 import resultsController from "./controllers/results.js";
 import skinsController from "./controllers/skins.js";
 import * as dbmodel from "./models/dbModel.js";
@@ -63,38 +64,37 @@ app.use(
     genid: (req) => {
       return uuid();
     },
-  })
+  }),
 );
 
 async function getFilenames(year) {
-    const client = new ftp.Client();
-    try {
-        await client.access({
-            host: "la.storage.bunnycdn.com",
-            user: "bottoms-up",
-            password: "ac5c1048-f353-4655-8dbe4c573ee9-85ec-4a40",
-            secure: false
-        });
+  const client = new ftp.Client();
+  try {
+    await client.access({
+      host: "la.storage.bunnycdn.com",
+      user: "bottoms-up",
+      password: "ac5c1048-f353-4655-8dbe4c573ee9-85ec-4a40",
+      secure: false,
+    });
 
-        const list = await client.list(year + "/");     // FTP folder
-        return list.map(item => item.name);      // Get names only
-
-    } catch (err) {
-        console.error("FTP Error:", err);
-        return [];
-    } finally {
-        client.close();
-    }
+    const list = await client.list(year + "/"); // FTP folder
+    return list.map((item) => item.name); // Get names only
+  } catch (err) {
+    console.error("FTP Error:", err);
+    return [];
+  } finally {
+    client.close();
+  }
 }
 
 app.get("/images2024", async (req, res) => {
-    const filenames = await getFilenames("2024");
-    res.render("images2024", { filenames });
+  const filenames = await getFilenames("2024");
+  res.render("images2024", { filenames });
 });
 
 app.get("/images2025", async (req, res) => {
-    const filenames = await getFilenames("2025");
-    res.render("images2025", { filenames });
+  const filenames = await getFilenames("2025");
+  res.render("images2025", { filenames });
 });
 
 app.get("/", homeController);
@@ -111,6 +111,7 @@ app.get("/results", resultsController);
 app.get("/tee-times", teetimesController);
 app.get("/second-half", secondHalfController);
 app.get("/first-half", firstHalfController);
+app.get("/rules", rulesController);
 app.get("/overall", overallController);
 app.get("/skins", skinsController);
 app.get("/form", showForm);

@@ -1,4 +1,4 @@
 export default async (req, res) => {
-  res.render("overall");
+  res.render("rules");
   console.log(req.session.id);
 };
