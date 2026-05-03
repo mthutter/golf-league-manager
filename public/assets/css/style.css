@@ -1,22 +1,25 @@
 /* ========================
-   RESET / BASE
+   VARIABLES (NEW)
 ======================== */
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: rgb(47, 138, 47);
+:root {
+  --green-main: rgb(47, 138, 47);
+  --green-dark: rgb(30, 110, 30);
+  --green-light: rgba(144, 238, 144, 0.95);
+  --green-hover: rgb(89, 195, 62);
+  --text-dark: #1e4d1e;
 }
 
+/* ========================
+   RESET / BASE
+======================== */
 html {
   overflow-x: hidden;
 }
 
-html, body {
-  background: linear-gradient(
-    180deg,
-    rgb(47, 138, 47),
-    rgb(30, 110, 30)
-  );
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, var(--green-main), var(--green-dark));
 }
 
 /* ========================
@@ -41,18 +44,16 @@ html, body {
   display: flex;
   justify-content: center;
   margin: 20px 0 10px;
-   user-select: none;
+  user-select: none;
 }
 
 .page-logo img {
   width: clamp(160px, 22vw, 280px);
   border-radius: 50%;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  user-select: none;
-  pointer-events: none;  
+  pointer-events: none;
 }
 
-/* remove focus outline */
 .page-logo a {
   outline: none;
 }
@@ -61,13 +62,11 @@ html, body {
    TAGLINE
 ======================== */
 .tagline {
-  text-align: center;
   font-size: clamp(15px, 2.7vw, 20px);
   font-weight: 600;
-  color: #1e4d1e;
-  letter-spacing: 0.5px;
+  color: var(--text-dark);
   margin: 8px 0 10px;
-  position: relative;
+  text-align: center;
 }
 
 .tagline::after {
@@ -76,12 +75,11 @@ html, body {
   width: 50px;
   height: 2px;
   margin: 4px auto 0;
-  background: rgba(0,0,0,0.15);
-  border-radius: 2px;
+  background: rgba(0,0,0,0.15);  
 }
 
 /* ========================
-   SCHEDULE BLOCK
+   SCHEDULE
 ======================== */
 .main-schedule {
   background-color: rgb(30, 188, 90);
@@ -91,7 +89,7 @@ html, body {
   padding: 10px;
 }
 
-.center-content .title {
+.title {
   color: red;
   font-size: clamp(16px, 4.5vw, 28px);
   margin-bottom: 12px;
@@ -105,7 +103,7 @@ html, body {
   margin: 4px 0;
 }
 
-.center-content .first {
+.first {
   color: aqua;
   font-weight: bold;
 }
@@ -114,11 +112,139 @@ html, body {
    NAVBAR
 ======================== */
 .navbar {
-  font-weight: bold;
+  margin-top: 25px;
   border: 5px solid green;
-  margin-top: 25px; 
+  font-weight: 500;
 }
 
+.navbar-brand {
+  font-weight: bold;
+}
+
+.navbar .nav-link {
+  text-align: center;
+}
+
+.navbar .nav-link:hover {
+  background-color: rgba(89, 195, 62, 0.7);
+  border-radius: 5px;
+}
+
+.navbar-collapse {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* MOBILE NAV */
+@media (max-width: 1200px) {
+  .navbar-collapse {
+    background: var(--green-light);
+    margin-top: 8px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 10px 0;
+  }
+}
+
+.nav-logo {
+  height: 42px;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .nav-logo {
+    height: 32px;
+  }
+}
+
+/* ========================
+   NAVBAR DROPDOWN (FIXED)
+======================== */
+.navbar .dropdown-menu {
+  background-color: rgba(144, 238, 144, 0.95);
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  padding: 6px 0;
+}
+
+.navbar .dropdown-item {
+  color: #1e4d1e;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  background-color: rgb(89, 195, 62); /* your hover green */
+  color: #1e4d1e;
+}
+
+/* ========================
+   TABLES
+======================== */
+.table-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+/* COURSE TABLE */
+.course-table {
+  width: min(95%, 900px);
+  font-size: 0.75rem;
+  border-collapse: collapse;
+}
+
+.course-table th,
+.course-table td {
+  border: 2px solid black;
+  padding: 4px;
+  text-align: center;
+}
+
+/* TEE TABLE */
+.tee-table {
+  width: min(95%, 800px);
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.tee-table th,
+.tee-table td {
+  border: 2px solid black;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: clamp(14px, 2vw, 18px);
+}
+
+/* table styling */
+.table-date th {
+  background: rgba(0,0,0,0.2);
+  color: white;
+}
+
+.table-times th {
+  background: rgba(0,0,0,0.1);
+  color: white;
+  font-weight: 600;
+}
+
+.tee-table tbody td {
+  color: rgb(23, 241, 41);
+}
+
+.tee-table tbody tr:nth-child(even) {
+  background: rgba(0,0,0,0.1);
+}
 
 /* ========================
    FOOTER
@@ -134,22 +260,19 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   max-width: 1200px;
   margin: 0 auto;
-
-  font-size: 15px;      /* was ~14px */
-  font-weight: 700;     /* stronger presence */
-  color: #1e4d1e;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
 }
+
 .footer-content a {
-  color: #1e4d1e;
-  transition: color 0.2s ease;
+  color: var(--text-dark);
 }
 
 .footer-content a:hover {
   text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 /* ========================
@@ -176,187 +299,4 @@ html, body {
   .page-logo img {
     width: clamp(120px, 20vw, 200px);
   }
-}
-
- /* NAV LINKS */
-  .navbar .nav-link {
-    text-align: center;
-  }
-
-  .navbar .nav-link:hover {
-    background-color: rgba(89, 195, 62, 0.7); /* slightly softer */
-    border-radius: 5px;
-  }
-
-  /* DROPDOWN (softened) */
-  .custom-dropdown {
-    background-color: rgb(88, 199, 61);
-    border: none; /* 🚫 removed hard border */
-    border-radius: 10px;
-
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12); /* 👈 soft depth */
-    padding: 6px 0;
-
-    transform: translateY(4px); /* subtle “drop” feel */
-  }
-
-  .custom-dropdown .dropdown-item {
-    border-radius: 6px;
-    transition: background-color 0.2s ease;
-  }
-
-  .custom-dropdown .dropdown-item:hover {
-    background-color: rgba(67, 150, 44, 0.6); /* softened hover */
-  }
-
-  /* NAVBAR TYPOGRAPHY */
-  .navbar {
-    font-weight: 500;
-  }
-
-  .navbar-brand {
-    font-weight: bold;
-  }
-
-  /* MOBILE MENU */
-  .navbar-collapse {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  @media (max-width: 1200px) {
-    .navbar-collapse {
-      background: rgba(144, 238, 144, 0.95);
-      margin-top: 8px;
-      padding: 12px 10px;
-      border-radius: 12px;
-
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-
-      transition: all 0.25s ease;
-    }
-
-    .navbar-nav .nav-link {
-      padding: 10px 0;
-    }
-  }
-
-  .nav-logo {
-    height: 42px;
-    width: auto;
-    border-radius: 50%;
-  }
-
-  @media (max-width: 768px) {
-    .nav-logo {
-      height: 32px;
-    }
-  }
-
-  .table-wrapper {
-  display: flex;
-  justify-content: center;
-  margin: 10px 0;
-}
-
-.course-table {
-  width: min(95%, 900px);
-  font-size: 0.75rem;
-
-  border-collapse: collapse;   /* 👈 KEY FIX */
-}
-
-.course-table th,
-.course-table td {
-  border: 2px solid black;
-  padding: 4px;
-  text-align: center;
-}
-
-.tee-table {
-  width: min(95%, 800px);   /* 👈 slightly wider */
-  margin: 0 auto;
-  border-collapse: collapse;
-}
-
-/* cells */
-.tee-table th,
-.tee-table td {
-  border: 2px solid black;
-  padding: 10px 12px;       /* 👈 more spacing */
-  text-align: center;
-  font-size: clamp(14px, 2vw, 18px);  /* 👈 better readability */
-}
-
-/* date row */
-.table-date th {
-  background: rgba(0,0,0,0.1);
-  font-size: 1.25rem;
-}
-
-/* time row */
-.table-times th {
-  background: rgba(0,0,0,0.05);
-  font-weight: 600;
-}
-
-/* alternating rows */
-.tee-table tbody tr:nth-child(even) {
-  background: rgba(0,0,0,0.03);
-}
-
-.table-wrapper {
-   display: flex;
-  justify-content: center;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.tee-table tbody td {
-  color: rgb(23, 241, 41);
-}
-
-/* date row */
-.table-date th {
-  background: rgba(0,0,0,0.2);
-  color: white;
-}
-
-/* time row */
-.table-times th {
-  background: rgba(0,0,0,0.1);
-  color: white;
-}
-.tee-table tbody tr:nth-child(even) {
-  background: rgba(0,0,0,0.1);
-}
-
-/* dropdown background */
-.dropdown-menu {
-  background-color: rgba(144, 238, 144, 0.95);  /* match navbar tone */
-  border: none;
-  border-radius: 8px;
-}
-
-/* dropdown items */
-.dropdown-item {
-  color: #1e4d1e;   /* same as your nav text */
-  padding: 8px 12px;
-}
-
-/* hover state (match navbar hover) */
-.dropdown-item:hover {
-  background-color: rgb(89, 195, 62);   /* 👈 your navbar hover color */
-  color: #1e4d1e;
-  border-radius: 5px;
-}
-
-.dropdown-menu {
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.navbar .dropdown-menu {
-  background-color: rgba(144, 238, 144, 0.95);
-  border: none;
 }
