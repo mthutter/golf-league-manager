@@ -262,3 +262,15 @@ ul {
   text-align: center;
   padding: 1rem;
 }
+
+.page-logo {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 10px;
+}
+
+.page-logo img {
+  width: clamp(140px, 22vw, 260px);
+  height: auto;
+  border-radius: 50%;
+}
