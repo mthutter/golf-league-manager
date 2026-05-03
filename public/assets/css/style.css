@@ -292,7 +292,7 @@ html, body {
 /* date row */
 .table-date th {
   background: rgba(0,0,0,0.1);
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
 
 /* time row */
@@ -314,7 +314,7 @@ html, body {
 }
 
 .tee-table tbody td {
-  color: white;
+  color: rgb(23, 241, 41);
 }
 
 /* date row */
