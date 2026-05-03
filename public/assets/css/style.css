@@ -331,3 +331,32 @@ html, body {
 .tee-table tbody tr:nth-child(even) {
   background: rgba(0,0,0,0.1);
 }
+
+/* dropdown background */
+.dropdown-menu {
+  background-color: rgba(144, 238, 144, 0.95);  /* match navbar tone */
+  border: none;
+  border-radius: 8px;
+}
+
+/* dropdown items */
+.dropdown-item {
+  color: #1e4d1e;   /* same as your nav text */
+  padding: 8px 12px;
+}
+
+/* hover state (match navbar hover) */
+.dropdown-item:hover {
+  background-color: rgb(89, 195, 62);   /* 👈 your navbar hover color */
+  color: #1e4d1e;
+  border-radius: 5px;
+}
+
+.dropdown-menu {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.navbar .dropdown-menu {
+  background-color: rgba(144, 238, 144, 0.95);
+  border: none;
+}
