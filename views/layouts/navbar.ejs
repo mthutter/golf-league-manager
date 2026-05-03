@@ -71,6 +71,18 @@
       padding: 10px 0;
     }
   }
+
+  .nav-logo {
+    height: 42px;
+    width: auto;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    .nav-logo {
+      height: 32px;
+    }
+  }
 </style>
 
 <div class="position-absolute top-0 end-0" style="padding-right: 15px; margin: 0; font-weight: bold; font-family: REM; color: rgb(20, 24, 9)">
@@ -79,7 +91,10 @@
 
 <nav class="navbar navbar-expand-xl bg-body-tertiary">
   <div class="container-fluid" style="background-color: lightgreen">
-    <a class="navbar-brand px-2" href="/">Bottoms Up Golf</a>
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/bottoms-up-logo.png" alt="Bottoms Up Logo" class="nav-logo" />
+      <span class="ms-2">Bottoms Up Golf</span>
+    </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
       <span class="navbar-toggler-icon"></span>
