@@ -116,8 +116,9 @@ html, body {
 .navbar {
   font-weight: bold;
   border: 5px solid green;
-  margin-top: 25px;
+  margin-top: 25px; 
 }
+
 
 /* ========================
    FOOTER
