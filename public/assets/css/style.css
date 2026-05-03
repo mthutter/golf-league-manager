@@ -274,3 +274,30 @@ ul {
   height: auto;
   border-radius: 50%;
 }
+
+.tagline {
+  text-align: center;
+
+  font-size: clamp(14px, 2.5vw, 18px); 
+    font-size: 22px;
+  font-weight: 600;  
+  letter-spacing: 0.5px;
+
+  margin-top: 8px;
+  margin-bottom: 10px;
+
+  position: relative;
+
+  /* fallback color */
+  color: #1e4d1e; 
+}
+
+.tagline::after {
+  content: "";
+  display: block;
+  width: 50px;              /* slightly shorter = tighter feel */
+  height: 2px;
+  margin: 4px auto 0;      /* closer to text */
+  background: rgba(0, 0, 0, 0.15); /* softer */
+  border-radius: 2px;
+}
