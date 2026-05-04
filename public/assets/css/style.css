@@ -50,7 +50,7 @@ body {
 .page-logo img {
   width: clamp(160px, 22vw, 280px);
   border-radius: 50%;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   pointer-events: none;
 }
 
@@ -75,7 +75,7 @@ body {
   width: 50px;
   height: 2px;
   margin: 4px auto 0;
-  background: rgba(0,0,0,0.15);  
+  background: rgba(0, 0, 0, 0.15);
 }
 
 /* ========================
@@ -169,8 +169,10 @@ body {
   background-color: rgba(144, 238, 144, 0.95);
   border: none;
   border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   padding: 6px 0;
+  transform: translateY(6px);
+  transition: all 0.2s ease;
 }
 
 .navbar .dropdown-item {
@@ -228,12 +230,12 @@ body {
 
 /* table styling */
 .table-date th {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   color: white;
 }
 
 .table-times th {
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   color: white;
   font-weight: 600;
 }
@@ -243,7 +245,7 @@ body {
 }
 
 .tee-table tbody tr:nth-child(even) {
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 /* ========================
