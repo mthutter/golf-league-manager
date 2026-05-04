@@ -2,7 +2,128 @@
 <html lang="en">
   <!-- header section -->
   <%- include('./layouts/header'); -%>
+  <style>
+    .winners {
+      margin-top: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
 
+    /* Card layout */
+    .winner-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 4px solid rgba(144, 238, 144, 0.5);
+
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+
+      transition: all 0.2s ease;
+    }
+
+    /* Subtle hover (feels modern) */
+    .winner-card:hover {
+      background: rgba(0, 0, 0, 0.35);
+      transform: translateX(3px);
+    }
+
+    /* Left side text */
+    .winner-place {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      color: rgb(98, 228, 98);
+    }
+
+    .winner-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    /* Score highlight */
+    .winner-score {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #90ee90;
+    }
+
+    /* Optional: medal colors */
+    .winner-card:nth-child(1) {
+      border-left-color: gold;
+    }
+    .winner-card:nth-child(2) {
+      border-left-color: silver;
+    }
+    .winner-card:nth-child(3) {
+      border-left-color: #cd7f32;
+    }
+    .winner-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    /* Medal Colors */
+    .winner-card.gold .winner-name {
+      color: #ffd700;
+    }
+
+    .winner-card.silver .winner-name {
+      color: #c0c0c0;
+    }
+
+    .winner-card.bronze .winner-name {
+      color: #cd7f32;
+    }
+
+    /* Optional: match border accent too */
+    .winner-card.gold {
+      border-left-color: #ffd700;
+    }
+
+    .winner-card.silver {
+      border-left-color: #c0c0c0;
+    }
+
+    .winner-card.bronze {
+      border-left-color: #cd7f32;
+    }
+    .winners-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 8px;
+      margin-bottom: 16px;
+
+      font-family: "Inter", sans-serif;
+    }
+
+    .winners-icon {
+      font-size: 1.2rem;
+    }
+
+    .winners-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .winners-container {
+      max-width: 550px;
+      margin: 30px auto;
+      padding: 20px 18px;
+
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(144, 238, 144, 0.25);
+      border-radius: 12px;
+
+      backdrop-filter: blur(4px); /* subtle modern feel */
+    }
+  </style>
   <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript>
@@ -23,14 +144,44 @@
       <div class="tagline">Golf. Drinks. Good Company. Good Times.</div>
 
       <!-- CONTENT -->
-      <div class="content-container">
-        <div class="center-content main-schedule">
-          <h2 class="title">2025 WINNERS</h2>
 
-          <p class="first">First Place - Jon Dickey (20.18)</p>
-          <p>Second Place - Matthew Shirola (19.92)</p>
-          <p>Third Place - Jeff Vest (19.89)</p>
-          <p>CTP - Ryan Miller (4)</p>
+      <div style="margin: 0 auto" class="winners">
+        <div class="winners-container">
+          <div class="winners-header">
+            <span class="winners-icon">🏆</span>
+            <span class="winners-title">2025 Winners</span>
+          </div>
+          <div class="winner-card gold">
+            <div class="winner-left">
+              <div class="winner-place">🥇 1st Place</div>
+              <div class="winner-name">Jon Dickey</div>
+            </div>
+            <div class="winner-score">20.18</div>
+          </div>
+
+          <div class="winner-card silver">
+            <div class="winner-left">
+              <div class="winner-place">🥈 2nd Place</div>
+              <div class="winner-name">Matthew Shirola</div>
+            </div>
+            <div class="winner-score">19.92</div>
+          </div>
+
+          <div class="winner-card bronze">
+            <div class="winner-left">
+              <div class="winner-place">🥉 3rd Place</div>
+              <div class="winner-name">Jeff Vest</div>
+            </div>
+            <div class="winner-score">19.89</div>
+          </div>
+
+          <div class="winner-card">
+            <div class="winner-left">
+              <div class="winner-place">🏌️ CTP</div>
+              <div style="color: #d4aa7f" class="winner-name">Ryan Miller</div>
+            </div>
+            <div class="winner-score">4</div>
+          </div>
         </div>
       </div>
     </section>
