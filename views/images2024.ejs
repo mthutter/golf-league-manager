@@ -1,43 +1,36 @@
 <!doctype html>
 <html lang="en">
 
-<%- include('./layouts/header'); %>
- 
-<style>
-img:hover {
-      border: 5px solid rgb(38, 226, 38);
-    }
-    </style>
-   <body>
+<body>
 
-    <section>
-      <%- include('./layouts/navbar'); %>
-    </section>
+  <%- include('./layouts/header'); %>
+  <%- include('./layouts/navbar'); %>
 
-    <section>      
-      <div>
-        <br><br>
-        <h1 style="text-align: center;">2024 Images</h1>
-        <br>
+  <div class="main-wrapper">
+    <h1 class="gallery-title">2024 Images</h1>
+
+    <div class="container">
+      <div class="row g-3">
+        <% filenames.forEach(name => { %>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <%- include('partials/media-card', {
+          type: 'image',
+          src: `https://bottoms-up.b-cdn.net/2024/${name}`,
+          title: name.replace(/[-_]/g, ' ').replace('.jpg','')
+        }) %>
+        </div>
+        <% }) %>
       </div>
-      <br>
-      <div class="container">
-        <div class="row justify-content-center">
-          <% filenames.forEach(function(name) { %>
-            <div class="col-xl-2 col-lg-3 col-md-3 col-sm-3 my-2" style="padding: 10px">
-              <a id="holder" href="https://bottoms-up.b-cdn.net/2024/<%= name %>"><img alt="<%= name%>" loading="lazy"
-                  src="https://bottoms-up.b-cdn.net/2024/<%= name %>"
-                  class="img-fluid">
-              </a>
-            </div>
-            <% }) %>            
-        </div>     
-    </section>
+    </div>
 
-    <section>
-      <div>
-        <%- include('./layouts/footer'); %>
-      </div>
-    </section>    
-  </body>
+  </div>
+
+  <%- include('./layouts/footer'); %>
+
+  <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+  <script>
+    const lightbox = GLightbox();
+  </script>
+</body>
+
 </html>

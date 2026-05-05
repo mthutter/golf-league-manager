@@ -13,6 +13,7 @@ import homeController from "./controllers/home.js";
 import courseController from "./controllers/course.js";
 import videos2024Controller from "./controllers/videos2024.js";
 import videos2025Controller from "./controllers/videos2025.js";
+import videosController from "./controllers/videos.js";
 import teetimesController from "./controllers/tee-times.js";
 import { showForm } from "./controllers/formController.js";
 import { submitForm } from "./controllers/formController.js";
@@ -64,7 +65,7 @@ app.use(
     genid: (req) => {
       return uuid();
     },
-  }),
+  })
 );
 
 async function getFilenames(year) {
@@ -97,14 +98,20 @@ app.get("/images2025", async (req, res) => {
   res.render("images2025", { filenames });
 });
 
+app.get("/images", async (req, res) => {
+  const filenames = await getFilenames("2025");
+  res.render("images", { filenames });
+});
+
 app.get("/", homeController);
 app.get("/course", courseController);
 
-app.get("/images2025", async (req, res) => {
-  res.render("images2025", { items: imageFiles2025 });
-});
+//app.get("/images2025", async (req, res) => {
+//  res.render("images2025", { items: imageFiles2025 });
+//});
 app.get("/videos2024", videos2024Controller);
 app.get("/videos2025", videos2025Controller);
+app.get("/videos", videosController);
 
 app.get("/results", resultsController);
 //app.get("/contacts", contactsController);

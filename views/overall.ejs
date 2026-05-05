@@ -1,18 +1,16 @@
 <!doctype html>
 <html lang="en">
-  <%- include('./layouts/header'); -%>
 
-  <body>
-    <section><%- include('./layouts/navbar'); -%></section>
+<body>
+  <%- include('./layouts/header'); -%> <%- include('./layouts/navbar'); -%>
 
-    <section id="meat">
-      <div style="text-align: center">
-        <iframe src="/results/2025/2025 Overall Standings.pdf#zoom=Fit" style="height: 90vh; width: 90%"></iframe>
-      </div>
-    </section>
+  <div class="main-wrapper">
+    <div style="text-align: center">
+      <iframe src="/results/2025/2025 Overall Standings.pdf#zoom=Fit" style="height: 90vh; width: 90%"></iframe>
+    </div>
+  </div>
 
-    <section><%- include('./layouts/footer'); -%></section>
+  <%- include('./layouts/footer'); -%> <%- include('./layouts/scripts'); -%>
+</body>
 
-    <section><%- include('./layouts/scripts'); -%></section>
-  </body>
 </html>
