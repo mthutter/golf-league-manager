@@ -1,18 +1,20 @@
 <!doctype html>
 <html lang="en">
+
+
+<body>
   <%- include('./layouts/header'); -%>
+  <%- include('./layouts/navbar'); -%>
 
-  <body>
-    <section><%- include('./layouts/navbar'); -%></section>
+  <div class="main-wrapper">
+    <div style="text-align: center">
+      <iframe src="/docs/Bottoms Up 2026 League Info and Rules (03-29-26).pdf#zoom=Fit" style="height: 90vh; width: 90%"></iframe>
+    </div>
+  </div>
 
-    <section id="meat">
-      <div style="text-align: center">
-        <iframe src="/docs/Bottoms Up 2026 League Info and Rules (03-29-26).pdf#zoom=Fit" style="height: 90vh; width: 90%"></iframe>
-      </div>
-    </section>
+  <%- include('./layouts/footer'); -%>
 
-    <section><%- include('./layouts/footer'); -%></section>
+  <%- include('./layouts/scripts'); -%>
+</body>
 
-    <section><%- include('./layouts/scripts'); -%></section>
-  </body>
 </html>
