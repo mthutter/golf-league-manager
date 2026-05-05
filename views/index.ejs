@@ -1,66 +1,69 @@
 <!doctype html>
 <html lang="en">
-  <body>
-    <%- include('./layouts/header'); -%> <%- include('./layouts/navbar'); -%>
+<%- include('./layouts/header'); -%>
 
-    <noscript>
-      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W9Q82T2S" height="0" width="0" style="display: none; visibility: hidden"></iframe>
-    </noscript>
+<body>
+  <%- include('./layouts/navbar'); -%>
 
-    <!-- MAIN -->
-    <div class="main-wrapper">
-      <!-- HERO LOGO -->
-      <div class="page-logo">
-        <img src="/images/bottoms-up-logo.png" alt="Bottoms Up Logo" />
-      </div>
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W9Q82T2S" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+  </noscript>
 
-      <!-- TAGLINE -->
-      <div class="tagline">Golf. Drinks. Good Company. Good Times.</div>
+  <!-- MAIN -->
+  <div class="main-wrapper">
+    <!-- HERO LOGO -->
+    <div class="page-logo">
+      <img src="/images/bottoms-up-logo.png" alt="Bottoms Up Logo" />
+    </div>
 
-      <!-- CONTENT -->
+    <!-- TAGLINE -->
+    <div class="tagline">Golf. Drinks. Good Company. Good Times.</div>
 
-      <div style="margin: 0 auto" class="winners">
-        <div class="winners-container">
-          <div class="winners-header">
-            <span class="winners-icon">🏆</span>
-            <span class="winners-title">2025 Winners</span>
+    <!-- CONTENT -->
+
+    <div style="margin: 0 auto" class="winners">
+      <div class="winners-container">
+        <div class="winners-header">
+          <span class="winners-icon">🏆</span>
+          <span class="winners-title">2025 Winners</span>
+        </div>
+        <div class="winner-card gold">
+          <div class="winner-left">
+            <div class="winner-place">🥇 1st Place</div>
+            <div class="winner-name">Jon Dickey</div>
           </div>
-          <div class="winner-card gold">
-            <div class="winner-left">
-              <div class="winner-place">🥇 1st Place</div>
-              <div class="winner-name">Jon Dickey</div>
-            </div>
-            <div class="winner-score">20.18</div>
-          </div>
+          <div class="winner-score">20.18</div>
+        </div>
 
-          <div class="winner-card silver">
-            <div class="winner-left">
-              <div class="winner-place">🥈 2nd Place</div>
-              <div class="winner-name">Matthew Shirola</div>
-            </div>
-            <div class="winner-score">19.92</div>
+        <div class="winner-card silver">
+          <div class="winner-left">
+            <div class="winner-place">🥈 2nd Place</div>
+            <div class="winner-name">Matthew Shirola</div>
           </div>
+          <div class="winner-score">19.92</div>
+        </div>
 
-          <div class="winner-card bronze">
-            <div class="winner-left">
-              <div class="winner-place">🥉 3rd Place</div>
-              <div class="winner-name">Jeff Vest</div>
-            </div>
-            <div class="winner-score">19.89</div>
+        <div class="winner-card bronze">
+          <div class="winner-left">
+            <div class="winner-place">🥉 3rd Place</div>
+            <div class="winner-name">Jeff Vest</div>
           </div>
+          <div class="winner-score">19.89</div>
+        </div>
 
-          <div class="winner-card">
-            <div class="winner-left">
-              <div class="winner-place">🏌️ CTP</div>
-              <div style="color: #d4aa7f" class="winner-name">Ryan Miller</div>
-            </div>
-            <div class="winner-score">4</div>
+        <div class="winner-card">
+          <div class="winner-left">
+            <div class="winner-place">🏌️ CTP</div>
+            <div style="color: #d4aa7f" class="winner-name">Ryan Miller</div>
           </div>
+          <div class="winner-score">4</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- FOOTER -->
-    <%- include('./layouts/footer'); -%>
-  </body>
+  <!-- FOOTER -->
+  <%- include('./layouts/footer'); -%>
+</body>
+
 </html>
