@@ -8,24 +8,21 @@
 
   <div class="main-wrapper">
     <h1 class="gallery-title">2025 Images</h1>
+
     <div class="container">
-      <div class="row g-3 justify-content-center">
-        <% filenames.sort().forEach(function(name) { %>
+      <div class="row g-3">
+        <% filenames.forEach(name => { %>
         <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-          <div class="gallery-item">
-            <a href="https://bottoms-up.b-cdn.net/2025/<%= name %>" class="glightbox" data-title="<%= name %>">
-              <div class="gallery-image-wrapper">
-                <img alt="<%= name%>" loading="lazy" src="https://bottoms-up.b-cdn.net/2025/<%= name %>?width=400&quality=80" class="img-fluid gallery-img">
-                <div class="gallery-caption">
-                  <%= name.replace(/[-_]/g, ' ').replace('.jpg','') %>
-                </div>
-              </div>
-            </a>
-          </div>
+          <%- include('partials/media-card', {
+          type: 'image',
+          src: `https://bottoms-up.b-cdn.net/2025/${name}`,
+          title: name.replace(/[-_]/g, ' ').replace('.jpg','')
+        }) %>
         </div>
         <% }) %>
       </div>
     </div>
+
   </div>
 
   <%- include('./layouts/footer'); %>

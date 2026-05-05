@@ -4,13 +4,7 @@
 <body>
   <%- include('./layouts/header'); -%>
   <%- include('./layouts/navbar'); -%>
-  <div class="main-wrapper">
-    <div>
-      <h1 class="gallery-title">2025 Videos</h1>
-    </div>
-    <div class="container">
-      <div class="row g-3 justify-content-center">
-        <% const videos = [
+  <% const videos = [
      "1f9c8e02-5895-4eb7-8035-6ef303a72299",
      "c46e4d7c-0ee6-4a1f-83fd-2a3fd8605971",
      "b6d43072-53c3-4d03-b6f9-bcf06b751e9d",
@@ -24,26 +18,27 @@
      "a214e453-349d-4e83-8684-09bf210a90e3"
     ]; %>
 
+  <div class="main-wrapper">
+    <div>
+      <h1 class="gallery-title">2025 Videos</h1>
+    </div>
+    <div class="container">
+      <div class="row g-3">
         <% videos.forEach(id => { %>
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-          <div class="video-item">
-            <div class="video-wrapper">
-              <iframe src="https://player.mediadelivery.net/embed/551954/<%= id %>?autoplay=false&loop=false&muted=false&preload=false&responsive=true" loading="lazy" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen>
-              </iframe>
-            </div>
-            <div class="video-caption">
-              Video <%= id.slice(0, 6) %>
-            </div>
-          </div>
+          <%- include('partials/media-card', {
+          type: 'video',
+          src: `https://player.mediadelivery.net/embed/551954/${id}?autoplay=false&responsive=true`,
+          title: `Video ${id.slice(0,6)}`
+        }) %>
         </div>
-
         <% }) %>
-
       </div>
     </div>
+  </div>
 
-    <%- include('./layouts/footer'); -%>
-    <%- include('./layouts/scripts'); -%>
+  <%- include('./layouts/footer'); -%>
+  <%- include('./layouts/scripts'); -%>
 
 </body>
 
