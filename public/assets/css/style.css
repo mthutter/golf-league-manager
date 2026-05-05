@@ -16,19 +16,20 @@
 html, body {
   height: 100%;
   margin: 0;
+  background: var(--green-dark);
 }
 
 body {
   display: flex;
   flex-direction: column;  
-  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: var(--green-dark);
+  background: linear-gradient(180deg, var(--green-main), var(--green-dark));
   min-height: 100vh;  
 }
 
 html {
   overflow-x: hidden;
+  background: var(--green-dark);
 }
 
 a {
