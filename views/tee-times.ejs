@@ -1,65 +1,99 @@
 <!doctype html>
 
 <html lang="en">
-  <body>
-    <%- include('layouts/header'); %> <%- include('layouts/navbar'); %>
 
-    <div class="main-wrapper">
-      <div class="text-center">
-        <br /><br />
-        <h1>2026 Tee Times</h1>
-        <h3>
-          <span style="color: white">White</span>/<span style="color: red">Red</span>
-          Tees
-        </h3>
-        <br />
+<body>
+  <%- include('layouts/header'); %> <%- include('layouts/navbar'); %>
+
+  <div class="main-wrapper">
+    <div class="tee-card">
+      <div class="tee-card-header">
+        <h2>Tee Times ( <span style="color: red;">Red</span> / <span style="color: white;">White</span> )</h2>
       </div>
-      <section>
-        <div style="margin: 0 auto" class="table-wrapper">
-          <table class="tee-table">
-            <thead>
-              <tr class="table-date">
-                <th colspan="4">May 4 (Week 1 of 22)</th>
-              </tr>
-              <tr class="table-times">
-                <th>4:50p</th>
-                <th>5:00p</th>
-                <th>5:10p</th>
-                <th>5:20p</th>
-              </tr>
-            </thead>
+      <div class="table-wrapper">
+        <table class="tee-table">
+          <thead>
+            <tr class="table-date">
+              <th colspan="4">May 4 (Week 1 of 22)</th>
+            </tr>
+            <tr class="table-times">
+              <th>4:50p</th>
+              <th>5:00p</th>
+              <th>5:10p</th>
+              <th>5:20p</th>
+            </tr>
+          </thead>
 
-            <tbody>
-              <tr>
-                <td>Russ W</td>
-                <td>Jon D</td>
-                <td>Ryan M</td>
-                <td>John B</td>
-              </tr>
-              <tr>
-                <td>Mark Y</td>
-                <td>Matthew S</td>
-                <td>Aaron J</td>
-                <td>Ami B</td>
-              </tr>
-              <tr>
-                <td>Shayne I</td>
-                <td>John R</td>
-                <td>Mario P</td>
-                <td>Mark H</td>
-              </tr>
-              <tr>
-                <td>Jim N</td>
-                <td>Perry D</td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
-      </section>
+          <tbody>
+            <tr>
+              <td>Russ W</td>
+              <td>Jon D</td>
+              <td>Ryan M</td>
+              <td>John B</td>
+            </tr>
+            <tr>
+              <td>Mark Y</td>
+              <td>Matthew S</td>
+              <td>Aaron J</td>
+              <td>Ami B</td>
+            </tr>
+            <tr>
+              <td>Shayne I</td>
+              <td>John R</td>
+              <td>Mario P</td>
+              <td>Mark H</td>
+            </tr>
+            <tr>
+              <td>Jim N</td>
+              <td>Perry D</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
     </div>
-    <%- include('layouts/footer'); %> <%- include('layouts/scripts'); %>
-  </body>
+  </div>
+  <%- include('layouts/footer'); %> <%- include('layouts/scripts'); %>
+</body>
+
+<script>
+  const table = document.querySelector('.tee-table');
+  let currentCol = -1;
+
+  table.addEventListener('pointerover', (e) => {
+    const cell = e.target.closest('td, th');
+    if (!cell) return;
+
+    const row = cell.parentElement;
+
+    // ❌ IGNORE header row
+    if (row.closest('thead')) return;
+
+    const col = cell.cellIndex;
+    if (col === currentCol) return;
+
+    currentCol = col;
+
+    // clear previous
+    table.querySelectorAll('.active-col').forEach(el => {
+      el.classList.remove('active-col');
+    });
+
+    // apply ONLY to tbody
+    table.querySelectorAll('tbody tr').forEach(row => {
+      const target = row.children[col];
+      if (target) target.classList.add('active-col');
+    });
+  });
+
+  table.addEventListener('pointerleave', () => {
+    currentCol = -1;
+    table.querySelectorAll('.active-col').forEach(el => {
+      el.classList.remove('active-col');
+    });
+  });
+</script>
+
 </html>
