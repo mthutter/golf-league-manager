@@ -31,6 +31,10 @@ html {
   overflow-x: hidden;
 }
 
+a {
+  text-decoration: none;
+}
+
 .container, .container-fluid {
   background: transparent;
 }
@@ -613,3 +617,85 @@ html {
 
       backdrop-filter: blur(4px); /* subtle modern feel */
     }
+
+.gallery-item {
+  background: rgba(255,255,255,0.05);
+  padding: 6px;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+
+.gallery-img {
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  opacity: 0;
+  animation: fadeIn 0.4s ease forwards;
+  width: 100%;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1;}
+}
+
+.gallery-img:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+a.glightbox {
+  display: block;
+}
+
+.gallery-item:hover {
+  transform: translateY(-3px);
+  transition: 0.2s ease;
+}
+
+.gallery-title {
+  text-align: center;
+  margin: 20px 0;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.gallery-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 11px;
+  text-align: center;
+  letter-spacing: .4px;
+  font-weight: 500;
+
+  color: #b8e6b8;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) transparent);
+
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.25s ease;
+}
+
+a.glightbox {
+  text-decoration: none;
+  color: inherit;
+}
+
+.gallery-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.gallery-image-wrapper:hover .gallery-img {
+  transform: scale(1.05);  
+}
+
+.gallery-image-wrapper:hover .gallery-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
