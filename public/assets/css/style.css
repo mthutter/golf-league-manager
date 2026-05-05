@@ -16,19 +16,20 @@
 html, body {
   height: 100%;
   margin: 0;
+  background: var(--green-dark);
 }
 
 body {
   display: flex;
   flex-direction: column;  
-  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: var(--green-dark);
+  background: linear-gradient(180deg, var(--green-main), var(--green-dark));
   min-height: 100vh;  
 }
 
 html {
   overflow-x: hidden;
+  background: var(--green-dark);
 }
 
 a {
@@ -238,9 +239,10 @@ a {
 
 /* TEE TABLE */
 .tee-table {
-  width: min(95%, 800px);
+  width: auto;
   margin: 0 auto;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .tee-table th,
@@ -263,9 +265,6 @@ a {
   font-weight: 600;
 }
 
-.tee-table tbody td {
-  color: rgb(23, 241, 41);
-}
 
 .tee-table tbody tr:nth-child(even) {
   background: rgba(0, 0, 0, 0.1);
@@ -853,4 +852,144 @@ NEW MEDIA CSS (video/image)
   font-size: 13px;
   color: #aee5aa;
   opacity: .85;
+}
+
+/* ========================
+   TEE TABLE ENHANCEMENTS
+======================== */
+
+/* subtle card feel */
+.table-wrapper {
+  padding: 6px;
+  border-radius: 10px;
+}
+
+/* soften header */
+.tee-table th {
+  background: rgba(0, 0, 0, 0.25);
+  color: #c8f7c5;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* improve row spacing feel */
+.tee-table td {
+  padding: 10px 14px;
+}
+
+/* zebra striping (subtle) */
+.tee-table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* softer hover */
+.tee-table tbody tr:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* highlight time column */
+
+.tee-table th:first-child {
+  color: #c8f7c5;
+  font-weight: 600;
+}
+
+/* smooth hover transitions */
+.tee-table td,
+.tee-table th {
+  transition: background 0.12s ease;
+}
+
+/* ========================
+   TEE TABLE CARD WRAPPER
+======================== */
+
+.tee-card {
+  max-width: 900px;
+  margin: 20px auto;
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* header above table */
+.tee-card-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.tee-card-header h2 {
+  font-size: 20px;
+  color: black;
+  letter-spacing: 0.3px;
+}
+
+.tee-card-header::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 1px;
+  margin: 8px auto 0;
+  background: rgba(255,255,255,0.2);
+}
+
+.tee-table .active-col {
+  background: rgba(255,255,255,0.12);
+}
+
+
+/* FORCE first column color */
+
+.tee-table tbody th:first-child {
+  color: #c8f7c5;
+  font-weight: 600;
+}
+
+/* prevent overrides from hover / active-col */
+
+.tee-table tbody th:first-child.active-col {
+  color: #c8f7c5;
+}
+
+.tee-table tbody td {
+  color: rgb(23, 241, 41);
+}
+
+/* ========================
+   GALLERY HEADER
+======================== */
+.gallery-header {
+  text-align: center;
+  padding: 20px 10px 10px;
+  margin-bottom: 10px;
+}
+
+.gallery-header h1 {
+  font-size: clamp(22px, 3.5vw, 30px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.gallery-header p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.3px;
+}
+
+/* subtle divider (the part you liked) */
+.gallery-header::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 1px;
+  margin: 10px auto 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,255,255,0.3),
+    transparent
+  );
 }
