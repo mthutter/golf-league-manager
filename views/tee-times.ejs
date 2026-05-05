@@ -1,67 +1,65 @@
 <!doctype html>
 
 <html lang="en">
-  <%- include('layouts/header');%>
-
   <body>
-    <section><%- include('layouts/navbar'); %></section>
-    <div class="text-center">
-      <br /><br />
-      <h1>2026 Tee Times</h1>
-      <h3>
-        <span style="color: white">White</span>/<span style="color: red">Red</span>
-        Tees
-      </h3>
-      <br />
-    </div>
-    <section>
-      <div style="margin: 0 auto" class="table-wrapper">
-        <table class="tee-table">
-          <thead>
-            <tr class="table-date">
-              <th colspan="4">May 4 (Week 1 of 22)</th>
-            </tr>
-            <tr class="table-times">
-              <th>4:50p</th>
-              <th>5:00p</th>
-              <th>5:10p</th>
-              <th>5:20p</th>
-            </tr>
-          </thead>
+    <%- include('layouts/header'); %> <%- include('layouts/navbar'); %>
 
-          <tbody>
-            <tr>
-              <td>Russ W</td>
-              <td>Jon D</td>
-              <td>Ryan M</td>
-              <td>John B</td>
-            </tr>
-            <tr>
-              <td>Mark Y</td>
-              <td>Matthew S</td>
-              <td>Aaron J</td>
-              <td>Ami B</td>
-            </tr>
-            <tr>
-              <td>Shayne I</td>
-              <td>John R</td>
-              <td>Mario P</td>
-              <td>Mark H</td>
-            </tr>
-            <tr>
-              <td>Jim N</td>
-              <td>Perry D</td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="main-wrapper">
+      <div class="text-center">
+        <br /><br />
+        <h1>2026 Tee Times</h1>
+        <h3>
+          <span style="color: white">White</span>/<span style="color: red">Red</span>
+          Tees
+        </h3>
+        <br />
       </div>
-      <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
-    </section>
+      <section>
+        <div style="margin: 0 auto" class="table-wrapper">
+          <table class="tee-table">
+            <thead>
+              <tr class="table-date">
+                <th colspan="4">May 4 (Week 1 of 22)</th>
+              </tr>
+              <tr class="table-times">
+                <th>4:50p</th>
+                <th>5:00p</th>
+                <th>5:10p</th>
+                <th>5:20p</th>
+              </tr>
+            </thead>
 
-    <section><%- include('layouts/footer'); %></section>
-
-    <section><%- include('layouts/scripts'); %></section>
+            <tbody>
+              <tr>
+                <td>Russ W</td>
+                <td>Jon D</td>
+                <td>Ryan M</td>
+                <td>John B</td>
+              </tr>
+              <tr>
+                <td>Mark Y</td>
+                <td>Matthew S</td>
+                <td>Aaron J</td>
+                <td>Ami B</td>
+              </tr>
+              <tr>
+                <td>Shayne I</td>
+                <td>John R</td>
+                <td>Mario P</td>
+                <td>Mark H</td>
+              </tr>
+              <tr>
+                <td>Jim N</td>
+                <td>Perry D</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
+      </section>
+    </div>
+    <%- include('layouts/footer'); %> <%- include('layouts/scripts'); %>
   </body>
 </html>

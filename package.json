@@ -50,6 +50,7 @@
     "yarn": "^1.22.22"
   },
   "devDependencies": {
-    "prettier": "3.3.3"
+    "prettier": "3.3.3",
+    "prettier-plugin-ejs": "^1.0.3"
   }
 }

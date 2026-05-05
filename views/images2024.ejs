@@ -1,43 +1,33 @@
 <!doctype html>
 <html lang="en">
 
-<%- include('./layouts/header'); %>
- 
 <style>
-img:hover {
-      border: 5px solid rgb(38, 226, 38);
-    }
-    </style>
-   <body>
+  img:hover {
+    border: 5px solid rgb(38, 226, 38);
+  }
+</style>
 
-    <section>
-      <%- include('./layouts/navbar'); %>
-    </section>
+<body>
 
-    <section>      
-      <div>
-        <br><br>
-        <h1 style="text-align: center;">2024 Images</h1>
-        <br>
+  <%- include('./layouts/header'); %>
+  <%- include('./layouts/navbar'); %>
+
+  <div class="main-wrapper">
+    <h1 style="text-align: center;">2024 Images</h1>
+    <div class="container">
+      <div class="row justify-content-center">
+        <% filenames.forEach(function(name) { %>
+        <div class="col-xl-2 col-lg-3 col-md-3 col-sm-3 my-2" style="padding: 10px">
+          <a id="holder" href="https://bottoms-up.b-cdn.net/2024/<%= name %>"><img alt="<%= name%>" loading="lazy" src="https://bottoms-up.b-cdn.net/2024/<%= name %>" class="img-fluid">
+          </a>
+        </div>
+        <% }) %>
       </div>
-      <br>
-      <div class="container">
-        <div class="row justify-content-center">
-          <% filenames.forEach(function(name) { %>
-            <div class="col-xl-2 col-lg-3 col-md-3 col-sm-3 my-2" style="padding: 10px">
-              <a id="holder" href="https://bottoms-up.b-cdn.net/2024/<%= name %>"><img alt="<%= name%>" loading="lazy"
-                  src="https://bottoms-up.b-cdn.net/2024/<%= name %>"
-                  class="img-fluid">
-              </a>
-            </div>
-            <% }) %>            
-        </div>     
-    </section>
+    </div>
+  </div>
 
-    <section>
-      <div>
-        <%- include('./layouts/footer'); %>
-      </div>
-    </section>    
-  </body>
+  <%- include('./layouts/footer'); %>
+
+</body>
+
 </html>

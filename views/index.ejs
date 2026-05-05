@@ -1,140 +1,14 @@
 <!doctype html>
 <html lang="en">
-  <!-- header section -->
-  <%- include('./layouts/header'); -%>
-  <style>
-    .winners {
-      margin-top: 20px;
-      max-width: 500px;
-      width: 100%;
-    }
-
-    /* Card layout */
-    .winner-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      background: rgba(0, 0, 0, 0.25);
-      border-left: 4px solid rgba(144, 238, 144, 0.5);
-
-      padding: 12px 14px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-
-      transition: all 0.2s ease;
-    }
-
-    /* Subtle hover (feels modern) */
-    .winner-card:hover {
-      background: rgba(0, 0, 0, 0.35);
-      transform: translateX(3px);
-    }
-
-    /* Left side text */
-    .winner-place {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      opacity: 0.7;
-      color: rgb(98, 228, 98);
-    }
-
-    .winner-name {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    /* Score highlight */
-    .winner-score {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #90ee90;
-    }
-
-    /* Optional: medal colors */
-    .winner-card:nth-child(1) {
-      border-left-color: gold;
-    }
-    .winner-card:nth-child(2) {
-      border-left-color: silver;
-    }
-    .winner-card:nth-child(3) {
-      border-left-color: #cd7f32;
-    }
-    .winner-name {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    /* Medal Colors */
-    .winner-card.gold .winner-name {
-      color: #ffd700;
-    }
-
-    .winner-card.silver .winner-name {
-      color: #c0c0c0;
-    }
-
-    .winner-card.bronze .winner-name {
-      color: #cd7f32;
-    }
-
-    /* Optional: match border accent too */
-    .winner-card.gold {
-      border-left-color: #ffd700;
-    }
-
-    .winner-card.silver {
-      border-left-color: #c0c0c0;
-    }
-
-    .winner-card.bronze {
-      border-left-color: #cd7f32;
-    }
-    .winners-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      gap: 8px;
-      margin-bottom: 16px;
-
-      font-family: "Inter", sans-serif;
-    }
-
-    .winners-icon {
-      font-size: 1.2rem;
-    }
-
-    .winners-title {
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    .winners-container {
-      max-width: 550px;
-      margin: 30px auto;
-      padding: 20px 18px;
-
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(144, 238, 144, 0.25);
-      border-radius: 12px;
-
-      backdrop-filter: blur(4px); /* subtle modern feel */
-    }
-  </style>
   <body>
-    <!-- Google Tag Manager (noscript) -->
+    <%- include('./layouts/header'); -%> <%- include('./layouts/navbar'); -%>
+
     <noscript>
       <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W9Q82T2S" height="0" width="0" style="display: none; visibility: hidden"></iframe>
     </noscript>
 
-    <!-- NAVBAR -->
-    <section id="navbar"><%- include('./layouts/navbar'); -%></section>
-
     <!-- MAIN -->
-    <section class="main-wrapper">
+    <div class="main-wrapper">
       <!-- HERO LOGO -->
       <div class="page-logo">
         <img src="/images/bottoms-up-logo.png" alt="Bottoms Up Logo" />
@@ -184,9 +58,9 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- FOOTER -->
-    <section id="footer"><%- include('./layouts/footer'); -%></section>
+    <%- include('./layouts/footer'); -%>
   </body>
 </html>
