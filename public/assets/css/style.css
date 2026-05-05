@@ -12,8 +12,10 @@
 /* ========================
    RESET / BASE
 ======================== */
-html {
-  overflow-x: hidden;
+
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
 body {
@@ -25,9 +27,8 @@ body {
   min-height: 100vh;  
 }
 
-html, body {
-  height: 100%;
-  margin: 0;
+html {
+  overflow-x: hidden;
 }
 
 /* ========================
