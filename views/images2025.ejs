@@ -1,37 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<style>
-  img:hover {
-    border: 5px solid rgb(38, 226, 38);
-  }
-</style>
-
 
 <body>
 
-  <%- include('./layouts/header'); -%>
-  <%- include('./layouts/navbar'); -%>
+  <%- include('./layouts/header'); %>
+  <%- include('./layouts/navbar'); %>
 
   <div class="main-wrapper">
-    <div>
-      <h1 style="text-align: center;">2025 Images</h1>
-    </div>
-
+    <h1 class="gallery-title">2025 Images</h1>
     <div class="container">
-      <div class="row justify-content-center">
-        <% filenames.forEach(function(name) { %>
-        <div class="col-xl-2 col-lg-3 col-md-3 col-sm-3 my-2" style="padding: 10px">
-          <a id="holder" href="https://bottoms-up.b-cdn.net/2025/<%= name %>"><img alt="<%= name%>" loading="lazy" src="https://bottoms-up.b-cdn.net/2025/<%= name %>" class="img-fluid">
-          </a>
+      <div class="row g-3 justify-content-center">
+        <% filenames.sort().forEach(function(name) { %>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="gallery-item">
+            <a href="https://bottoms-up.b-cdn.net/2025/<%= name %>" class="glightbox" data-title="<%= name %>">
+              <div class="gallery-image-wrapper">
+                <img alt="<%= name%>" loading="lazy" src="https://bottoms-up.b-cdn.net/2025/<%= name %>?width=400&quality=80" class="img-fluid gallery-img">
+                <div class="gallery-caption">
+                  <%= name.replace(/[-_]/g, ' ').replace('.jpg','') %>
+                </div>
+              </div>
+            </a>
+          </div>
         </div>
         <% }) %>
       </div>
     </div>
   </div>
 
-  <%- include('./layouts/footer'); -%>
-  <%- include('./layouts/scripts'); -%>
+  <%- include('./layouts/footer'); %>
 
+  <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+  <script>
+    const lightbox = GLightbox();
+  </script>
 </body>
 
 </html>
