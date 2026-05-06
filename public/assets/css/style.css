@@ -230,6 +230,9 @@ a {
   width: 100%;
   overflow-x: auto;
   margin: 10px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
 }
 
 /*=========================
@@ -371,6 +374,7 @@ a {
   margin: 0 auto;
   border-collapse: collapse;
   font-size: 13px;
+  min-width: 720px;
 }
 
 .scorecard td,
@@ -384,9 +388,34 @@ a {
 /* first column */
 .scorecard td:first-child,
 .scorecard th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: rgba(0,0,0,0.85);
+  color: #c8f7c5;
   text-align: left;
   font-weight: 600;
   width: 1%;
+}
+
+@media (max-width: 768px) {
+  .scorecard td,
+  .scorecard th {
+    padding: 3px 4px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .scorecard {
+    min-width: 650px;
+  }
+
+  .scorecard td,
+  .scorecard th {
+    padding: 4px 5px;
+    font-size: 12px;
+  }
 }
 
 /* header */
@@ -1229,4 +1258,112 @@ NEW MEDIA CSS (video/image)
     rgba(255,255,255,0.3),
     transparent
   );
+}
+
+/* ========================
+   FINAL SCORECARD (CLEAN)
+======================== */
+
+.scorecard {
+  border-collapse: collapse;
+  width: auto;
+  margin: 0 auto;
+  font-size: 13px;
+  min-width: 720px;
+}
+
+.scorecard td,
+.scorecard th {
+  border: 1px solid rgba(0,0,0,0.35);
+  padding: 4px 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* first column sticky */
+.scorecard td:first-child,
+.scorecard th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: rgba(0,0,0,0.85);
+  color: #c8f7c5;
+  text-align: left;
+  font-weight: 600;
+}
+
+/* header */
+.scorecard-header th {
+  background: rgba(0,0,0,0.85);
+  color: white;
+}
+
+/* FRONT 9 (dark band) */
+.scorecard td:nth-child(n+2):nth-child(-n+10),
+.scorecard th:nth-child(n+2):nth-child(-n+10) {
+  background: rgba(0,0,0,0.35);
+  color: white;
+}
+
+/* BACK 9 (lighter band) */
+.scorecard td:nth-child(n+12):nth-child(-n+20),
+.scorecard th:nth-child(n+12):nth-child(-n+20) {
+  background: rgba(255,255,255,0.06);
+}
+
+/* MEN (white → blue) */
+.tee.men td:nth-child(n+2):nth-child(-n+10) {
+  background: #f5f5f5;
+  color: #111;
+}
+.tee.men td:nth-child(n+12):nth-child(-n+20) {
+  background: #1e6fb6;
+  color: white;
+}
+
+/* WOMEN (red → gold) */
+.tee.women td:nth-child(n+2):nth-child(-n+10) {
+  background: #c62828;
+  color: white;
+}
+.tee.women td:nth-child(n+12):nth-child(-n+20) {
+  background: #d4af37;
+  color: #111;
+}
+
+/* HCP / PAR */
+.hcp-row td {
+  background: #1b7f3a;
+  color: white;
+}
+.par-row td {
+  background: rgba(0,0,0,0.2);
+}
+
+/* OUT divider */
+.scorecard td:nth-child(11),
+.scorecard th:nth-child(11) {
+  border-right: 3px solid rgba(0,0,0,0.7);
+}
+
+/* TOTAL divider */
+.scorecard td:nth-child(21),
+.scorecard th:nth-child(21) {
+  border-right: 3px solid rgba(0,0,0,0.7);
+}
+
+/* TOTAL column */
+.scorecard td:nth-child(22),
+.scorecard th:nth-child(22) {
+  font-weight: 700;
+  background: rgba(0,0,0,0.25);
+}
+
+/* mobile */
+@media (max-width: 768px) {
+  .scorecard td,
+  .scorecard th {
+    padding: 3px 4px;
+    font-size: 12px;
+  }
 }
