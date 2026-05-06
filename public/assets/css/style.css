@@ -77,15 +77,13 @@ a {
 
 .page-logo img {
   display: block;
-  width: clamp(260px, 38vw, 520px);
+  width: clamp(220px, 30vw, 360px);
+  margin: 0 auto;
 
-  /* optional slight zoom to hide edge padding */
-  transform: scale(1.03);
+  /* hides edge artifacts */
+  clip-path: circle(49.2%);
 
-  border-radius: 50%;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-
-  pointer-events: none;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
 }
 
 /* ========================
