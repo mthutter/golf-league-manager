@@ -62,22 +62,30 @@ a {
 /* ========================
    HERO LOGO
 ======================== */
+
+/* ========================
+   HERO LOGO
+======================== */
 .page-logo {
   display: flex;
   justify-content: center;
-  margin: 20px 0 10px;
+  align-items: center;
+  margin: 10px 0 0;
+  overflow: hidden;
   user-select: none;
 }
 
 .page-logo img {
-  width: clamp(160px, 22vw, 280px);
-  border-radius: 50%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  pointer-events: none;
-}
+  display: block;
+  width: clamp(260px, 38vw, 520px);
 
-.page-logo a {
-  outline: none;
+  /* optional slight zoom to hide edge padding */
+  transform: scale(1.03);
+
+  border-radius: 50%;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+
+  pointer-events: none;
 }
 
 /* ========================
@@ -321,7 +329,7 @@ a {
   }
 
   .page-logo img {
-    width: clamp(120px, 20vw, 200px);
+    width: clamp(140px, 25vw, 220px);
   }
 }
 
