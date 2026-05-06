@@ -232,18 +232,121 @@ a {
   margin: 10px 0;
 }
 
-/* COURSE TABLE */
+/*=========================
+  COURSE TABLE
+==========================*/
+
 .course-table {
-  width: min(95%, 900px);
-  font-size: 0.75rem;
+  width: auto;  
   border-collapse: collapse;
+  table-layout: auto;
+  margin: 0 auto;
+ 
 }
 
 .course-table th,
 .course-table td {
-  border: 2px solid black;
-  padding: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  padding: 6px;
+  text-align: center;  
+}
+
+.course-table td,
+.course-table th {
+  white-space: nowrap;
+  padding: 4px 6px;
+  font-size: 13px;
+  min-width: 32px;
+}
+
+.course-table tr:first-child td {
+   text-align: left;
+  font-weight: 600;
+  padding-left: 8px;
+}
+
+
+
+.course-table tr:nth-child(2) td {
+  background: rgba(0,0,0,0.2);
+  font-weight: 600;
+}
+
+.course-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  padding-left: 8px;
+}
+
+.course-table td:not(:first-child) {
   text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+}
+
+.course-table td:last-child {
+  font-weight: 700;
+  color: #90ee90;
+}
+  .scorecard-header td {
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.hole-row td {
+  background: rgba(0,0,0,0.25);
+  color: white;
+  font-weight: 600;
+}
+
+/* Blue tees */
+.tee.blue td {
+  background: #1e6fb6;
+  color: white;
+}
+
+/* White tees */
+.tee.white td {
+  background: #f5f5f5;
+  color: black;
+}
+
+/* Red tees */
+.tee.red td {
+  background: #c62828;
+  color: white;
+}
+
+/* GOLD tees */
+.tee.gold td {
+  background: #d4af37;
+  color: #1e1e1e;
+}
+
+.hcp-row td {
+  background: #1b7f3a;
+  color: white;
+  font-weight: 600;
+}
+
+.par-row td {
+  background: rgba(0,0,0,0.2);
+  font-weight: 600;
+}
+
+.tee td {
+  border-top: 2px solid rgba(0,0,0,0.4);
+}
+
+.table-wrapper {
+  margin-bottom: 14px;
+}
+
+.tee td:first-child {
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 /* TEE TABLE */
@@ -273,7 +376,6 @@ a {
   color: white;
   font-weight: 600;
 }
-
 
 .tee-table tbody tr:nth-child(even) {
   background: rgba(0, 0, 0, 0.1);
