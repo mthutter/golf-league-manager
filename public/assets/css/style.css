@@ -241,7 +241,7 @@ a {
   border-collapse: collapse;
   table-layout: auto;
   margin: 0 auto;
- 
+  font-size: 13px;
 }
 
 .course-table th,
@@ -250,22 +250,36 @@ a {
   padding: 6px;
   text-align: center;  
 }
+.course-table td:not(:first-child),
+.course-table th:not(:first-child) {
+  white-space: nowrap;
+  padding: 4px 6px;
+  min-width: 28px;
+}
+
+.course-table td:last-child {
+  font-weight: 700;
+  color: #90ee90;
+}
 
 .course-table td,
 .course-table th {
   white-space: nowrap;
   padding: 4px 6px;
-  font-size: 13px;
-  min-width: 32px;
+  font-size: 13px;  
+}
+
+.course-table td:first-child,
+.course-table th:first-child {
+  width: 1%;
+  white-space: nowrap;
 }
 
 .course-table tr:first-child td {
-   text-align: left;
+  text-align: left;
   font-weight: 600;
   padding-left: 8px;
 }
-
-
 
 .course-table tr:nth-child(2) td {
   background: rgba(0,0,0,0.2);
@@ -347,6 +361,118 @@ a {
 .tee td:first-child {
   font-weight: 600;
   letter-spacing: 0.3px;
+}
+
+/* ========================
+   SCORECARD LAYOUT
+======================== */
+.scorecard {
+  width: auto;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.scorecard td,
+.scorecard th {
+  border: 1px solid rgba(0,0,0,0.35);
+  padding: 4px 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* first column */
+.scorecard td:first-child,
+.scorecard th:first-child {
+  text-align: left;
+  font-weight: 600;
+  width: 1%;
+}
+
+/* header */
+.scorecard-header th {
+  background: rgba(0,0,0,0.8);
+  color: white;
+}
+
+/* ========================
+   OUT / IN DIVIDER
+======================== */
+
+/* divider after OUT column */
+.scorecard td:nth-child(11),
+.scorecard th:nth-child(11) {
+  border-right: 3px solid rgba(0,0,0,0.7);
+}
+
+/* optional: slight spacing effect */
+.scorecard td:nth-child(12),
+.scorecard th:nth-child(12) {
+  padding-left: 8px;
+}
+
+/* ========================
+   TOTAL COLUMN DIVIDER
+======================== */
+
+/* divider before TOTAL column */
+.scorecard td:nth-child(21),
+.scorecard th:nth-child(21) {
+  border-right: 3px solid rgba(0,0,0,0.7);
+}
+
+.scorecard td:nth-child(22),
+.scorecard th:nth-child(22) {
+  font-weight: 700;
+  background: rgba(0,0,0,0.25);
+}
+
+/* FRONT NINE (holes 1–9) */
+.scorecard td:nth-child(n+2):nth-child(-n+10),
+.scorecard th:nth-child(n+2):nth-child(-n+10) {
+  background: rgba(255,255,255,0.06); /* base light */
+}
+
+/* Men's rows (white tees) */
+.tee.men td:nth-child(n+2):nth-child(-n+10) {
+  background: #f5f5f5;
+  color: #111;
+}
+
+/* Women's rows (red tees) */
+.tee.women td:nth-child(n+2):nth-child(-n+10) {
+  background: #c62828;
+  color: #fff;
+}
+
+/* Men's rows (blue tees) */
+.tee.men td:nth-child(n+12):nth-child(-n+20) {
+  background: #1e6fb6;
+  color: white;
+}
+
+/* Women's rows (gold tees) */
+.tee.women td:nth-child(n+12):nth-child(-n+20) {
+  background: #d4af37;
+  color: #1e1e1e;
+}
+
+
+
+
+
+/* tee colors */
+.tee.white td { background: #f5f5f5; color: #111; }
+.tee.red td { background: #c62828; color: white; }
+
+/* hcp + par */
+.hcp-row td {
+  background: #1b7f3a;
+  color: white;
+}
+
+.par-row td {
+  background: rgba(0,0,0,0.2);
 }
 
 /* TEE TABLE */
