@@ -22,7 +22,7 @@
         <table class="tee-table">
           <thead>
             <tr class="table-date">
-              <th colspan="4">May 4 (Week 1 of 22)</th>
+              <th colspan="4">May 11 (Week 2 of 22)</th>
             </tr>
             <tr class="table-times">
               <th>4:50p</th>
@@ -34,33 +34,33 @@
 
           <tbody>
             <tr>
-              <td>Russ W</td>
-              <td>Jon D</td>
-              <td>Ryan M</td>
-              <td>John B</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td>Mark Y</td>
-              <td>Matthew S</td>
-              <td>Aaron J</td>
-              <td>Ami B</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td>Shayne I</td>
-              <td>John R</td>
-              <td>Mario P</td>
-              <td>Mark H</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td>Jim N</td>
-              <td>Perry D</td>
+              <td></td>
+              <td></td>
               <td></td>
               <td></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
+      <h5 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h5>
     </div>
   </div>
   <%- include('layouts/footer'); %> <%- include('layouts/scripts'); %>
@@ -90,10 +90,10 @@
     });
 
     // apply ONLY to tbody
-    table.querySelectorAll('tbody tr').forEach(row => {
-      const target = row.children[col];
-      if (target) target.classList.add('active-col');
-    });
+    //table.querySelectorAll('tbody tr').forEach(row => {
+    //  const target = row.children[col];
+    //  if (target) target.classList.add('active-col');
+    //});
   });
 
   table.addEventListener('pointerleave', () => {
