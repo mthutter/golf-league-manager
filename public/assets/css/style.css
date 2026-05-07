@@ -208,7 +208,7 @@ a {
 	width: auto;
 	margin: 0 auto;
 	border-collapse: collapse;
-	table-layout: auto;
+	table-layout: auto;  
 }
 .tee-table th,.tee-table td {
 	border: 2px solid black;
