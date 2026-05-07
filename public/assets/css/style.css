@@ -166,9 +166,6 @@ a {
   margin-left: 0;
 }
 
-.navbar .dropdown {
-  position: relative;
-}
 
 .navbar .dropdown-item {
 	color: #1e4d1e;
@@ -182,6 +179,19 @@ a {
 	/* your hover green */
 	color: #1e4d1e;
 }
+
+@media (max-width: 991px) {
+  .navbar .dropdown-menu {
+    inset: auto !important;
+    transform: none !important;
+    left: 0 !important;
+    right: auto !important;
+    text-align: center;
+    margin-left: 0 !important;
+    width: 100%;
+  }
+}
+
 /* ========================TABLES======================== */
 .table-wrapper {
 	display: flex;
