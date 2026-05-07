@@ -159,13 +159,23 @@ a {
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 	padding: 6px 0;
 	transform: translateY(6px);
-	transition: all 0.2s ease;
+	transition: all 0.2s ease; 
+  transform: translateX(-50%) !important;
+  left: 50% !important;
+  right: auto !important;
+  margin-left: 0;
 }
+
+.navbar .dropdown {
+  position: relative;
+}
+
 .navbar .dropdown-item {
 	color: #1e4d1e;
 	padding: 8px 12px;
 	border-radius: 6px;
 	transition: background-color 0.2s ease;
+  text-align: center;
 }
 .navbar .dropdown-item:hover,.navbar .dropdown-item:focus {
 	background-color: rgb(89, 195, 62);
