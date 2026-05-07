@@ -183,130 +183,6 @@ a {
 	-webkit-overflow-scrolling: touch;
 	padding-bottom: 6px;
 }
-/*=========================COURSE TABLE==========================*/
-.course-table {
-	width: auto;
-	border-collapse: collapse;
-	table-layout: auto;
-	margin: 0 auto;
-	font-size: 13px;
-}
-.course-table th,.course-table td {
-	border: 1px solid rgba(0, 0, 0, 0.35);
-	padding: 6px;
-	text-align: center;
-}
-.course-table td:not(:first-child),.course-table th:not(:first-child) {
-	white-space: nowrap;
-	padding: 4px 6px;
-	min-width: 28px;
-}
-.course-table td:last-child {
-	font-weight: 700;
-	color: #90ee90;
-}
-.course-table td,.course-table th {
-	white-space: nowrap;
-	padding: 4px 6px;
-	font-size: 13px;
-}
-.course-table td:first-child,.course-table th:first-child {
-	width: 1%;
-	white-space: nowrap;
-}
-.course-table tr:first-child td {
-	text-align: left;
-	font-weight: 600;
-	padding-left: 8px;
-}
-.course-table tr:nth-child(2) td {
-	background: rgba(0,0,0,0.2);
-	font-weight: 600;
-}
-.course-table td:first-child {
-	text-align: left;
-	font-weight: 600;
-	padding-left: 8px;
-}
-.course-table td:not(:first-child) {
-	text-align: center;
-	font-size: 13px;
-	letter-spacing: 0.3px;
-}
-.course-table td:last-child {
-	font-weight: 700;
-	color: #90ee90;
-}
-.scorecard-header td {
-	background: rgba(0,0,0,0.8);
-	color: white;
-	font-weight: 700;
-	letter-spacing: 0.5px;
-}
-.hole-row td {
-	background: rgba(0,0,0,0.25);
-	color: white;
-	font-weight: 600;
-}
-/* Blue tees */
-.tee.blue td {
-	background: #1e6fb6;
-	color: white;
-}
-/* White tees */
-.tee.white td {
-	background: #f5f5f5;
-	color: black;
-}
-/* Red tees */
-.tee.red td {
-	background: #c62828;
-	color: white;
-}
-/* GOLD tees */
-.tee.gold td {
-	background: #d4af37;
-	color: #1e1e1e;
-}
-.tee td {
-	border-top: 2px solid rgba(0,0,0,0.4);
-}
-.table-wrapper {
-	margin-bottom: 14px;
-}
-.tee td:first-child {
-	font-weight: 600;
-	letter-spacing: 0.3px;
-}
-@media (max-width: 768px) {
-	.scorecard td,.scorecard th {
-		padding: 3px 4px;
-		font-size: 12px;
-	}
-}
-@media (max-width: 900px) and (orientation: landscape) {
-	.scorecard {
-		min-width: 650px;
-	}
-	.scorecard td,.scorecard th {
-		padding: 4px 5px;
-		font-size: 12px;
-	}
-}
-/* ========================OUT / IN DIVIDER======================== */
-/* optional: slight spacing effect */
-.scorecard td:nth-child(12),.scorecard th:nth-child(12) {
-	padding-left: 8px;
-}
-/* tee colors */
-.tee.white td {
-	background: #f5f5f5;
-	color: #111;
-}
-.tee.red td {
-	background: #c62828;
-	color: white;
-}
 /* TEE TABLE */
 .tee-table {
 	width: auto;
@@ -918,13 +794,149 @@ iframe {
 }
 
 /* ========================FINAL SCORECARD (course.ejs)======================== */
+
+/*=========================COURSE TABLE==========================*/
+.course-table {
+	width: auto;
+	border-collapse: collapse;
+	table-layout: auto;
+	margin: 0 auto;
+	font-size: 13px;
+}
+.course-table th,.course-table td {
+	border: 1px solid rgba(0, 0, 0, 0.35);
+	padding: 6px;
+	text-align: center;
+}
+.course-table td:not(:first-child),.course-table th:not(:first-child) {
+	white-space: nowrap;
+	padding: 4px 6px;
+	min-width: 28px;
+}
+.course-table td:last-child {
+	font-weight: 700;
+	color: #90ee90;
+}
+.course-table td,.course-table th {
+	white-space: nowrap;
+	padding: 4px 6px;
+	font-size: 13px;
+}
+.course-table td:first-child,.course-table th:first-child {
+	width: 1%;
+	white-space: nowrap;
+}
+.course-table tr:first-child td {
+	text-align: left;
+	font-weight: 600;
+	padding-left: 8px;
+}
+.course-table tr:nth-child(2) td {
+	background: rgba(0,0,0,0.2);
+	font-weight: 600;
+}
+.course-table td:first-child {
+	text-align: left;
+	font-weight: 600;
+	padding-left: 8px;
+}
+.course-table td:not(:first-child) {
+	text-align: center;
+	font-size: 13px;
+	letter-spacing: 0.3px;
+}
+.course-table td:last-child {
+	font-weight: 700;
+	color: #90ee90;
+}
+.scorecard-header td {
+	background: rgba(0,0,0,0.8);
+	color: white;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+}
+.hole-row td {
+	background: rgba(0,0,0,0.25);
+	color: white;
+	font-weight: 600;
+}
+/* Blue tees */
+.tee.blue td {
+	background: #1e6fb6;
+	color: white;
+}
+/* White tees */
+.tee.white td {
+	background: #f5f5f5;
+	color: black;
+}
+/* Red tees */
+.tee.red td {
+	background: #c62828;
+	color: white;
+}
+/* GOLD tees */
+.tee.gold td {
+	background: #d4af37;
+	color: #1e1e1e;
+}
+.tee td {
+	border-top: 2px solid rgba(0,0,0,0.4);
+}
+.table-wrapper {
+	margin-bottom: 14px;
+}
+.tee td:first-child {
+	font-weight: 600;
+	letter-spacing: 0.3px;
+}
+@media (max-width: 768px) {
+	.scorecard td,.scorecard th {
+		padding: 3px 4px;
+		font-size: 12px;
+	}
+}
+@media (max-width: 900px) and (orientation: landscape) {
+	.scorecard {
+		min-width: 650px;
+	}
+	.scorecard td,.scorecard th {
+		padding: 4px 5px;
+		font-size: 12px;
+	}
+}
+/* ========================OUT / IN DIVIDER======================== */
+/* optional: slight spacing effect */
+.scorecard td:nth-child(12),.scorecard th:nth-child(12) {
+	padding-left: 8px;
+}
+/* tee colors */
+.tee.white td {
+	background: #f5f5f5;
+	color: #111;
+}
+.tee.red td {
+	background: #c62828;
+	color: white;
+}
+
 .scorecard {
+  border: 4px solid #000;
 	border-collapse: collapse;
 	width: auto;
 	margin: 0 auto;
 	font-size: 13px;
 	min-width: 720px;
 }
+
+.scorecard th {
+  border-bottom: 3px solid #000;
+}
+
+.scorecard th,.scorecard td {
+  border: 1px solid rgba(0, 0, 0, 0.35);
+}
+
 .scorecard td,.scorecard th {
 	border: 1px solid rgba(0,0,0,0.35);
 	padding: 4px 6px;
@@ -955,20 +967,20 @@ iframe {
 	background: rgba(255,255,255,0.06);
 }
 /* MEN (white → blue) */
-.tee.men td:nth-child(n+2):nth-child(-n+10) {
+.tee.men td:nth-child(n+2):nth-child(-n+11) {
 	background: #f5f5f5;
 	color: #111;
 }
-.tee.men td:nth-child(n+12):nth-child(-n+20) {
+.tee.men td:nth-child(n+12):nth-child(-n+21) {
 	background: #1e6fb6;
 	color: white;
 }
 /* WOMEN (red → gold) */
-.tee.women td:nth-child(n+2):nth-child(-n+10) {
+.tee.women td:nth-child(n+2):nth-child(-n+11) {
 	background: #c62828;
 	color: white;
 }
-.tee.women td:nth-child(n+12):nth-child(-n+20) {
+.tee.women td:nth-child(n+12):nth-child(-n+21) {
 	background: #d4af37;
 	color: #111;
 }
@@ -979,7 +991,9 @@ iframe {
 }
 .par-row td {
 	background: rgba(0,0,0,0.2);
+  color: rgb(209, 188, 188);
 }
+
 /* OUT divider */
 .scorecard td:nth-child(11),.scorecard th:nth-child(11) {
 	border-right: 3px solid rgba(0,0,0,0.7);
@@ -991,6 +1005,7 @@ iframe {
 /* TOTAL column */
 .scorecard td:nth-child(22),.scorecard th:nth-child(22) {
 	font-weight: 700;
+   color: rgb(209, 188, 188);
 	background: rgba(0,0,0,0.25);
 }
 /* mobile */
