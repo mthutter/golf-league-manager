@@ -1,9 +1,17 @@
 <!doctype html>
 
 <html lang="en">
- <%- include('./layouts/header'); -%>
+<%- include('./layouts/header'); -%>
+<style>
+  @media (max-width: 680px) {
+    td {
+      font-size: 6px;
+    }
+  }
+</style>
+
 <body>
- <%- include('layouts/navbar'); %>
+  <%- include('layouts/navbar'); %>
 
   <div class="main-wrapper">
     <div class="tee-card">
