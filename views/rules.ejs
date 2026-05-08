@@ -84,7 +84,6 @@
 
   /* MOBILE */
   @media (max-width: 768px) {
-
     .rules-desktop {
       display: none;
     }
@@ -101,44 +100,31 @@
 </style>
 
 <body>
-
   <%- include('./layouts/navbar'); -%>
 
+  <div class="gallery-header">
+    <h1>League Information and Rules</h1>
+    <p>Bottoms Up Golf League • 2026 Season</p>
+  </div>
 
   <div class="rules-card">
-
-    <div class="gallery-header">
-      <h1>League Rules and Information</h1>
-      <p>Bottoms Up Golf League • 2026 Season</p>
-    </div>
-
     <!-- Desktop PDF Viewer -->
     <div class="rules-desktop">
-      <iframe class="rules-frame" src="/docs/Bottoms Up 2026 League Info and Rules (03-29-26).pdf">
-      </iframe>
+      <iframe class="rules-frame" src="/docs/Bottoms Up 2026 League Info and Rules (03-29-26).pdf"> </iframe>
     </div>
 
     <!-- Mobile Fallback -->
     <div class="rules-mobile">
       <div class="mobile-rules-card">
         <h3>League Rules PDF</h3>
-        <p>
-          For the best viewing experience on mobile,
-          open the rules document directly.
-        </p>
+        <p>For the best viewing experience on mobile, open the rules document directly.</p>
 
-        <a href="/docs/Bottoms Up 2026 League Info and Rules (03-29-26).pdf" target="_blank">
-          Open Rules PDF
-        </a>
+        <a href="/docs/Bottoms Up 2026 League Info and Rules (03-29-26).pdf" target="_blank"> Open Rules PDF </a>
       </div>
     </div>
-
   </div>
 
-
-  <%- include('./layouts/footer'); -%>
-
-  <%- include('./layouts/scripts'); -%>
+  <%- include('./layouts/footer'); -%> <%- include('./layouts/scripts'); -%>
 </body>
 
 </html>
