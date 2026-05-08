@@ -1,11 +1,29 @@
 <%
 const weeks = [
-  { num: 1, date: "May 4", enabled: false } 
+  { num: 1, date: "May 4", enabled: false, current: true }
 ];
 %>
 
 <!doctype html>
 <html lang="en">
+
+<style>
+  .pdf-controls button {
+    padding: 0.35rem 0.35em;
+    line-height: 1;
+    font-size: 0.95rem;
+  }
+
+  .empty-state {
+    display: none;
+    width: 100%;
+    min-height: 500px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 1rem;
+  }
+</style>
 <%- include('./layouts/header'); -%>
 
 <body>
@@ -44,20 +62,27 @@ const weeks = [
 
         <!-- ✅ NAV CONTROLS -->
         <div class="pdf-controls">
-          <button onclick="goPrev()">← Previous</button>
+          <div>
+            <button onclick="goPrev()">← Previous</button>
+          </div>
           <div class="gallery-header">
-            <h1>2026 Weekly Skins Results</h1>
+            <h1>2026 Weekly Skins</h1>
 
           </div>
-          <button onclick="goNext()">Next →</button>
+          <div>
+            <button onclick="goNext()">Next →</button>
+          </div>
         </div>
 
         <h2 id="skins-header">Skins Results</h2>
 
         <div id="loading-indicator">Loading...</div>
 
-        <iframe id="myFrame"></iframe>
+        <div id="empty-state" class="empty-state">
+          No skins results available yet.
+        </div>
 
+        <iframe id="myFrame"></iframe>
       </div>
     </div>
   </div>
@@ -137,6 +162,22 @@ const weeks = [
 
   // AUTO LOAD CURRENT OR LAST
   window.addEventListener("DOMContentLoaded", () => {
+
+    const buttons = getEnabledButtons();
+    const frame = document.getElementById("myFrame");
+    const empty = document.getElementById("empty-state");
+
+    // NO PDF FILES AVAILABLE
+    if (buttons.length === 0) {
+      frame.style.display = "none";
+      empty.style.display = "block";
+      document.querySelector(".pdf-controls").style.display = "none";
+      return;
+    }
+
+    empty.style.display = "none";
+    frame.style.display = "block";
+
     const currentBtn = document.querySelector(".skins-list .current");
 
     if (currentBtn) {
@@ -144,7 +185,6 @@ const weeks = [
       return;
     }
 
-    const buttons = getEnabledButtons();
     const lastBtn = buttons[buttons.length - 1];
 
     if (lastBtn) lastBtn.click();
