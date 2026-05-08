@@ -2,14 +2,47 @@
 <html lang="en">
 <%- include('./layouts/header'); -%>
 
+<style>
+  /* ========================
+  RULES PAGE
+  ======================== */
+
+  .rules-card {
+    max-width: 1600px;
+    width: 90%;
+    margin: 20px auto;
+    padding: 16px;
+
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .rules-frame {
+    width: 100%;
+    height: 80vh;
+
+    border: none;
+    border-radius: 10px;
+
+    background: white;
+  }
+</style>
+
 <body>
 
   <%- include('./layouts/navbar'); -%>
 
 
-    <div style="margin: 0 auto; text-align: center">     
-    <iframe src="https://docs.google.com/document/d/e/2PACX-1vRhwke4pVrQHBPBYh1caT_8nqLMpGsYdStFuf9GlSF4FkF9fqhO9zC5JXQpHrBb8d1S--S50ry_mv2-/pub?embedded=true" style="width: 100%; height: 800px; border: none;"></iframe>
+  <div class="rules-card">
+    <div class="gallery-header">
+      <h1>League Rules and Information</h1>
+      <p>Bottoms Up Golf League 2026</p>
     </div>
+    <iframe class="rules-frame" src="/docs/Bottoms Up 2026 League Info and Rules (03-29-26).pdf">
+    </iframe>
+  </div>
 
 
   <%- include('./layouts/footer'); -%>
