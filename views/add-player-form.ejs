@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Golf League Entry</title>
+</head>
+
+<body>
+  <h1>Add New Player</h1>
+  <form action="/add-player" method="POST">
+    <div>
+      <label>Player Name:</label>
+      <input type="text" placeholder="Last" name="name_last">
+      <input type="text" placeholder="First" name="name_first">
+    </div>
+    <div>
+      <label>E-Mail:</label>
+      <input type="text" placeholder="joe@abc.com" name="e_mail">
+    </div>
+    <div>
+      <label>Phone:</label>
+      <input type="text" placeholder="719-867-5309" name="phone">
+    </div>
+    <div>
+      <label>Year Joined:</label>
+      <input type="number" placeholder="2024" name="year_joined">
+    </div>
+    <div>
+      <label>Handicap:</label>
+      <input type="number" placeholder="5.0" name="handicap">
+    </div>
+    <div>
+      <label>Password:</label>
+      <input type="text" placeholder="password" name="password">
+    </div>
+    <br>
+    <!--<div>
+      <label>Handicap:</label>
+      <input type="number" name="handicap" step="0.1" required>
+    </div> -->
+    <br>
+    <button type="submit">Add Player</button>
+  </form>
+</body>
+
+</html>
