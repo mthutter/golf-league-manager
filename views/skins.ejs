@@ -1,40 +1,33 @@
 <%
 const weeks = [
-  { num: 1, date: "May 5", enabled: false },
-  { num: 2, date: "May 12", enabled: true },
-  { num: 3, date: "May 19", enabled: false },
-  { num: 4, date: "May 26", enabled: false },
-  { num: 5, date: "June 2", enabled: true },
-  { num: 6, date: "June 9", enabled: true },
-  { num: 7, date: "June 16", enabled: true },
-  { num: 8, date: "June 23", enabled: true },
-  { num: 9, date: "June 30", enabled: true },
-  { num: 10, date: "July 7", enabled: true },
-  { num: 11, date: "July 14", enabled: true },
-  { num: 12, date: "July 21", enabled: true },
-  { num: 13, date: "July 28", enabled: true },
-  { num: 14, date: "August 4", enabled: true },
-  { num: 15, date: "August 11", enabled: true },
-  { num: 16, date: "August 18", enabled: true },
-  { num: 17, date: "August 25", enabled: false },
-  { num: 18, date: "September 1", enabled: false },
-  { num: 19, date: "September 8", enabled: false },
-  { num: 20, date: "September 15", enabled: true },
-  { num: 21, date: "September 22", enabled: true, current: true },
-  { num: 22, date: "September 29", enabled: false }
+  { num: 1, date: "May 4", enabled: false, current: true }
 ];
 %>
 
 <!doctype html>
 <html lang="en">
-<head>
-  <style>
-    h2 { text-decoration: none; }
-  </style>
-</head>
+
+<style>
+  .pdf-controls button {
+    padding: 0.35rem 0.35em;
+    line-height: 1;
+    font-size: 0.95rem;
+  }
+
+  .empty-state {
+    display: none;
+    width: 100%;
+    min-height: 330px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 1rem;
+  }
+</style>
+<%- include('./layouts/header'); -%>
 
 <body>
-  <%- include('./layouts/header'); -%>
+
   <%- include('./layouts/navbar'); -%>
 
   <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Weeks</button>
@@ -46,23 +39,20 @@ const weeks = [
       <div class="skins-sidebar">
         <ul class="skins-list">
           <% weeks.forEach(week => { %>
-            <li>
-              <% if (!week.enabled) { %>
-                <button class="button-3 disabled">
-                  Week <%= week.num %> - <%= week.date %> (No Skins)
-                </button>
-              <% } else { %>
-                <button
-                  class="button-3 <%= week.current ? 'current' : '' %>"
-                  onclick="openPDF(this, 'Week%20<%= week.num %>%20Skins.pdf')"
-                >
-                  Week <%= week.num %> - <%= week.date %>
-                  <% if (week.current) { %>
-                    <span class="badge">Current</span>
-                  <% } %>
-                </button>
+          <li>
+            <% if (!week.enabled) { %>
+            <button class="button-3 disabled">
+              Week <%= week.num %> - <%= week.date %> (No Skins)
+            </button>
+            <% } else { %>
+            <button class="button-3 <%= week.current ? 'current' : '' %>" onclick="openPDF(this, 'Week%20<%= week.num %>%20Skins.pdf')">
+              Week <%= week.num %> - <%= week.date %>
+              <% if (week.current) { %>
+              <span class="badge">Current</span>
               <% } %>
-            </li>
+            </button>
+            <% } %>
+          </li>
           <% }) %>
         </ul>
       </div>
@@ -72,16 +62,27 @@ const weeks = [
 
         <!-- ✅ NAV CONTROLS -->
         <div class="pdf-controls">
-          <button onclick="goPrev()">← Previous</button>
-          <button onclick="goNext()">Next →</button>
+          <div>
+            <button onclick="goPrev()">← Previous</button>
+          </div>
+          <div class="gallery-header">
+            <h1>2026 Weekly Skins</h1>
+
+          </div>
+          <div>
+            <button onclick="goNext()">Next →</button>
+          </div>
         </div>
 
         <h2 id="skins-header">Skins Results</h2>
 
         <div id="loading-indicator">Loading...</div>
 
-        <iframe id="myFrame"></iframe>
+        <div id="empty-state" class="empty-state">
+          No skins results available yet.
+        </div>
 
+        <iframe id="myFrame"></iframe>
       </div>
     </div>
   </div>
@@ -107,34 +108,37 @@ const weeks = [
 
   function openPDF(button, filename) {
 
-  const buttons = getEnabledButtons();
-  currentIndex = buttons.indexOf(button);
+    const buttons = getEnabledButtons();
+    currentIndex = buttons.indexOf(button);
 
-  document.querySelectorAll(".skins-list button").forEach(btn => {
-    btn.classList.remove("active");
-  });
+    document.querySelectorAll(".skins-list button").forEach(btn => {
+      btn.classList.remove("active");
+    });
 
-  button.classList.add("active");
-  
-  const frame = document.getElementById("myFrame");
-  const header = document.getElementById("skins-header");
-  const loader = document.getElementById("loading-indicator");
+    button.classList.add("active");
 
-  const match = filename.match(/Week%20(\d+)/);
-  const week = match ? match[1] : "";
+    const frame = document.getElementById("myFrame");
+    const header = document.getElementById("skins-header");
+    const loader = document.getElementById("loading-indicator");
 
-  loader.style.display = "block";
+    const match = filename.match(/Week%20(\d+)/);
+    const week = match ? match[1] : "";
 
-  frame.onload = () => {
-    loader.style.display = "none";
-  };
+    loader.style.display = "block";
 
-  frame.src = "results/2025/" + filename + "?t=" + new Date().getTime();
-  header.textContent = `Week ${week} Skins Results`;
+    frame.onload = () => {
+      loader.style.display = "none";
+    };
 
-  updateNavButtons();
-    window.scrollTo({ top: 0, behavior: "auto" });
-}
+    frame.src = "results/2026/" + filename + "?t=" + new Date().getTime();
+    header.textContent = `Week ${week} Results`;
+
+    updateNavButtons();
+    window.scrollTo({
+      top: 0,
+      behavior: "auto"
+    });
+  }
 
   function goNext() {
     const buttons = getEnabledButtons();
@@ -158,6 +162,22 @@ const weeks = [
 
   // AUTO LOAD CURRENT OR LAST
   window.addEventListener("DOMContentLoaded", () => {
+
+    const buttons = getEnabledButtons();
+    const frame = document.getElementById("myFrame");
+    const empty = document.getElementById("empty-state");
+
+    // NO PDF FILES AVAILABLE
+    if (buttons.length === 0) {
+      frame.style.display = "none";
+      empty.style.display = "block";
+      document.querySelector(".pdf-controls").style.display = "none";
+      return;
+    }
+
+    empty.style.display = "none";
+    frame.style.display = "block";
+
     const currentBtn = document.querySelector(".skins-list .current");
 
     if (currentBtn) {
@@ -165,7 +185,6 @@ const weeks = [
       return;
     }
 
-    const buttons = getEnabledButtons();
     const lastBtn = buttons[buttons.length - 1];
 
     if (lastBtn) lastBtn.click();
@@ -173,4 +192,5 @@ const weeks = [
 </script>
 
 <%- include('layouts/scripts'); %>
+
 </html>

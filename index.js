@@ -98,6 +98,11 @@ app.get("/images2025", async (req, res) => {
   res.render("images2025", { filenames });
 });
 
+app.get("/images2026", async (req, res) => {
+  const filenames = await getFilenames("2026");
+  res.render("images2026", { filenames });
+});
+
 app.get("/images", async (req, res) => {
   const filenames = await getFilenames("2025");
   res.render("images", { filenames });
