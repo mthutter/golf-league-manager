@@ -260,16 +260,13 @@
 
   <!-- HERO -->
   <section class="form-hero">
-    <h1>⛳ Add New Player</h1>
-    <p>
-      Register a golfer for the Bottoms Up Golf League
-    </p>
+    <h3>⛳ Add New Player</h3>
   </section>
 
   <!-- FORM CARD -->
   <div class="player-form-card">
 
-    <form>
+    <form action="/add-player" method="POST">
 
       <!-- PLAYER INFO -->
       <div class="form-section">
@@ -283,7 +280,7 @@
               First Name
             </label>
 
-            <input type="text" class="form-control" placeholder="Enter first name">
+            <input type="text" name="name_first" class="form-control" placeholder="Enter first name">
           </div>
 
           <div class="col-md-6">
@@ -291,15 +288,7 @@
               Last Name
             </label>
 
-            <input type="text" class="form-control" placeholder="Enter last name">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Nickname
-            </label>
-
-            <input type="text" class="form-control" placeholder="Optional nickname">
+            <input type="text" name="name_last" class="form-control" placeholder="Enter last name">
           </div>
 
           <div class="col-md-6">
@@ -307,7 +296,19 @@
               Handicap
             </label>
 
-            <input type="number" class="form-control" placeholder="0.0">
+            <input type="number" name="handicap" class="form-control" placeholder="0.0">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              Year Joined
+            </label>
+
+            <input type="number" name="year_joined" class="form-control" placeholder="2026">
+          </div>
+
+          <div class="col-md-6">
+            <input type="text" name="password" class="form-control" placeholder="password">
           </div>
 
         </div>
@@ -325,7 +326,7 @@
               Email Address
             </label>
 
-            <input type="email" class="form-control" placeholder="player@email.com">
+            <input type="email" name="e_mail" class="form-control" placeholder="player@email.com">
           </div>
 
           <div class="col-md-6">
@@ -333,7 +334,7 @@
               Phone Number
             </label>
 
-            <input type="tel" class="form-control" placeholder="(555) 555-5555">
+            <input type="tel" name="phone" class="form-control" placeholder="(555) 555-5555">
           </div>
 
         </div>
@@ -348,14 +349,13 @@
 
           <div class="col-md-6">
             <label class="form-label">
-              Flight
+              Active
             </label>
 
-            <select class="form-select">
-              <option selected>Select flight</option>
-              <option>A Flight</option>
-              <option>B Flight</option>
-              <option>C Flight</option>
+            <select class="form-select" name="status">
+              <option selected>True or False</option>
+              <option>true</option>
+              <option>false</option>
             </select>
           </div>
 
@@ -364,10 +364,10 @@
               Status
             </label>
 
-            <select class="form-select">
-              <option selected>Active</option>
+            <select class="form-select" name="type">
+              <option selected>Regular or Substitute</option>
+              <option>Regular</option>
               <option>Substitute</option>
-              <option>Inactive</option>
             </select>
           </div>
 
@@ -382,19 +382,6 @@
       </div>
 
     </form>
-
-    <!-- OPTIONAL PREVIEW -->
-    <div class="player-preview">
-
-      <div class="preview-name">
-        John Daly
-      </div>
-
-      <div class="preview-meta">
-        Handicap: 8.4 • B Flight
-      </div>
-
-    </div>
 
   </div>
 

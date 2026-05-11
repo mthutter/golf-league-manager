@@ -126,11 +126,12 @@ const db = new sqlite3.Database("./golf-league-db.db", (err) => {
   if (err) console.error(err.message);
   console.log("Connected to the SQLite database.");
 });
+
 app.get("/add-player-form", addPlayerForm);
 
 app.post("/add-player", function (req, res) {
   const { name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type } = req.body;
-  const sql = `INSERT INTO members (name_last, name_first, phone, handicap, password, e_mail, year_joined, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO members (name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   console.log(name_last, name_first);
 
