@@ -135,10 +135,14 @@ app.post("/add-player", function (req, res) {
 
   console.log(name_last, name_first);
 
+  if (!name_first || !name_last) {
+    return res.send("Missing required fields");
+  }
+
   db.run(sql, [name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type], function (err) {
     if (err) return console.error(err.message);
     console.log(`A row has been inserted with rowid ${this.lastID}`);
-    res.redirect("/");
+    res.redirect("/players");
   });
 });
 
