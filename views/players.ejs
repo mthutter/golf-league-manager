@@ -3,63 +3,93 @@
 
 <%- include('./layouts/header'); -%>
 
-<body class="p-4">
+<style>
+  .players-table {
+    width: 1%;
+    border-collapse: separate;
+  }
 
-  <%- include('layouts/navbar'); %>
+  .players-table th,
+  .players-table td {
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 0.65rem 0.8rem;
+  }
 
-  <div class="container">
-    <h1 class="mb-4">
-      League Players
-    </h1>
-    <table class="table table-striped table-bordered">
-      <thead class="table-success">
-        <tr>
-          <th>ID</th>
-          <th>Last Name</th>
-          <th>First Name</th>
-          <th>Phone</th>
-          <th>Handicap</th>
-          <th>Email</th>
-          <th>Joined</th>
-        </tr>
+  table.players-table {
+    width: 1% !important;
+    table-layout: auto !important;
+  }
 
-      </thead>
+  table.players-table th,
+  table.players-table td {
+    text-align: center;
+    white-space: nowrap;
+    padding: 0.45rem 0.7rem !important;
+    vertical-align: middle;
+  }
+</style>
 
-      <tbody>
+<%- include('layouts/navbar'); %>
 
-        <% players.forEach(player => { %>
+<div class="main-wrapper">
+  <h1 class="mb-4">
+    League Players
+  </h1>
+  <table class="table players-table">
+    <thead class="table-success">
+      <tr>
+        <th>ID</th>
+        <th>Last Name</th>
+        <th>First Name</th>
+        <th>Phone</th>
+        <th>Current Handicap</th>
+        <th>Email</th>
+        <th>Joined</th>
+        <th>Active</th>
+      </tr>
 
-        <tr>
-          <td>
-            <%= player.id %>
-          </td>
-          <td>
-            <%= player.name_last %>
-          </td>
-          <td>
-            <%= player.name_first %>
-          </td>
-          <td>
-            <%= player.phone %>
-          </td>
-          <td>
-            <%= player.handicap %>
-          </td>
-          <td>
-            <%= player.e_mail %>
-          </td>
-          <td>
-            <%= player.year_joined %>
-          </td>
-        </tr>
+    </thead>
 
-        <% }) %>
+    <tbody>
 
-      </tbody>
+      <% players.forEach(player => { %>
 
-    </table>
+      <tr>
+        <td>
+          <%= player.id %>
+        </td>
+        <td>
+          <%= player.name_last %>
+        </td>
+        <td>
+          <%= player.name_first %>
+        </td>
+        <td>
+          <%= player.phone %>
+        </td>
+        <td>
+          <%= player.handicap %>
+        </td>
+        <td>
+          <%= player.e_mail %>
+        </td>
+        <td>
+          <%= player.year_joined %>
+        </td>
+        <td>
+          <%= player.status ? 'true' : 'false' %>
+        </td>
+      </tr>
 
-  </div>
+      <% }) %>
+
+    </tbody>
+
+  </table>
+</div>
+
+
 
 </body>
 
