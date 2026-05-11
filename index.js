@@ -68,7 +68,7 @@ app.use(
     genid: (req) => {
       return uuid();
     },
-  }),
+  })
 );
 
 async function getFilenames(year) {
@@ -138,6 +138,35 @@ app.post("/add-player", function (req, res) {
     if (err) return console.error(err.message);
     console.log(`A row has been inserted with rowid ${this.lastID}`);
     res.redirect("/");
+  });
+});
+
+app.get("/players", function (req, res) {
+  const sql = `
+    SELECT
+      rowid,
+      name_last,
+      name_first,
+      phone,
+      handicap,
+      e_mail,
+      year_joined
+    FROM members
+    ORDER BY name_last ASC
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error(err.message);
+
+      return res.status(500).send("Database Error");
+    }
+
+    console.log(rows);
+
+    res.render("players", {
+      players: rows,
+    });
   });
 });
 
