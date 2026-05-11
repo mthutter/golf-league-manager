@@ -129,12 +129,12 @@ const db = new sqlite3.Database("./golf-league-db.db", (err) => {
 app.get("/add-player-form", addPlayerForm);
 
 app.post("/add-player", function (req, res) {
-  const { name_last, name_first, phone, handicap, password, e_mail, year_joined, status } = req.body;
-  const sql = `INSERT INTO members (name_last, name_first, phone, handicap, password, e_mail, year_joined, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  const { name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type } = req.body;
+  const sql = `INSERT INTO members (name_last, name_first, phone, handicap, password, e_mail, year_joined, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   console.log(name_last, name_first);
 
-  db.run(sql, [name_last, name_first, phone, handicap, password, e_mail, year_joined, status], function (err) {
+  db.run(sql, [name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type], function (err) {
     if (err) return console.error(err.message);
     console.log(`A row has been inserted with rowid ${this.lastID}`);
     res.redirect("/");
@@ -151,7 +151,8 @@ app.get("/players", function (req, res) {
       handicap,
       e_mail,
       year_joined,
-      status
+      status,
+      type
     FROM members
     ORDER BY id ASC
   `;

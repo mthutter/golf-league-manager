@@ -47,6 +47,7 @@
         <th>Email</th>
         <th>Joined</th>
         <th>Active</th>
+        <th>Status (Reg/Sub)</th>
       </tr>
 
     </thead>
@@ -79,6 +80,9 @@
         </td>
         <td>
           <%= player.status ? 'true' : 'false' %>
+        </td>
+        <td>
+          <%= player.type %>
         </td>
       </tr>
 
