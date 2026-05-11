@@ -144,7 +144,7 @@ app.post("/add-player", function (req, res) {
 app.get("/players", function (req, res) {
   const sql = `
     SELECT
-      rowid,
+      id,
       name_last,
       name_first,
       phone,
