@@ -15,6 +15,7 @@ import videos2024Controller from "./controllers/videos2024.js";
 import videos2025Controller from "./controllers/videos2025.js";
 import videosController from "./controllers/videos.js";
 import teetimesController from "./controllers/tee-times.js";
+import addPlayerForm from "./controllers/add-player-form.js";
 import { showForm } from "./controllers/formController.js";
 import { submitForm } from "./controllers/formController.js";
 
@@ -25,6 +26,8 @@ import rulesController from "./controllers/rules.js";
 import resultsController from "./controllers/results.js";
 import skinsController from "./controllers/skins.js";
 import * as dbmodel from "./models/dbModel.js";
+
+import sqlite3 from "sqlite3";
 
 const app = new express();
 
@@ -65,7 +68,7 @@ app.use(
     genid: (req) => {
       return uuid();
     },
-  })
+  }),
 );
 
 async function getFilenames(year) {
@@ -110,24 +113,33 @@ app.get("/images", async (req, res) => {
 
 app.get("/", homeController);
 app.get("/course", courseController);
-
-//app.get("/images2025", async (req, res) => {
-//  res.render("images2025", { items: imageFiles2025 });
-//});
 app.get("/videos2024", videos2024Controller);
 app.get("/videos2025", videos2025Controller);
 app.get("/videos", videosController);
-
 app.get("/results", resultsController);
-//app.get("/contacts", contactsController);
 app.get("/tee-times", teetimesController);
-app.get("/second-half", secondHalfController);
-app.get("/first-half", firstHalfController);
 app.get("/rules", rulesController);
 app.get("/overall", overallController);
 app.get("/skins", skinsController);
-app.get("/form", showForm);
-app.post("/submit", submitForm);
+
+const db = new sqlite3.Database("./golf-league-db.db", (err) => {
+  if (err) console.error(err.message);
+  console.log("Connected to the SQLite database.");
+});
+app.get("/add-player-form", addPlayerForm);
+
+app.post("/add-player", function (req, res) {
+  const { name_last, name_first, phone, handicap, password, e_mail, year_joined } = req.body;
+  const sql = `INSERT INTO members (name_last, name_first, phone, handicap, password, e_mail, year_joined) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+  console.log(name_last, name_first);
+
+  db.run(sql, [name_last, name_first, phone, handicap, password, e_mail, year_joined], function (err) {
+    if (err) return console.error(err.message);
+    console.log(`A row has been inserted with rowid ${this.lastID}`);
+    res.redirect("/");
+  });
+});
 
 let port = process.env.PORT || 3000;
 
