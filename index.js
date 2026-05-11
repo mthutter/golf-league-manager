@@ -152,7 +152,7 @@ app.get("/players", function (req, res) {
       e_mail,
       year_joined
     FROM members
-    ORDER BY name_last ASC
+    ORDER BY id ASC
   `;
 
   db.all(sql, [], (err, rows) => {
