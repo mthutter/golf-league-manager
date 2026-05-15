@@ -1,6 +1,7 @@
 <%
 const weeks = [
-  { num: 1, date: "May 4", enabled: false, current: true }
+  { num: 1, date: "May 4", enabled: false, current: false },
+  { num: 2, date: "May 11", enabled: true, current: true }
 ];
 %>
 
@@ -65,10 +66,6 @@ const weeks = [
           <div>
             <button onclick="goPrev()">← Previous</button>
           </div>
-          <div class="gallery-header">
-            <h1>2026 Weekly Skins</h1>
-
-          </div>
           <div>
             <button onclick="goNext()">Next →</button>
           </div>
@@ -101,9 +98,11 @@ const weeks = [
   function updateNavButtons() {
     const buttons = getEnabledButtons();
 
-    document.querySelector(".pdf-controls button:first-child").disabled = currentIndex === 0;
-    document.querySelector(".pdf-controls button:last-child").disabled =
-      currentIndex === buttons.length - 1;
+    const prevBtn = document.querySelector(".pdf-controls button[onclick='goPrev()']");
+    const nextBtn = document.querySelector(".pdf-controls button[onclick='goNext()']");
+
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === buttons.length - 1;
   }
 
   function openPDF(button, filename) {
