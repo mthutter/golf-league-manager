@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 app.use(
   helmet({
     contentSecurityPolicy: false,
-  })
+  }),
 );
 
 app.use(express.static("public"));
@@ -58,14 +58,14 @@ app.use(
   expressSession({
     name: "SessionCookie",
     cookie: { maxAge: 86400000 },
-    secret: "woot",
+    secret: process.env.EXPRESS_SESSION_SECRET,
     store: new MemoryStore({ checkPeriod: 86400000 }),
     resave: false,
     saveUninitialized: false,
     genid: (req) => {
       return uuid();
     },
-  })
+  }),
 );
 
 //basic auth for 'app-player-form'
@@ -123,8 +123,6 @@ const db = new sqlite3.Database("./golf-league-db.db", (err) => {
   if (err) console.error(err.message);
   console.log("Connected to the SQLite database.");
 });
-
-//app.get("/add-player-form", addPlayerForm);
 
 app.post("/add-player", myAuth, function (req, res) {
   const { name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type } = req.body;
