@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Error</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f7f7f7;
+      color: #222;
+    }
+
+    .error-box {
+      max-width: 600px;
+      margin: 3rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #b00020;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="error-box">
+    <h1>Something Went Wrong</h1>
+
+    <p>
+      <%= message %>
+    </p>
+  </div>
+
+</body>
+
+</html>
