@@ -52,18 +52,45 @@
           <a class="nav-link px-3 text-success" href="/course">Course Information</a>
         </li>
 
-        <% if (!isAdmin) { %>
+        <% if (isAdmin) { %>
+
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle px-3 text-success" href="#" data-bs-toggle="dropdown">Admin</a>
-          <ul class="dropdown-menu custom-dropdown">
-            <li><a class="dropdown-item" href="/players">Players</a></li>
-            <li><a class="dropdown-item" href="/players/new">Add Player</a></li>
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            Admin
+          </a>
+
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="/players">
+                List Players
+              </a>
+            </li>
+
+            <li>
+              <a class="dropdown-item" href="/players/new">
+                Add Player
+              </a>
+            </li>
           </ul>
         </li>
-        <% } %>
-      </ul>
 
-      <!-- RIGHT SIDE -->
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">
+            Logout
+          </a>
+        </li>
+
+        <% } else { %>
+
+        <li class="nav-item">
+          <a class="nav-link" href="/login">
+            Login
+          </a>
+        </li>
+
+        <% } %>
+
+      </ul>
     </div>
   </div>
 </nav>
