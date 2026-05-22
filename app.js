@@ -25,9 +25,7 @@ const app = express();
 ========================================= */
 
 app.disable("x-powered-by");
-
 app.set("view engine", "ejs");
-
 app.set("trust proxy", 1);
 
 /* =========================================
@@ -37,7 +35,7 @@ app.set("trust proxy", 1);
 app.use(
   helmet({
     contentSecurityPolicy: false,
-  })
+  }),
 );
 
 app.use((req, res, next) => {
@@ -55,13 +53,9 @@ app.use((req, res, next) => {
 ========================================= */
 
 app.use(express.static("public"));
-
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.json());
-
 app.use(cookieParser());
-
 app.use(fileUpload());
 
 /* =========================================
@@ -71,23 +65,17 @@ app.use(fileUpload());
 app.use(
   session({
     name: "SessionCookie",
-
     secret: process.env.EXPRESS_SESSION_SECRET,
-
     store: new MemoryStore({
       checkPeriod: 86400000,
     }),
-
     resave: false,
-
     saveUninitialized: false,
-
     cookie: {
       maxAge: 86400000,
     },
-
     genid: () => uuid(),
-  })
+  }),
 );
 
 app.use(flash());
@@ -97,9 +85,7 @@ app.use(flash());
 ========================================= */
 
 app.use("/", publicRoutes);
-
 app.use("/players", playerRoutes);
-
 app.use("/images", imageRoutes);
 
 /* =========================================
