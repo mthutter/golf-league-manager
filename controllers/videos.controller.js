@@ -1,11 +1,11 @@
 import { getFilenames } from "../services/ftp.service.js";
 
-export async function imagesByYear(req, res) {
+export async function videosByYear(req, res) {
   try {
     const { year } = req.params;
     const filenames = await getFilenames(year);
 
-    res.render("images", {
+    res.render("videos", {
       year,
       filenames,
     });
@@ -13,7 +13,7 @@ export async function imagesByYear(req, res) {
     console.error(err);
 
     res.status(500).render("error", {
-      message: "Unable to load images.",
+      message: "Unable to load videos.",
     });
   }
 }

@@ -180,7 +180,7 @@ a {
 	color: #1e4d1e;
 }
 
-@media (max-width: 1150px) {
+@media (max-width: 1199px) {
   .navbar .dropdown-menu {
     inset: auto !important;
     transform: none !important;

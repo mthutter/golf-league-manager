@@ -17,7 +17,7 @@ export function getPlayers(req, res) {
       status,
       type
     FROM members
-    ORDER BY name_last ASC
+    ORDER BY name_last, name_first ASC
   `;
 
   db.all(sql, [], (err, rows) => {

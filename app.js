@@ -12,6 +12,7 @@ import { v4 as uuid } from "uuid";
 import publicRoutes from "./routes/public.routes.js";
 import playerRoutes from "./routes/player.routes.js";
 import imageRoutes from "./routes/image.routes.js";
+import videoRoutes from "./routes/video.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -87,6 +88,7 @@ app.use(flash());
 app.use("/", publicRoutes);
 app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);
+app.use("/videos", videoRoutes);
 
 /* =========================================
    404 HANDLER
