@@ -16,6 +16,7 @@ import videoRoutes from "./routes/video.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
+import viewDataMiddleware from "./middleware/view-data.middleware.js";
 
 dotenv.config();
 
@@ -36,7 +37,7 @@ app.set("trust proxy", 1);
 app.use(
   helmet({
     contentSecurityPolicy: false,
-  }),
+  })
 );
 
 app.use((req, res, next) => {
@@ -76,7 +77,7 @@ app.use(
       maxAge: 86400000,
     },
     genid: () => uuid(),
-  }),
+  })
 );
 
 app.use(flash());
@@ -85,6 +86,7 @@ app.use(flash());
    ROUTES
 ========================================= */
 
+app.use(viewDataMiddleware);
 app.use("/", publicRoutes);
 app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);

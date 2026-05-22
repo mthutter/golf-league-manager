@@ -1,6 +1,6 @@
 import basicAuth from "express-basic-auth";
 
-const authMiddleware = basicAuth({
+const basicAuthMiddleware = basicAuth({
   users: {
     [process.env.ADMIN_USER]: process.env.ADMIN_PASS,
   },
@@ -8,4 +8,10 @@ const authMiddleware = basicAuth({
   unauthorizedResponse: "Direct access denied.",
 });
 
-export default authMiddleware;
+export default function authMiddleware(req, res, next) {
+  basicAuthMiddleware(req, res, function () {
+    req.session.isAdmin = true;
+
+    next();
+  });
+}
