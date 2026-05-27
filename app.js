@@ -35,11 +35,11 @@ app.set("trust proxy", 1);
    SECURITY
 ========================================= */
 
-app.use(
-  helmet({
+/* app.use(
+   helmet({
     contentSecurityPolicy: false,
   }),
-);
+); */
 
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store");
