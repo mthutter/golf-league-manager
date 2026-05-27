@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+
+<%- include('layouts/header'); %>
+
+<style>
+  body {
+    background-color: #f5f7fa;
+  }
+
+  .score-card {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .score-card .card-header {
+    background: #198754;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+  }
+
+  table {
+    margin-bottom: 0;
+  }
+
+  th {
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .score-input {
+    width: 65px;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  .hole-header {
+    min-width: 70px;
+  }
+
+  .total-box {
+    font-weight: bold;
+    background-color: #f1f3f5;
+  }
+
+  .btn-save {
+    border-radius: 12px;
+    padding: 0.65rem 1.5rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .score-input {
+      width: 55px;
+    }
+  }
+</style>
+
+<%- include('layouts/navbar'); %>
+
+<body>
+
+
+
+  <div class="main-wrapper">
+    <div class="gallery-header">
+      <h1>Enter Weekly Scores</h1>
+      <p>Bottoms Up Golf League</p>
+    </div>
+
+    <div class="container py-5">
+
+      <div class="card score-card">
+
+        <div class="card-header">
+          Weekly League Score Entry
+        </div>
+
+        <div class="card-body">
+
+          <form method="POST" action="/scores/save">
+
+            <!-- League / Player Info -->
+            <div class="row mb-4">
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Week</label>
+                <select class="form-select" name="week" required>
+                  <option value="">Select Week</option>
+                  <option value="1">Week 1</option>
+                  <option value="2">Week 2</option>
+                  <option value="3">Week 3</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Player</label>
+                <select class="form-select" name="playerId" required>
+                  <option value="">Select Player</option>
+                  <option value="1">John Smith</option>
+                  <option value="2">Mike Johnson</option>
+                  <option value="3">Tom Wilson</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Date</label>
+                <input type="date" class="form-control" name="scoreDate" required />
+              </div>
+
+            </div>
+
+            <!-- Score Table -->
+            <div class="table-responsive">
+
+              <table class="table table-bordered align-middle">
+
+                <thead class="table-success">
+
+                  <tr>
+                    <th>Hole</th>
+
+                    <th class="hole-header">1</th>
+                    <th class="hole-header">2</th>
+                    <th class="hole-header">3</th>
+                    <th class="hole-header">4</th>
+                    <th class="hole-header">5</th>
+                    <th class="hole-header">6</th>
+                    <th class="hole-header">7</th>
+                    <th class="hole-header">8</th>
+                    <th class="hole-header">9</th>
+
+                    <th>Total</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <!-- Par Row -->
+                  <tr>
+                    <th class="table-light">Par</th>
+
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+
+                    <td class="total-box">36</td>
+                  </tr>
+
+                  <!-- Handicap Row -->
+                  <tr>
+                    <th class="table-light">HCP</th>
+
+                    <td>7</td>
+                    <td>1</td>
+                    <td>5</td>
+                    <td>17</td>
+                    <td>9</td>
+                    <td>13</td>
+                    <td>15</td>
+                    <td>11</td>
+                    <td>3</td>
+                  </tr>
+
+                  <!-- Score Entry Row -->
+                  <tr>
+
+                    <th class="table-light">Score</th>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole1" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole2" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole3" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole4" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole5" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole6" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole7" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole8" class="form-control score-input" required />
+                    </td>
+
+                    <td>
+                      <input type="number" min="1" max="8" name="hole9" class="form-control score-input" required />
+                    </td>
+
+                    <td class="total-box">
+                      <span id="grossTotal">0</span>
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-4 d-flex justify-content-end gap-2">
+
+              <button type="reset" class="btn btn-outline-secondary btn-save">
+                Clear
+              </button>
+
+              <button type="submit" class="btn btn-success btn-save">
+                Save Scores
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const scoreInputs = document.querySelectorAll(".score-input");
+    const grossTotal = document.getElementById("grossTotal");
+
+    function calculateTotal() {
+      let total = 0;
+
+      scoreInputs.forEach((input) => {
+        total += Number(input.value) || 0;
+      });
+
+      grossTotal.textContent = total;
+    }
+
+    scoreInputs.forEach((input) => {
+      input.addEventListener("input", calculateTotal);
+    });
+  </script>
+
+</body>
+
+<%- include('layouts/scripts'); %>
+
+</html>

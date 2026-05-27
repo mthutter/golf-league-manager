@@ -14,6 +14,7 @@ import playerRoutes from "./routes/player.routes.js";
 import imageRoutes from "./routes/image.routes.js";
 import videoRoutes from "./routes/video.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import scoresRoutes from "./routes/scores.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -78,7 +79,7 @@ app.use(
       maxAge: 86400000,
     },
     genid: () => uuid(),
-  }),
+  })
 );
 
 app.use(flash());
@@ -96,6 +97,7 @@ app.use("/", publicRoutes);
 app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);
 app.use("/videos", videoRoutes);
+app.use("/scores", scoresRoutes);
 
 /* =========================================
    404 HANDLER
