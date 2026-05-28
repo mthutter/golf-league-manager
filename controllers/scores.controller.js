@@ -3,7 +3,17 @@ export function showWeeklyScoresForm(req, res) {
 }
 
 export function postWeeklyScore(req, res) {
-  const { name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type } = req.body;
+  const {
+    name_last,
+    name_first,
+    phone,
+    handicap,
+    password,
+    e_mail,
+    year_joined,
+    status,
+    type,
+  } = req.body;
 
   /* =========================================
      VALIDATION
@@ -34,7 +44,17 @@ export function postWeeklyScore(req, res) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  const values = [name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type];
+  const values = [
+    name_last,
+    name_first,
+    phone,
+    handicap,
+    password,
+    e_mail,
+    year_joined,
+    status,
+    type,
+  ];
 
   db.run(sql, values, function (err) {
     if (err) {

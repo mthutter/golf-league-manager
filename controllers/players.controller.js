@@ -48,7 +48,17 @@ export function showAddPlayerForm(req, res) {
 ========================================= */
 
 export function createPlayer(req, res) {
-  const { name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type } = req.body;
+  const {
+    name_last,
+    name_first,
+    phone,
+    handicap,
+    password,
+    e_mail,
+    year_joined,
+    status,
+    type,
+  } = req.body;
 
   /* =========================================
      VALIDATION
@@ -79,7 +89,17 @@ export function createPlayer(req, res) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  const values = [name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type];
+  const values = [
+    name_last,
+    name_first,
+    phone,
+    handicap,
+    password,
+    e_mail,
+    year_joined,
+    status,
+    type,
+  ];
 
   db.run(sql, values, function (err) {
     if (err) {

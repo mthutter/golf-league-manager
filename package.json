@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "nodemon server.js",
-    "format": "prettier --log-level warn --write \"{<file-path>}/**/*.{jsx,js}\""
+    "format": "prettier --log-level warn --write \"{<file-path>}/**/*.{ejs,jsx,js}\""
   },
   "author": "",
   "license": "ISC",

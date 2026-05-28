@@ -1,6 +1,10 @@
 import express from "express";
 import authMiddleware from "../middleware/auth.middleware.js";
-import { getPlayers, showAddPlayerForm, createPlayer } from "../controllers/players.controller.js";
+import {
+  getPlayers,
+  showAddPlayerForm,
+  createPlayer,
+} from "../controllers/players.controller.js";
 
 const router = express.Router();
 

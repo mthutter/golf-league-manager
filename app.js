@@ -79,7 +79,7 @@ app.use(
       maxAge: 86400000,
     },
     genid: () => uuid(),
-  })
+  }),
 );
 
 app.use(flash());
