@@ -1,403 +1,315 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%- include('layouts/header'); %>
 
-  <title>Add Player</title>
+<style>
+  :root {
+    --green-main: rgb(47, 138, 47);
+    --green-dark: rgb(30, 110, 30);
+    --light-gray: #f5f5f5;
+    --card-bg: #ffffff;
+  }
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--light-gray);
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
 
-  <style>
-    :root {
-      --green-main: rgb(47, 138, 47);
-      --green-dark: rgb(30, 110, 30);
-      --green-light: rgba(144, 238, 144, 0.18);
-      --card-bg: rgba(255, 255, 255, 0.94);
-    }
-
-    body {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top,
-          rgba(144, 238, 144, 0.18),
-          transparent 40%),
-        linear-gradient(to bottom,
-          #f6fff6,
-          #edf7ed);
-
-      padding: 2rem 1rem;
-    }
-
-    /* =========================
+  /* =========================
        HERO
-    ========================= */
+  ========================= */
+  .form-hero {
+    max-width: 800px;
+    margin: 2rem auto;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    background-color: var(--green-main);
+    color: white;
+  }
+
+  .form-hero h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .form-hero p {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  /* =========================
+       FORM CARD
+  ========================= */
+  .player-form-card {
+    max-width: 800px;
+    margin: 1.5rem auto;
+    padding: 2rem;
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  /* =========================
+       FORM SECTIONS
+  ========================= */
+  .form-section {
+    margin-bottom: 1.8rem;
+  }
+
+  .form-section h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+  }
+
+  /* =========================
+       LABELS
+  ========================= */
+  .form-label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* =========================
+       INPUTS
+  ========================= */
+  .form-control {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 2px solid #d8e8d8;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  .form-control:focus {
+    border-color: var(--green-main);
+    box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  /* =========================
+       SELECTS (Rounded)
+  ========================= */
+  .select-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .select-wrapper select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 2px solid #d8e8d8;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+
+  .select-wrapper::after {
+    content: "▾";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #4f664f;
+    font-size: 0.9rem;
+  }
+
+  .select-wrapper select:focus {
+    border-color: var(--green-main);
+    box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
+    outline: none;
+  }
+
+  /* =========================
+       BUTTON
+  ========================= */
+  .btn-submit-player {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--green-main);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-submit-player:hover {
+    background-color: var(--green-dark);
+    transform: translateY(-1px);
+  }
+
+  /* =========================
+       RESPONSIVE
+  ========================= */
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
+    }
 
     .form-hero {
-      max-width: 900px;
-      margin: 0 auto 2rem;
-      text-align: center;
-
-      padding: 2rem;
-      border-radius: 24px;
-
-      background:
-        linear-gradient(135deg,
-          rgba(47, 138, 47, 0.97),
-          rgba(30, 110, 30, 0.97));
-
-      color: white;
-
-      box-shadow:
-        0 14px 34px rgba(0, 0, 0, 0.15);
+      padding: 1.5rem;
     }
-
-    .form-hero h1 {
-      margin: 0;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800;
-      letter-spacing: 0.5px;
-    }
-
-    .form-hero p {
-      margin-top: 0.7rem;
-      margin-bottom: 0;
-      opacity: 0.92;
-      font-size: 1.05rem;
-    }
-
-    /* =========================
-       FORM CARD
-    ========================= */
 
     .player-form-card {
-      max-width: 900px;
-      margin: 0 auto;
-
-      padding: 2rem;
-
-      border-radius: 24px;
-
-      background: var(--card-bg);
-
-      border: 1px solid rgba(255, 255, 255, 0.45);
-
-      backdrop-filter: blur(10px);
-
-      box-shadow:
-        0 14px 40px rgba(0, 0, 0, 0.12),
-        0 3px 12px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
     }
-
-    /* =========================
-       FORM SECTIONS
-    ========================= */
-
-    .form-section {
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid #e5efe5;
-    }
-
-    .form-section:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .form-section h3 {
-      margin-bottom: 1.25rem;
-
-      font-size: 1.25rem;
-      font-weight: 700;
-
-      color: var(--green-dark);
-    }
-
-    /* =========================
-       LABELS
-    ========================= */
-
-    .form-label {
-      font-weight: 600;
-      color: #244224;
-      margin-bottom: 0.45rem;
-    }
-
-    /* =========================
-       INPUTS
-    ========================= */
-
-    .form-control,
-    .form-select {
-      border-radius: 14px;
-
-      border: 2px solid #d8e8d8;
-
-      padding: 0.85rem 1rem;
-
-      background: rgba(255, 255, 255, 0.96);
-
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-      border-color: var(--green-main);
-
-      box-shadow:
-        0 0 0 4px rgba(47, 138, 47, 0.15);
-
-      transform: translateY(-1px);
-    }
-
-    /* =========================
-       BUTTON
-    ========================= */
 
     .btn-submit-player {
-      border: none;
-
-      border-radius: 16px;
-
-      padding: 0.95rem 2rem;
-
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-
-      color: white;
-
-      background:
-        linear-gradient(135deg,
-          rgb(47, 138, 47),
-          rgb(30, 110, 30));
-
-      box-shadow:
-        0 8px 20px rgba(47, 138, 47, 0.25);
-
-      transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+      width: 100%;
     }
+  }
 
-    .btn-submit-player:hover {
-      transform: translateY(-2px);
+  .select-wrapper select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 14px !important;
+    border: 2px solid #d8e8d8;
 
-      box-shadow:
-        0 12px 28px rgba(47, 138, 47, 0.35);
-    }
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 
-    .btn-submit-player:active {
-      transform: translateY(0);
-    }
+    background-color: white;
+    background-clip: padding-box;
 
-    /* =========================
-       OPTIONAL PLAYER PREVIEW
-    ========================= */
+    overflow: hidden;
+  }
 
-    .player-preview {
-      background:
-        linear-gradient(145deg,
-          rgba(47, 138, 47, 0.12),
-          rgba(255, 255, 255, 0.9));
+  select::-ms-expand {
+    display: none;
+  }
+</style>
 
-      border-radius: 20px;
-
-      padding: 1.5rem;
-
-      border: 1px solid rgba(47, 138, 47, 0.15);
-
-      text-align: center;
-
-      margin-top: 2rem;
-    }
-
-    .player-preview .preview-name {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--green-dark);
-    }
-
-    .player-preview .preview-meta {
-      margin-top: 0.5rem;
-      color: #4f664f;
-      font-weight: 500;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 768px) {
-
-      body {
-        padding: 1rem 0.75rem;
-      }
-
-      .form-hero {
-        padding: 1.5rem 1rem;
-        border-radius: 20px;
-      }
-
-      .player-form-card {
-        padding: 1.25rem;
-        border-radius: 20px;
-      }
-
-      .btn-submit-player {
-        width: 100%;
-      }
-    }
-  </style>
-</head>
+<%- include('layouts/navbar'); %>
 
 <body>
-
   <!-- HERO -->
-  <section class="form-hero">
-    <h1>⛳ Add New Player</h1>
-    <p>
-      Register a golfer for the Bottoms Up Golf League
-    </p>
-  </section>
-
-  <!-- FORM CARD -->
-  <div class="player-form-card">
-
-    <form>
-
-      <!-- PLAYER INFO -->
-      <div class="form-section">
-
-        <h3>Player Information</h3>
-
-        <div class="row g-4">
-
-          <div class="col-md-6">
-            <label class="form-label">
-              First Name
-            </label>
-
-            <input type="text" class="form-control" placeholder="Enter first name">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Last Name
-            </label>
-
-            <input type="text" class="form-control" placeholder="Enter last name">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Nickname
-            </label>
-
-            <input type="text" class="form-control" placeholder="Optional nickname">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Handicap
-            </label>
-
-            <input type="number" class="form-control" placeholder="0.0">
-          </div>
-
-        </div>
-      </div>
-
-      <!-- CONTACT -->
-      <div class="form-section">
-
-        <h3>Contact Information</h3>
-
-        <div class="row g-4">
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Email Address
-            </label>
-
-            <input type="email" class="form-control" placeholder="player@email.com">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Phone Number
-            </label>
-
-            <input type="tel" class="form-control" placeholder="(555) 555-5555">
-          </div>
-
-        </div>
-      </div>
-
-      <!-- LEAGUE -->
-      <div class="form-section">
-
-        <h3>League Settings</h3>
-
-        <div class="row g-4">
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Flight
-            </label>
-
-            <select class="form-select">
-              <option selected>Select flight</option>
-              <option>A Flight</option>
-              <option>B Flight</option>
-              <option>C Flight</option>
-            </select>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              Status
-            </label>
-
-            <select class="form-select">
-              <option selected>Active</option>
-              <option>Substitute</option>
-              <option>Inactive</option>
-            </select>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- SUBMIT -->
-      <div class="text-center mt-4">
-        <button type="submit" class="btn btn-submit-player">
-          Add Player
-        </button>
-      </div>
-
-    </form>
-
-    <!-- OPTIONAL PREVIEW -->
-    <div class="player-preview">
-
-      <div class="preview-name">
-        John Daly
-      </div>
-
-      <div class="preview-meta">
-        Handicap: 8.4 • B Flight
-      </div>
-
+  <div class="main-wrapper">
+    <div class="form-hero">
+      <h1>Add Player Form</h1>
+      <p>Bottoms Up Golf League</p>
     </div>
 
-  </div>
+    <!-- FORM CARD -->
+    <div class="player-form-card">
+      <form action="/players" method="POST">
 
+        <!-- PLAYER INFO -->
+        <div class="form-section">
+          <h3>Player Information</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name <span style="color:red">*</span></label>
+              <input type="text" name="name_first" class="form-control" placeholder="Enter first name" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name <span style="color:red">*</span></label>
+              <input type="text" name="name_last" class="form-control" placeholder="Enter last name" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Handicap</label>
+              <input type="number" name="handicap" class="form-control" placeholder="0.0" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Year Joined</label>
+              <div class="select-wrapper">
+                <select name="year_joined">
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password</label>
+              <input type="text" name="password" class="form-control" placeholder="password" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="form-section">
+          <h3>Contact Information</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Email Address <span style="color:red">*</span></label>
+              <input type="email" name="e_mail" class="form-control" placeholder="player@email.com" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone Number <span style="color:red">*</span></label>
+              <input type="tel" name="phone" class="form-control" placeholder="(555) 555-5555" maxlength="14" required oninput="formatPhoneNumber(this)" />
+            </div>
+          </div>
+        </div>
+
+        <!-- LEAGUE -->
+        <div class="form-section">
+          <h3>League Settings</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Active <span style="color:red">*</span></label>
+              <div class="select-wrapper">
+                <select name="status">
+                  <option selected>True or False</option>
+                  <option>true</option>
+                  <option>false</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status <span style="color:red">*</span></label>
+              <div class="select-wrapper">
+                <select name="type">
+                  <option selected>Regular or Substitute</option>
+                  <option>Regular</option>
+                  <option>Substitute</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-submit-player">Add Player</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
 </body>
+
+<%- include('layouts/scripts'); %>
+<script>
+  function formatPhoneNumber(input) {
+    let value = input.value.replace(/\D/g, "");
+    if (value.length > 10) value = value.slice(0, 10);
+    if (value.length >= 7) input.value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
+    else if (value.length >= 4) input.value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+    else if (value.length > 0) input.value = `(${value}`;
+  }
+</script>
 
 </html>

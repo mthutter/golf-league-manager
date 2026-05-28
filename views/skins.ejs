@@ -1,6 +1,9 @@
 <%
 const weeks = [
-  { num: 1, date: "May 4", enabled: false, current: true }
+  { num: 1, date: "May 4", enabled: false, current: false },
+  { num: 2, date: "May 11", enabled: true, current: false },
+  { num: 3, date: "May 18", enabled: false, current: false },
+  { num: 4, date: "May 25", enabled: false, current: true }
 ];
 %>
 
@@ -66,15 +69,13 @@ const weeks = [
             <button onclick="goPrev()">← Previous</button>
           </div>
           <div class="gallery-header">
-            <h1>2026 Weekly Skins</h1>
-
+            <h1 id="skins-header">Weekly Results</h1>
+            <p>Bottoms Up Golf League • 2026 Season</p>
           </div>
           <div>
             <button onclick="goNext()">Next →</button>
           </div>
         </div>
-
-        <h2 id="skins-header">Skins Results</h2>
 
         <div id="loading-indicator">Loading...</div>
 
@@ -101,9 +102,11 @@ const weeks = [
   function updateNavButtons() {
     const buttons = getEnabledButtons();
 
-    document.querySelector(".pdf-controls button:first-child").disabled = currentIndex === 0;
-    document.querySelector(".pdf-controls button:last-child").disabled =
-      currentIndex === buttons.length - 1;
+    const prevBtn = document.querySelector(".pdf-controls button[onclick='goPrev()']");
+    const nextBtn = document.querySelector(".pdf-controls button[onclick='goNext()']");
+
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === buttons.length - 1;
   }
 
   function openPDF(button, filename) {

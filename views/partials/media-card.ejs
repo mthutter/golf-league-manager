@@ -3,7 +3,7 @@
   <% if (type === 'image') { %>
   <a href="<%= src %>" class="glightbox" data-title="<%= title %>">
     <div class="media-wrapper image-wrapper">
-      <img src="<%= src %>" alt="<%= title %>" loading="lazy" class="media-img">
+      <img src="<%= src %>" alt="<%= title %>" loading="lazy" class="media-img" decoding="async">
       <div class="media-caption">
         <%= title %>
       </div>

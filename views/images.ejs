@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <%- include('./layouts/header'); %>
 
 <body>
@@ -7,30 +8,44 @@
   <%- include('./layouts/navbar'); %>
 
   <div class="main-wrapper">
-    <h1 class="gallery-title">Images Test</h1>
+    <div class="gallery-header">
+      <h1>
+        <%= year %> Images
+      </h1>
+      <p>
+        Bottoms Up Golf League
+      </p>
+    </div>
 
     <div class="container">
       <div class="row g-3">
         <% filenames.forEach(name => { %>
         <div class="col-6 col-sm-4 col-md-3 col-lg-2">
           <%- include('partials/media-card', {
-          type: 'image',
-          src: `https://bottoms-up.b-cdn.net/2025/${name}`,
-          title: name.replace(/[-_]/g, ' ').replace('.jpg','')
-        }) %>
+              type: 'image',
+              src: `https://bottoms-up.b-cdn.net/${year}/${name}`,
+              title: name
+                .replace(/[-_]/g, ' ')
+                .replace('.jpg', '')
+            }) %>
         </div>
+
         <% }) %>
+
       </div>
     </div>
-
   </div>
 
   <%- include('./layouts/footer'); %>
 
+  <%- include('./layouts/scripts.ejs'); %>
+
   <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+
   <script>
     const lightbox = GLightbox();
   </script>
+
 </body>
 
 </html>
