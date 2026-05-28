@@ -1,4 +1,3 @@
-
 {
   "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   "editor.formatOnType": false, // required
@@ -18,5 +17,8 @@
     "Shirola",
     "teetimes",
     "woot"
-  ], // set as "true" to run 'prettier' last not first
- }
+  ],
+  "[html]": {
+    "editor.defaultFormatter": "j69.ejs-beautify"
+  } // set as "true" to run 'prettier' last not first
+}

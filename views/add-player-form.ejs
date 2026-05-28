@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+
+<%- include('layouts/header'); %>
+
+<style>
+  :root {
+    --green-main: rgb(47, 138, 47);
+    --green-dark: rgb(30, 110, 30);
+    --light-gray: #f5f5f5;
+    --card-bg: #ffffff;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--light-gray);
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* =========================
+       HERO
+  ========================= */
+  .form-hero {
+    max-width: 800px;
+    margin: 2rem auto;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    background-color: var(--green-main);
+    color: white;
+  }
+
+  .form-hero h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .form-hero p {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  /* =========================
+       FORM CARD
+  ========================= */
+  .player-form-card {
+    max-width: 800px;
+    margin: 1.5rem auto;
+    padding: 2rem;
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  /* =========================
+       FORM SECTIONS
+  ========================= */
+  .form-section {
+    margin-bottom: 1.8rem;
+  }
+
+  .form-section h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+  }
+
+  /* =========================
+       LABELS
+  ========================= */
+  .form-label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* =========================
+       INPUTS
+  ========================= */
+  .form-control {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 2px solid #d8e8d8;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  .form-control:focus {
+    border-color: var(--green-main);
+    box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  /* =========================
+       SELECTS (Rounded)
+  ========================= */
+  .select-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .select-wrapper select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 2px solid #d8e8d8;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+
+  .select-wrapper::after {
+    content: "▾";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #4f664f;
+    font-size: 0.9rem;
+  }
+
+  .select-wrapper select:focus {
+    border-color: var(--green-main);
+    box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
+    outline: none;
+  }
+
+  /* =========================
+       BUTTON
+  ========================= */
+  .btn-submit-player {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--green-main);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-submit-player:hover {
+    background-color: var(--green-dark);
+    transform: translateY(-1px);
+  }
+
+  /* =========================
+       RESPONSIVE
+  ========================= */
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
+    }
+
+    .form-hero {
+      padding: 1.5rem;
+    }
+
+    .player-form-card {
+      padding: 1.5rem;
+    }
+
+    .btn-submit-player {
+      width: 100%;
+    }
+  }
+
+  .select-wrapper select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 14px !important;
+    border: 2px solid #d8e8d8;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-color: white;
+    background-clip: padding-box;
+
+    overflow: hidden;
+  }
+
+  select::-ms-expand {
+    display: none;
+  }
+</style>
+
+<%- include('layouts/navbar'); %>
+
+<body>
+  <!-- HERO -->
+  <div class="main-wrapper">
+    <div class="form-hero">
+      <h1>Add Player Form</h1>
+      <p>Bottoms Up Golf League</p>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="player-form-card">
+      <form action="/players" method="POST">
+
+        <!-- PLAYER INFO -->
+        <div class="form-section">
+          <h3>Player Information</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name <span style="color:red">*</span></label>
+              <input type="text" name="name_first" class="form-control" placeholder="Enter first name" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name <span style="color:red">*</span></label>
+              <input type="text" name="name_last" class="form-control" placeholder="Enter last name" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Handicap</label>
+              <input type="number" name="handicap" class="form-control" placeholder="0.0" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Year Joined</label>
+              <div class="select-wrapper">
+                <select name="year_joined">
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password</label>
+              <input type="text" name="password" class="form-control" placeholder="password" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="form-section">
+          <h3>Contact Information</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Email Address <span style="color:red">*</span></label>
+              <input type="email" name="e_mail" class="form-control" placeholder="player@email.com" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone Number <span style="color:red">*</span></label>
+              <input type="tel" name="phone" class="form-control" placeholder="(555) 555-5555" maxlength="14" required oninput="formatPhoneNumber(this)" />
+            </div>
+          </div>
+        </div>
+
+        <!-- LEAGUE -->
+        <div class="form-section">
+          <h3>League Settings</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Active <span style="color:red">*</span></label>
+              <div class="select-wrapper">
+                <select name="status">
+                  <option selected>True or False</option>
+                  <option>true</option>
+                  <option>false</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status <span style="color:red">*</span></label>
+              <div class="select-wrapper">
+                <select name="type">
+                  <option selected>Regular or Substitute</option>
+                  <option>Regular</option>
+                  <option>Substitute</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-submit-player">Add Player</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</body>
+
+<%- include('layouts/scripts'); %>
+<script>
+  function formatPhoneNumber(input) {
+    let value = input.value.replace(/\D/g, "");
+    if (value.length > 10) value = value.slice(0, 10);
+    if (value.length >= 7) input.value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
+    else if (value.length >= 4) input.value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+    else if (value.length > 0) input.value = `(${value}`;
+  }
+</script>
+
+</html>

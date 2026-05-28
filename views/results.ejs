@@ -1,119 +1,149 @@
 <!doctype html>
 <html lang="en">
+
 <%- include('./layouts/header'); -%>
+<style>
+  /* ========================
+  RESULTS PAGE
+  ======================== */
 
-  <body>
-    <section><%- include('./layouts/navbar'); -%></section>
+  .results-card {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(4px);
+  }
 
-    <section>
-      <div class="text-center">
-        <br /><br />
-        <h1>2025 Results</h1>
-      </div>
-      <br />
-      <div class="container justify-content-center align-items-center results">
-        <div class="row">
-          <div class="col-lg-4 mx-auto my-3 file-list text-center">
+  /* section titles */
+  .results-card h4 {
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .results-card h5 {
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+
+  /* week links */
+  .results-card a {
+    display: block;
+    padding: 6px 10px;
+    margin-bottom: 3px;
+
+    border-radius: 8px;
+
+    background: rgba(0, 0, 0, 0.12);
+    color: #d8f5d8 !important;
+
+    transition: all 0.18s ease;
+  }
+
+  /* hover effect */
+  .results-card a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+    text-decoration: none;
+  }
+
+  /* inactive weeks */
+  .results-card a:not([href]) {
+    opacity: 0.65;
+    cursor: default;
+  }
+
+  /* active downloadable weeks */
+  .results-card a[href] {
+    border-left: 3px solid #90ee90;
+  }
+
+  /* subtle divider */
+  .results-card::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 1px;
+    margin: 16px auto 0;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .week-label {
+    font-weight: 600;
+  }
+
+  .week-date {
+    opacity: 0.75;
+    font-size: 13px;
+    margin-left: 4px;
+  }
+</style>
+
+
+<body>
+  <%- include('./layouts/navbar'); -%>
+
+  <div class=" main-wrapper">
+    <div class="gallery-header">
+      <h1>Weekly Results</h1>
+      <p>Bottoms Up Golf League • 2026 Season</p>
+    </div>
+
+    <div class="container justify-content-center align-items-center results">
+      <div class="row">
+        <div class="col-xl-4 col-lg-5 col-md-10 mx-auto my-3">
+          <div class="results-card">
             <div class="text-center">
-              <br />
+
               <h4>First Half (Weeks 1-11)</h4>
               <h5><span style="color: white">White</span>/<span style="color: red">Red</span> Tees</h5>
-              <br />
-            </div>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 1 - May 5&nbsp (RAIN OUT)</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 2.xlsx">&nbspWeek 2 - May
-              12&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 3- May 19&nbsp (RAIN OUT)</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 4.xlsx">&nbspWeek 4 - May
-              26&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 5.xlsx">&nbspWeek 5 - June
-              2&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 6.xlsx">&nbspWeek 6 - June
-              9&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 7.xlsx">&nbspWeek 7 - June
-              16&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 8.xlsx">&nbspWeek 8 - June
-              23&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 9.xlsx">&nbspWeek 9 - June
-              30&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 10.xlsx">&nbspWeek 10 - July
-              7&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 11.xlsx">&nbspWeek 11 - July
-              14&nbsp</a><br />
-          </div>
 
-          <div class="col-lg-4 mx-auto my-3 file-list text-center">
+            </div>
+            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 1.xlsx"><span class="week-label">Week 1</span>
+              <span class="week-date">May 4</span></a>
+            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 2.xlsx"><span class="week-label">Week 2</span>
+              <span class="week-date">May 11</span></a>
+            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 3.xlsx"><span class="week-label">Week 3</span>
+              <span class="week-date">May 18</span></a>
+            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 4.xlsx"><span class="week-label">Week 4</span>
+              <span class="week-date">May 25</span></a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 5 - June 1&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 6 - June 8&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 7 - June 15&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 8 - June 22&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 9 - June 29&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 10 - July 6&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 11 - July 13&nbsp</a>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-5 col-md-10 mx-auto my-3">
+          <div class="results-card">
             <div class="text-center">
-              <br />
+
               <h4>Second Half (Weeks 12-22)</h4>
               <h5><span style="color: blue">Blue</span>/<span style="color: gold">Gold</span> Tees</h5>
-              <br />
+
             </div>
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 12.xlsx">&nbspWeek 12 - July
-              21&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 13.xlsx">&nbspWeek 13 - July
-              28&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 14.xlsx">&nbspWeek 14 -
-              August 4&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 15.xlsx">&nbspWeek 15 -
-              August 11&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 16.xlsx">&nbspWeek 16 -
-              August 18&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 17 - August 25&nbsp (RAIN OUT)</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 18.xlsx">&nbspWeek 18 -
-              September 1&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 19 - September 8&nbsp (COURSE CLOSED)</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 20.xlsx">&nbspWeek 20 -
-              September 15&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 21.xlsx">&nbspWeek 21 -
-              September 22&nbsp</a><br />
-            <a style="color: rgb(20, 20, 85)" href="/results/2025/2025 Weekly Stats - Week 22.xlsx">&nbspWeek 22 -
-              September 29&nbsp</a><br />
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 12 - July 20&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 13 - July 27&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 14 - August 4&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 15 - August 10&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 16 - August 17&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 17 - August 24&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 18 - August 31&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 19 - September 7&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 20 - September 14&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 21 - September 21&nbsp</a>
+            <a style="color: rgb(20, 20, 85)">&nbspWeek 22 - September 28&nbsp</a>
           </div>
-          <!-- <div class="col-md-4 mx-auto my-3 file-list">
-            <div class="text-center">
-              <h3>Weekly Results - Back Nine</h3>
-              <p>(July 22 - Sept 30)</p>
-            </div>
-            <a href="/results/Bottoms Up 2024 League Stats - Week 12.xlsx">&nbspWeek 12 - July 22&nbsp</a><br />
-            <a href="/results/Bottoms Up 2024 League Stats - Week 13.xlsx">&nbspWeek 13 - July 29&nbsp</a><br />
-            <h3 style="
-                  margin: 0;
-                  color: rgb(8, 70, 6);
-                  font-size: larger;
-                  font-weight: bolder;
-                ">
-              &nbspWeek 14 - August 5 (RAIN OUT)&nbsp
-            </h3>
-            <a href="/results/Bottoms Up 2024 League Stats - Week 15.xlsx">&nbspWeek 15 - August 12&nbsp</a><br />
-            <h3 style="
-                  margin: 0;
-                  color: rgb(8, 70, 6);
-                  font-size: larger;
-                  font-weight: bolder;
-                ">
-              &nbspWeek 16 - August 19 (RAIN OUT)&nbsp
-            </h3>
-            <a href="/results/Bottoms Up 2024 League Stats - Week 17.xlsx" download="League-Stats-Week17.xlsx">&nbspWeek
-              17 - August 26&nbsp</a><br />
-            <a href="/results/Bottoms Up 2024 League Stats - Week 18.xlsx" download="League-Stats-Week18.xlsx">&nbspWeek
-              18 - September 2&nbsp</a><br />
-            <a href="/results/Bottoms Up 2024 League Stats - Week 19.xlsx" download="League-Stats-Week19.xlsx">&nbspWeek
-              19 - September 9&nbsp</a><br />
-            <a href="/results/Bottoms Up 2024 League Stats - Week 20.xlsx" download="League-Stats-Week20.xlsx">&nbspWeek
-              20 - September 16&nbsp</a><br />
-            <a href="/results/Bottoms Up 2024 League Stats - Week 21.xlsx" download="League-Stats-Week21.xlsx">&nbspWeek
-              21 - September 23&nbsp</a><br />
-            <a href="/results/Bottoms Up 2024 League Stats - Week 22.xlsx" download="League-Stats-Week22.xlsx">&nbspWeek
-              22 - September 30&nbsp</a><br />
-          </div> -->
         </div>
       </div>
-    </section>
+    </div>
 
-    <section><%- include('./layouts/footer'); -%></section>
-
-    <section><%- include('./layouts/scripts'); -%></section>
-  </body>
+    <%- include('./layouts/footer'); -%>
+</body>
+<%- include('layouts/scripts'); %>
 
 </html>

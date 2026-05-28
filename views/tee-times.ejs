@@ -1,25 +1,33 @@
 <!doctype html>
 
 <html lang="en">
-  <%- include('layouts/header');%>
+<%- include('./layouts/header'); -%>
+<style>
+  @media (max-width: 680px) {
+    table {
+      table-layout: auto;
+    }
+  }
+</style>
 
-  <body>
-    <section><%- include('layouts/navbar'); %></section>
-    <div class="text-center">
-      <br /><br />
-      <h1>2026 Tee Times</h1>
-      <h3>
-        <span style="color: white">White</span>/<span style="color: red">Red</span>
-        Tees
-      </h3>
-      <br />
+<body>
+  <%- include('layouts/navbar'); %>
+
+  <div class="main-wrapper">
+    <div class="gallery-header">
+      <h1>Tee Times</h1>
+      <p>Bottoms Up Golf League • 2026 Season</p>
     </div>
-    <section>
-      <div style="margin: 0 auto" class="table-wrapper">
+    <div class="tee-card">
+
+      <div class="tee-card-header">
+        <h2><span style="color: red;">Red</span> / <span style="color: white;">White</span> First 11 Weeks</h2>
+      </div>
+      <div class="table-wrapper">
         <table class="tee-table">
           <thead>
             <tr class="table-date">
-              <th colspan="4">May 4 (Week 1 of 22)</th>
+              <th colspan="4">June 1 (Week 5 of 22)</th>
             </tr>
             <tr class="table-times">
               <th>4:50p</th>
@@ -31,37 +39,74 @@
 
           <tbody>
             <tr>
-              <td>Russ W</td>
-              <td>Jon D</td>
-              <td>Ryan M</td>
-              <td>John B</td>
+              <td>TBD</td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td>Mark Y</td>
-              <td>Matthew S</td>
-              <td>Aaron J</td>
-              <td>Ami B</td>
+              <td>TBD</td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td>Shayne I</td>
-              <td>John R</td>
-              <td>Mario P</td>
-              <td>Mark H</td>
+              <td>TBD</td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td>Jim N</td>
-              <td>Perry D</td>
+              <td>TBD</td>
+              <td></td>
               <td></td>
               <td></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <h4 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h4>
-    </section>
+      <h5 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h5>
+    </div>
+  </div>
+  <%- include('layouts/footer'); %> <%- include('layouts/scripts'); %>
+</body>
 
-    <section><%- include('layouts/footer'); %></section>
+<script>
+  const table = document.querySelector('.tee-table');
+  let currentCol = -1;
 
-    <section><%- include('layouts/scripts'); %></section>
-  </body>
+  table.addEventListener('pointerover', (e) => {
+    const cell = e.target.closest('td, th');
+    if (!cell) return;
+
+    const row = cell.parentElement;
+
+    // ❌ IGNORE header row
+    if (row.closest('thead')) return;
+
+    const col = cell.cellIndex;
+    if (col === currentCol) return;
+
+    currentCol = col;
+
+    // clear previous
+    table.querySelectorAll('.active-col').forEach(el => {
+      el.classList.remove('active-col');
+    });
+
+    // apply ONLY to tbody
+    //table.querySelectorAll('tbody tr').forEach(row => {
+    //  const target = row.children[col];
+    //  if (target) target.classList.add('active-col');
+    //});
+  });
+
+  table.addEventListener('pointerleave', () => {
+    currentCol = -1;
+    table.querySelectorAll('.active-col').forEach(el => {
+      el.classList.remove('active-col');
+    });
+  });
+</script>
+
 </html>

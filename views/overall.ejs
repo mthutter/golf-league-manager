@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang="en">
-  <%- include('./layouts/header'); -%>
+<%- include('./layouts/header'); -%>
 
-  <body>
-    <section><%- include('./layouts/navbar'); -%></section>
+<body>
+  <%- include('./layouts/navbar'); -%>
 
-    <section id="meat">
-      <div style="text-align: center">
-        <iframe src="/results/2025/2025 Overall Standings.pdf#zoom=Fit" style="height: 90vh; width: 90%"></iframe>
-      </div>
-    </section>
+  <div class="main-wrapper">
+    <div class="gallery-header">
+      <h1>Overall Standings</h1>
+      <p>Bottoms Up Golf League • 2026 Season</p>
+    </div>
+    <div style="text-align: center">
+      <iframe src="/results/2026/2026 Overall Standings.pdf#zoom=Fit" style="height: 90vh; width: 90%"></iframe>
+    </div>
+  </div>
 
-    <section><%- include('./layouts/footer'); -%></section>
+  <%- include('./layouts/footer'); -%> <%- include('./layouts/scripts'); -%>
+</body>
 
-    <section><%- include('./layouts/scripts'); -%></section>
-  </body>
 </html>
