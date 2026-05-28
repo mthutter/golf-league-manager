@@ -34,6 +34,12 @@
     td {
       text-align: center;
       vertical-align: middle;
+      margin: 0 auto;
+    }
+
+    td,
+    input {
+      margin: 0 auto;
     }
 
     .score-input {
@@ -110,13 +116,14 @@
                   </select>
                 </div>
 
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Player</label>
-                  <select class="form-select" name="playerId" required>
+                <div class="col-md-6">
+                  <label class="form-label">Player <span style="color:red">*</span></label>
+
+                  <select name="memberId" class="form-select" required>
                     <option value="">Select Player</option>
-                    <option value="1">John Smith</option>
-                    <option value="2">Mike Johnson</option>
-                    <option value="3">Tom Wilson</option>
+                    <% members.forEach(member => { %>
+                      <option value="<%= member.id %>"><%= member.name_last %>, <%= member.name_first %></option>
+                    <% }); %>
                   </select>
                 </div>
 
@@ -275,7 +282,7 @@
 
       scoreInputs.forEach((input) => {
         input.addEventListener("input", calculateTotal);
-      });
+      });     
     </script>
   </body>
 
