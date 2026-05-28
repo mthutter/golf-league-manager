@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
@@ -19,8 +18,6 @@ import scoresRoutes from "./routes/scores.routes.js";
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
 import authMiddleware from "./middleware/auth.middleware.js";
-
-dotenv.config();
 
 const app = express();
 
