@@ -13,7 +13,7 @@ import playerRoutes from "./routes/player.routes.js";
 import imageRoutes from "./routes/image.routes.js";
 import videoRoutes from "./routes/video.routes.js";
 import authRoutes from "./routes/auth.routes.js";
-import scoresRoutes from "./routes/scores.routes.js";
+import scoreRoutes from "./routes/scores.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -33,11 +33,11 @@ app.set("trust proxy", 1);
    SECURITY
 ========================================= */
 
-/* app.use(
-   helmet({
+app.use(
+  helmet({
     contentSecurityPolicy: false,
   }),
-); */
+);
 
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store");
@@ -94,7 +94,7 @@ app.use("/", publicRoutes);
 app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);
 app.use("/videos", videoRoutes);
-app.use("/scores", scoresRoutes);
+app.use("/scores", scoreRoutes);
 
 /* =========================================
    404 HANDLER

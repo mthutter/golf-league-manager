@@ -117,20 +117,33 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Player <span style="color:red">*</span></label>
+  <label class="form-label">
+    Player <span style="color:red">*</span>
+  </label>
 
-                  <select name="memberId" class="form-select" required>
-                    <option value="">Select Player</option>
-                    <% members.forEach(member => { %>
-                      <option value="<%= member.id %>"><%= member.name_last %>, <%= member.name_first %></option>
-                    <% }); %>
-                  </select>
-                </div>
+  <select id="memberSelect" name="memberId" class="form-select" required>
+    <option value="">Select Player</option>
 
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Player Handicap</label>
-                  <input type="number" class="form-control" name="handicap" required />
-                </div>
+    <% members.forEach(member => { %>
+      <option
+        value="<%= member.id %>"
+        data-handicap="<%= member.handicap %>">
+        <%= member.name_last %>, <%= member.name_first %>
+      </option>
+    <% }); %>
+  </select>
+</div>
+
+<div class="col-md-4">
+  <label class="form-label fw-semibold">Player Handicap</label>
+  <input
+    type="number"
+    id="handicap"
+    class="form-control"
+    name="handicap"
+    readonly
+  />
+</div>
               </div>
 
               <!-- Score Table -->
@@ -284,6 +297,20 @@
         input.addEventListener("input", calculateTotal);
       });     
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const memberSelect = document.getElementById('memberSelect');
+  const handicapInput = document.getElementById('handicap');
+
+  memberSelect.addEventListener('change', () => {
+    const selected =
+      memberSelect.options[memberSelect.selectedIndex];
+
+    handicapInput.value =
+      selected.dataset.handicap || '';
+  });
+});
+</script>
   </body>
 
   <%- include('layouts/scripts'); %>

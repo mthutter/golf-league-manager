@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.get("/new", authMiddleware, (req, res) => {
   const sql = `
-    SELECT id, name_first, name_last
+    SELECT id, name_first, name_last, handicap
     FROM members
     ORDER BY name_last, name_first
   `;
@@ -27,10 +27,6 @@ router.get("/new", authMiddleware, (req, res) => {
     });
   });
 });
-
-/* =========================================
-   CREATE PLAYER
-========================================= */
 
 //router.post("/", authMiddleware, postWeeklyScore);
 
