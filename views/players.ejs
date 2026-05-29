@@ -58,7 +58,7 @@
         </thead>
 
         <tbody>
-          <% players.forEach(player => { %>
+          <% players.forEach(player => { if ((player.status == 'Yes')) { %>
 
           <tr>
             <td>
@@ -89,7 +89,7 @@
               <%= player.type %>
             </td>
           </tr>
-          <% }) %>
+          <% }}) %>
         </tbody>
       </table>
     </div>
