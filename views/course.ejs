@@ -1,274 +1,261 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <%- include('./layouts/header'); %>
+  </head>
 
-<%- include('./layouts/header'); -%>
+  <body>
+    <%- include('./layouts/navbar'); %>
 
-<body>
+    <div class="main-wrapper">
+      <!-- PAGE HEADER -->
+      <div class="gallery-header">
+        <h1>Cherokee Ridge Scorecard</h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
+      </div>
 
-  <%- include('./layouts/navbar'); -%>
-
-  <div class="main-wrapper">
-
-    <!-- PAGE HEADER -->
-    <div class="gallery-header">
-      <h1>Cherokee Ridge Scorecard</h1>
-      <p>Bottoms Up Golf League • 2026 Season</p>
-    </div>
-
-    <!-- COURSE INFO -->
-    <div class="course-info">
-      <p>
-        <strong>White / Blue:</strong>
-        Rating 69.9 • Slope 123 • Par 72 • 6570 yds
-      </p>
-
-      <p>
-        <strong>Red / Gold:</strong>
-        Rating 71.8 • Slope 127 • Par 74 • 5612 yds
-      </p>
-    </div>
-
-    <!-- FRONT NINE -->
-    <div class="scorecard-card">
-
-      <div class="scorecard-section-header">
-        <h3>Front Nine</h3>
+      <!-- COURSE INFO -->
+      <div class="course-info">
         <p>
-          <span style="color:white;">White</span> /
-          <span style="color:red;">Red</span> Tees
+          <strong>White / Blue:</strong>
+          Rating 69.9 • Slope 123 • Par 72 • 6570 yds
+        </p>
+
+        <p>
+          <strong>Red / Gold:</strong>
+          Rating 71.8 • Slope 127 • Par 74 • 5612 yds
         </p>
       </div>
 
-      <div class="table-wrapper">
+      <!-- FRONT NINE -->
+      <div class="scorecard-card">
+        <div class="scorecard-section-header">
+          <h3>Front Nine</h3>
+          <p>
+            <span style="color: white">White</span> /
+            <span style="color: red">Red</span> Tees
+          </p>
+        </div>
 
-        <table class="scorecard">
+        <div class="table-wrapper">
+          <table class="scorecard">
+            <tr class="scorecard-header">
+              <th>Hole</th>
+              <th>1</th>
+              <th>2</th>
+              <th>3</th>
+              <th>4</th>
+              <th>5</th>
+              <th>6</th>
+              <th>7</th>
+              <th>8</th>
+              <th>9</th>
+              <th>OUT</th>
+            </tr>
 
-          <tr class="scorecard-header">
-            <th>Hole</th>
-            <th>1</th>
-            <th>2</th>
-            <th>3</th>
-            <th>4</th>
-            <th>5</th>
-            <th>6</th>
-            <th>7</th>
-            <th>8</th>
-            <th>9</th>
-            <th>OUT</th>
-          </tr>
+            <tr class="tee men-front">
+              <td>White</td>
+              <td>394</td>
+              <td>501</td>
+              <td>406</td>
+              <td>154</td>
+              <td>425</td>
+              <td>373</td>
+              <td>195</td>
+              <td>403</td>
+              <td>458</td>
+              <td>3307</td>
+            </tr>
 
-          <tr class="tee men-front">
-            <td>White</td>
-            <td>394</td>
-            <td>501</td>
-            <td>406</td>
-            <td>154</td>
-            <td>425</td>
-            <td>373</td>
-            <td>195</td>
-            <td>403</td>
-            <td>458</td>
-            <td>3307</td>
-          </tr>
+            <tr class="tee women-front">
+              <td>Red</td>
+              <td>348</td>
+              <td>413</td>
+              <td>302</td>
+              <td>136</td>
+              <td>310</td>
+              <td>303</td>
+              <td>138</td>
+              <td>360</td>
+              <td>373</td>
+              <td>2683</td>
+            </tr>
 
-          <tr class="tee women-front">
-            <td>Red</td>
-            <td>348</td>
-            <td>413</td>
-            <td>302</td>
-            <td>136</td>
-            <td>310</td>
-            <td>303</td>
-            <td>138</td>
-            <td>360</td>
-            <td>373</td>
-            <td>2683</td>
-          </tr>
+            <tr class="par-row">
+              <td>Men's Par</td>
+              <td>4</td>
+              <td>5</td>
+              <td>4</td>
+              <td>3</td>
+              <td>4</td>
+              <td>4</td>
+              <td>3</td>
+              <td>4</td>
+              <td>5</td>
+              <td>36</td>
+            </tr>
 
-          <tr class="par-row">
-            <td>Men's Par</td>
-            <td>4</td>
-            <td>5</td>
-            <td>4</td>
-            <td>3</td>
-            <td>4</td>
-            <td>4</td>
-            <td>3</td>
-            <td>4</td>
-            <td>5</td>
-            <td>36</td>
-          </tr>
+            <tr class="hcp-row">
+              <td>Men's HCP</td>
+              <td>7</td>
+              <td>1</td>
+              <td>5</td>
+              <td>17</td>
+              <td>9</td>
+              <td>13</td>
+              <td>15</td>
+              <td>11</td>
+              <td>3</td>
+              <td></td>
+            </tr>
 
-          <tr class="hcp-row">
-            <td>Men's HCP</td>
-            <td>7</td>
-            <td>1</td>
-            <td>5</td>
-            <td>17</td>
-            <td>9</td>
-            <td>13</td>
-            <td>15</td>
-            <td>11</td>
-            <td>3</td>
-            <td></td>
-          </tr>
+            <tr class="par-row">
+              <td>Ladies Par</td>
+              <td>4</td>
+              <td>5</td>
+              <td>4</td>
+              <td>3</td>
+              <td>4</td>
+              <td>4</td>
+              <td>3</td>
+              <td>5</td>
+              <td>5</td>
+              <td>37</td>
+            </tr>
 
-          <tr class="par-row">
-            <td>Ladies Par</td>
-            <td>4</td>
-            <td>5</td>
-            <td>4</td>
-            <td>3</td>
-            <td>4</td>
-            <td>4</td>
-            <td>3</td>
-            <td>5</td>
-            <td>5</td>
-            <td>37</td>
-          </tr>
+            <tr class="hcp-row">
+              <td>Ladies HCP</td>
+              <td>9</td>
+              <td>1</td>
+              <td>11</td>
+              <td>17</td>
+              <td>7</td>
+              <td>13</td>
+              <td>15</td>
+              <td>5</td>
+              <td>3</td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
+      </div>
 
-          <tr class="hcp-row">
-            <td>Ladies HCP</td>
-            <td>9</td>
-            <td>1</td>
-            <td>11</td>
-            <td>17</td>
-            <td>7</td>
-            <td>13</td>
-            <td>15</td>
-            <td>5</td>
-            <td>3</td>
-            <td></td>
-          </tr>
+      <!-- BACK NINE -->
+      <div class="scorecard-card">
+        <div class="scorecard-section-header">
+          <h3>Back Nine</h3>
+          <p>
+            <span style="color: #1e6fb6">Blue</span> /
+            <span style="color: gold">Gold</span> Tees
+          </p>
+        </div>
 
-        </table>
+        <div class="table-wrapper">
+          <table class="scorecard">
+            <tr class="scorecard-header">
+              <th>Hole</th>
+              <th>10</th>
+              <th>11</th>
+              <th>12</th>
+              <th>13</th>
+              <th>14</th>
+              <th>15</th>
+              <th>16</th>
+              <th>17</th>
+              <th>18</th>
+              <th>IN</th>
+            </tr>
 
+            <tr class="tee men-back">
+              <td>Blue</td>
+              <td>352</td>
+              <td>480</td>
+              <td>421</td>
+              <td>189</td>
+              <td>400</td>
+              <td>365</td>
+              <td>139</td>
+              <td>425</td>
+              <td>492</td>
+              <td>3263</td>
+            </tr>
+
+            <tr class="tee women-back">
+              <td>Gold</td>
+              <td>353</td>
+              <td>452</td>
+              <td>373</td>
+              <td>149</td>
+              <td>363</td>
+              <td>350</td>
+              <td>144</td>
+              <td>367</td>
+              <td>378</td>
+              <td>2929</td>
+            </tr>
+
+            <tr class="par-row">
+              <td>Men's Par</td>
+              <td>4</td>
+              <td>5</td>
+              <td>4</td>
+              <td>3</td>
+              <td>4</td>
+              <td>4</td>
+              <td>3</td>
+              <td>4</td>
+              <td>5</td>
+              <td>36</td>
+            </tr>
+
+            <tr class="hcp-row">
+              <td>Men's HCP</td>
+              <td>8</td>
+              <td>2</td>
+              <td>6</td>
+              <td>18</td>
+              <td>10</td>
+              <td>14</td>
+              <td>16</td>
+              <td>12</td>
+              <td>4</td>
+              <td></td>
+            </tr>
+
+            <tr class="par-row">
+              <td>Ladies Par</td>
+              <td>4</td>
+              <td>5</td>
+              <td>4</td>
+              <td>3</td>
+              <td>4</td>
+              <td>4</td>
+              <td>3</td>
+              <td>5</td>
+              <td>5</td>
+              <td>37</td>
+            </tr>
+
+            <tr class="hcp-row">
+              <td>Ladies HCP</td>
+              <td>10</td>
+              <td>2</td>
+              <td>12</td>
+              <td>18</td>
+              <td>8</td>
+              <td>14</td>
+              <td>16</td>
+              <td>6</td>
+              <td>4</td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- BACK NINE -->
-    <div class="scorecard-card">
+    <%- include('./layouts/footer'); %>
 
-      <div class="scorecard-section-header">
-        <h3>Back Nine</h3>
-        <p>
-          <span style="color:#1e6fb6;">Blue</span> /
-          <span style="color:gold;">Gold</span> Tees
-        </p>
-      </div>
-
-      <div class="table-wrapper">
-
-        <table class="scorecard">
-
-          <tr class="scorecard-header">
-            <th>Hole</th>
-            <th>10</th>
-            <th>11</th>
-            <th>12</th>
-            <th>13</th>
-            <th>14</th>
-            <th>15</th>
-            <th>16</th>
-            <th>17</th>
-            <th>18</th>
-            <th>IN</th>
-          </tr>
-
-          <tr class="tee men-back">
-            <td>Blue</td>
-            <td>352</td>
-            <td>480</td>
-            <td>421</td>
-            <td>189</td>
-            <td>400</td>
-            <td>365</td>
-            <td>139</td>
-            <td>425</td>
-            <td>492</td>
-            <td>3263</td>
-          </tr>
-
-          <tr class="tee women-back">
-            <td>Gold</td>
-            <td>353</td>
-            <td>452</td>
-            <td>373</td>
-            <td>149</td>
-            <td>363</td>
-            <td>350</td>
-            <td>144</td>
-            <td>367</td>
-            <td>378</td>
-            <td>2929</td>
-          </tr>
-
-          <tr class="par-row">
-            <td>Men's Par</td>
-            <td>4</td>
-            <td>5</td>
-            <td>4</td>
-            <td>3</td>
-            <td>4</td>
-            <td>4</td>
-            <td>3</td>
-            <td>4</td>
-            <td>5</td>
-            <td>36</td>
-          </tr>
-
-          <tr class="hcp-row">
-            <td>Men's HCP</td>
-            <td>8</td>
-            <td>2</td>
-            <td>6</td>
-            <td>18</td>
-            <td>10</td>
-            <td>14</td>
-            <td>16</td>
-            <td>12</td>
-            <td>4</td>
-            <td></td>
-          </tr>
-
-          <tr class="par-row">
-            <td>Ladies Par</td>
-            <td>4</td>
-            <td>5</td>
-            <td>4</td>
-            <td>3</td>
-            <td>4</td>
-            <td>4</td>
-            <td>3</td>
-            <td>5</td>
-            <td>5</td>
-            <td>37</td>
-          </tr>
-
-          <tr class="hcp-row">
-            <td>Ladies HCP</td>
-            <td>10</td>
-            <td>2</td>
-            <td>12</td>
-            <td>18</td>
-            <td>8</td>
-            <td>14</td>
-            <td>16</td>
-            <td>6</td>
-            <td>4</td>
-            <td></td>
-          </tr>
-
-        </table>
-
-      </div>
-    </div>
-
-  </div>
-
-  <%- include('./layouts/footer'); -%>
-  <%- include('./layouts/scripts'); -%>
-
-</body>
-
+    <%- include('./layouts/scripts'); %>
+  </body>
 </html>

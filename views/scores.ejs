@@ -37,56 +37,81 @@
 
   <body>
     <%- include('layouts/navbar'); %>
+
     <div class="main-wrapper">
       <div class="gallery-header">
-        <h1>Current Players</h1>
-        <p>Bottoms Up Golf League</p>
+        <h1>Weekly Scores</h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
       <table class="table players-table">
         <thead class="table-success">
           <tr>
-            <th>ID</th>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Phone</th>
-            <th>Current Handicap</th>
-            <th>E-Mail</th>
-            <th>Joined</th>
-            <th>Active</th>
-            <th>Status (Reg/Sub)</th>
+            <th>Week</th>
+            <th>Member ID</th>
+            <th>Handicap Used</th>
+            <th>Gross Hole 1</th>
+            <th>Gross Hole 2</th>
+            <th>Gross Hole 3</th>
+            <th>Gross Hole 4</th>
+            <th>Gross Hole 5</th>
+            <th>Gross Hole 6</th>
+            <th>Gross Hole 7</th>
+            <th>Gross Hole 8</th>
+            <th>Gross Hole 9</th>
+            <th>Gross Total</th>
+            <th>Net Total</th>
+            <th>Points Total</th>
           </tr>
         </thead>
 
         <tbody>
-          <% players.forEach(player => { %>
+          <% scores.forEach(score => { %>
 
           <tr>
             <td>
-              <%= player.id %>
+              <%= score.week_id %>
             </td>
             <td>
-              <%= player.name_last %>
+              <%= score.member_id %>
             </td>
             <td>
-              <%= player.name_first %>
+              <%= score.handicap_used %>
             </td>
             <td>
-              <%= player.phone %>
+              <%= score.gross1 %>
             </td>
             <td>
-              <%= player.handicap %>
+              <%= score.gross2 %>
             </td>
             <td>
-              <%= player.e_mail %>
+              <%= score.gross3 %>
             </td>
             <td>
-              <%= player.year_joined %>
+              <%= score.gross4 %>
             </td>
             <td>
-              <%= player.status %>
+              <%= score.gross5 %>
             </td>
             <td>
-              <%= player.type %>
+              <%= score.gross6 %>
+            </td>
+            <td>
+              <%= score.gross7 %>
+            </td>
+            <td>
+              <%= score.gross8 %>
+            </td>
+            <td>
+              <%= score.gross9 %>
+            </td>
+            <td>
+              <%= score.gross_total %>
+            </td>
+            <td>
+              <%= score.net_total %>
+            </td>
+            <td>
+              <%= score.stableford_total %>
             </td>
           </tr>
           <% }) %>
@@ -95,6 +120,5 @@
     </div>
   </body>
 
-  <%- include('layouts/footer'); %>
   <%- include('layouts/scripts'); %>
 </html>

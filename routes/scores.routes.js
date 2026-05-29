@@ -2,6 +2,7 @@ import db from "../config/db.js";
 import express from "express";
 import authMiddleware from "../middleware/auth.middleware.js";
 import { showWeeklyScoresForm } from "../controllers/scores.controller.js";
+import { getScores } from "../controllers/scores.controller.js";
 
 const router = express.Router();
 
@@ -83,7 +84,9 @@ router.post("/save", authMiddleware, (req, res) => {
       console.error(err);
 
       if (err.message.includes("UNIQUE")) {
-        return res.status(400).send("Scores already entered for this player/week.");
+        return res
+          .status(400)
+          .send("Scores already entered for this player/week.");
       }
 
       return res.status(500).send("Database error");
@@ -92,5 +95,7 @@ router.post("/save", authMiddleware, (req, res) => {
     res.redirect("/scores/new");
   });
 });
+
+router.get("/", authMiddleware, getScores);
 
 export default router;

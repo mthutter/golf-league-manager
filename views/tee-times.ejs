@@ -1,112 +1,116 @@
 <!doctype html>
-
 <html lang="en">
-<%- include('./layouts/header'); -%>
-<style>
-  @media (max-width: 680px) {
-    table {
-      table-layout: auto;
-    }
-  }
-</style>
+  <head>
+    <%- include('./layouts/header'); -%>
+    <style>
+      @media (max-width: 680px) {
+        table {
+          table-layout: auto;
+        }
+      }
+    </style>
+  </head>
 
-<body>
-  <%- include('layouts/navbar'); %>
+  <body>
+    <%- include('./layouts/navbar'); %>
 
-  <div class="main-wrapper">
-    <div class="gallery-header">
-      <h1>Tee Times</h1>
-      <p>Bottoms Up Golf League • 2026 Season</p>
-    </div>
-    <div class="tee-card">
-
-      <div class="tee-card-header">
-        <h2><span style="color: red;">Red</span> / <span style="color: white;">White</span> First 11 Weeks</h2>
+    <div class="main-wrapper">
+      <div class="gallery-header">
+        <h1>Tee Times</h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
-      <div class="table-wrapper">
-        <table class="tee-table">
-          <thead>
-            <tr class="table-date">
-              <th colspan="4">June 1 (Week 5 of 22)</th>
-            </tr>
-            <tr class="table-times">
-              <th>4:50p</th>
-              <th>5:00p</th>
-              <th>5:10p</th>
-              <th>5:20p</th>
-            </tr>
-          </thead>
+      <div class="tee-card">
+        <div class="tee-card-header">
+          <h2>
+            <span style="color: red">Red</span> /
+            <span style="color: white">White</span> First 11 Weeks
+          </h2>
+        </div>
+        <div class="table-wrapper">
+          <table class="tee-table">
+            <thead>
+              <tr class="table-date">
+                <th colspan="4">June 1 (Week 5 of 22)</th>
+              </tr>
+              <tr class="table-times">
+                <th>4:50p</th>
+                <th>5:00p</th>
+                <th>5:10p</th>
+                <th>5:20p</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr>
-              <td>TBD</td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>TBD</td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>TBD</td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>TBD</td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+            <tbody>
+              <tr>
+                <td>TBD</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>TBD</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>TBD</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>TBD</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h5 style="text-align: center; font-weight: normal">
+          (we will adjust if needed at the course)
+        </h5>
       </div>
-      <h5 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h5>
     </div>
-  </div>
-  <%- include('layouts/footer'); %> <%- include('layouts/scripts'); %>
-</body>
+    <%- include('layouts/footer'); %>
+    <%- include('layouts/scripts'); %>
+    <script>
+      const table = document.querySelector(".tee-table");
+      let currentCol = -1;
 
-<script>
-  const table = document.querySelector('.tee-table');
-  let currentCol = -1;
+      table.addEventListener("pointerover", (e) => {
+        const cell = e.target.closest("td, th");
+        if (!cell) return;
 
-  table.addEventListener('pointerover', (e) => {
-    const cell = e.target.closest('td, th');
-    if (!cell) return;
+        const row = cell.parentElement;
 
-    const row = cell.parentElement;
+        // ❌ IGNORE header row
+        if (row.closest("thead")) return;
 
-    // ❌ IGNORE header row
-    if (row.closest('thead')) return;
+        const col = cell.cellIndex;
+        if (col === currentCol) return;
 
-    const col = cell.cellIndex;
-    if (col === currentCol) return;
+        currentCol = col;
 
-    currentCol = col;
+        // clear previous
+        table.querySelectorAll(".active-col").forEach((el) => {
+          el.classList.remove("active-col");
+        });
 
-    // clear previous
-    table.querySelectorAll('.active-col').forEach(el => {
-      el.classList.remove('active-col');
-    });
+        // apply ONLY to tbody
+        //table.querySelectorAll('tbody tr').forEach(row => {
+        //  const target = row.children[col];
+        //  if (target) target.classList.add('active-col');
+        //});
+      });
 
-    // apply ONLY to tbody
-    //table.querySelectorAll('tbody tr').forEach(row => {
-    //  const target = row.children[col];
-    //  if (target) target.classList.add('active-col');
-    //});
-  });
-
-  table.addEventListener('pointerleave', () => {
-    currentCol = -1;
-    table.querySelectorAll('.active-col').forEach(el => {
-      el.classList.remove('active-col');
-    });
-  });
-</script>
-
+      table.addEventListener("pointerleave", () => {
+        currentCol = -1;
+        table.querySelectorAll(".active-col").forEach((el) => {
+          el.classList.remove("active-col");
+        });
+      });
+    </script>
+  </body>
 </html>

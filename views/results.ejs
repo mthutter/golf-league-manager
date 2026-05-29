@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
-
-<%- include('./layouts/header'); -%>
+<head>
+<%- include('./layouts/header'); %>
 <style>
   /* ========================
   RESULTS PAGE
@@ -79,10 +79,10 @@
     margin-left: 4px;
   }
 </style>
-
+</head>
 
 <body>
-  <%- include('./layouts/navbar'); -%>
+  <%- include('./layouts/navbar'); %>
 
   <div class=" main-wrapper">
     <div class="gallery-header">
@@ -142,8 +142,9 @@
       </div>
     </div>
 
-    <%- include('./layouts/footer'); -%>
+    <%- include('./layouts/footer'); %>
+    <%- include('./layouts/scripts'); %>
 </body>
-<%- include('layouts/scripts'); %>
+
 
 </html>
