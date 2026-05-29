@@ -43,6 +43,54 @@ router.get("/new", authMiddleware, (req, res) => {
   });
 });
 
-//router.post("/", authMiddleware, postWeeklyScore);
+router.post("/save", authMiddleware, (req, res) => {
+  const sql = `
+    INSERT INTO scores (
+      week_id,
+      member_id,
+      handicap_used,
+      gross1,gross2,gross3,gross4,gross5,
+      gross6,gross7,gross8,gross9,
+      gross_total,
+      net_total,
+      stableford_total
+    )
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+  `;
+
+  const params = [
+    req.body.weekId,
+    req.body.memberId,
+    req.body.handicap,
+
+    req.body.gross1,
+    req.body.gross2,
+    req.body.gross3,
+    req.body.gross4,
+    req.body.gross5,
+    req.body.gross6,
+    req.body.gross7,
+    req.body.gross8,
+    req.body.gross9,
+
+    req.body.gross_total,
+    req.body.net_total,
+    req.body.stableford_total,
+  ];
+
+  db.run(sql, params, function (err) {
+    if (err) {
+      console.error(err);
+
+      if (err.message.includes("UNIQUE")) {
+        return res.status(400).send("Scores already entered for this player/week.");
+      }
+
+      return res.status(500).send("Database error");
+    }
+
+    res.redirect("/scores/new");
+  });
+});
 
 export default router;

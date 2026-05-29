@@ -71,33 +71,34 @@
       }
     }
   </style>
-</head>
 
+</head>
 
   <body>
 
       <%- include('layouts/navbar'); %>
 
-<p>Members: <%= members.length %></p>
-<p>Holes: <%= holes.length %></p>
-
     <div class="main-wrapper">
+
       <div class="gallery-header">
         <h1>Enter Weekly Scores</h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
 
       <div class="container py-5">
+
         <div class="card score-card">
+
           <div class="card-header">Weekly League Score Entry</div>
 
           <div class="card-body">
+
             <form method="POST" action="/scores/save">
               <!-- League / Player Info -->
               <div class="row mb-4">
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Week</label>
-                  <select class="form-select" name="week" required>
+                  <select class="form-select" name="weekId" required>
                     <option value="">Select Week</option>
                     <option value="1">Week 1 - May 4</option>
                     <option value="2">Week 2 - May 11</option>
@@ -202,7 +203,7 @@
       type="number"
       min="1"
       max="8"
-      name="hole<%= hole.hole_mumber %>"
+      name="gross<%= hole.hole_number %>"
       class="form-control score-input"
       data-holehcp="<%= hole.handicap_men %>"
       data-par="<%= hole.par_men %>"
@@ -259,12 +260,17 @@
 
                 <button type="submit" class="btn btn-success btn-save">Save Scores</button>
               </div>
+
+              <input type="hidden" name="gross_total" id="grossTotalInput">
+<input type="hidden" name="net_total" id="netTotalInput">
+<input type="hidden" name="stableford_total" id="pointsTotalInput">
             </form>
           </div>
         </div>
       </div>
     </div>
-
+    
+       
    <script>
 function handicapStrokes(playerHandicap, holeHandicap) {
   const playingHandicap = playerHandicap * 2;
@@ -288,34 +294,20 @@ function stablefordPoints(net, par) {
 
 function calculateCard() {
 
-  const handicap =
-    parseInt(document.getElementById('handicap').value) || 0;
+  const handicap = parseInt(document.getElementById('handicap').value) || 0;
 
   let grossTotal = 0;
   let netTotal = 0;
   let pointsTotal = 0;
 
-  document
-    .querySelectorAll('.score-input')
-    .forEach((input, index) => {
+  document.querySelectorAll('.score-input').forEach((input, index) => {
 
-      const gross =
-        parseInt(input.value) || 0;
-
-      const holeHcp =
-        parseInt(input.dataset.holehcp);
-
-      const par =
-        parseInt(input.dataset.par);
-
-      const strokes =
-        handicapStrokes(handicap, holeHcp);
-
-      const net =
-        gross ? gross - strokes : 0;
-
-      const points =
-        gross ? stablefordPoints(net, par) : 0;
+      const gross = parseInt(input.value) || 0;
+      const holeHcp = parseInt(input.dataset.holehcp);
+      const par = parseInt(input.dataset.par);
+      const strokes = handicapStrokes(handicap, holeHcp);
+      const net = gross ? gross - strokes : 0;
+      const points = gross ? stablefordPoints(net, par) : 0;
 
       document.getElementById(
         `net${index + 1}`
@@ -330,14 +322,13 @@ function calculateCard() {
       pointsTotal += points;
     });
 
-  document.getElementById('grossTotal').textContent =
-    grossTotal;
+  document.getElementById('grossTotal').textContent = grossTotal;
+  document.getElementById('netTotal').textContent = netTotal;
+  document.getElementById('pointsTotal').textContent = pointsTotal;
 
-  document.getElementById('netTotal').textContent =
-    netTotal;
-
-  document.getElementById('pointsTotal').textContent =
-    pointsTotal;
+  document.getElementById("grossTotalInput").value = grossTotal;
+  document.getElementById("netTotalInput").value = netTotal;
+  document.getElementById("pointsTotalInput").value = pointsTotal;
 }
 
 document
@@ -349,7 +340,16 @@ document
 document
   .getElementById('handicap')
   .addEventListener('change', calculateCard);
+
+  document
+  .querySelector('button[type="reset"]')
+  .addEventListener('click', () => {
+
+    setTimeout(calculateCard, 0);
+
+  });
 </script>
+
     <script>
 document.addEventListener('DOMContentLoaded', () => {
   const memberSelect = document.getElementById('memberSelect');
@@ -359,13 +359,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const selected =
       memberSelect.options[memberSelect.selectedIndex];
 
-    handicapInput.value =
-      selected.dataset.handicap || '';
+    handicapInput.value = selected.dataset.handicap || '';
   });
 });
 </script>
 
+
   <%- include('layouts/scripts'); %>
+
   </body>
 
 
