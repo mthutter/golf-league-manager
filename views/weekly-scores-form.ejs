@@ -1,5 +1,7 @@
 <!doctype html>
 <html lang="en">
+
+<head>
   <%- include('layouts/header'); %>
 
   <style>
@@ -69,10 +71,16 @@
       }
     }
   </style>
+</head>
 
-  <%- include('layouts/navbar'); %>
 
   <body>
+
+      <%- include('layouts/navbar'); %>
+
+<p>Members: <%= members.length %></p>
+<p>Holes: <%= holes.length %></p>
+
     <div class="main-wrapper">
       <div class="gallery-header">
         <h1>Enter Weekly Scores</h1>
@@ -94,25 +102,25 @@
                     <option value="1">Week 1 - May 4</option>
                     <option value="2">Week 2 - May 11</option>
                     <option value="3">Week 3 - May 18</option>
-                    <option value="1">Week 4 - May 25</option>
-                    <option value="2">Week 5 - June 1</option>
-                    <option value="3">Week 6 - June 8</option>
-                    <option value="1">Week 7 - June 15</option>
-                    <option value="2">Week 8 - June 22</option>
-                    <option value="3">Week 9 - June 29</option>
-                    <option value="1">Week 10 - July 6</option>
-                    <option value="2">Week 11 - July 13</option>
-                    <option value="3">Week 12 - July 20</option>
-                    <option value="1">Week 13 - July 27</option>
-                    <option value="2">Week 14 - August 3</option>
-                    <option value="3">Week 15 - August 10</option>
-                    <option value="1">Week 16 - August 17</option>
-                    <option value="2">Week 17 - August 24</option>
-                    <option value="3">Week 18 - August 31</option>
-                    <option value="1">Week 19 - September 1</option>
-                    <option value="2">Week 20 - September 8</option>
-                    <option value="3">Week 21 - September 15</option>
-                    <option value="1">Week 22 - September 22</option>
+                    <option value="4">Week 4 - May 25</option>
+                    <option value="5">Week 5 - June 1</option>
+                    <option value="6">Week 6 - June 8</option>
+                    <option value="7">Week 7 - June 15</option>
+                    <option value="8">Week 8 - June 22</option>
+                    <option value="9">Week 9 - June 29</option>
+                    <option value="10">Week 10 - July 6</option>
+                    <option value="11">Week 11 - July 13</option>
+                    <option value="12">Week 12 - July 20</option>
+                    <option value="13">Week 13 - July 27</option>
+                    <option value="14">Week 14 - August 3</option>
+                    <option value="15">Week 15 - August 10</option>
+                    <option value="16">Week 16 - August 17</option>
+                    <option value="17">Week 17 - August 24</option>
+                    <option value="18">Week 18 - August 31</option>
+                    <option value="19">Week 19 - September 1</option>
+                    <option value="20">Week 20 - September 8</option>
+                    <option value="21">Week 21 - September 15</option>
+                    <option value="22">Week 22 - September 22</option>
                   </select>
                 </div>
 
@@ -153,16 +161,11 @@
                     <tr>
                       <th>Hole</th>
 
-                      <th class="hole-header">1</th>
-                      <th class="hole-header">2</th>
-                      <th class="hole-header">3</th>
-                      <th class="hole-header">4</th>
-                      <th class="hole-header">5</th>
-                      <th class="hole-header">6</th>
-                      <th class="hole-header">7</th>
-                      <th class="hole-header">8</th>
-                      <th class="hole-header">9</th>
-
+                     <% holes.forEach(hole => { %>
+                    <th class="hole-header">
+                      <%= hole.hole_number %>
+                   </th>
+                        <% }) %>
                       <th>Total</th>
                     </tr>
                   </thead>
@@ -172,97 +175,80 @@
                     <tr>
                       <th class="table-light">Par</th>
 
-                      <td>4</td>
-                      <td>5</td>
-                      <td>4</td>
-                      <td>3</td>
-                      <td>4</td>
-                      <td>4</td>
-                      <td>3</td>
-                      <td>4</td>
-                      <td>5</td>
+                     <% holes.forEach(hole => { %>
+                     <td><%= hole.par_men %></td>
+                      <% }) %>
 
-                      <td class="total-box">36</td>
+                      <td class="total-box">
+                      <%= holes.reduce((sum, hole) => sum + hole.par_men, 0) %>
+                      </td>
                     </tr>
 
                     <!-- Handicap Row -->
                     <tr>
                       <th class="table-light">Handicap</th>
-                      <td>7</td>
-                      <td>1</td>
-                      <td>5</td>
-                      <td>17</td>
-                      <td>9</td>
-                      <td>13</td>
-                      <td>15</td>
-                      <td>11</td>
-                      <td>3</td>
+                      <% holes.forEach(hole => { %>
+                      <td><%= hole.handicap_men %></td>
+                      <% }) %>
                     </tr>
 
                     <!-- Score Entry Row -->
                     <tr>
                       <th class="table-light">Score (Gross)</th>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole1" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole2" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole3" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole4" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole5" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole6" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole7" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole8" class="form-control score-input" required />
-                      </td>
-                      <td>
-                        <input type="number" min="1" max="8" name="hole9" class="form-control score-input" required />
-                      </td>
+                     
+                     <% holes.forEach(hole => { %>
+  <td>
+    <input
+      type="number"
+      min="1"
+      max="8"
+      name="hole<%= hole.hole_mumber %>"
+      class="form-control score-input"
+      data-holehcp="<%= hole.handicap_men %>"
+      data-par="<%= hole.par_men %>"
+      required
+    />
+  </td>
+<% }) %>                 
+  
                       <td class="total-box">
                         <span id="grossTotal">0</span>
                       </td>
                     </tr>
                     <tr>
-                      <th class="table-light">Score (Net)</th>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="total-box">
-                        <span id="grossTotal">0</span>
-                      </td>
-                    </tr>
+  <th class="table-light">Score (Net)</th>
+
+  <td id="net1">0</td>
+  <td id="net2">0</td>
+  <td id="net3">0</td>
+  <td id="net4">0</td>
+  <td id="net5">0</td>
+  <td id="net6">0</td>
+  <td id="net7">0</td>
+  <td id="net8">0</td>
+  <td id="net9">0</td>
+
+  <td class="total-box">
+    <span id="netTotal">0</span>
+  </td>
+</tr>
                     <tr>
-                      <th class="table-light">Points</th>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="total-box">
-                        <span id="grossTotal">0</span>
-                      </td>
-                    </tr>
+  <th class="table-light">Points</th>
+
+  <td id="pts1">0</td>
+  <td id="pts2">0</td>
+  <td id="pts3">0</td>
+  <td id="pts4">0</td>
+  <td id="pts5">0</td>
+  <td id="pts6">0</td>
+  <td id="pts7">0</td>
+  <td id="pts8">0</td>
+  <td id="pts9">0</td>
+
+  <td class="total-box">
+    <span id="pointsTotal">0</span>
+  </td>
+</tr>
                   </tbody>
                 </table>
               </div>
@@ -279,24 +265,91 @@
       </div>
     </div>
 
-    <script>
-      const scoreInputs = document.querySelectorAll(".score-input");
-      const grossTotal = document.getElementById("grossTotal");
+   <script>
+function handicapStrokes(playerHandicap, holeHandicap) {
+  const playingHandicap = playerHandicap * 2;
+  const base = Math.floor(playingHandicap / 18);
+  const extra = playingHandicap % 18;
 
-      function calculateTotal() {
-        let total = 0;
+  return base + (holeHandicap <= extra ? 1 : 0);
+}
 
-        scoreInputs.forEach((input) => {
-          total += Number(input.value) || 0;
-        });
+function stablefordPoints(net, par) {
+  const diff = net - par;
 
-        grossTotal.textContent = total;
-      }
+  if (diff >= 2) return 0;
+  if (diff === 1) return 1;
+  if (diff === 0) return 2;
+  if (diff === -1) return 3;
+  if (diff === -2) return 4;
 
-      scoreInputs.forEach((input) => {
-        input.addEventListener("input", calculateTotal);
-      });     
-    </script>
+  return 5;
+}
+
+function calculateCard() {
+
+  const handicap =
+    parseInt(document.getElementById('handicap').value) || 0;
+
+  let grossTotal = 0;
+  let netTotal = 0;
+  let pointsTotal = 0;
+
+  document
+    .querySelectorAll('.score-input')
+    .forEach((input, index) => {
+
+      const gross =
+        parseInt(input.value) || 0;
+
+      const holeHcp =
+        parseInt(input.dataset.holehcp);
+
+      const par =
+        parseInt(input.dataset.par);
+
+      const strokes =
+        handicapStrokes(handicap, holeHcp);
+
+      const net =
+        gross ? gross - strokes : 0;
+
+      const points =
+        gross ? stablefordPoints(net, par) : 0;
+
+      document.getElementById(
+        `net${index + 1}`
+      ).textContent = net || '';
+
+      document.getElementById(
+        `pts${index + 1}`
+      ).textContent = points || '';
+
+      grossTotal += gross;
+      netTotal += net;
+      pointsTotal += points;
+    });
+
+  document.getElementById('grossTotal').textContent =
+    grossTotal;
+
+  document.getElementById('netTotal').textContent =
+    netTotal;
+
+  document.getElementById('pointsTotal').textContent =
+    pointsTotal;
+}
+
+document
+  .querySelectorAll('.score-input')
+  .forEach(input => {
+    input.addEventListener('input', calculateCard);
+  });
+
+document
+  .getElementById('handicap')
+  .addEventListener('change', calculateCard);
+</script>
     <script>
 document.addEventListener('DOMContentLoaded', () => {
   const memberSelect = document.getElementById('memberSelect');
@@ -311,7 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
-  </body>
 
   <%- include('layouts/scripts'); %>
+  </body>
+
+
 </html>

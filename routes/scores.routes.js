@@ -10,20 +10,35 @@ const router = express.Router();
 ========================================= */
 
 router.get("/new", authMiddleware, (req, res) => {
-  const sql = `
+  const memberSql = `
     SELECT id, name_first, name_last, handicap
     FROM members
     ORDER BY name_last, name_first
   `;
 
-  db.all(sql, [], (err, members) => {
+  db.all(memberSql, [], (err, members) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Database error");
     }
 
-    res.render("weekly-scores-form", {
-      members,
+    const holesSql = `
+    SELECT *
+    FROM holes
+    WHERE hole_number <= 9
+    ORDER BY hole_number
+    `;
+
+    db.all(holesSql, [], (err, holes) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Database Error");
+      }
+
+      res.render("weekly-scores-form", {
+        members,
+        holes,
+      });
     });
   });
 });
