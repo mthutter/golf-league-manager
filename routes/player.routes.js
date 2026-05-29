@@ -4,6 +4,7 @@ import {
   getPlayers,
   showAddPlayerForm,
   createPlayer,
+  getPlayersInactive,
 } from "../controllers/players.controller.js";
 
 const router = express.Router();
@@ -13,6 +14,7 @@ const router = express.Router();
 ========================================= */
 
 router.get("/", authMiddleware, getPlayers);
+router.get("/inactive", authMiddleware, getPlayersInactive);
 
 /* =========================================
    ADD PLAYER FORM

@@ -22,7 +22,6 @@ router.post("/login", (req, res) => {
     password === process.env.ADMIN_PASS
   ) {
     req.session.isAdmin = true;
-
     return res.redirect("/");
   }
 

@@ -39,7 +39,7 @@
     <%- include('layouts/navbar'); %>
     <div class="main-wrapper">
       <div class="gallery-header">
-        <h1>Active Players (2026)</h1>
+        <h1>Inactive Players (2026)</h1>
         <p>Bottoms Up Golf League</p>
       </div>
       <table class="table players-table">
@@ -58,7 +58,7 @@
         </thead>
 
         <tbody>
-          <% players.forEach(player => { if ((player.status == 'Yes')) { %>
+          <% players.forEach(player => { if ((player.status == 'No')) { %>
 
           <tr>
             <td>

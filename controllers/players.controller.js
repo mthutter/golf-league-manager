@@ -35,6 +35,37 @@ export function getPlayers(req, res) {
   });
 }
 
+export function getPlayersInactive(req, res) {
+  const sql = `
+    SELECT
+      id,
+      name_last,
+      name_first,
+      phone,
+      handicap,
+      e_mail,
+      year_joined,
+      status,
+      type
+    FROM members
+    ORDER BY name_last, name_first ASC
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error("Database Error:", err.message);
+
+      return res.status(500).render("error", {
+        message: "Unable to retrieve players.",
+      });
+    }
+
+    res.render("inactive", {
+      players: rows,
+    });
+  });
+}
+
 /* =========================================
    SHOW ADD PLAYER FORM
 ========================================= */
