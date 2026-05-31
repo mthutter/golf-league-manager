@@ -114,15 +114,12 @@ router.get("/standings", authMiddleware, (req, res) => {
           s.birdie_points
       ) AS total_points,
 
-     ROUND(
-  SUM(
-    s.stableford_total +
-    s.ctp_points +
-    s.birdie_points
-  ) * 1.0
-  / COUNT(s.score_id),
-  2
-) AS avg_points,
+    ROUND(SUM(
+          s.stableford_total +
+          s.ctp_points +
+          s.birdie_points
+      ) * 1.0 /
+      NULLIF(COUNT(s.score_id), 0), 2) AS avg_points,
 
       ROUND(AVG(s.gross_total),2) AS avg_gross,
 

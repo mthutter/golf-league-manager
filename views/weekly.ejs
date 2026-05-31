@@ -7,16 +7,26 @@
         overflow-y: auto;
         overflow-x: auto;
       }
+
+      th,
+      td {
+        margin: 0 auto;
+        text-align: center;
+      }
     </style>
   </head>
 
   <body>
     <%- include('./layouts/navbar'); %>
-    <h1>
-      Week
-      <%= weekId %>
-      Results
-    </h1>
+
+    <div class="gallery-header">
+      <h1>
+        Week
+        <%= weekId %>
+        Results
+      </h1>
+      <p>Bottoms Up Golf League • 2026 Season</p>
+    </div>
 
     <table class="table table-striped">
       <thead>
@@ -25,10 +35,10 @@
           <th>Player</th>
           <th>Gross</th>
           <th>Net</th>
-          <th>Stableford</th>
-          <th>CTP</th>
-          <th>Birdies</th>
-          <th>Total</th>
+          <th>Points</th>
+          <th>CTP Points</th>
+          <th>Birdie Points</th>
+          <th>Total Points</th>
         </tr>
       </thead>
 
