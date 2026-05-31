@@ -102,7 +102,7 @@ router.get("/standings", authMiddleware, (req, res) => {
   const standingsSql = `
     SELECT
       m.id,
-      CONCAT(m.name_first, ' ', m.name_last) AS player_name,
+       m.name_first || ' ' || m.name_last AS player_name,
 
       COUNT(s.score_id) AS weeks_played,
       SUM(s.stableford_total) AS stableford_points,
@@ -114,7 +114,15 @@ router.get("/standings", authMiddleware, (req, res) => {
           s.birdie_points
       ) AS total_points,
 
-      ROUND(AVG(s.stableford_total),2) AS avg_points,
+     ROUND(
+  SUM(
+    s.stableford_total +
+    s.ctp_points +
+    s.birdie_points
+  ) * 1.0
+  / COUNT(s.score_id),
+  2
+) AS avg_points,
 
       ROUND(AVG(s.gross_total),2) AS avg_gross,
 

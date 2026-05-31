@@ -49,37 +49,28 @@
         <tr>
           <th>Rank</th>
           <th>Player</th>
-          <th>Weeks</th>
+          <th>Rounds Played</th>
           <th>Birdie Points</th>
           <th>CTP Points</th>
           <th>Total Points</th>
-
           <th>Avg Gross</th>
           <th>Avg Net</th>
           <th>Avg Points</th>
         </tr>
       </thead>
-
       <tbody>
         <% standings.forEach((player, idx) => { %>
         <tr>
           <td><%= idx + 1 %></td>
-
           <td><%= player.player_name %></td>
-
           <td><%= player.weeks_played %></td>
-
           <td><%= player.birdie_points %></td>
           <td><%= player.ctp_points %></td>
-
           <td>
             <strong><%= player.total_points %></strong>
           </td>
-
           <td><%= player.avg_gross %></td>
-
           <td><%= player.avg_net %></td>
-
           <td
             class="<% if (idx === 0) { %>gold-cell<% } %> <% if (idx === 1) { %>silver-cell<% } %> <% if (idx === 2) { %>bronze-cell<% } %>"
           >
