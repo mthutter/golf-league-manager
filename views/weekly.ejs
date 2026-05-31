@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('./layouts/header'); %>
+    <style>
+      html {
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <%- include('./layouts/navbar'); %>
+    <h1>
+      Week
+      <%= weekId %>
+      Results
+    </h1>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Gross</th>
+          <th>Net</th>
+          <th>Stableford</th>
+          <th>CTP</th>
+          <th>Birdies</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% results.forEach((player, idx) => { %>
+        <tr>
+          <td><%= idx + 1 %></td>
+          <td><%= player.player_name %></td>
+          <td><%= player.gross_total %></td>
+          <td><%= player.net_total %></td>
+          <td><%= player.stableford_total %></td>
+          <td><%= player.ctp_points %></td>
+          <td><%= player.birdie_points %></td>
+          <td>
+            <strong><%= player.total_points %></strong>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <%- include('./layouts/footer'); %>
+    <%- include('./layouts/scripts'); %>
+  </body>
+</html>
