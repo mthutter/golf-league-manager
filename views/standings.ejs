@@ -33,7 +33,26 @@
       <h1>League Standings</h1>
       <p>Bottoms Up Golf League • 2026 Season</p>
     </div>
+    <br />
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <form>
+          <select
+            class="form-select"
+            onchange="if(this.value) window.location=this.value;"
+          >
+            <option value="">Weekly Results...</option>
 
+            <option value="/scores/weekly/1">Week 1</option>
+            <option value="/scores/weekly/2">Week 2</option>
+            <option value="/scores/weekly/3">Week 3</option>
+            <option value="/scores/weekly/4">Week 4</option>
+          </select>
+        </form>
+      </div>
+    </div>
+
+    <br />
     <table class="table table-striped table-hover">
       <thead>
         <tr>
@@ -70,19 +89,6 @@
         <% }) %>
       </tbody>
     </table>
-    <form>
-      <select
-        class="form-select"
-        onchange="if(this.value) window.location=this.value;"
-      >
-        <option value="">Weekly Results...</option>
-
-        <option value="/scores/weekly/1">Week 1</option>
-        <option value="/scores/weekly/2">Week 2</option>
-        <option value="/scores/weekly/3">Week 3</option>
-        <option value="/scores/weekly/4">Week 4</option>
-      </select>
-    </form>
 
     <%- include('layouts/scripts'); %>
     <%- include('layouts/footer'); %>
