@@ -27,6 +27,11 @@ html {
 a {
   text-decoration: none;
 }
+
+th, td{
+   border: 2px solid #dddddd; 
+}
+
 .container,
 .container-fluid {
   background: transparent;

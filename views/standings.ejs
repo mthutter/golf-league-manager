@@ -24,6 +24,36 @@
         color: white;
         font-weight: bold;
       }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-family: sans-serif;
+      }
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+      /* Style headers to look clickable */
+      th {
+        background-color: #f4f4f4;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+      /* Visual indicators for sorting */
+      th.sort-asc::after {
+        content: " ▲";
+        position: absolute;
+        right: 8px;
+      }
+      th.sort-desc::after {
+        content: " ▼";
+        position: absolute;
+        right: 8px;
+      }
     </style>
   </head>
 
@@ -51,7 +81,7 @@
       </div>
     </div>
     <br />
-    <table class="table table-striped table-hover">
+    <table id="sortableTable" class="table table-striped table-hover">
       <thead>
         <tr>
           <th>Rank</th>
@@ -87,6 +117,54 @@
         <% }) %>
       </tbody>
     </table>
+
+    <script>
+      document
+        .querySelectorAll("#sortableTable th")
+        .forEach((headerCell, columnIndex) => {
+          headerCell.addEventListener("click", () => {
+            const tableElement = headerCell.closest("table");
+            const tbodyElement = tableElement.querySelector("tbody");
+            const rowsArray = Array.from(tbodyElement.querySelectorAll("tr"));
+
+            // Determine sort direction (default to ascending)
+            const isAscending = headerCell.classList.contains("sort-asc");
+            const directionModifier = isAscending ? -1 : 1;
+
+            // Reset visual indicators on all headers
+            tableElement
+              .querySelectorAll("th")
+              .forEach((th) => th.classList.remove("sort-asc", "sort-desc"));
+
+            // Sort the array of DOM rows
+            rowsArray.sort((rowA, rowB) => {
+              const cellA = rowA.children[columnIndex].textContent.trim();
+              const cellB = rowB.children[columnIndex].textContent.trim();
+
+              // Handle numeric values vs string values smoothly
+              const valueA = isNaN(cellA) ? cellA : parseFloat(cellA);
+              const valueB = isNaN(cellB) ? cellB : parseFloat(cellB);
+
+              if (typeof valueA === "number" && typeof valueB === "number") {
+                return (valueA - valueB) * directionModifier;
+              }
+
+              return (
+                valueA.localeCompare(valueB, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                }) * directionModifier
+              );
+            });
+
+            // Re-append rows in the new sorted order
+            rowsArray.forEach((row) => tbodyElement.appendChild(row));
+
+            // Apply new visual indicators
+            headerCell.classList.add(isAscending ? "sort-desc" : "sort-asc");
+          });
+        });
+    </script>
 
     <%- include('layouts/scripts'); %>
     <%- include('layouts/footer'); %>
