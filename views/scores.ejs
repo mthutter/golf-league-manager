@@ -4,6 +4,11 @@
     <%- include('layouts/header'); %>
 
     <style>
+      html {
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+
       table {
         margin: 0 auto;
       }
@@ -77,6 +82,7 @@
             <td>
               <%= score.member_id %>
             </td>
+
             <td>
               <%= score.handicap_used %>
             </td>
