@@ -22,6 +22,24 @@
         text-decoration: none;
         border-radius: 5px;
       }
+
+      th {
+        background-color: #f4f4f4;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+
+      th.sort-asc::after {
+        content: " ▲";
+        position: absolute;
+        right: 8px;
+      }
+      th.sort-desc::after {
+        content: " ▼";
+        position: absolute;
+        right: 8px;
+      }
     </style>
   </head>
 
@@ -60,7 +78,7 @@
     </div>
     <br />
 
-    <table class="table table-striped">
+    <table id="sortableTable" class="table table-striped">
       <thead>
         <tr>
           <th>Rank</th>
