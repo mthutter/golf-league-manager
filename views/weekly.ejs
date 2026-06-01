@@ -13,6 +13,15 @@
         margin: 0 auto;
         text-align: center;
       }
+
+      .button-link {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #53da80;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
     </style>
   </head>
 
@@ -27,6 +36,29 @@
       </h1>
       <p>Bottoms Up Golf League • 2026 Season</p>
     </div>
+
+    <div style="margin: 0 auto" class="col-md-2">
+      <form>
+        <select
+          class="form-select"
+          onchange="if(this.value) window.location=this.value;"
+        >
+          <option value="">Weekly Results...</option>
+          <option value="/scores/weekly/1">Week 1</option>
+          <option value="/scores/weekly/2">Week 2</option>
+          <option value="/scores/weekly/3">Week 3</option>
+          <option value="/scores/weekly/4">Week 4</option>
+        </select>
+      </form>
+    </div>
+
+    <div>
+      <!-- SUBMIT -->
+      <div class="text-center mt-4">
+        <a href="/scores/standings" class="button-link">Overall Standings</a>
+      </div>
+    </div>
+    <br />
 
     <table class="table table-striped">
       <thead>
