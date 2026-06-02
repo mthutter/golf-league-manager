@@ -98,7 +98,7 @@ router.post("/save", authMiddleware, (req, res) => {
   });
 });
 
-router.get("/standings", authMiddleware, (req, res) => {
+router.get("/standings", (req, res) => {
   const standingsSql = `
     SELECT
       m.id,
