@@ -14,28 +14,33 @@
         const tbodyElement = tableElement.querySelector("tbody");
         const rowsArray = Array.from(tbodyElement.querySelectorAll("tr"));
 
-        // Determine sort direction (default to ascending)
         const isAscending = headerCell.classList.contains("sort-asc");
         const directionModifier = isAscending ? -1 : 1;
 
-        // Reset visual indicators on all headers
         tableElement
           .querySelectorAll("th")
           .forEach((th) => th.classList.remove("sort-asc", "sort-desc"));
 
-        // Sort the array of DOM rows
+        // 1. Sort the array of DOM rows
         rowsArray.sort((rowA, rowB) => {
-          const cellA = rowA.children[columnIndex].textContent.trim();
-          const cellB = rowB.children[columnIndex].textContent.trim();
+          let cellA = rowA.children[columnIndex].textContent.trim();
+          let cellB = rowB.children[columnIndex].textContent.trim();
 
-          // Handle numeric values vs string values smoothly
-          const valueA = isNaN(cellA) ? cellA : parseFloat(cellA);
-          const valueB = isNaN(cellB) ? cellB : parseFloat(cellB);
+          // Strip emojis for sorting the original rank column
+          if (columnIndex === 0) {
+            const medalMap = { "🥇": "1", "🥈": "2", "🥉": "3" };
+            cellA = medalMap[cellA] || cellA;
+            cellB = medalMap[cellB] || cellB;
+          }
+
+          const valueA =
+            isNaN(cellA) || cellA === "" ? cellA : parseFloat(cellA);
+          const valueB =
+            isNaN(cellB) || cellB === "" ? cellB : parseFloat(cellB);
 
           if (typeof valueA === "number" && typeof valueB === "number") {
             return (valueA - valueB) * directionModifier;
           }
-
           return (
             valueA.localeCompare(valueB, undefined, {
               numeric: true,
@@ -44,10 +49,47 @@
           );
         });
 
-        // Re-append rows in the new sorted order
-        rowsArray.forEach((row) => tbodyElement.appendChild(row));
+        // 2. Dynamically calculate ranks and ties based on the sorted column
+        let currentRank = 1;
+        let skipCount = 0;
+        let previousValue = null;
 
-        // Apply new visual indicators
+        rowsArray.forEach((row, index) => {
+          // Get the value of the column we are currently sorting by
+          const currentCellText = row.children[columnIndex].textContent.trim();
+
+          if (index === 0) {
+            currentRank = 1;
+            skipCount = 1;
+          } else if (currentCellText === previousValue) {
+            // It's a tie! Keep the same rank, increment the skip counter
+            skipCount++;
+          } else {
+            // Not a tie. Advance rank by the total number of skipped slots
+            currentRank += skipCount;
+            skipCount = 1;
+          }
+          previousValue = currentCellText;
+
+          // 3. Update the visual position column (Index 0)
+          const posCell = row.children[0];
+          if (currentRank === 1) {
+            posCell.textContent = "🥇";
+          } else if (currentRank === 2) {
+            posCell.textContent = "🥈";
+          } else if (currentRank === 3) {
+            posCell.textContent = "🥉";
+          } else {
+            posCell.textContent = currentRank;
+          }
+
+          // 4. Clean up leader styling and re-append to the table
+          row.classList.remove("leader-row");
+          if (index === 0) row.classList.add("leader-row");
+
+          tbodyElement.appendChild(row);
+        });
+
         headerCell.classList.add(isAscending ? "sort-desc" : "sort-asc");
       });
     });

@@ -100,53 +100,35 @@ router.post("/save", authMiddleware, (req, res) => {
 
 router.get("/standings", (req, res) => {
   const standingsSql = `
-    SELECT
-      m.id,
-       m.name_first || ' ' || m.name_last AS player_name,
-
-      COUNT(s.score_id) AS weeks_played,
-      SUM(s.stableford_total) AS stableford_points,
-      SUM(s.ctp_points) AS ctp_points,
-      SUM(s.birdie_points) AS birdie_points,
-      SUM(
-          s.stableford_total +
-          s.ctp_points +
-          s.birdie_points
-      ) AS total_points,
-
-    ROUND(SUM(
-          s.stableford_total +
-          s.ctp_points +
-          s.birdie_points
-      ) * 1.0 /
-      NULLIF(COUNT(s.score_id), 0), 2) AS avg_points,
-
-      ROUND(AVG(s.gross_total),2) AS avg_gross,
-
-      ROUND(AVG(s.net_total),2) AS avg_net
-
-    FROM members m
-    LEFT JOIN scores s
-      ON s.member_id = m.id
-
-    GROUP BY
-      m.id,
-      m.name_first,
-      m.name_last
-
-    ORDER BY
-      avg_points DESC,
-      total_points DESC      
+    WITH raw_standings AS (
+      SELECT 
+        m.id, 
+        m.name_last || ', ' || m.name_first AS player_name, 
+        COUNT(s.score_id) AS weeks_played, 
+        TOTAL(s.stableford_total) AS stableford_points, 
+        TOTAL(s.ctp_points) AS ctp_points, 
+        TOTAL(s.birdie_points) AS birdie_points, 
+        TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points, 
+        ROUND(TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) / NULLIF(COUNT(s.score_id), 0), 2) AS avg_points, 
+        ROUND(AVG(s.gross_total), 2) AS avg_gross, 
+        ROUND(AVG(s.net_total), 2) AS avg_net 
+      FROM members m 
+      LEFT JOIN scores s ON s.member_id = m.id 
+      GROUP BY m.id
+    )
+    SELECT 
+      RANK() OVER (ORDER BY avg_points DESC) AS rank,
+      *
+    FROM raw_standings
+    ORDER BY rank ASC, total_points DESC
   `;
+
   db.all(standingsSql, [], (err, rows) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Database Error");
     }
-
-    res.render("standings", {
-      standings: rows,
-    });
+    res.render("standings", { standings: rows });
   });
 });
 
