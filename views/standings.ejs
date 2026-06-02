@@ -12,7 +12,6 @@
         color: #18aa24;
         text-decoration: underline;
       }
-
       .button-link {
         display: inline-block;
         padding: 10px 20px;
@@ -186,15 +185,7 @@
                   %>
                   <!-- Leave blank for subsequent tied players -->
                   <% } else { %>
-                  <% if (player.rank === 1) { %>
-                  🥇
-                  <% } else if (player.rank === 2) { %>
-                  🥈
-                  <% } else if (player.rank === 3) { %>
-                  🥉
-                  <% } else { %>
                   <%= player.rank %>
-                  <% } %>
                   <% } %>
                 </td>
                 <td>
