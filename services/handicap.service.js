@@ -2,7 +2,10 @@ import { all, run } from "../config/db.js";
 
 export async function calculateHandicaps(coursePar = 36) {
   const players = await all(`
-    SELECT id, name_last
+    SELECT
+      id,
+      name_last,
+      handicap
     FROM members
   `);
 
@@ -19,7 +22,17 @@ export async function calculateHandicaps(coursePar = 36) {
       [player.id],
     );
 
-    if (rounds.length < 3) continue;
+    // Skip players with no rounds entered
+    if (rounds.length === 0) {
+      continue;
+    }
+
+    // New players (no carry-over handicap) need 3 rounds
+    const isNewPlayer = player.handicap == null;
+
+    if (isNewPlayer && rounds.length < 3) {
+      continue;
+    }
 
     const total = rounds.reduce((sum, r) => sum + r.total_score, 0);
 
@@ -33,8 +46,8 @@ export async function calculateHandicaps(coursePar = 36) {
     await run(
       `
       UPDATE members
-      SET current_handicap = ?           
-      WHERE id = ?      
+      SET current_handicap = ?
+      WHERE id = ?
       `,
       [handicap, player.id],
     );
@@ -42,8 +55,8 @@ export async function calculateHandicaps(coursePar = 36) {
     await run(
       `
       UPDATE members
-      SET average_score = ?           
-      WHERE id = ?      
+      SET average_score = ?
+      WHERE id = ?
       `,
       [average, player.id],
     );
@@ -51,8 +64,8 @@ export async function calculateHandicaps(coursePar = 36) {
     await run(
       `
       UPDATE members
-      SET rounds_played = ?           
-      WHERE id = ?      
+      SET rounds_played = ?
+      WHERE id = ?
       `,
       [rounds.length, player.id],
     );
