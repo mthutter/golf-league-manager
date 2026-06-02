@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('layouts/header'); %>
+    <style>
+      .profile-banner {
+        background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        text-align: center;
+        border-radius: 0 0 18px 18px;
+      }
+      .profile-card {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .profile-table thead {
+        background: #1b4332;
+        color: white;
+      }
+      .profile-table th {
+        background-color: #18aa24 !important;
+        color: white;
+        text-align: center;
+        padding: 14px;
+      }
+      .profile-table td {
+        background-color: #53da80 !important;
+        text-align: center;
+        vertical-align: middle;
+        padding: 12px;
+      }
+      .back-btn {
+        background-color: #1b4332;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 8px 20px;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .back-btn:hover {
+        background-color: #2d6a4f;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('layouts/navbar'); %>
+
+    <!-- Header Banner -->
+    <div class="container">
+      <div class="profile-banner shadow">
+        <h1>
+          <%= member.name_first %>
+          <%= member.name_last %>
+        </h1>
+        <p class="mb-0">Player Performance History • 2026 Season</p>
+      </div>
+      <div class="mb-4">
+        <a href="/scores/standings" class="back-btn">← Back to Standings</a>
+      </div>
+    </div>
+
+    <!-- Performance History Table -->
+    <div class="container mb-5">
+      <div class="card profile-card shadow-lg">
+        <div class="card-body p-0">
+          <table class="table profile-table table-hover margin-bottom-0">
+            <thead>
+              <tr>
+                <th>Week / Round</th>
+                <th>Gross Score</th>
+                <th>Net Score</th>
+                <th>Stableford Pts</th>
+                <th>Birdie Pts</th>
+                <th>CTP Pts</th>
+                <th>Total Pts Earned</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (scores.length === 0) { %>
+              <tr>
+                <td colspan="7" class="text-center py-4 text-white">
+                  No rounds recorded for this player yet.
+                </td>
+              </tr>
+              <% } else { %>
+              <% scores.forEach(row => { %>
+              <tr>
+                <td>
+                  <strong
+                    >Week
+                    <%= row.week_number %></strong
+                  >
+                </td>
+                <td><%= row.gross_total %></td>
+                <td><%= row.net_total %></td>
+                <td><%= row.stableford_total %></td>
+                <td><%= row.birdie_points %></td>
+                <td><%= row.ctp_points %></td>
+                <td>
+                  <strong><%= row.total_points %></strong>
+                </td>
+              </tr>
+              <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%- include('layouts/scripts'); %>
+    <%- include('layouts/footer'); %>
+  </body>
+</html>

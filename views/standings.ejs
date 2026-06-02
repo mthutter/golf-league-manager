@@ -3,6 +3,16 @@
   <head>
     <%- include('layouts/header'); %>
     <style>
+      .player-link {
+        color: #1b4332;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      .player-link:hover {
+        color: #18aa24;
+        text-decoration: underline;
+      }
+
       .button-link {
         display: inline-block;
         padding: 10px 20px;
@@ -188,7 +198,13 @@
                   <% } %>
                 </td>
                 <td>
-                  <strong><%= player.player_name %></strong>
+                  <strong
+                    ><a
+                      href="/scores/members/<%= player.id %>"
+                      class="player-link"
+                      ><%= player.player_name %></a
+                    ></strong
+                  >
                 </td>
                 <td>
                   <%= player.weeks_played %>

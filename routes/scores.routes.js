@@ -168,6 +168,58 @@ router.get("/weekly/:weekId", (req, res) => {
   });
 });
 
+router.get("/members/:id", (req, res) => {
+  const memberId = parseInt(req.params.id, 10);
+
+  // 1. Fetch member basic details
+  const memberSql = `SELECT id, name_first, name_last FROM members WHERE id = ?`;
+
+  // 2. Generate weeks 1-5 and LEFT JOIN player scores
+  const historySql = `
+    WITH RECURSIVE league_weeks(week_number) AS (
+      SELECT 1
+      UNION ALL
+      SELECT week_number + 1 FROM league_weeks WHERE week_number < 5 -- Adjust '5' if your season has more weeks
+    )
+    SELECT 
+      lw.week_number,
+      COALESCE(s.score_id, '') AS score_id,
+      COALESCE(s.stableford_total, '') AS stableford_total,
+      COALESCE(s.ctp_points, '') AS ctp_points,
+      COALESCE(s.birdie_points, '') AS birdie_points,
+      CASE WHEN s.score_id IS NOT NULL 
+           THEN (s.stableford_total + s.ctp_points + s.birdie_points) 
+           ELSE '' END AS total_points,
+      COALESCE(s.gross_total, '') AS gross_total,
+      COALESCE(s.net_total, '') AS net_total
+    FROM league_weeks lw
+    LEFT JOIN scores s ON s.week_id = lw.week_number AND s.member_id = ?
+    ORDER BY lw.week_number ASC
+  `;
+
+  db.get(memberSql, [memberId], (err, member) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Database Error");
+    }
+    if (!member) {
+      return res.status(404).send("Player Not Found");
+    }
+
+    db.all(historySql, [memberId], (err, scores) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Database Error");
+      }
+
+      res.render("profile", {
+        member: member,
+        scores: scores,
+      });
+    });
+  });
+});
+
 router.get("/", authMiddleware, getScores);
 
 export default router;
