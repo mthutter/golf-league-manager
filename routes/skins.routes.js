@@ -39,9 +39,20 @@ router.get("/", async (req, res) => {
 
     let leaderboard = [];
     let holeDetails = [];
+    let participantScores = [];
+    let courseHandicaps = {};
     let totalPot = 0;
 
     if (selectedWeekId) {
+      // 1. Fetch hole difficulty mappings for our columns
+      const holeData = await all(
+        `SELECT hole_number, handicap_men FROM holes WHERE hole_number BETWEEN 1 AND 9`,
+      );
+      holeData.forEach((h) => {
+        courseHandicaps[h.hole_number] = h.handicap_men;
+      });
+
+      // 2. Fetch Leaderboard summary
       leaderboard = await all(
         `SELECT ws.member_id, m.name_first, m.name_last, ws.skins_won, ws.payout
          FROM weekly_skins ws
@@ -51,14 +62,56 @@ router.get("/", async (req, res) => {
         [selectedWeekId],
       );
 
+      // 3. Fetch specific hole line item winners
       holeDetails = await all(
         `SELECT sd.hole_number, sd.score AS net_score, sd.payout, m.name_first, m.name_last, sd.member_id
          FROM skin_details sd
          LEFT JOIN members m ON sd.member_id = m.id
-         WHERE sd.week_id = ?
-         ORDER BY sd.hole_number ASC`,
+         WHERE sd.week_id = ?`,
         [selectedWeekId],
       );
+
+      // 4. NEW: Fetch ALL registered players & calculate gross/net on-the-fly for the comprehensive table matrix
+      const rawCards = await all(
+        `SELECT s.*, m.name_first, m.name_last 
+         FROM scores s
+         LEFT JOIN members m ON s.member_id = m.id
+         WHERE s.week_id = ? AND s.skins_entered = 1
+         ORDER BY m.name_last ASC`,
+        [selectedWeekId],
+      );
+
+      participantScores = rawCards.map((player) => {
+        const raw9HoleHandicap = player.handicap_used || 0;
+        const emulated18Handicap = raw9HoleHandicap * 2;
+        const holesArray = [];
+
+        // Loop holes 1-9 to calculate net maps
+        for (let h = 1; h <= 9; h++) {
+          const gross = player[`gross${h}`] || 0;
+          const holeDifficultyIndex = courseHandicaps[h] || 18;
+
+          let strokesAllowed = Math.floor(emulated18Handicap / 18);
+          const leftoverStrokes = emulated18Handicap % 18;
+          if (leftoverStrokes >= holeDifficultyIndex) {
+            strokesAllowed += 1;
+          }
+
+          holesArray.push({
+            holeNumber: h,
+            gross: gross,
+            net: gross > 0 ? gross - strokesAllowed : 0,
+            strokes: strokesAllowed,
+          });
+        }
+
+        return {
+          memberId: player.member_id,
+          name: `${player.name_first} ${player.name_last}`,
+          handicap: raw9HoleHandicap,
+          holes: holesArray,
+        };
+      });
 
       totalPot = leaderboard.reduce((sum, player) => sum + player.payout, 0);
     }
@@ -68,6 +121,7 @@ router.get("/", async (req, res) => {
       selectedWeekId,
       leaderboard,
       holeDetails,
+      participantScores, // Sent to EJS matrix loop
       totalPot,
     });
   } catch (error) {
