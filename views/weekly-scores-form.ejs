@@ -144,6 +144,22 @@
                     <% }); %>
                   </select>
                 </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">Skins Game</label>
+
+                  <div class="form-check mt-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="skins_entered"
+                      id="skinsEntered"
+                      value="1"
+                    />
+                    <label class="form-check-label" for="skinsEntered">
+                      Entered Weekly Skins
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div class="row mb-4">
@@ -347,6 +363,7 @@
           }
           const strokes = handicapStrokes(handicap, holeHcp);
           const net = gross ? gross - strokes : 0;
+          const skinsEntered = req.body.skins_entered ? 1 : 0;
           const points = gross ? stablefordPoints(net, par) : 0;
 
           document.getElementById(`net${index + 1}`).textContent = net || "";

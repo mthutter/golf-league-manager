@@ -14,6 +14,7 @@ import imageRoutes from "./routes/image.routes.js";
 import videoRoutes from "./routes/video.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import scoreRoutes from "./routes/scores.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -95,6 +96,7 @@ app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);
 app.use("/videos", videoRoutes);
 app.use("/scores", scoreRoutes);
+app.use("/admin", adminRoutes);
 
 /* =========================================
    404 HANDLER

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('./layouts/header'); %>
+    <style></style>
+  </head>
+
+  <body>
+    <section>
+      <%- include('./layouts/navbar'); %>
+    </section>
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-success text-white">Weekly Skins</div>
+
+      <div class="card-body">
+        <form method="POST" action="/admin/skins/calculate">
+          <div class="row align-items-end">
+            <div class="col-md-4">
+              <label class="form-label">Week</label>
+
+              <select name="weekId" class="form-select" required>
+                <option value="">Select Week</option>
+
+                <% for(let i = 1; i <= 22; i++) { %>
+                <option value="<%= i %>">Week <%= i %></option>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-success">
+                Calculate Skins
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <section>
+      <%- include('./layouts/footer'); %>
+    </section>
+
+    <section>
+      <%- include('./layouts/scripts'); %>
+    </section>
+  </body>
+</html>
