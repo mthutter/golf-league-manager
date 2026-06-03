@@ -26,13 +26,6 @@
           let cellA = rowA.children[columnIndex].textContent.trim();
           let cellB = rowB.children[columnIndex].textContent.trim();
 
-          // Strip emojis for sorting the original rank column
-          if (columnIndex === 0) {
-            const medalMap = { "🥇": "1", "🥈": "2", "🥉": "3" };
-            cellA = medalMap[cellA] || cellA;
-            cellB = medalMap[cellB] || cellB;
-          }
-
           const valueA =
             isNaN(cellA) || cellA === "" ? cellA : parseFloat(cellA);
           const valueB =
@@ -71,17 +64,8 @@
           }
           previousValue = currentCellText;
 
-          // 3. Update the visual position column (Index 0)
           const posCell = row.children[0];
-          if (currentRank === 1) {
-            posCell.textContent = "🥇";
-          } else if (currentRank === 2) {
-            posCell.textContent = "🥈";
-          } else if (currentRank === 3) {
-            posCell.textContent = "🥉";
-          } else {
-            posCell.textContent = currentRank;
-          }
+          posCell.textContent = currentRank;
 
           // 4. Clean up leader styling and re-append to the table
           row.classList.remove("leader-row");
