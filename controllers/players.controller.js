@@ -1,148 +1,57 @@
-import db from "../config/db.js";
+import * as playersService from "../services/players.service.js";
 
-/* =========================================
-   GET ALL PLAYERS
-========================================= */
-
-export function getPlayers(req, res) {
-  const sql = `
-    SELECT
-      id,
-      name_last,
-      name_first,
-      phone,
-      handicap,
-      e_mail,
-      year_joined,
-      status,
-      type
-    FROM members
-    ORDER BY name_last, name_first ASC
-  `;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      console.error("Database Error:", err.message);
-
-      return res.status(500).render("error", {
-        message: "Unable to retrieve players.",
-      });
-    }
-
-    res.render("players", {
-      players: rows,
-    });
-  });
+/**
+ * GET /players - Display active players
+ */
+export async function getPlayers(req, res) {
+  try {
+    const rows = await playersService.getAllPlayers();
+    res.render("players", { players: rows });
+  } catch (err) {
+    console.error("Database Error:", err.message);
+    res.status(500).render("error", { message: "Unable to retrieve players." });
+  }
 }
 
-export function getPlayersInactive(req, res) {
-  const sql = `
-    SELECT
-      id,
-      name_last,
-      name_first,
-      phone,
-      handicap,
-      e_mail,
-      year_joined,
-      status,
-      type
-    FROM members
-    ORDER BY name_last, name_first ASC
-  `;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      console.error("Database Error:", err.message);
-
-      return res.status(500).render("error", {
-        message: "Unable to retrieve players.",
-      });
-    }
-
-    res.render("inactive", {
-      players: rows,
-    });
-  });
+/**
+ * GET /players/inactive - Display inactive players
+ */
+export async function getPlayersInactive(req, res) {
+  try {
+    const rows = await playersService.getAllPlayers();
+    res.render("inactive", { players: rows });
+  } catch (err) {
+    console.error("Database Error:", err.message);
+    res.status(500).render("error", { message: "Unable to retrieve players." });
+  }
 }
 
-/* =========================================
-   SHOW ADD PLAYER FORM
-========================================= */
-
+/**
+ * GET /players/new - Show creation form
+ */
 export function showAddPlayerForm(req, res) {
   res.render("add-player-form");
 }
 
-/* =========================================
-   CREATE PLAYER
-========================================= */
+/**
+ * POST /players - Create player record
+ */
+export async function createPlayer(req, res) {
+  const { name_first, name_last } = req.body;
 
-export function createPlayer(req, res) {
-  const {
-    name_last,
-    name_first,
-    phone,
-    handicap,
-    password,
-    e_mail,
-    year_joined,
-    status,
-    type,
-  } = req.body;
-
-  /* =========================================
-     VALIDATION
-  ========================================= */
-
+  // Basic Validation stays in controller to prevent hitting the DB unnecessarily
   if (!name_first || !name_last) {
     return res.status(400).render("error", {
       message: "First and last name are required.",
     });
   }
 
-  /* =========================================
-     INSERT PLAYER
-  ========================================= */
-
-  const sql = `
-    INSERT INTO members (
-      name_last,
-      name_first,
-      phone,
-      handicap,
-      password,
-      e_mail,
-      year_joined,
-      status,
-      type
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    name_last,
-    name_first,
-    phone,
-    handicap,
-    password,
-    e_mail,
-    year_joined,
-    status,
-    type,
-  ];
-
-  db.run(sql, values, function (err) {
-    if (err) {
-      console.error("Insert Error:", err.message);
-
-      return res.status(500).render("error", {
-        message: "Unable to create player.",
-      });
-    }
-
-    console.log(`Player created with ID ${this.lastID}`);
-
+  try {
+    const lastID = await playersService.createNewPlayer(req.body);
+    console.log(`Player created with ID ${lastID}`);
     res.redirect("/players");
-  });
+  } catch (err) {
+    console.error("Insert Error:", err.message);
+    res.status(500).render("error", { message: "Unable to create player." });
+  }
 }
