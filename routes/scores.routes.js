@@ -3,6 +3,12 @@ import express from "express";
 import authMiddleware from "../middleware/auth.middleware.js";
 import { showWeeklyScoresForm } from "../controllers/scores.controller.js";
 import { getScores } from "../controllers/scores.controller.js";
+import {
+  getAllWeeks,
+  getWeek,
+  getCurrentWeek,
+  getCurrentWeekPlayed,
+} from "../services/weeks.service.js";
 
 const router = express.Router();
 
@@ -98,7 +104,10 @@ router.post("/save", authMiddleware, (req, res) => {
   });
 });
 
-router.get("/standings", (req, res) => {
+router.get("/standings", async (req, res) => {
+  const weeks = await getAllWeeks();
+  const latestWeekPlayed = await getCurrentWeekPlayed();
+  const currentWeek = await getWeek(latestWeekPlayed.week_number);
   const standingsSql = `
     WITH raw_standings AS (
       SELECT 
@@ -123,12 +132,20 @@ router.get("/standings", (req, res) => {
     ORDER BY rank ASC, total_points DESC
   `;
 
+  currentWeek.displayDate = new Date(
+    currentWeek.date + "T12:00:00",
+  ).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
+
   db.all(standingsSql, [], (err, rows) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Database Error");
     }
-    res.render("standings", { standings: rows });
+
+    res.render("standings", { standings: rows, weeks, currentWeek });
   });
 });
 

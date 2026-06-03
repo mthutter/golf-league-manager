@@ -2,47 +2,124 @@
 <html lang="en">
   <head>
     <%- include('./layouts/header'); %>
-    <style>
-      html {
-        overflow-y: auto;
-        overflow-x: auto;
-      }
-
-      th,
-      td {
-        margin: 0 auto;
-        text-align: center;
-      }
-
-      .button-link {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #53da80;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-      }
-
-      th {
-        background-color: #f4f4f4;
-        cursor: pointer;
-        user-select: none;
-        position: relative;
-      }
-
-      th.sort-asc::after {
-        content: " ▲";
-        position: absolute;
-        right: 8px;
-      }
-      th.sort-desc::after {
-        content: " ▼";
-        position: absolute;
-        right: 8px;
-      }
-    </style>
   </head>
+  <style>
+    html {
+      overflow-y: auto;
+      overflow-x: auto;
+    }
 
+    :root {
+      --league-dark: #1b4332;
+      --league-green: #18aa24;
+      --league-light: #53da80;
+      --gridline: rgba(255, 255, 255, 0.15);
+    }
+
+    .player-link {
+      color: var(--league-dark);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .player-link:hover {
+      color: var(--league-green);
+      text-decoration: underline;
+    }
+
+    .button-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--league-light);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    /* ===== Header ===== */
+
+    .gallery-header {
+      text-align: center;
+    }
+
+    .gallery-header h1 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .gallery-header p {
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+
+    /* ===== Results Card ===== */
+
+    .results-card {
+      border: 2px solid var(--gridline);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    /* ===== Table ===== */
+
+    .results-table {
+      margin-bottom: 0;
+    }
+
+    .results-table th {
+      background-color: var(--league-green);
+      color: white;
+      padding: 14px;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1.5px solid var(--gridline);
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .results-table td {
+      background-color: var(--league-light);
+      text-align: center;
+      vertical-align: middle;
+      padding: 12px;
+      border: 2px solid var(--gridline);
+    }
+
+    .results-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .results-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    th.sort-asc::after {
+      content: " ▲";
+      position: absolute;
+      right: 8px;
+    }
+
+    th.sort-desc::after {
+      content: " ▼";
+      position: absolute;
+      right: 8px;
+    }
+    .results-table th {
+      background-color: #18aa24 !important;
+      color: white !important;
+    }
+
+    .results-table td {
+      background-color: #53da80 !important;
+    }
+
+    .results-table th,
+    .results-table td {
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+    }
+  </style>
   <body>
     <%- include('./layouts/navbar'); %>
 
@@ -54,43 +131,48 @@
       </h1>
       <p>Bottoms Up Golf League • 2026 Season</p>
     </div>
-
     <!-- SUBMIT -->
     <div class="text-center mt-4">
       <a href="/scores/standings" class="button-link">Current Standings</a>
     </div>
     <br />
-    <table id="sortableTable" class="table table-striped">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Player</th>
-          <th>Gross</th>
-          <th>Net</th>
-          <th>Points</th>
-          <th>CTP Points</th>
-          <th>Birdie Points</th>
-          <th>Total Points</th>
-        </tr>
-      </thead>
+    <div class="container">
+      <div class="card results-card shadow-lg mb-5">
+        <div class="card-body p-0">
+          <table id="sortableTable" class="table results-table table-hover">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Gross</th>
+                <th>Net</th>
+                <th>Points</th>
+                <th>CTP Points</th>
+                <th>Birdie Points</th>
+                <th>Total Points</th>
+              </tr>
+            </thead>
 
-      <tbody>
-        <% results.forEach((player, idx) => { %>
-        <tr>
-          <td><%= idx + 1 %></td>
-          <td><%= player.player_name %></td>
-          <td><%= player.gross_total %></td>
-          <td><%= player.net_total %></td>
-          <td><%= player.stableford_total %></td>
-          <td><%= player.ctp_points %></td>
-          <td><%= player.birdie_points %></td>
-          <td>
-            <strong><%= player.total_points %></strong>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
+            <tbody>
+              <% results.forEach((player, idx) => { %>
+              <tr>
+                <td><%= idx + 1 %></td>
+                <td><%= player.player_name %></td>
+                <td><%= player.gross_total %></td>
+                <td><%= player.net_total %></td>
+                <td><%= player.stableford_total %></td>
+                <td><%= player.ctp_points %></td>
+                <td><%= player.birdie_points %></td>
+                <td>
+                  <strong><%= player.total_points %></strong>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <%- include('./layouts/footer'); %>
     <%- include('./layouts/scripts'); %>
   </body>
