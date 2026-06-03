@@ -1,1 +1,1 @@
-update scores set skins_entered = '1' WHERE member_id = '2'
+SELECT * FROM scores where week_id = '4'
