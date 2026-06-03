@@ -1,1 +1,1 @@
-select * from scores
+update scores set skins_entered = '1' WHERE member_id = '2'

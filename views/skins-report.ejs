@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weekly Skins Report</title>
+    <!-- Fixed Bootstrap CDN link to load styles correctly -->
+    <link href="https://jsdelivr.net" rel="stylesheet" />
+    <style>
+      .skin-winner-card {
+        background-color: #d1e7dd;
+        border-color: #badbcc;
+        color: #0f5132;
+      }
+      .border-dashed {
+        border-style: dashed !important;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="container my-5">
+      <header
+        class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center"
+      >
+        <h1 class="text-dark fs-2 fw-bold">⛳ League Skins Report</h1>
+        <span class="badge bg-secondary fs-6"
+          >Skins Format: Net (Holes 1-9)</span
+        >
+      </header>
+
+      <!-- Week Selector & Admin Trigger Controls Form -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <div
+            class="d-flex flex-wrap align-items-center justify-content-between g-3"
+          >
+            <!-- Dropdown Selector -->
+            <form
+              method="GET"
+              action="/skins-report"
+              class="row g-3 align-items-center m-0"
+            >
+              <div class="col-auto ps-0">
+                <label for="weekId" class="col-form-label fw-semibold"
+                  >Select Tournament Week:</label
+                >
+              </div>
+              <div class="col-auto">
+                <select
+                  name="weekId"
+                  id="weekId"
+                  class="form-select"
+                  onchange="this.form.submit()"
+                >
+                  <% if (weeks.length === 0) { %>
+                  <option value="">No weeks available</option>
+                  <% } %>
+                  <% weeks.forEach(w => { %>
+                  <% if (w.week_id === selectedWeekId) { %>
+                  <option value="<%= w.week_id %>" selected>
+                    Week
+                    <%= w.week_id %>
+                  </option>
+                  <% } else { %>
+                  <option value="<%= w.week_id %>">
+                    Week <%= w.week_id %>
+                  </option>
+                  <% } %>
+                  <% }) %>
+                </select>
+              </div>
+            </form>
+
+            <!-- Asynchronous Admin Trigger Button -->
+            <% if (selectedWeekId) { %>
+            <div class="col-auto pe-0">
+              <button
+                type="button"
+                id="recalcBtn"
+                class="btn btn-warning fw-bold shadow-sm"
+              >
+                🔄 Recalculate Week
+                <%= selectedWeekId %>
+              </button>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <% if (!selectedWeekId) { %>
+      <div class="alert alert-warning text-center">
+        No game data has been processed yet.
+      </div>
+      <% } else { %>
+
+      <!-- Summary Stats Banner Row -->
+      <div class="row mb-4 text-center">
+        <div class="col-md-6 mb-3 mb-md-0">
+          <div class="card p-3 shadow-sm bg-primary text-white">
+            <h3 class="fs-6 text-uppercase fw-bold opacity-75">
+              Total Skins Purse
+            </h3>
+            <p class="fs-2 fw-bold mb-0">$<%= totalPot.toFixed(2) %></p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card p-3 shadow-sm bg-dark text-white">
+            <h3 class="fs-6 text-uppercase fw-bold opacity-75">
+              Skins Documented
+            </h3>
+            <p class="fs-2 fw-bold mb-0"><%= holeDetails.length %></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Payout Standings Leaderboard Table -->
+        <div class="col-lg-5 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3">
+              <h5 class="card-title mb-0 fw-bold">Payout Standings</h5>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Player</th>
+                    <th class="text-center">Skins Won</th>
+                    <th class="text-end">Total Payout</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (leaderboard.length === 0) { %>
+                  <tr>
+                    <td colspan="3" class="text-muted text-center py-4">
+                      No skins won this week. All holes tied!
+                    </td>
+                  </tr>
+                  <% } else { %>
+                  <% leaderboard.forEach(player => { %>
+                  <tr>
+                    <td class="fw-semibold">
+                      <%= player.name_first %> <%= player.name_last %>
+                    </td>
+                    <td class="text-center">
+                      <span
+                        class="badge bg-light text-dark border border-secondary px-2.5"
+                        ><%= player.skins_won %></span
+                      >
+                    </td>
+                    <td class="text-end fw-bold text-success">
+                      $<%= player.payout.toFixed(2) %>
+                    </td>
+                  </tr>
+                  <% }) %>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hole-by-Hole Visual Grid Breakdown -->
+        <div class="col-lg-7 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3">
+              <h5 class="card-title mb-0 fw-bold">
+                Hole-by-Hole Skin Breakdown
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row row-cols-1 row-cols-sm-3 g-3">
+                <% for (let h = 1; h <= 9; h++) { %> <% const holeWin =
+                holeDetails.find(d => d.hole_number === h); %>
+                <div class="col">
+                  <div
+                    class="card h-100 text-center <%= holeWin ? 'skin-winner-card' : 'bg-light border-dashed' %>"
+                  >
+                    <div class="card-body py-3">
+                      <h6
+                        class="text-uppercase tracking-wider font-monospace text-muted small mb-1"
+                      >
+                        Hole
+                        <%= h %>
+                      </h6>
+                      <% if (holeWin) { %>
+                      <p class="fs-6 fw-bold mb-0 text-truncate">
+                        <%= holeWin.name_first %>
+                      </p>
+                      <small class="d-block text-secondary"
+                        >Net: <strong><%= holeWin.net_score %></strong></small
+                      >
+                      <span class="badge bg-success mt-1"
+                        >+$<%= holeWin.payout.toFixed(2) %></span
+                      >
+                      <% } else { %>
+                      <span class="text-muted d-block py-2 small"
+                        >Halved / Tied</span
+                      >
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <% } %>
+    </div>
+
+    <!-- Fixed Bootstrap JS Bundle Link -->
+    <script src="https://jsdelivr.net"></script>
+
+    <!-- Async Recalculation Engine Fetch Script -->
+    <script>
+      document
+        .getElementById("recalcBtn")
+        ?.addEventListener("click", async () => {
+          const weekId = "<%= selectedWeekId %>";
+          if (!weekId) return;
+
+          const btn = document.getElementById("recalcBtn");
+          const originalText = btn.innerHTML;
+
+          btn.disabled = true;
+          btn.innerHTML = "⏳ Calculating...";
+
+          try {
+            const response = await fetch(`/skins-report/calculate/${weekId}`, {
+              method: "POST",
+            });
+            const result = await response.json();
+
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              alert(
+                "Error recalculating skins: " +
+                  (result.error || "Unknown error"),
+              );
+              btn.disabled = false;
+              btn.innerHTML = originalText;
+            }
+          } catch (err) {
+            console.error("Skins calculation trigger exception:", err);
+            alert("Network or internal server error triggering calculation.");
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+          }
+        });
+    </script>
+  </body>
+</html>

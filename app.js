@@ -15,6 +15,7 @@ import videoRoutes from "./routes/video.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import scoreRoutes from "./routes/scores.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import skinsRouter from "./routes/skins.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -97,6 +98,7 @@ app.use("/images", imageRoutes);
 app.use("/videos", videoRoutes);
 app.use("/scores", scoreRoutes);
 app.use("/admin", adminRoutes);
+app.use("/skins-report", skinsRouter);
 
 /* =========================================
    404 HANDLER
