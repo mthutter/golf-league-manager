@@ -164,9 +164,9 @@
                   <input
                     class="form-control"
                     type="number"
+                    id="birdiePoints"
                     name="birdie_points"
-                    min="0"
-                    max="9"
+                    readonly
                     value="0"
                   />
                 </div>
@@ -330,6 +330,7 @@
       }
 
       function calculateCard() {
+        let birdiePoints = 0;
         const handicap =
           parseInt(document.getElementById("handicap").value) || 0;
 
@@ -341,6 +342,11 @@
           const gross = parseInt(input.value) || 0;
           const holeHcp = parseInt(input.dataset.holehcp);
           const par = parseInt(input.dataset.par);
+          if (gross && gross === par - 1) {
+            birdiePoints++;
+          } else if (gross && gross === par - 2) {
+            birdiePoints++;
+          }
           const strokes = handicapStrokes(handicap, holeHcp);
           const net = gross ? gross - strokes : 0;
           const points = gross ? stablefordPoints(net, par) : 0;
@@ -357,6 +363,7 @@
         document.getElementById("grossTotal").textContent = grossTotal;
         document.getElementById("netTotal").textContent = netTotal;
         document.getElementById("pointsTotal").textContent = pointsTotal;
+        document.getElementById("birdiePoints").value = birdiePoints;
 
         document.getElementById("grossTotalInput").value = grossTotal;
         document.getElementById("netTotalInput").value = netTotal;
