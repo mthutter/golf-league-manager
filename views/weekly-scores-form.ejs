@@ -342,10 +342,8 @@
           const gross = parseInt(input.value) || 0;
           const holeHcp = parseInt(input.dataset.holehcp);
           const par = parseInt(input.dataset.par);
-          if (gross && gross === par - 1) {
-            birdiePoints++;
-          } else if (gross && gross === par - 2) {
-            birdiePoints++;
+          if (gross && gross <= par - 1) {
+            birdiePoints++; // birdie or better
           }
           const strokes = handicapStrokes(handicap, holeHcp);
           const net = gross ? gross - strokes : 0;
