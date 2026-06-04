@@ -1,4 +1,6 @@
 import * as skinsService from "../services/skins.service.js";
+// ✨ FIX: Import your admin service file where processSkinsForWeek is defined
+import * as adminService from "../services/admin.service.js";
 
 /**
  * POST /skins/calculate/:weekId
@@ -10,9 +12,8 @@ export const calculateSkinsApi = async (req, res) => {
       return res.status(400).json({ error: "Missing weekId parameter." });
     }
 
-    // Call service to run calculation engine
-    const results = await skinsService.runSkinsCalculation(Number(weekId));
-
+    // Call service to run calculation engine from admin service
+    const results = await adminService.processSkinsForWeek(Number(weekId));
     return res.status(200).json({ message: "Success", data: results });
   } catch (error) {
     console.error("Skins calculation route error:", error);
@@ -25,21 +26,40 @@ export const calculateSkinsApi = async (req, res) => {
  */
 export const getSkinsReport = async (req, res) => {
   try {
-    // Get summary of all weeks available
+    // 1. Get summary of all tournament weeks available
     const weeks = await skinsService.getWeeksSummary();
 
-    // Choose selected week or fallback to the latest one
+    // 2. Determine selected week ID
     const selectedWeekId = req.query.weekId
       ? Number(req.query.weekId)
       : weeks[0]?.week_id || null;
 
-    // Fetch report statistics from the service
-    const reportData = await skinsService.buildSkinsReport(selectedWeekId);
+    if (!selectedWeekId) {
+      return res.render("skins-report", {
+        weeks: weeks || [],
+        selectedWeekId: null,
+        totalPot: 0,
+        participantScores: [],
+        leaderboard: [],
+        holeDetails: [],
+      });
+    }
 
+    // 3. Fetch base stats and participant score matrix details from your main service
+    const baseReportData = await skinsService.buildSkinsReport(selectedWeekId);
+
+    // 4. ✨ FIX: Call the function from adminService instead of skinsService
+    const computedSkins =
+      await adminService.processSkinsForWeek(selectedWeekId);
+
+    // 5. Render your EJS view, feeding the exact structured arrays it expects
     res.render("skins-report", {
-      weeks,
+      weeks: weeks || [],
       selectedWeekId,
-      ...reportData,
+      totalPot: baseReportData?.totalPot || computedSkins?.totalPot || 0,
+      participantScores: baseReportData?.participantScores || [],
+      leaderboard: computedSkins?.leaderboard || [],
+      holeDetails: computedSkins?.holeDetails || [],
     });
   } catch (error) {
     console.error("Skins Report Route Error:", error);
