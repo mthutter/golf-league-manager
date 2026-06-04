@@ -1,1 +1,1 @@
-SELECT * FROM scores where week_id = '4'
+SELECT * FROM scores WHERE week_id = '5'

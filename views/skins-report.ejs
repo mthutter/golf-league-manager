@@ -130,17 +130,17 @@
           <div class="table-responsive">
             <table class="table table-bordered align-middle text-center mb-0 skins-custom-table">
               <thead>
-                <tr>
-                  <th class="text-start" style="min-width: 180px">Player</th>
-                 <th style="width: 70px">Hcp</th>
+                  <tr>
+                    <th class="text-start" style="min-width: 180px">Player</th>
+                    <th style="width: 70px">Hcp</th>
+                    <% for (let h = 1; h <= 9; h++) { %>
+                      <th>Hole <%= h %></th>
+                    <% } %>
+                    <th style="width: 80px">Skins</th>
+                    <th style="width: 100px">Payout ($)</th>
+                  </tr>
+                </thead>
 
-<% for (let h = 1; h <= 9; h++) { %>
-<th>Hole <%= h %></th>
-<% } %>
-
-<th style="width: 80px">Skins</th>
-                </tr>
-              </thead>
 <tbody>
   <% if (participantScores.length === 0) { %>
     <tr>
@@ -150,16 +150,39 @@
     </tr>
   <% } else { %>
     <% participantScores.forEach(player => { %>
-      <% 
-        let skinTotal = 0; 
-        const currentPlayerId = player.member_id || player.memberId;
-        player.holes.forEach(h => { 
-          const winners = holeDetails.filter(d => d.hole_number === h.holeNumber && d.member_id === currentPlayerId); 
-          winners.forEach(w => { 
-            skinTotal += Number(w.skins_won || 0); 
-          }); 
-        }); 
-      %>
+    <% 
+  let skinTotal = 0; 
+  const currentPlayerId = player.member_id || player.memberId;
+  
+  // 1. Calculate total skin points for this specific player
+  player.holes.forEach(h => { 
+    const playerWonThisHole = holeDetails.some(d => d.hole_number === h.holeNumber && d.member_id === currentPlayerId); 
+    if (playerWonThisHole) {
+      const totalWinnersForHole = holeDetails.filter(d => d.hole_number === h.holeNumber).length;
+      skinTotal += (totalWinnersForHole === 1) ? 1 : 0.5;
+    }
+  }); 
+
+  // 2. Calculate the exact overall skins awarded across the field by grouping by unique hole numbers
+  let overallFieldSkins = 0;
+  for (let hNumber = 1; hNumber <= 9; hNumber++) {
+    const winnersForThisHole = holeDetails.filter(w => w.hole_number === hNumber).length;
+    if (winnersForThisHole === 1) {
+      overallFieldSkins += 1; // Outright skin awards exactly 1 skin point to the field
+    } else if (winnersForThisHole > 1) {
+      overallFieldSkins += (0.5 * winnersForThisHole); // Each tied player receives 0.5 skin points
+    }
+  }
+  
+  // 3. Determine the clean cash value per skin point
+  const perSkinValue = overallFieldSkins > 0 ? (totalPot / overallFieldSkins) : 0;
+  const rawPayout = skinTotal * perSkinValue;
+
+  // 4. Apply your custom league rounding rule
+  const roundedPayout = Math.round(rawPayout);
+%>
+
+
       <tr>
         <td class="text-start fw-semibold bg-light">
           <a href="/scores/members/<%= currentPlayerId %>" class="player-link"><%= player.name %></a>
@@ -184,7 +207,10 @@
         <% }) %>
 
         <td class="fw-bold text-center">
-          <%= skinTotal %>
+           <%= skinTotal % 1 === 0 ? skinTotal : skinTotal.toFixed(1) %>
+        </td>
+         <td class="fw-bold text-end text-success bg-light pe-3">
+          $<%= roundedPayout.toFixed(2) %>
         </td>
       </tr>
     <% }) %>
@@ -223,7 +249,7 @@
 <% } else { %><% leaderboard.forEach(player => { %>
                 <tr>
                   <td class="fw-semibold text-start">
-                    <a href="/scores/members/<%= player.member_id || player.id %>" class="player-link"><%= player.name_first %><%= player.name_last %></a>
+                    <a href="/scores/members/<%= player.member_id || player.id %>" class="player-link"><%= player.name_first %> <%= player.name_last %></a>
                   </td>
                   <td class="text-center">
                     <span class="badge text-dark border border-secondary px-2.5" style="background-color: #e9ecef"><%= player.skins_won %></span>
