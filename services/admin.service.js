@@ -4,9 +4,6 @@ import { get, all } from "../config/db.js"; // Added 'all' for complete lookup s
 /**
  * Fetches skins calculations and maps player IDs to DB names
  */
-/**
- * Fetches skins calculations and maps player IDs to DB names
- */
 export const processSkinsForWeek = async (weekId) => {
   // 1. Fetch raw metrics from the core skin calculator
   const { skinTotals, payoutPerSkin, totalPot, holeBreakdown } =
@@ -39,19 +36,69 @@ export const processSkinsForWeek = async (weekId) => {
           sqlError,
         );
       }
-
       const skinsCount =
         data && typeof data === "object" ? data.count || 0 : data || 0;
-
       return {
         member_id: Number(playerId),
         name_first: name_first,
         name_last: name_last,
         skins_won: skinsCount,
-        payout: Math.round(skinsCount * (payoutPerSkin || 0)),
+        payout: 0, // Will be dynamically computed by the carryover engine below
       };
     }),
   );
+
+  // =========================================================================
+  // ✨ SEQUENTIAL HOLE-BY-HOLE CARRYOVER ENGINE
+  // =========================================================================
+  const baseValuePerHole = (totalPot || 0) / 9; // Flat base value natively split among 9 holes
+  let carriedPursePool = 0; // Accumulator for halved/tied hole roll overs
+  const holePayouts = {}; // Tracks final dynamic cash value for Holes 1-9
+
+  // First Pass: Walk sequentially from Hole 1 to Hole 9 to calculate carryover purses
+  for (let hNum = 1; hNum <= 9; hNum++) {
+    // Count how many players claimed this specific hole across our field datasets
+    let winnersForThisHole = 0;
+
+    if (holeBreakdown && Array.isArray(holeBreakdown)) {
+      winnersForThisHole = holeBreakdown.filter((record) => {
+        const h = record.hole_number || record.holeNumber || record.hole;
+        return Number(h) === hNum;
+      }).length;
+    } else if (skinTotals && typeof skinTotals === "object") {
+      winnersForThisHole = Object.entries(skinTotals).filter(
+        ([_, d]) => d.holes && d.holes.includes(hNum),
+      ).length;
+    }
+
+    // Add this hole's native purse to whatever jackpot has accumulated so far
+    const activeHoleValue = baseValuePerHole + carriedPursePool;
+
+    if (winnersForThisHole === 0) {
+      // HALVED HOLE: Entire active purse rolls forward to pile onto the next hole
+      carriedPursePool = activeHoleValue;
+      holePayouts[hNum] = 0;
+    } else {
+      // SKIN CLAIMED: The purse is successfully paid out. Carryover pool resets back to 0.
+      holePayouts[hNum] = activeHoleValue;
+      carriedPursePool = 0;
+    }
+  }
+
+  // Handle ultimate hole edge case: If hole 9 is tied, distribute leftover pool to active winners evenly
+  if (carriedPursePool > 0) {
+    let totalSkinsClaimedAcrossField = 0;
+    for (let h = 1; h <= 9; h++) {
+      if (holePayouts[h] > 0) totalSkinsClaimedAcrossField++;
+    }
+    if (totalSkinsClaimedAcrossField > 0) {
+      const leftoverBonusPerWonHole =
+        carriedPursePool / totalSkinsClaimedAcrossField;
+      for (let h = 1; h <= 9; h++) {
+        if (holePayouts[h] > 0) holePayouts[h] += leftoverBonusPerWonHole;
+      }
+    }
+  }
 
   // 3. Reconstruct detailed individual hole details needed for grid cell highlighting
   const detailsArray = [];
@@ -68,22 +115,27 @@ export const processSkinsForWeek = async (weekId) => {
         record.name_first || record.nameFirst || record.firstName || "Player";
 
       if (holeNumber && memberId) {
+        const totalWinnersForHole = holeBreakdown.filter(
+          (r) => (r.hole_number || r.holeNumber || r.hole) === holeNumber,
+        ).length;
+        const individualHolePayout =
+          holePayouts[holeNumber] / (totalWinnersForHole || 1);
+
         detailsArray.push({
           hole_number: Number(holeNumber),
           member_id: Number(memberId),
           name_first: first_name,
           net_score: netScore,
-          skins_won: isSplit ? 0.5 : 1.0,
-          payout: isSplit ? (payoutPerSkin || 0) * 0.5 : payoutPerSkin || 0,
+          skins_won: totalWinnersForHole === 1 ? 1.0 : 1 / totalWinnersForHole,
+          payout: individualHolePayout,
         });
       }
     }
   }
-  // ✨ FIXING THE FALLBACK LAYER: Successfully populates detailsArray from skinTotals
+  // EMERGENCY FALLBACK LAYER: Reconstruct data from skinTotals using dynamic carryover calculations
   else if (skinTotals && typeof skinTotals === "object") {
     for (const [playerId, data] of Object.entries(skinTotals)) {
       if (data && data.holes && Array.isArray(data.holes)) {
-        // Dynamic name lookup from our formattedWinners array built in step 2
         const matchingWinnerObj = formattedWinners.find(
           (w) => Number(w.member_id) === Number(playerId),
         );
@@ -92,24 +144,49 @@ export const processSkinsForWeek = async (weekId) => {
           : "Player";
 
         for (const holeNum of data.holes) {
+          const totalWinnersForHole = Object.entries(skinTotals).filter(
+            ([_, d]) => d.holes && d.holes.includes(holeNum),
+          ).length;
+          const individualHolePayout =
+            holePayouts[holeNum] / (totalWinnersForHole || 1);
+
           detailsArray.push({
             hole_number: Number(holeNum),
             member_id: Number(playerId),
             name_first: mappedFirstName,
             net_score: "",
-            skins_won: 1.0,
-            payout: payoutPerSkin || 0,
+            skins_won:
+              totalWinnersForHole === 1 ? 1.0 : 1 / totalWinnersForHole,
+            payout: individualHolePayout,
           });
         }
       }
     }
   }
 
-  // 4. Return clean data structure matching controller signatures perfectly
+  // 4. Update the formattedWinners Leaderboard standings with dynamic carryover math values
+  const correctedLeaderboard = formattedWinners.map((winner) => {
+    const totalCashWon = detailsArray
+      .filter((d) => Number(d.member_id) === Number(winner.member_id))
+      .reduce((sum, h) => sum + h.payout, 0);
+
+    // Sum total fractional skin values dynamically based on split records
+    const dynamicSkinsCount = detailsArray
+      .filter((d) => Number(d.member_id) === Number(winner.member_id))
+      .reduce((sum, h) => sum + h.skins_won, 0);
+
+    return {
+      ...winner,
+      skins_won: dynamicSkinsCount,
+      payout: Math.round(totalCashWon), // Apply custom league rounding criteria (.50 rounds up)
+    };
+  });
+
+  // 5. Return clean data structure matching controller signatures perfectly
   return {
     totalPot: totalPot || 0,
-    leaderboard: formattedWinners,
-    holeDetails: detailsArray, // ✨ FIXED: Changed from generatedHoleDetails to detailsArray
+    leaderboard: correctedLeaderboard.sort((a, b) => b.payout - a.payout), // Automatically sorts by earnings
+    holeDetails: detailsArray,
   };
 };
 

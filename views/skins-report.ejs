@@ -1,135 +1,80 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-<%- include('layouts/header'); %>
+  <%- include('layouts/header'); %>
   <style>
-    .player-link {
-      color: #1b4332;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .player-link:hover {
-      color: #18aa24;
-      text-decoration: underline;
-    }
-.skin-winner-card {
-  background-color: #d1e7dd;
-  border: 3px solid #18aa24 !important;
-  font-weight: 700;
+    .player-link { color: #1b4332; text-decoration: none; transition: color 0.2s ease; }
+    .player-link:hover { color: #18aa24; text-decoration: underline; }
+    
+    /* Standard Skin Winner (Outright or Flat-Rate Split) */
+    .skin-winner-card { background-color: #d1e7dd; border: 3px solid #18aa24 !important; font-weight: 700; }
+    .skin-winner-card .net-score { color: #0f5132; font-weight: 700; }
+    
+    /* ✨ Premium Amber/Gold Class for Carried-Over Jackpot Skins */
+    .skin-carryover-winner-card { background-color: #fff3cd !important; border: 3px solid #ffc107 !important; font-weight: 700; }
+    .skin-carryover-winner-card .net-score { color: #664d03 !important; font-weight: 700; }
+    
+    .border-dashed { border: 1.5px dashed rgba(27, 67, 50, 0.25) !important; }
+    .stroke-marker { color: #dc3545; font-weight: bold; margin-left: 2px; }
+    .gallery-header { text-align: center; margin-top: 1.5rem; }
+    .gallery-header h1 { font-weight: 700; margin-bottom: 0.5rem; }
+    .gallery-header p { opacity: 0.9; margin-bottom: 1rem; }
+    .skins-table-card { border: 1.5px solid rgba(27, 67, 50, 0.15); border-radius: 18px; overflow: hidden; }
+    .skins-custom-table th { background-color: #1b4332 !important; color: white !important; padding: 14px; font-weight: 600; letter-spacing: 0.5px; border: 1px solid rgba(255, 255, 255, 0.15); }
+    .skins-custom-table td { vertical-align: middle; padding: 4px 6px; border: 1px solid rgba(27, 67, 50, 0.1); }
+  /* Gold Dashed Border for Holes that Built up the active Jackpot */
+.skin-carryover-feeder-cell {
+  border: 2px dashed #ffc107 !important;
+  background-color: rgba(255, 243, 205, 0.25) !important; /* Extremely subtle warm tint */
 }
 
-.skin-winner-card .net-score {
-  color: #0f5132;
-  font-weight: 700;
-}
-
-    .border-dashed {
-      border: 1.5px dashed rgba(27, 67, 50, 0.25) !important;
-    }
-
-    .stroke-marker {
-      color: #dc3545;
-      font-weight: bold;
-      margin-left: 2px;
-    }
-
-    .gallery-header {
-      text-align: center;
-      margin-top: 1.5rem;
-    }
-
-    .gallery-header h1 {
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .gallery-header p {
-      opacity: 0.9;
-      margin-bottom: 1rem;
-    }
-
-    .skins-table-card {
-      border: 1.5px solid rgba(27, 67, 50, 0.15);
-      border-radius: 18px;
-      overflow: hidden;
-    }
-
-    .skins-custom-table th {
-      background-color: #1b4332 !important;
-      color: white !important;
-      padding: 14px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .skins-custom-table td {
-      vertical-align: middle;
-      padding: 4px 6px;
-      border: 1px solid rgba(27, 67, 50, 0.1);
-    }
   </style>
 </head>
-
 <body>
-<%- include('layouts/navbar'); %>
+  <%- include('layouts/navbar'); %>
+  
   <div class="container">
     <div class="gallery-header">
       <h1>Week <%= selectedWeekId %> Skins Report</h1>
-     <p>Bottoms Up Golf League • 2026 Season</p>
+      <p>Bottoms Up Golf League • 2026 Season</p>
     </div>
   </div>
+
   <div class="container my-4">
     <div class="skins-toolbar mb-3">
       <div class="toolbar-left">
         <form method="GET" action="/skins-report" class="d-flex align-items-center gap-2">
           <label for="weekId" class="fw-bold mb-0">Week</label>
-
           <select name="weekId" id="weekId" class="form-select form-select-sm" onchange="this.form.submit()">
-<% weeks.forEach(w => { %>
-            <option value="<%= w.week_id %>" <%= w.week_id === selectedWeekId ? "selected" : "" %>>
-              Week <%= w.week_id %>
-            </option>
-<% }) %>
+            <% weeks.forEach(w => { %>
+              <option value="<%= w.week_id %>" <%= w.week_id === selectedWeekId ? "selected" : "" %>>
+                Week <%= w.week_id %>
+              </option>
+            <% }) %>
           </select>
         </form>
       </div>
-
       <div class="toolbar-center">
-        <span class="toolbar-stat">
-          Pot:
-          <strong>$<%= totalPot.toFixed(2) %></strong>
-        </span>
-
-        <span class="toolbar-stat">
-          Skins:
-          <strong><%= holeDetails.length %></strong>
-        </span>
+        <span class="toolbar-stat"> Pot: <strong>$<%= totalPot.toFixed(2) %></strong> </span>
+        <span class="toolbar-stat"> Skins: <strong><%= holeDetails.length %></strong> </span>
       </div>
-
-    </div>
-<% if (!selectedWeekId) { %>
-
-    <div class="alert alert-warning text-center shadow-sm" style="border-radius: 12px">
-      No game data has been processed yet.
     </div>
 
-<% } else { %>
-  <div class="row mt-2">
-      <div class="col-12">
-        <div class="card shadow-sm skins-table-card">
-          <div class="card-header text-white py-3" style="background-color: #1b4332">
-            <h5 class="card-title mb-0 fw-bold">
-            Participant Complete Scores Grid
-            </h5>
-            <small class="text-white-50">Displays Gross / Net scores. Highlighted green cells indicate a
-              won skin.</small>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-bordered align-middle text-center mb-0 skins-custom-table">
-              <thead>
+    <% if (!selectedWeekId) { %>
+      <div class="alert alert-warning text-center shadow-sm" style="border-radius: 12px">
+        No game data has been processed yet.
+      </div>
+    <% } else { %>
+      <div class="row mt-2">
+        <div class="col-12">
+          <div class="card shadow-sm skins-table-card">
+            <div class="card-header text-white py-3" style="background-color: #1b4332">
+              <h5 class="card-title mb-0 fw-bold"> Participant Complete Scores Grid </h5>
+              <small class="text-white-50">Displays Gross / Net scores. Green cells indicate standard skins; Gold cells highlight dynamic carryover jackpot wins.</small>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered align-middle text-center mb-0 skins-custom-table">
+                <thead>
                   <tr>
                     <th class="text-start" style="min-width: 180px">Player</th>
                     <th style="width: 70px">Hcp</th>
@@ -140,168 +85,209 @@
                     <th style="width: 100px">Payout ($)</th>
                   </tr>
                 </thead>
-
-<tbody>
-  <% if (participantScores.length === 0) { %>
-    <tr>
-      <td colspan="12" class="text-muted py-4">
-        No active participant data found for this week.
-      </td>
-    </tr>
-  <% } else { %>
-    <% participantScores.forEach(player => { %>
-    <% 
-  let skinTotal = 0; 
+                <tbody>
+                  <% if (participantScores.length === 0) { %>
+                    <tr>
+                      <td colspan="13" class="text-muted py-4"> No active participant data found for this week. </td>
+                    </tr>
+                  <% } else { %>
+                   <% participantScores.forEach(player => { %>
+<% 
+  let skinTotal = 0;
+  let payoutSum = 0;
   const currentPlayerId = player.member_id || player.memberId;
-  
-  // 1. Calculate total skin points for this specific player
-  player.holes.forEach(h => { 
-    const playerWonThisHole = holeDetails.some(d => d.hole_number === h.holeNumber && d.member_id === currentPlayerId); 
-    if (playerWonThisHole) {
-      const totalWinnersForHole = holeDetails.filter(d => d.hole_number === h.holeNumber).length;
-      skinTotal += (totalWinnersForHole === 1) ? 1 : 0.5;
-    }
-  }); 
 
-  // 2. Calculate the exact overall skins awarded across the field by grouping by unique hole numbers
-  let overallFieldSkins = 0;
-  for (let hNumber = 1; hNumber <= 9; hNumber++) {
-    const winnersForThisHole = holeDetails.filter(w => w.hole_number === hNumber).length;
-    if (winnersForThisHole === 1) {
-      overallFieldSkins += 1; // Outright skin awards exactly 1 skin point to the field
-    } else if (winnersForThisHole > 1) {
-      overallFieldSkins += (0.5 * winnersForThisHole); // Each tied player receives 0.5 skin points
+  // ✨ FRONTEND SEQUENTIAL CARRYOVER AND FEEDER TRACKER
+  const baseValuePerHole = totalPot / 9;
+  let carriedPursePool = 0;
+  
+  // Track status codes: 0 = normal/halved, 1 = feeder hole building pot, 2 = jackpot winner cell
+  const holeCarryoverStatus = {}; 
+  let currentFeederHoles = [];
+
+  for (let hNum = 1; hNum <= 9; hNum++) {
+    const winnersForThisHole = holeDetails.filter(d => Number(d.hole_number) === hNum).length;
+    
+    if (winnersForThisHole === 0) {
+      carriedPursePool += baseValuePerHole;
+      holeCarryoverStatus[hNum] = 0; // Standard halved hole globally
+      currentFeederHoles.push(hNum); // Remember this hole built the active pot
+    } else {
+      if (carriedPursePool > 0) {
+        holeCarryoverStatus[hNum] = 2; // Jackpot winner hit!
+        
+        // Mark all preceding holes that fed this specific jackpot
+        currentFeederHoles.forEach(fHole => {
+          holeCarryoverStatus[fHole] = 1; // Mark as a feeder hole
+        });
+      } else {
+        holeCarryoverStatus[hNum] = 0; // Standard single-hole win
+      }
+      
+      // Reset tracking pools for the next sequence
+      carriedPursePool = 0;
+      currentFeederHoles = [];
     }
   }
-  
-  // 3. Determine the clean cash value per skin point
-  const perSkinValue = overallFieldSkins > 0 ? (totalPot / overallFieldSkins) : 0;
-  const rawPayout = skinTotal * perSkinValue;
 
-  // 4. Apply your custom league rounding rule
-  const roundedPayout = Math.round(rawPayout);
+  // Calculate totals for player row
+  player.holes.forEach(h => {
+    const skinRecord = holeDetails.find(d => Number(d.hole_number) === Number(h.holeNumber) && Number(d.member_id) === Number(currentPlayerId));
+    if (skinRecord) {
+      skinTotal += Number(skinRecord.skins_won || 0);
+      payoutSum += Number(skinRecord.payout || 0);
+    }
+  });
+
+  const roundedPayout = Math.round(payoutSum);
 %>
 
 
-      <tr>
-        <td class="text-start fw-semibold bg-light">
-          <a href="/scores/members/<%= currentPlayerId %>" class="player-link"><%= player.name %></a>
-        </td>
-        <td class="text-muted small bg-light">
-          <%= player.handicap %>
-        </td>
-        
-        <% player.holes.forEach(h => { %>
-          <% const isSkinWinner = holeDetails.some(d => d.hole_number === h.holeNumber && d.member_id === currentPlayerId); %>
-          <td class="<%= isSkinWinner ? 'skin-winner-card fw-bold' : '' %>">
-            <div class="score-cell">
-              <div class="gross-score">Gross: <%= h.gross %></div>
-              <div class="net-score">
-                Net: <%= h.net %>
-                <% if (h.strokes > 0) { %>
-                  <span class="stroke-marker" title="<%= h.strokes %> handicap stroke(s)">*</span>
-                <% } %>
-              </div>
+                      <tr>
+                        <td class="text-start fw-semibold bg-light">
+                          <a href="/scores/members/<%= currentPlayerId %>" class="player-link"><%= player.name %></a>
+                        </td>
+                        <td class="text-muted small bg-light">
+                          <%= player.handicap %>
+                        </td>
+                        
+ <% player.holes.forEach(h => { %>
+  <% 
+    const currentHoleNum = Number(h.holeNumber);
+    const isSkinWinner = holeDetails.some(d => Number(d.hole_number) === currentHoleNum && Number(d.member_id) === Number(currentPlayerId));
+    
+    // Check our global status map for this hole
+    const carryStatus = holeCarryoverStatus[currentHoleNum] || 0;
+
+    // Check if the current player was the eventual recipient of this specific jackpot sequence
+    // We look forward to find the winner of this carryover run
+    let playerWonThisSequence = false;
+    if (carryStatus === 1) {
+      // Find the next hole number that actually claimed the skin
+      for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) {
+        if (holeDetails.some(d => Number(d.hole_number) === nextHole)) {
+          // Check if OUR player is the one who won it
+          if (holeDetails.some(d => Number(d.hole_number) === nextHole && Number(d.member_id) === Number(currentPlayerId))) {
+            playerWonThisSequence = true;
+          }
+          break; // Stop looking after finding the sequence conclusion hole
+        }
+      }
+    }
+
+    // Determine styles dynamically
+    let cellClass = '';
+    if (isSkinWinner) {
+      cellClass = (carryStatus === 2) ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold';
+    } else if (carryStatus === 1 && playerWonThisSequence) {
+      cellClass = 'skin-carryover-feeder-cell'; // ✨ Apply the gold dashed border to feeder cells in their row!
+    }
+  %>
+  <td class="<%= cellClass %>">
+    <div class="score-cell">
+      <div class="gross-score">Gross: <%= h.gross %></div>
+      <div class="net-score">
+        Net: <%= h.net %>
+        <% if (h.strokes > 0) { %>
+          <span class="stroke-marker" title="<%= h.strokes %> handicap stroke(s)">*</span>
+        <% } %>
+      </div>
+    </div>
+  </td>
+<% }) %>
+
+
+                        
+                        <td class="fw-bold text-center">
+                          <%= skinTotal % 1 === 0 ? skinTotal : skinTotal.toFixed(1) %>
+                        </td>
+                        <td class="fw-bold text-end text-success bg-light pe-3">
+                          $<%= roundedPayout.toFixed(2) %>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } %>
+                </tbody>
+              </table>
             </div>
-          </td>
-        <% }) %>
-
-        <td class="fw-bold text-center">
-           <%= skinTotal % 1 === 0 ? skinTotal : skinTotal.toFixed(1) %>
-        </td>
-         <td class="fw-bold text-end text-success bg-light pe-3">
-          $<%= roundedPayout.toFixed(2) %>
-        </td>
-      </tr>
-    <% }) %>
-  <% } %>
-</tbody>
-
-            </table>
           </div>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-5 mb-4">
-        <div class="card shadow-sm h-100 skins-table-card">
-          <div class="card-header border-bottom py-3" style="background-color: #1b4332">
-            <h5 class="card-title mb-0 fw-bold text-white">
-              Payout Standings
-            </h5>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 skins-custom-table">
-              <thead>
-                <tr>
-                  <th class="text-start">Player</th>
-                  <th class="text-center">Skins Won</th>
-                  <th class="text-end">Total Payout</th>
-                </tr>
-              </thead>
-              <tbody>
-<% if (leaderboard.length === 0) { %>
-                <tr>
-                  <td colspan="3" class="text-muted text-center py-4">
-                    No skins won this week. All holes tied!
-                  </td>
-                </tr>
-<% } else { %><% leaderboard.forEach(player => { %>
-                <tr>
-                  <td class="fw-semibold text-start">
-                    <a href="/scores/members/<%= player.member_id || player.id %>" class="player-link"><%= player.name_first %> <%= player.name_last %></a>
-                  </td>
-                  <td class="text-center">
-                    <span class="badge text-dark border border-secondary px-2.5" style="background-color: #e9ecef"><%= player.skins_won %></span>
-                  </td>
-                  <td class="text-end fw-bold text-success">
-                    $<%= player.payout.toFixed(2) %>
-                  </td>
-                </tr>
-<% }) %><% } %>
-              </tbody>
-            </table>
+      
+      <div class="row">
+        <div class="col-lg-5 mb-4">
+          <div class="card shadow-sm h-100 skins-table-card">
+            <div class="card-header border-bottom py-3" style="background-color: #1b4332">
+              <h5 class="card-title mb-0 fw-bold text-white"> Payout Standings </h5>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 skins-custom-table">
+                <thead>
+                  <tr>
+                    <th class="text-start">Player</th>
+                    <th class="text-center">Skins Won</th>
+                    <th class="text-end">Total Payout</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (leaderboard.length === 0) { %>
+                    <tr>
+                      <td colspan="3" class="text-muted text-center py-4"> No skins won this week. All holes tied! </td>
+                    </tr>
+                  <% } else { %>
+                    <% leaderboard.forEach(player => { %>
+                      <tr>
+                        <td class="fw-semibold text-start">
+                          <a href="/scores/members/<%= player.member_id || player.id %>" class="player-link">
+                            <%= player.name_first %> <%= player.name_last %>
+                          </a>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge text-dark border border-secondary px-2.5" style="background-color: #e9ecef">
+                            <%= player.skins_won % 1 === 0 ? player.skins_won : player.skins_won.toFixed(1) %>
+                          </span>
+                        </td>
+                        <td class="text-end fw-bold text-success"> 
+                          $<%= player.payout.toFixed(2) %> 
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-
-    </div>
-  </div>
-
-<% } %>
+    <% } %>
   </div>
 
   <script>
-    document
-      .getElementById("recalcBtn")
-      ?.addEventListener("click", async () => {
-        const weekId = "<%= selectedWeekId %>";
-        if (!weekId) return;
-        const btn = document.getElementById("recalcBtn");
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = "⏳ Calculating...";
-        try {
-          const response = await fetch(`/skins-report/calculate/${weekId}`, {
-            method: "POST",
-          });
-          const result = await response.json();
-          if (response.ok) {
-            window.location.reload();
-          } else {
-            alert("Error: " + (result.error || "Unknown error"));
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-          }
-        } catch (err) {
-          alert("Server fetch error.");
+    document.getElementById("recalcBtn")?.addEventListener("click", async () => {
+      const weekId = "<%= selectedWeekId %>";
+      if (!weekId) return;
+      const btn = document.getElementById("recalcBtn");
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = "⏳ Calculating...";
+      try {
+        const response = await fetch(`/skins-report/calculate/${weekId}`, { method: "POST" });
+        const result = await response.json();
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert("Error: " + (result.error || "Unknown error"));
           btn.disabled = false;
           btn.innerHTML = originalText;
         }
-      });
+      } catch (err) {
+        alert("Server fetch error.");
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
   </script>
-<%- include('layouts/scripts'); %>
-<%- include('layouts/footer'); %>
+  <%- include('layouts/scripts'); %>
+  <%- include('layouts/footer'); %>
 </body>
-
 </html>
