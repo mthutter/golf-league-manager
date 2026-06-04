@@ -141,71 +141,56 @@
 <th style="width: 80px">Skins</th>
                 </tr>
               </thead>
-              <tbody>
-<% if (participantScores.length === 0) { %>
-                <tr>
-                  <td colspan="11" class="text-muted py-4">
-                    No active participant data found for this week.
-                  </td>
-                </tr>
-<% } else { %><% participantScores.forEach(player => { %>
+<tbody>
+  <% if (participantScores.length === 0) { %>
+    <tr>
+      <td colspan="12" class="text-muted py-4">
+        No active participant data found for this week.
+      </td>
+    </tr>
+  <% } else { %>
+    <% participantScores.forEach(player => { %>
+      <% 
+        let skinTotal = 0; 
+        const currentPlayerId = player.member_id || player.memberId;
+        player.holes.forEach(h => { 
+          const winners = holeDetails.filter(d => d.hole_number === h.holeNumber && d.member_id === currentPlayerId); 
+          winners.forEach(w => { 
+            skinTotal += Number(w.skins_won || 0); 
+          }); 
+        }); 
+      %>
+      <tr>
+        <td class="text-start fw-semibold bg-light">
+          <a href="/scores/members/<%= currentPlayerId %>" class="player-link"><%= player.name %></a>
+        </td>
+        <td class="text-muted small bg-light">
+          <%= player.handicap %>
+        </td>
+        
+        <% player.holes.forEach(h => { %>
+          <% const isSkinWinner = holeDetails.some(d => d.hole_number === h.holeNumber && d.member_id === currentPlayerId); %>
+          <td class="<%= isSkinWinner ? 'skin-winner-card fw-bold' : '' %>">
+            <div class="score-cell">
+              <div class="gross-score">Gross: <%= h.gross %></div>
+              <div class="net-score">
+                Net: <%= h.net %>
+                <% if (h.strokes > 0) { %>
+                  <span class="stroke-marker" title="<%= h.strokes %> handicap stroke(s)">*</span>
+                <% } %>
+              </div>
+            </div>
+          </td>
+        <% }) %>
 
-<% let skinTotal = 0;
+        <td class="fw-bold text-center">
+          <%= skinTotal %>
+        </td>
+      </tr>
+    <% }) %>
+  <% } %>
+</tbody>
 
-player.holes.forEach(h => {
-  const winners = holeDetails.filter(
-    d =>
-      d.hole_number === h.holeNumber &&
-      d.member_id === (player.member_id || player.memberId)
-  );
-
-  winners.forEach(w => {
-    skinTotal += Number(w.skins_won || 0);
-  });
-}); %>
-                <tr>
-                  <td class="text-start fw-semibold bg-light">
-                    <a href="/scores/members/<%= player.member_id || player.memberId %>" class="player-link"><%= player.name %></a>
-                  </td>
-                  <td class="text-muted small bg-light">
-<%= player.handicap %>
-<% player.holes.forEach(h => { %>
-<% const currentPlayerId =
-      player.member_id || player.memberId;
-
-    const isSkinWinner = holeDetails.some(
-      d =>
-        d.hole_number === h.holeNumber &&
-        d.member_id === currentPlayerId
-    ); %>
-                  <td class="<%= isSkinWinner ? 'skin-winner-card fw-bold' : '' %>">
-<div class="score-cell">
-  <div class="gross-score">
-    Gross:<%= h.gross %>
-  </div>
-
-  <div class="net-score">
-    Net:<%= h.net %>
-
-<% if (h.strokes > 0) { %>
-      <span
-        class="stroke-marker"
-        title="<%= h.strokes %> handicap stroke(s)"
-      >
-        *
-      </span>
-<% } %>
-  </div>
-</div>
-                  </td>
-<% }) %>
-                  <td class="fw-bold text-center">
-<%= skinTotal %>
-</td>
-                </tr>
-<% }) %>
-<% } %>
-              </tbody>
             </table>
           </div>
         </div>

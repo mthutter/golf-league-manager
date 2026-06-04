@@ -30,7 +30,7 @@ export const getSkinsReport = async (req, res) => {
 
     // Choose selected week or fallback to the latest one
     const selectedWeekId = req.query.weekId
-      ? Number(req.query.query.weekId)
+      ? Number(req.query.weekId)
       : weeks[0]?.week_id || null;
 
     // Fetch report statistics from the service
