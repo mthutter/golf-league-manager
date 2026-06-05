@@ -163,18 +163,31 @@
         <div class="col-12">
           <div class="card shadow-sm skins-table-card">
             <div
-              class="card-header text-white py-3"
+              class="card-header text-white py-3 d-flex justify-content-between align-items-center"
               style="background-color: #1b4332"
             >
-              <h5 class="card-title mb-0 fw-bold">
-                Participant Gross/Net Scores
-              </h5>
-              <small class="text-white-50"
-                >Displays Gross / Net scores. Green cells indicate standard
-                skins; Gold cells highlight dynamic carryover jackpot
-                wins.</small
-              >
+              <div>
+                <h5 class="card-title mb-0 fw-bold">
+                  Participant Gross/Net Scores
+                </h5>
+                <small class="text-white-50"
+                  >Displays Gross / Net scores. Green cells indicate standard
+                  skins; Gold cells highlight dynamic carryover jackpot
+                  wins.</small
+                >
+              </div>
+
+              <!-- Sleek inline pot tracker matching the rest of the white header layout -->
+              <div class="text-end ps-3">
+                <div
+                  class="fs-5 fw-bold text-nowrap text-white"
+                  style="letter-spacing: 0.5px"
+                >
+                  Pot: $35.00
+                </div>
+              </div>
             </div>
+
             <div class="table-responsive">
               <table
                 class="table table-bordered align-middle text-center mb-0 skins-custom-table"
