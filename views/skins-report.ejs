@@ -28,6 +28,34 @@
   background-color: rgba(255, 243, 205, 0.25) !important; /* Extremely subtle warm tint */
 }
 
+.score-cell 
+  {
+  line-height: 1.05;
+}
+
+.gross-score {
+  font-size: clamp(.55rem, .9vw, .75rem);
+}
+
+.net-score {
+  font-size: clamp(.45rem, .8vw, .65rem);
+}
+
+.players {
+  font-size: clamp(.65rem, 1vw, .85rem);
+}
+
+.scorecard td:first-child,
+.scorecard th:first-child {
+  padding-left: clamp(4px, .5vw, 10px);
+}
+
+.scorecard-header th {
+  font-size: clamp(.55rem, 1vw, .80rem);
+  padding: clamp(2px, .4vw, 5px)
+           clamp(3px, .6vw, 8px);
+  font-weight: 700;
+}
   </style>
 </head>
 <body>
@@ -54,10 +82,7 @@
           </select>
         </form>
       </div>
-      <div class="toolbar-center">
-        <span class="toolbar-stat"> Pot: <strong>$<%= totalPot.toFixed(2) %></strong> </span>
-        <span class="toolbar-stat"> Skins: <strong><%= holeDetails.length %></strong> </span>
-      </div>
+    
     </div>
 
     <% if (!selectedWeekId) { %>
@@ -69,26 +94,26 @@
         <div class="col-12">
           <div class="card shadow-sm skins-table-card">
             <div class="card-header text-white py-3" style="background-color: #1b4332">
-              <h5 class="card-title mb-0 fw-bold"> Participant Complete Scores Grid </h5>
+              <h5 class="card-title mb-0 fw-bold"> Participant Gross/Net Scores </h5>
               <small class="text-white-50">Displays Gross / Net scores. Green cells indicate standard skins; Gold cells highlight dynamic carryover jackpot wins.</small>
             </div>
             <div class="table-responsive">
               <table class="table table-bordered align-middle text-center mb-0 skins-custom-table">
-                <thead>
+                <thead class="scorecard-header">
                   <tr>
-                    <th class="text-start" style="min-width: 180px">Player</th>
-                    <th style="width: 70px">Hcp</th>
+                    <th class="text-start" style="min-width: 110px">Player</th>
+                    <th style="width: 70px">HCP</th>
                     <% for (let h = 1; h <= 9; h++) { %>
                       <th>Hole <%= h %></th>
                     <% } %>
-                    <th style="width: 80px">Skins</th>
+                    <th style="width: 60px">Skins</th>
                     <th style="width: 100px">Payout ($)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% if (participantScores.length === 0) { %>
                     <tr>
-                      <td colspan="13" class="text-muted py-4"> No active participant data found for this week. </td>
+                      <td colspan="13" class=" text-muted py-4"> No active participant data found for this week. </td>
                     </tr>
                   <% } else { %>
                    <% participantScores.forEach(player => { %>
@@ -144,10 +169,10 @@
 
 
                       <tr>
-                        <td class="text-start fw-semibold bg-light">
+                        <td class="text-start fw-semibold bg-light players">
                           <a href="/scores/members/<%= currentPlayerId %>" class="player-link"><%= player.name %></a>
                         </td>
-                        <td class="text-muted small bg-light">
+                        <td class="text-muted small bg-light players">
                           <%= player.handicap %>
                         </td>
                         
@@ -186,9 +211,9 @@
   <td class="<%= cellClass %>">
     <div class="score-cell">
       <div class="gross-score">Gross: <%= h.gross %></div>
-      <div class="net-score">
+      <div class="net-score"><strong>
         Net: <%= h.net %>
-        <% if (h.strokes > 0) { %>
+        <% if (h.strokes > 0) { %></strong>
           <span class="stroke-marker" title="<%= h.strokes %> handicap stroke(s)">*</span>
         <% } %>
       </div>
@@ -198,7 +223,7 @@
 
 
                         
-                        <td class="fw-bold text-center">
+                        <td class="fw-bold text-center players">
                           <%= skinTotal % 1 === 0 ? skinTotal : skinTotal.toFixed(1) %>
                         </td>
                         <td class="fw-bold text-end text-success bg-light pe-3">
@@ -214,51 +239,7 @@
         </div>
       </div>
       
-      <div class="row">
-        <div class="col-lg-5 mb-4">
-          <div class="card shadow-sm h-100 skins-table-card">
-            <div class="card-header border-bottom py-3" style="background-color: #1b4332">
-              <h5 class="card-title mb-0 fw-bold text-white"> Payout Standings </h5>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-hover align-middle mb-0 skins-custom-table">
-                <thead>
-                  <tr>
-                    <th class="text-start">Player</th>
-                    <th class="text-center">Skins Won</th>
-                    <th class="text-end">Total Payout</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (leaderboard.length === 0) { %>
-                    <tr>
-                      <td colspan="3" class="text-muted text-center py-4"> No skins won this week. All holes tied! </td>
-                    </tr>
-                  <% } else { %>
-                    <% leaderboard.forEach(player => { %>
-                      <tr>
-                        <td class="fw-semibold text-start">
-                          <a href="/scores/members/<%= player.member_id || player.id %>" class="player-link">
-                            <%= player.name_first %> <%= player.name_last %>
-                          </a>
-                        </td>
-                        <td class="text-center">
-                          <span class="badge text-dark border border-secondary px-2.5" style="background-color: #e9ecef">
-                            <%= player.skins_won % 1 === 0 ? player.skins_won : player.skins_won.toFixed(1) %>
-                          </span>
-                        </td>
-                        <td class="text-end fw-bold text-success"> 
-                          $<%= player.payout.toFixed(2) %> 
-                        </td>
-                      </tr>
-                    <% }) %>
-                  <% } %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+     
     <% } %>
   </div>
 
