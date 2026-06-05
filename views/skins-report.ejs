@@ -93,6 +93,36 @@
         padding: clamp(2px, 0.4vw, 5px) clamp(3px, 0.6vw, 8px);
         font-weight: 700;
       }
+
+      /* Optional custom style for your new active-week class if needed */
+      .active-week {
+        background-color: #18aa24 !important;
+        color: white !important;
+        font-weight: bold;
+        border-color: #1b4332 !important;
+      }
+      /* ===== Fix Button Link Conflict ===== */
+      .button-link {
+        display: inline-block;
+        text-decoration: none;
+      }
+
+      .week-nav {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .week-nav .btn {
+        min-width: 85px;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        transition: all 0.2s ease;
+      }
+      .week-nav .btn:hover {
+        transform: translateY(-1px);
+      }
     </style>
   </head>
   <body>
@@ -108,20 +138,19 @@
       </div>
     </div>
     <div class="container my-4">
-      <div class="skins-toolbar mb-3">
-        <div class="toolbar-left d-flex flex-wrap gap-2 align-items-center">
-          <span class="fw-bold me-1">Weeks:</span>
-          <% weeks.forEach(function(w) { %>
-          <a
-            href="/skins-report?weekId=<%= w.week_id %>"
-            class="btn btn-sm <%= w.week_id === selectedWeekId ? 'btn-success fw-bold' : 'btn-outline-secondary' %>"
-          >
-            Wk
-            <%= w.week_id %>
-          </a>
-          <% }) %>
-        </div>
-      </div>
+      <!-- Your New Week Navigation Structure -->
+      <!-- <div class="week-nav">
+        <% weeks.forEach(week => { %>
+        <a
+          href="/scores/weekly/<%= week.week_number %>"
+          class="button-link btn btn-light btn-sm <%= Number(week.week_number) === Number(selectedWeekId) ? 'active-week' : '' %>"
+        >
+          Week
+          <%= week.week_number %>
+        </a>
+        <% }) %>
+      </div>-->
+
       <% if (!selectedWeekId) { %>
       <div
         class="alert alert-warning text-center shadow-sm"
@@ -218,35 +247,35 @@
                       <%= player.handicap %>
                     </td>
                     <% player.holes.forEach(function(h) { 
-        const currentHoleNum = Number(h.holeNumber); 
-        const isSkinWinner = holeDetails.some(function(d) { 
-          const mId = d.member_id || d.memberId; 
-          const hNum = d.hole_number || d.holeNumber; 
-          return Number(hNum) === currentHoleNum && Number(mId) === Number(currentPlayerId); 
-        }); 
-        const carryStatus = holeCarryoverStatus[currentHoleNum] || 0; 
-        let playerWonThisSequence = false; 
-        if (carryStatus === 1) { 
-          for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) { 
-            if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) { 
-              if (holeDetails.some(function(d) { 
-                const mId = d.member_id || d.memberId; 
-                const hNum = d.hole_number || d.holeNumber; 
-                return Number(hNum) === nextHole && Number(mId) === Number(currentPlayerId); 
-              })) { 
-                playerWonThisSequence = true; 
-              } 
-              break; 
-            } 
-          } 
-        } 
-        let cellClass = ''; 
-        if (isSkinWinner) { 
-          cellClass = carryStatus === 2 ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold'; 
-        } else if (carryStatus === 1 && playerWonThisSequence) { 
-          cellClass = 'skin-carryover-feeder-cell'; 
-        } 
-      %>
+                        const currentHoleNum = Number(h.holeNumber); 
+                        const isSkinWinner = holeDetails.some(function(d) { 
+                          const mId = d.member_id || d.memberId; 
+                          const hNum = d.hole_number || d.holeNumber; 
+                          return Number(hNum) === currentHoleNum && Number(mId) === Number(currentPlayerId); 
+                        }); 
+                        const carryStatus = holeCarryoverStatus[currentHoleNum] || 0; 
+                        let playerWonThisSequence = false; 
+                        if (carryStatus === 1) { 
+                          for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) { 
+                            if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) { 
+                              if (holeDetails.some(function(d) { 
+                                const mId = d.member_id || d.memberId; 
+                                const hNum = d.hole_number || d.holeNumber; 
+                                return Number(hNum) === nextHole && Number(mId) === Number(currentPlayerId); 
+                              })) { 
+                                playerWonThisSequence = true; 
+                              } 
+                              break; 
+                            } 
+                          } 
+                        } 
+                        let cellClass = ''; 
+                        if (isSkinWinner) { 
+                          cellClass = carryStatus === 2 ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold'; 
+                        } else if (carryStatus === 1 && playerWonThisSequence) { 
+                          cellClass = 'skin-carryover-feeder-cell'; 
+                        } 
+                      %>
                     <td class="<%= cellClass %>">
                       <div class="score-cell">
                         <div class="gross-score">Gross: <%= h.gross %></div>
@@ -276,17 +305,17 @@
                   </tr>
                   <% }); %>
 
+                  <!-- Grand Totals Row aligned under Hole 9 -->
                   <tr
-                    class="table-dark fw-bold border-top border-dark"
-                    style="background-color: #112a1f !important; color: white"
+                    class="fw-bold border-top border-dark"
+                    style="background-color: #179117 !important; color: white"
                   >
-                    <!-- 1. Large empty spacer covering the Player column, HCP column, and Holes 1 through 8 (10 columns total) -->
+                    <!-- Blank spacer covering Player, HCP, and Holes 1 through 8 (10 columns) -->
                     <td colspan="10"></td>
 
-                    <!-- 2. The TOTALS label sits perfectly in the 11th column space, right under Hole 9 -->
+                    <!-- TOTALS text rests directly under Hole 9 (11th column space) -->
                     <td class="text-center players">TOTALS:</td>
 
-                    <!-- 3. Grand total numbers stay right where they are under Skins and Payout -->
                     <td class="text-center players">
                       <%= Number.isInteger(grandTotalSkins) ? grandTotalSkins :
                       grandTotalSkins.toFixed(1) %>
@@ -295,7 +324,6 @@
                       $<%= grandTotalPayout.toFixed(2) %>
                     </td>
                   </tr>
-
                   <% } %>
                 </tbody>
               </table>
