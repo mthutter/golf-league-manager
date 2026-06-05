@@ -1,6 +1,4 @@
 import * as skinsService from "../services/skins.service.js";
-import * as adminService from "../services/admin.service.js";
-
 /**
  * POST /skins/calculate/:weekId
  */
@@ -57,16 +55,13 @@ export const getSkinsReport = async (req, res) => {
 
     const baseReportData = await skinsService.buildSkinsReport(selectedWeekId);
 
-    const computedSkins =
-      await adminService.processSkinsForWeek(selectedWeekId);
-
     res.render("skins-report", {
       weeks: weeks || [],
       selectedWeekId,
-      totalPot: baseReportData?.totalPot || computedSkins?.totalPot || 0,
+      totalPot: baseReportData?.totalPot || 0,
       participantScores: baseReportData?.participantScores || [],
-      leaderboard: computedSkins?.leaderboard || [],
-      holeDetails: computedSkins?.holeDetails || [],
+      leaderboard: baseReportData?.leaderboard || [],
+      holeDetails: baseReportData?.holeDetails || [],
     });
   } catch (error) {
     console.error("Skins Report Route Error:", error);

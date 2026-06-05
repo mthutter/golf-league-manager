@@ -181,6 +181,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
   });
 
   totalPot = leaderboard.reduce((sum, player) => sum + player.payout, 0);
+  console.log(totalPot);
 
   return { leaderboard, holeDetails, participantScores, totalPot };
 };
