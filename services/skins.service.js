@@ -184,3 +184,111 @@ export const buildSkinsReport = async (selectedWeekId) => {
 
   return { leaderboard, holeDetails, participantScores, totalPot };
 };
+
+export const calculateAndSaveSkins = async (weekId) => {
+  const results = await calculateSkins(weekId);
+
+  await run(
+    `
+    DELETE FROM skin_details
+    WHERE week_id = ?
+    `,
+    [weekId],
+  );
+
+  await run(
+    `
+  DELETE FROM weekly_skins
+  WHERE week_id = ?
+  `,
+    [weekId],
+  );
+
+  for (const winner of results.detailedHoleWinners) {
+    await run(
+      `
+      INSERT INTO skin_details
+      (
+        week_id,
+        hole_number,
+        skins_available,
+        member_id,
+        skins_awarded,
+        payout,
+        score
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        weekId,
+        winner.holeNumber,
+        results.payoutPerSkin,
+        winner.memberId,
+        1,
+        results.payoutPerSkin,
+        winner.score,
+      ],
+    );
+  }
+  for (const [memberId, data] of Object.entries(results.skinTotals)) {
+    await run(
+      `
+    INSERT INTO weekly_skins
+    (
+      week_id,
+      member_id,
+      skins_won,
+      payout
+    )
+    VALUES (?, ?, ?, ?)
+    `,
+      [
+        weekId,
+        Number(memberId),
+        data.count,
+        data.count * results.payoutPerSkin,
+      ],
+    );
+  }
+
+  return results;
+};
+
+export const saveSkinDetails = async (weekId, holeDetails, totalPot) => {
+  await run(
+    `
+    DELETE FROM skin_details
+    WHERE week_id = ?
+    `,
+    [weekId],
+  );
+
+  const baseValuePerHole = totalPot / 9;
+
+  for (const detail of holeDetails) {
+    await run(
+      `
+      INSERT INTO skin_details
+      (
+        week_id,
+        hole_number,
+        skins_available,
+        member_id,
+        skins_awarded,
+        payout,
+        score
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        weekId,
+        detail.hole_number,
+        baseValuePerHole,
+        detail.member_id,
+        detail.skins_won,
+        detail.payout,
+        detail.net_score,
+      ],
+    );
+  }
+};

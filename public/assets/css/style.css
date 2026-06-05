@@ -28,21 +28,22 @@ a {
   text-decoration: none;
 }
 
-th, td{
-   border: 2px solid #dddddd; 
+th,
+td {
+  border: 2px solid #dddddd;
 }
 
 /* Visual indicators for sorting */
-      th.sort-asc::after {
-        content: " ▲";
-        position: absolute;
-        right: 8px;
-      }
-      th.sort-desc::after {
-        content: " ▼";
-        position: absolute;
-        right: 8px;
-      }
+th.sort-asc::after {
+  content: " ▲";
+  position: absolute;
+  right: 8px;
+}
+th.sort-desc::after {
+  content: " ▼";
+  position: absolute;
+  right: 8px;
+}
 
 .container,
 .container-fluid {

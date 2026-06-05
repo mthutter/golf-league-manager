@@ -1,5 +1,4 @@
 import * as skinsService from "../services/skins.service.js";
-// ✨ FIX: Import your admin service file where processSkinsForWeek is defined
 import * as adminService from "../services/admin.service.js";
 
 /**
@@ -8,16 +7,29 @@ import * as adminService from "../services/admin.service.js";
 export const calculateSkinsApi = async (req, res) => {
   try {
     const { weekId } = req.params;
+
     if (!weekId) {
-      return res.status(400).json({ error: "Missing weekId parameter." });
+      return res.status(400).json({
+        error: "Missing weekId parameter.",
+      });
     }
 
-    // Call service to run calculation engine from admin service
-    const results = await adminService.processSkinsForWeek(Number(weekId));
-    return res.status(200).json({ message: "Success", data: results });
+    console.log("calculateSkinsApi fired");
+
+    const results = await skinsService.calculateAndSaveSkins(Number(weekId));
+
+    console.log(`[SKINS] Week ${weekId} calculated successfully`);
+
+    return res.status(200).json({
+      success: true,
+      results,
+    });
   } catch (error) {
     console.error("Skins calculation route error:", error);
-    return res.status(500).json({ error: error.message });
+
+    return res.status(500).json({
+      error: error.message,
+    });
   }
 };
 
@@ -26,10 +38,8 @@ export const calculateSkinsApi = async (req, res) => {
  */
 export const getSkinsReport = async (req, res) => {
   try {
-    // 1. Get summary of all tournament weeks available
     const weeks = await skinsService.getWeeksSummary();
 
-    // 2. Determine selected week ID
     const selectedWeekId = req.query.weekId
       ? Number(req.query.weekId)
       : weeks[0]?.week_id || null;
@@ -45,14 +55,11 @@ export const getSkinsReport = async (req, res) => {
       });
     }
 
-    // 3. Fetch base stats and participant score matrix details from your main service
     const baseReportData = await skinsService.buildSkinsReport(selectedWeekId);
 
-    // 4. ✨ FIX: Call the function from adminService instead of skinsService
     const computedSkins =
       await adminService.processSkinsForWeek(selectedWeekId);
 
-    // 5. Render your EJS view, feeding the exact structured arrays it expects
     res.render("skins-report", {
       weeks: weeks || [],
       selectedWeekId,

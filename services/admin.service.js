@@ -51,9 +51,6 @@ export const processSkinsForWeek = async (weekId) => {
   // =========================================================================
   // ✨ SEQUENTIAL HOLE-BY-HOLE CARRYOVER ENGINE
   // =========================================================================
-  const baseValuePerHole = (totalPot || 0) / 9; // Flat base value natively split among 9 holes
-  let carriedPursePool = 0; // Accumulator for halved/tied hole roll overs
-  const holePayouts = {}; // Tracks final dynamic cash value for Holes 1-9
 
   // First Pass: Walk sequentially from Hole 1 to Hole 9 to calculate carryover purses
   for (let hNum = 1; hNum <= 9; hNum++) {
