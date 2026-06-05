@@ -8,65 +8,53 @@
         text-decoration: none;
         transition: color 0.2s ease;
       }
-
       .player-link:hover {
         color: #18aa24;
         text-decoration: underline;
       }
-
       .skin-winner-card {
         background-color: #d1e7dd;
         border: 3px solid #18aa24 !important;
         font-weight: 700;
       }
-
       .skin-winner-card .net-score {
         color: #0f5132;
         font-weight: 700;
       }
-
       .skin-carryover-winner-card {
         background-color: #fff3cd !important;
         border: 3px solid #ffc107 !important;
         font-weight: 700;
       }
-
       .skin-carryover-winner-card .net-score {
         color: #664d03 !important;
         font-weight: 700;
       }
-
       .border-dashed {
         border: 1.5px dashed rgba(27, 67, 50, 0.25) !important;
       }
-
       .stroke-marker {
         color: #dc3545;
         font-weight: bold;
         margin-left: 2px;
       }
-
       .gallery-header {
         text-align: center;
         margin-top: 1.5rem;
       }
-
       .gallery-header h1 {
         font-weight: 700;
         margin-bottom: 0.5rem;
       }
-
       .gallery-header p {
         opacity: 0.9;
         margin-bottom: 1rem;
       }
-
       .skins-table-card {
         border: 1.5px solid rgba(27, 67, 50, 0.15);
         border-radius: 18px;
         overflow: hidden;
       }
-
       .skins-custom-table th {
         background-color: #1b4332 !important;
         color: white !important;
@@ -75,39 +63,31 @@
         letter-spacing: 0.5px;
         border: 1px solid rgba(255, 255, 255, 0.15);
       }
-
       .skins-custom-table td {
         vertical-align: middle;
         padding: 4px 6px;
         border: 1px solid rgba(27, 67, 50, 0.1);
       }
-
       .skin-carryover-feeder-cell {
         border: 2px dashed #ffc107 !important;
         background-color: rgba(255, 243, 205, 0.25) !important;
       }
-
       .score-cell {
         line-height: 1.05;
       }
-
       .gross-score {
         font-size: clamp(0.55rem, 0.9vw, 0.75rem);
       }
-
       .net-score {
         font-size: clamp(0.45rem, 0.8vw, 0.65rem);
       }
-
       .players {
         font-size: clamp(0.65rem, 1vw, 0.85rem);
       }
-
       .scorecard td:first-child,
       .scorecard th:first-child {
         padding-left: clamp(4px, 0.5vw, 10px);
       }
-
       .scorecard-header th {
         font-size: clamp(0.55rem, 1vw, 0.8rem);
         padding: clamp(2px, 0.4vw, 5px) clamp(3px, 0.6vw, 8px);
@@ -115,7 +95,6 @@
       }
     </style>
   </head>
-
   <body>
     <%- include('layouts/navbar') %>
     <div class="container">
@@ -192,18 +171,19 @@
                       No active participant data found for this week.
                     </td>
                   </tr>
-                  <% } else { participantScores.forEach(function(player) { let
-                  skinTotal = 0; let payoutSum = 0; const currentPlayerId =
-                  player.member_id || player.memberId; const baseValuePerHole =
-                  totalPot / 9; let carriedPursePool = 0; const
-                  holeCarryoverStatus = {}; let currentFeederHoles = []; for
-                  (let hNum = 1; hNum <= 9; hNum++) { const winnersForThisHole =
-                  holeDetails.filter(function(d) { return Number(d.hole_number
-                  || d.holeNumber) === hNum; }).length; if (winnersForThisHole
-                  === 0) { carriedPursePool += baseValuePerHole;
-                  holeCarryoverStatus[hNum] = 0; currentFeederHoles.push(hNum);
-                  } else { if (carriedPursePool > 0) { holeCarryoverStatus[hNum]
-                  = 2; currentFeederHoles.forEach(function(fHole) {
+                  <% } else { let grandTotalSkins = 0; let grandTotalPayout = 0;
+                  participantScores.forEach(function(player) { let skinTotal =
+                  0; let payoutSum = 0; const currentPlayerId = player.member_id
+                  || player.memberId; const baseValuePerHole = totalPot / 9; let
+                  carriedPursePool = 0; const holeCarryoverStatus = {}; let
+                  currentFeederHoles = []; for (let hNum = 1; hNum <= 9; hNum++)
+                  { const winnersForThisHole = holeDetails.filter(function(d) {
+                  return Number(d.hole_number || d.holeNumber) === hNum;
+                  }).length; if (winnersForThisHole === 0) { carriedPursePool +=
+                  baseValuePerHole; holeCarryoverStatus[hNum] = 0;
+                  currentFeederHoles.push(hNum); } else { if (carriedPursePool >
+                  0) { holeCarryoverStatus[hNum] = 2;
+                  currentFeederHoles.forEach(function(fHole) {
                   holeCarryoverStatus[fHole] = 1; }); } else {
                   holeCarryoverStatus[hNum] = 0; } carriedPursePool = 0;
                   currentFeederHoles = []; } } player.holes.forEach(function(h)
@@ -223,7 +203,9 @@
                   const nextHoleWinnerId = nextHoleWinnerRecord.member_id ||
                   nextHoleWinnerRecord.memberId; if (Number(nextHoleWinnerId)
                   === Number(currentPlayerId)) { skinTotal += 1; } break; } } }
-                  }); const roundedPayout = Math.round(payoutSum); %>
+                  }); const roundedPayout = Math.round(payoutSum);
+                  grandTotalSkins += skinTotal; grandTotalPayout +=
+                  roundedPayout; %>
                   <tr>
                     <td class="text-start fw-semibold bg-light players">
                       <a
@@ -236,37 +218,35 @@
                       <%= player.handicap %>
                     </td>
                     <% player.holes.forEach(function(h) { 
-          const currentHoleNum = Number(h.holeNumber);
-          const isSkinWinner = holeDetails.some(function(d) { 
-            const mId = d.member_id || d.memberId;
-            const hNum = d.hole_number || d.holeNumber;
-            return Number(hNum) === currentHoleNum && Number(mId) === Number(currentPlayerId); 
-          });
-          const carryStatus = holeCarryoverStatus[currentHoleNum] || 0;
-          let playerWonThisSequence = false;
-
-          if (carryStatus === 1) {
-            for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) {
-              if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) {
-                if (holeDetails.some(function(d) { 
-                  const mId = d.member_id || d.memberId;
-                  const hNum = d.hole_number || d.holeNumber;
-                  return Number(hNum) === nextHole && Number(mId) === Number(currentPlayerId); 
-                })) {
-                  playerWonThisSequence = true;
-                }
-                break;
-              }
-            }
-          }
-
-          let cellClass = '';
-          if (isSkinWinner) {
-            cellClass = carryStatus === 2 ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold';
-          } else if (carryStatus === 1 && playerWonThisSequence) {
-            cellClass = 'skin-carryover-feeder-cell';
-          }
-        %>
+        const currentHoleNum = Number(h.holeNumber); 
+        const isSkinWinner = holeDetails.some(function(d) { 
+          const mId = d.member_id || d.memberId; 
+          const hNum = d.hole_number || d.holeNumber; 
+          return Number(hNum) === currentHoleNum && Number(mId) === Number(currentPlayerId); 
+        }); 
+        const carryStatus = holeCarryoverStatus[currentHoleNum] || 0; 
+        let playerWonThisSequence = false; 
+        if (carryStatus === 1) { 
+          for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) { 
+            if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) { 
+              if (holeDetails.some(function(d) { 
+                const mId = d.member_id || d.memberId; 
+                const hNum = d.hole_number || d.holeNumber; 
+                return Number(hNum) === nextHole && Number(mId) === Number(currentPlayerId); 
+              })) { 
+                playerWonThisSequence = true; 
+              } 
+              break; 
+            } 
+          } 
+        } 
+        let cellClass = ''; 
+        if (isSkinWinner) { 
+          cellClass = carryStatus === 2 ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold'; 
+        } else if (carryStatus === 1 && playerWonThisSequence) { 
+          cellClass = 'skin-carryover-feeder-cell'; 
+        } 
+      %>
                     <td class="<%= cellClass %>">
                       <div class="score-cell">
                         <div class="gross-score">Gross: <%= h.gross %></div>
@@ -294,10 +274,29 @@
                       $<%= roundedPayout.toFixed(2) %>
                     </td>
                   </tr>
-                  <% 
-    });
-  } 
-  %>
+                  <% }); %>
+
+                  <tr
+                    class="table-dark fw-bold border-top border-dark"
+                    style="background-color: #112a1f !important; color: white"
+                  >
+                    <!-- 1. Large empty spacer covering the Player column, HCP column, and Holes 1 through 8 (10 columns total) -->
+                    <td colspan="10"></td>
+
+                    <!-- 2. The TOTALS label sits perfectly in the 11th column space, right under Hole 9 -->
+                    <td class="text-center players">TOTALS:</td>
+
+                    <!-- 3. Grand total numbers stay right where they are under Skins and Payout -->
+                    <td class="text-center players">
+                      <%= Number.isInteger(grandTotalSkins) ? grandTotalSkins :
+                      grandTotalSkins.toFixed(1) %>
+                    </td>
+                    <td class="text-end pe-3">
+                      $<%= grandTotalPayout.toFixed(2) %>
+                    </td>
+                  </tr>
+
+                  <% } %>
                 </tbody>
               </table>
             </div>
