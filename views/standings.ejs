@@ -161,7 +161,8 @@
         </h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
-      <div class="week-nav">
+      <div class="week-nav d-flex align-items-center flex-wrap">
+        <span class="fw-bold me-2 text-white fs-5">Weekly Results:</span>
         <% weeks .filter(week => week.week_number <= currentWeek.week_number)
         .forEach(week => { %>
 
