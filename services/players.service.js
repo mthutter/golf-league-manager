@@ -38,12 +38,13 @@ export async function createNewPlayer(playerData) {
     year_joined,
     status,
     type,
+    sex,
   } = playerData;
 
   const sql = `
     INSERT INTO members ( 
-      name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type 
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type, sex
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
