@@ -39,7 +39,6 @@ export function showAddPlayerForm(req, res) {
 export async function createPlayer(req, res) {
   const { name_first, name_last } = req.body;
 
-  // Basic Validation stays in controller to prevent hitting the DB unnecessarily
   if (!name_first || !name_last) {
     return res.status(400).render("error", {
       message: "First and last name are required.",
@@ -53,5 +52,57 @@ export async function createPlayer(req, res) {
   } catch (err) {
     console.error("Insert Error:", err.message);
     res.status(500).render("error", { message: "Unable to create player." });
+  }
+}
+
+/* ==========================================================================
+   NEW WORK: EDIT AND UPDATE LOGIC
+   ========================================================================== */
+
+/**
+ * GET /players/:id/edit - Show modify player form
+ */
+export async function showEditPlayerForm(req, res) {
+  const playerId = req.params.id;
+  try {
+    // Fetches individual player record from service layer
+    const player = await playersService.getPlayerById(playerId);
+
+    if (!player) {
+      return res.status(404).render("error", { message: "Player not found." });
+    }
+
+    // Renders the modify-player.ejs view you just built
+    res.render("modify-player", { player: player });
+  } catch (err) {
+    console.error("Fetch Player Error:", err.message);
+    res
+      .status(500)
+      .render("error", { message: "Unable to load player details." });
+  }
+}
+
+/**
+ * POST /players/:id - Update player record
+ */
+export async function updatePlayer(req, res) {
+  const playerId = req.params.id;
+  const { name_first, name_last } = req.body;
+
+  // Basic validation match to createPlayer action logic
+  if (!name_first || !name_last) {
+    return res.status(400).render("error", {
+      message: "First and last name are required.",
+    });
+  }
+
+  try {
+    // Sends structural payload object along with targeting ID
+    await playersService.updatePlayerById(playerId, req.body);
+    console.log(`Player ID ${playerId} updated successfully.`);
+    res.redirect("/players");
+  } catch (err) {
+    console.error("Update Error:", err.message);
+    res.status(500).render("error", { message: "Unable to update player." });
   }
 }

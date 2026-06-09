@@ -1,1 +1,1 @@
-SELECT * FROM scores WHERE week_id = '5'
+UPDATE members SET sex = 'F' where id = '22'
