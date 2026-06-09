@@ -1,10 +1,12 @@
 import { calculateSkins } from "./skins.service.js";
-import { get, all } from "../config/db.js"; // Added 'all' for complete lookup support
+import { get, all, run } from "../config/db.js"; // Included 'run' for database write transactions
 
 /**
- * Fetches skins calculations and maps player IDs to DB names
+ * Fetches skins calculations, processes complex carryover logic, and maps player IDs to DB names
  */
 export const processSkinsForWeek = async (weekId) => {
+  if (!weekId) throw new Error("A valid week ID is required.");
+
   // 1. Fetch raw metrics from the core skin calculator
   const { skinTotals, payoutPerSkin, totalPot, holeBreakdown } =
     await calculateSkins(weekId);
@@ -21,6 +23,7 @@ export const processSkinsForWeek = async (weekId) => {
     Object.entries(skinTotals || {}).map(async ([playerId, data]) => {
       let name_first = "Player";
       let name_last = `#${playerId}`;
+
       try {
         const member = await get(
           "SELECT name_last, name_first FROM members WHERE id = ?",
@@ -32,10 +35,11 @@ export const processSkinsForWeek = async (weekId) => {
         }
       } catch (sqlError) {
         console.error(
-          `SQLite look up failed for player ID ${playerId}:`,
+          `SQLite lookup failed for player ID ${playerId}:`,
           sqlError,
         );
       }
+
       const skinsCount =
         data && typeof data === "object" ? data.count || 0 : data || 0;
       return {
@@ -51,10 +55,12 @@ export const processSkinsForWeek = async (weekId) => {
   // =========================================================================
   // ✨ SEQUENTIAL HOLE-BY-HOLE CARRYOVER ENGINE
   // =========================================================================
+  const baseValuePerHole = Number(totalPot || 0) / 9; // Native financial division per hole
+  let carriedPursePool = 0; // Tracks jackpot roll accumulation loops
+  const holePayouts = {}; // Stores computed final payouts per hole number
 
   // First Pass: Walk sequentially from Hole 1 to Hole 9 to calculate carryover purses
   for (let hNum = 1; hNum <= 9; hNum++) {
-    // Count how many players claimed this specific hole across our field datasets
     let winnersForThisHole = 0;
 
     if (holeBreakdown && Array.isArray(holeBreakdown)) {
@@ -88,6 +94,7 @@ export const processSkinsForWeek = async (weekId) => {
     for (let h = 1; h <= 9; h++) {
       if (holePayouts[h] > 0) totalSkinsClaimedAcrossField++;
     }
+
     if (totalSkinsClaimedAcrossField > 0) {
       const leftoverBonusPerWonHole =
         carriedPursePool / totalSkinsClaimedAcrossField;
@@ -106,8 +113,6 @@ export const processSkinsForWeek = async (weekId) => {
       const memberId =
         record.member_id || record.memberId || record.playerId || record.id;
       const netScore = record.net_score || record.netScore || record.net || 0;
-      const isSplit =
-        record.is_split || record.isSplit || record.winnersCount > 1 || false;
       const first_name =
         record.name_first || record.nameFirst || record.firstName || "Player";
 
@@ -115,6 +120,7 @@ export const processSkinsForWeek = async (weekId) => {
         const totalWinnersForHole = holeBreakdown.filter(
           (r) => (r.hole_number || r.holeNumber || r.hole) === holeNumber,
         ).length;
+
         const individualHolePayout =
           holePayouts[holeNumber] / (totalWinnersForHole || 1);
 
@@ -144,6 +150,7 @@ export const processSkinsForWeek = async (weekId) => {
           const totalWinnersForHole = Object.entries(skinTotals).filter(
             ([_, d]) => d.holes && d.holes.includes(holeNum),
           ).length;
+
           const individualHolePayout =
             holePayouts[holeNum] / (totalWinnersForHole || 1);
 
@@ -167,7 +174,6 @@ export const processSkinsForWeek = async (weekId) => {
       .filter((d) => Number(d.member_id) === Number(winner.member_id))
       .reduce((sum, h) => sum + h.payout, 0);
 
-    // Sum total fractional skin values dynamically based on split records
     const dynamicSkinsCount = detailsArray
       .filter((d) => Number(d.member_id) === Number(winner.member_id))
       .reduce((sum, h) => sum + h.skins_won, 0);
@@ -175,14 +181,46 @@ export const processSkinsForWeek = async (weekId) => {
     return {
       ...winner,
       skins_won: dynamicSkinsCount,
-      payout: Math.round(totalCashWon), // Apply custom league rounding criteria (.50 rounds up)
+      payout: Math.round(totalCashWon), // Apply custom rounding (.50 rounds up)
     };
   });
+
+  // =========================================================================
+  // 🌟 DATABASE TRANSACTION LAYER: Saves data rows permanently to SQLite
+  // =========================================================================
+  await run(`DELETE FROM skin_details WHERE week_id = ?`, [weekId]);
+  await run(`DELETE FROM weekly_skins WHERE week_id = ?`, [weekId]);
+
+  // Commit individual hole records
+  for (const detail of detailsArray) {
+    await run(
+      `INSERT INTO skin_details (week_id, hole_number, skins_available, member_id, skins_awarded, payout, score)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        weekId,
+        detail.hole_number,
+        baseValuePerHole,
+        detail.member_id,
+        detail.skins_won,
+        detail.payout,
+        detail.net_score || "",
+      ],
+    );
+  }
+
+  // Commit weekly total records per player
+  for (const summary of correctedLeaderboard) {
+    await run(
+      `INSERT INTO weekly_skins (week_id, member_id, skins_won, payout)
+       VALUES (?, ?, ?, ?)`,
+      [weekId, summary.member_id, summary.skins_won, summary.payout],
+    );
+  }
 
   // 5. Return clean data structure matching controller signatures perfectly
   return {
     totalPot: totalPot || 0,
-    leaderboard: correctedLeaderboard.sort((a, b) => b.payout - a.payout), // Automatically sorts by earnings
+    leaderboard: correctedLeaderboard.sort((a, b) => b.payout - a.payout),
     holeDetails: detailsArray,
   };
 };

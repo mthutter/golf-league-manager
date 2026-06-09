@@ -93,20 +93,16 @@
         padding: clamp(2px, 0.4vw, 5px) clamp(3px, 0.6vw, 8px);
         font-weight: 700;
       }
-
-      /* Optional custom style for your new active-week class if needed */
       .active-week {
         background-color: #18aa24 !important;
         color: white !important;
         font-weight: bold;
         border-color: #1b4332 !important;
       }
-      /* ===== Fix Button Link Conflict ===== */
       .button-link {
         display: inline-block;
         text-decoration: none;
       }
-
       .week-nav {
         display: flex;
         justify-content: center;
@@ -131,25 +127,12 @@
       <div class="gallery-header">
         <h1>
           Skins Report - Week
-          <%= selectedWeekId %>/June 1
+          <%= selectedWeekId %>
         </h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
     </div>
     <div class="container my-4">
-      <!-- Your New Week Navigation Structure -->
-      <!-- <div class="week-nav">
-        <% weeks.forEach(week => { %>
-        <a
-          href="/scores/weekly/<%= week.week_number %>"
-          class="button-link btn btn-light btn-sm <%= Number(week.week_number) === Number(selectedWeekId) ? 'active-week' : '' %>"
-        >
-          Week
-          <%= week.week_number %>
-        </a>
-        <% }) %>
-      </div>-->
-
       <% if (!selectedWeekId) { %>
       <div
         class="alert alert-warning text-center shadow-sm"
@@ -171,27 +154,24 @@
                 </h5>
                 <small class="text-white-50"
                   >Displays Gross / Net scores. Green cells indicate standard
-                  skins; Gold cells highlight dynamic carryover jackpot
-                  wins.</small
+                  skins.</small
                 >
               </div>
-
-              <!-- Sleek inline pot tracker matching the rest of the white header layout -->
               <div class="text-end ps-3">
                 <div
                   class="fs-5 fw-bold text-nowrap text-white"
                   style="letter-spacing: 0.5px"
                 >
-                  Pot: $35.00
+                  Pot: $<%= Number(totalPot || 0).toFixed(2) %>
                 </div>
               </div>
             </div>
-
             <div class="table-responsive">
               <table
                 class="table table-bordered align-middle text-center mb-0 skins-custom-table"
               >
                 <thead class="scorecard-header">
+                  <!-- ROW 1: Labels -->
                   <tr>
                     <th class="text-start" style="min-width: 110px">Player</th>
                     <th style="width: 70px">HCP</th>
@@ -204,49 +184,93 @@
                     <th style="width: 60px">Skins</th>
                     <th style="width: 100px">Payout ($)</th>
                   </tr>
+                  <!-- ROW 2: Men's Hole Handicap Indexes -->
+                  <% if (participantScores && participantScores.length > 0 &&
+                  participantScores[0].holes) { %>
+                  <tr
+                    class="bg-light text-dark"
+                    style="
+                      font-size: clamp(0.55rem, 0.8vw, 0.75rem);
+                      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+                    "
+                  >
+                    <td
+                      class="text-start fw-bold text-success"
+                      style="
+                        padding: 6px 14px;
+                        background-color: #f8f9fa !important;
+                      "
+                    >
+                      Men's HCP
+                    </td>
+                    <td style="background-color: #f8f9fa !important"></td>
+                    <% participantScores[0].holes.forEach(function(h) { %>
+                    <td
+                      class="fw-bold text-dark"
+                      style="background-color: #f8f9fa !important"
+                    >
+                      <%= h.handicap_men %>
+                    </td>
+                    <% }); %>
+                    <td style="background-color: #f8f9fa !important"></td>
+                    <td style="background-color: #f8f9fa !important"></td>
+                  </tr>
+                  <% } %>
+                  <!-- ROW 3: Women's Hole Handicap Indexes -->
+                  <% if (participantScores && participantScores.length > 0 &&
+                  participantScores[0].holes) { %>
+                  <tr
+                    class="bg-light text-dark"
+                    style="
+                      font-size: clamp(0.55rem, 0.8vw, 0.75rem);
+                      border-bottom: 2px solid #1b4332;
+                    "
+                  >
+                    <td
+                      class="text-start fw-bold text-danger"
+                      style="
+                        padding: 6px 14px;
+                        background-color: #f8f9fa !important;
+                      "
+                    >
+                      Women's HCP
+                    </td>
+                    <td style="background-color: #f8f9fa !important"></td>
+                    <% participantScores[0].holes.forEach(function(h) { %>
+                    <td
+                      class="fw-bold text-dark"
+                      style="background-color: #f8f9fa !important"
+                    >
+                      <%= h.handicap_women %>
+                    </td>
+                    <% }); %>
+                    <td style="background-color: #f8f9fa !important"></td>
+                    <td style="background-color: #f8f9fa !important"></td>
+                  </tr>
+                  <% } %>
                 </thead>
                 <tbody>
-                  <% if (participantScores.length === 0) { %>
+                  <% if (!participantScores || participantScores.length === 0) { %>
                   <tr>
                     <td colspan="13" class="text-muted py-4">
                       No active participant data found for this week.
                     </td>
                   </tr>
                   <% } else { let grandTotalSkins = 0; let grandTotalPayout = 0;
-                  participantScores.forEach(function(player) { let skinTotal =
-                  0; let payoutSum = 0; const currentPlayerId = player.member_id
-                  || player.memberId; const baseValuePerHole = totalPot / 9; let
-                  carriedPursePool = 0; const holeCarryoverStatus = {}; let
-                  currentFeederHoles = []; for (let hNum = 1; hNum <= 9; hNum++)
-                  { const winnersForThisHole = holeDetails.filter(function(d) {
-                  return Number(d.hole_number || d.holeNumber) === hNum;
-                  }).length; if (winnersForThisHole === 0) { carriedPursePool +=
-                  baseValuePerHole; holeCarryoverStatus[hNum] = 0;
-                  currentFeederHoles.push(hNum); } else { if (carriedPursePool >
-                  0) { holeCarryoverStatus[hNum] = 2;
-                  currentFeederHoles.forEach(function(fHole) {
-                  holeCarryoverStatus[fHole] = 1; }); } else {
-                  holeCarryoverStatus[hNum] = 0; } carriedPursePool = 0;
-                  currentFeederHoles = []; } } player.holes.forEach(function(h)
-                  { const currentHoleNum = Number(h.holeNumber); const
-                  skinRecord = holeDetails.find(function(d) { const
-                  checkMemberId = d.member_id || d.memberId; const checkHoleNum
-                  = d.hole_number || d.holeNumber; return Number(checkHoleNum)
-                  === currentHoleNum && Number(checkMemberId) ===
-                  Number(currentPlayerId); }); if (skinRecord) { skinTotal +=
-                  Number(skinRecord.skins_won || skinRecord.skinsWon || 0);
-                  payoutSum += Number(skinRecord.payout || 0); } const
-                  carryStatus = holeCarryoverStatus[currentHoleNum] || 0; if
-                  (carryStatus === 1) { for (let nextHole = currentHoleNum + 1;
-                  nextHole <= 9; nextHole++) { const nextHoleWinnerRecord =
-                  holeDetails.find(function(d) { return Number(d.hole_number ||
-                  d.holeNumber) === nextHole; }); if (nextHoleWinnerRecord) {
-                  const nextHoleWinnerId = nextHoleWinnerRecord.member_id ||
-                  nextHoleWinnerRecord.memberId; if (Number(nextHoleWinnerId)
-                  === Number(currentPlayerId)) { skinTotal += 1; } break; } } }
-                  }); const roundedPayout = Math.round(payoutSum);
-                  grandTotalSkins += skinTotal; grandTotalPayout +=
-                  roundedPayout; %>
+                  // Calculate carryover sequences across the hole details const
+                  baseValuePerHole = Number(totalPot || 0) / 9; let
+                  carriedPursePool = 0; const holeCarryoverStatus = {}; for (let
+                  hNum = 1; hNum <= 9; hNum++) { const winnersForThisHole =
+                  holeDetails.filter(function(d) { return Number(d.hole_number
+                  || d.holeNumber) === hNum; }).length; if (winnersForThisHole
+                  === 0) { carriedPursePool += baseValuePerHole;
+                  holeCarryoverStatus[hNum] = 1; } else { if (carriedPursePool >
+                  0) { holeCarryoverStatus[hNum] = 2; } else {
+                  holeCarryoverStatus[hNum] = 0; } carriedPursePool = 0; } }
+                  participantScores.forEach(function(player) { const
+                  currentPlayerId = player.memberId || player.member_id; const
+                  payoutSum = Number(player.payout || 0); let dynamicSkinsCount
+                  = 0; %>
                   <tr>
                     <td class="text-start fw-semibold bg-light players">
                       <a
@@ -258,36 +282,49 @@
                     <td class="text-muted small bg-light players">
                       <%= player.handicap %>
                     </td>
+
+                    <!-- Individual Player Scoring Grid Loop -->
+                    <% if (player.holes && player.holes.length > 0) { %>
                     <% player.holes.forEach(function(h) { 
-                        const currentHoleNum = Number(h.holeNumber); 
-                        const isSkinWinner = holeDetails.some(function(d) { 
-                          const mId = d.member_id || d.memberId; 
-                          const hNum = d.hole_number || d.holeNumber; 
-                          return Number(hNum) === currentHoleNum && Number(mId) === Number(currentPlayerId); 
-                        }); 
-                        const carryStatus = holeCarryoverStatus[currentHoleNum] || 0; 
-                        let playerWonThisSequence = false; 
-                        if (carryStatus === 1) { 
-                          for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) { 
-                            if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) { 
-                              if (holeDetails.some(function(d) { 
-                                const mId = d.member_id || d.memberId; 
-                                const hNum = d.hole_number || d.holeNumber; 
-                                return Number(hNum) === nextHole && Number(mId) === Number(currentPlayerId); 
-                              })) { 
-                                playerWonThisSequence = true; 
-                              } 
-                              break; 
-                            } 
-                          } 
-                        } 
-                        let cellClass = ''; 
-                        if (isSkinWinner) { 
-                          cellClass = carryStatus === 2 ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold'; 
-                        } else if (carryStatus === 1 && playerWonThisSequence) { 
-                          cellClass = 'skin-carryover-feeder-cell'; 
-                        } 
-                      %>
+                             const currentHoleNum = Number(h.holeNumber); 
+                             
+                             const isSkinWinner = holeDetails.some(function(d) { 
+                               const mId = Number(d.member_id || d.memberId); 
+                               const hNum = Number(d.hole_number || d.holeNumber); 
+                               return hNum === currentHoleNum && mId === Number(currentPlayerId); 
+                             });
+                             
+                             const carryStatus = holeCarryoverStatus[currentHoleNum] || 0;
+                             let playerWonThisSequence = false;
+
+                             if (carryStatus === 1) {
+                               for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) {
+                                 if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) {
+                                   if (holeDetails.some(function(d) { 
+                                     const mId = Number(d.member_id || d.memberId); 
+                                     const hNum = Number(d.hole_number || d.holeNumber); 
+                                     return hNum === nextHole && mId === Number(currentPlayerId); 
+                                   })) {
+                                     playerWonThisSequence = true;
+                                   }
+                                   break;
+                                 }
+                               }
+                             }
+                             
+                             let cellClass = ''; 
+                             if (isSkinWinner) { 
+                               if (carryStatus === 2) {
+                                 cellClass = 'skin-carryover-winner-card';
+                               } else {
+                                 cellClass = 'skin-winner-card fw-bold';
+                               }
+                               dynamicSkinsCount += 1;
+                             } else if (carryStatus === 1 && playerWonThisSequence) {
+                               cellClass = 'skin-carryover-feeder-cell'; 
+                               dynamicSkinsCount += 1; 
+                             }
+                        %>
                     <td class="<%= cellClass %>">
                       <div class="score-cell">
                         <div class="gross-score">Gross: <%= h.gross %></div>
@@ -307,31 +344,36 @@
                       </div>
                     </td>
                     <% }); %>
+                    <% } else { %>
+                    <% for (let i = 1; i <= 9; i++) { %>
+                    <td>-</td>
+                    <% } %>
+                    <% } %>
+
+                    <% 
+                        grandTotalSkins += dynamicSkinsCount; 
+                        grandTotalPayout += payoutSum; 
+                      %>
+
+                    <!-- Aggregate Skins Won Column -->
                     <td class="fw-bold text-center players">
-                      <%= Number.isInteger(skinTotal) ? skinTotal :
-                      skinTotal.toFixed(1) %>
+                      <%= dynamicSkinsCount %>
                     </td>
+                    <!-- Net Financial Earnings Column -->
                     <td class="fw-bold text-end text-success bg-light pe-3">
-                      $<%= roundedPayout.toFixed(2) %>
+                      $<%= payoutSum.toFixed(2) %>
                     </td>
                   </tr>
                   <% }); %>
 
-                  <!-- Grand Totals Row aligned under Hole 9 -->
+                  <!-- Grand Summary Bottom Matrix Row -->
                   <tr
                     class="fw-bold border-top border-dark"
                     style="background-color: #179117 !important; color: white"
                   >
-                    <!-- Blank spacer covering Player, HCP, and Holes 1 through 8 (10 columns) -->
                     <td colspan="10"></td>
-
-                    <!-- TOTALS text rests directly under Hole 9 (11th column space) -->
                     <td class="text-center players">TOTALS:</td>
-
-                    <td class="text-center players">
-                      <%= Number.isInteger(grandTotalSkins) ? grandTotalSkins :
-                      grandTotalSkins.toFixed(1) %>
-                    </td>
+                    <td class="text-center players"><%= grandTotalSkins %></td>
                     <td class="text-end pe-3">
                       $<%= grandTotalPayout.toFixed(2) %>
                     </td>
