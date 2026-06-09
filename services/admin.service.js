@@ -1,13 +1,16 @@
 import { calculateSkins } from "./skins.service.js";
-import { get, all } from "../config/db.js"; // Added 'all' for complete lookup support
+import { get, all, run } from "../config/db.js"; // Added 'all' for complete lookup support
 
 /**
  * Fetches skins calculations and maps player IDs to DB names
  */
 export const processSkinsForWeek = async (weekId) => {
   // 1. Fetch raw metrics from the core skin calculator
-  const { skinTotals, payoutPerSkin, totalPot, holeBreakdown } =
+
+  const { skinTotals, payoutPerSkin, totalPot, detailedHoleWinners } =
     await calculateSkins(weekId);
+
+  const holeBreakdown = detailedHoleWinners;
 
   console.log("--- SKINS CALCULATION ENGINE RAW OUTPUT ---", {
     skinTotals,
@@ -51,7 +54,9 @@ export const processSkinsForWeek = async (weekId) => {
   // =========================================================================
   // ✨ SEQUENTIAL HOLE-BY-HOLE CARRYOVER ENGINE
   // =========================================================================
-
+  const baseValuePerHole = totalPot / 9;
+  let carriedPursePool = 0;
+  const holePayouts = {};
   // First Pass: Walk sequentially from Hole 1 to Hole 9 to calculate carryover purses
   for (let hNum = 1; hNum <= 9; hNum++) {
     // Count how many players claimed this specific hole across our field datasets
@@ -85,6 +90,7 @@ export const processSkinsForWeek = async (weekId) => {
   // Handle ultimate hole edge case: If hole 9 is tied, distribute leftover pool to active winners evenly
   if (carriedPursePool > 0) {
     let totalSkinsClaimedAcrossField = 0;
+
     for (let h = 1; h <= 9; h++) {
       if (holePayouts[h] > 0) totalSkinsClaimedAcrossField++;
     }
@@ -160,7 +166,7 @@ export const processSkinsForWeek = async (weekId) => {
       }
     }
   }
-
+  console.log("DETAILS ARRAY", detailsArray);
   // 4. Update the formattedWinners Leaderboard standings with dynamic carryover math values
   const correctedLeaderboard = formattedWinners.map((winner) => {
     const totalCashWon = detailsArray
@@ -178,7 +184,20 @@ export const processSkinsForWeek = async (weekId) => {
       payout: Math.round(totalCashWon), // Apply custom league rounding criteria (.50 rounds up)
     };
   });
-
+  console.log("CORRECTED LEADERBOARD", correctedLeaderboard);
+  for (const winner of correctedLeaderboard) {
+    await run(
+      `
+    UPDATE weekly_skins
+    SET
+      skins_won = ?,
+      payout = ?
+    WHERE week_id = ?
+      AND member_id = ?
+    `,
+      [winner.skins_won, winner.payout, weekId, winner.member_id],
+    );
+  }
   // 5. Return clean data structure matching controller signatures perfectly
   return {
     totalPot: totalPot || 0,

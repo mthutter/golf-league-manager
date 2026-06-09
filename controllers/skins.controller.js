@@ -62,6 +62,7 @@ export const getSkinsReport = async (req, res) => {
       participantScores: baseReportData?.participantScores || [],
       leaderboard: baseReportData?.leaderboard || [],
       holeDetails: baseReportData?.holeDetails || [],
+      holeInfo: baseReportData?.holeInfo || [],
     });
   } catch (error) {
     console.error("Skins Report Route Error:", error);

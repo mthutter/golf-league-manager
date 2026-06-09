@@ -1,28 +1,32 @@
 import { all, run } from "../config/db.js"; // Ensure your DB client includes promise or callback bindings
 
-// --- Promise Helpers for SQLite (use if your config/db.js uses callbacks) ---
-const dbAll = (sql, params = []) =>
-  new Promise((res, rej) => all(sql, params, (e, r) => (e ? rej(e) : res(r))));
-
-/**
- * 1. The Core Skin Calculation Engine
- * Processes individual net holes to find unique low scores for a week.
- */
 export const calculateSkins = async (weekId) => {
   if (!weekId) throw new Error("A valid week ID is required.");
 
   // Fetch hole difficulties
   const holeData = await all(
-    `SELECT hole_number, handicap_men FROM holes WHERE hole_number BETWEEN 1 AND 9`,
+    `
+  SELECT
+    hole_number,
+    handicap_men,
+    handicap_women
+  FROM holes
+  WHERE hole_number BETWEEN 1 AND 9
+  `,
   );
+
   const courseHandicaps = {};
+
   holeData.forEach((h) => {
-    courseHandicaps[h.hole_number] = h.handicap_men;
+    courseHandicaps[h.hole_number] = {
+      men: h.handicap_men,
+      women: h.handicap_women,
+    };
   });
 
   // Fetch match scorecards signed up for skins
   const rawCards = await all(
-    `SELECT s.*, m.name_first, m.name_last FROM scores s 
+    `SELECT s.*, m.name_first, m.name_last, m.sex FROM scores s 
      LEFT JOIN members m ON s.member_id = m.id 
      WHERE s.week_id = ? AND s.skins_entered = 1`,
     [weekId],
@@ -41,7 +45,12 @@ export const calculateSkins = async (weekId) => {
       const gross = player[`gross${h}`] || 0;
       if (gross <= 0) continue;
 
-      const holeDifficultyIndex = courseHandicaps[h] || 18;
+      const playerSex = (player.sex || "M").toUpperCase();
+
+      const holeDifficultyIndex =
+        playerSex === "F"
+          ? courseHandicaps[h]?.women || 18
+          : courseHandicaps[h]?.men || 18;
       let strokesAllowed = Math.floor(emulated18Handicap / 18);
       if (emulated18Handicap % 18 >= holeDifficultyIndex) {
         strokesAllowed += 1;
@@ -61,7 +70,7 @@ export const calculateSkins = async (weekId) => {
   // Isolate outright skins (holes with exactly ONE winner)
   let totalSkinsWon = 0;
   const detailedHoleWinners = [];
-
+  console.log("HOLE SCORES", holeScores);
   Object.entries(holeScores).forEach(([hole, data]) => {
     if (data.winners.length === 1) {
       const winnerId = data.winners[0];
@@ -76,7 +85,8 @@ export const calculateSkins = async (weekId) => {
       detailedHoleWinners.push({
         holeNumber: Number(hole),
         memberId: winnerId,
-        score: data.minNet,
+        net_score: data.minNet,
+        skins_won: 1,
       });
     }
   });
@@ -95,23 +105,14 @@ export const calculateSkins = async (weekId) => {
   };
 };
 
-/**
- * 2. Interface Router function for API execution
- */
 export const runSkinsCalculation = async (weekId) => {
   return calculateSkins(weekId);
 };
 
-/**
- * 3. Fetches unique list of historical scoring weeks
- */
 export const getWeeksSummary = async () => {
   return all(`SELECT DISTINCT week_id FROM scores ORDER BY week_id DESC`);
 };
 
-/**
- * 4. Generates data for EJS rendering matrices
- */
 export const buildSkinsReport = async (selectedWeekId) => {
   let leaderboard = [];
   let holeDetails = [];
@@ -119,34 +120,86 @@ export const buildSkinsReport = async (selectedWeekId) => {
   let courseHandicaps = {};
   let totalPot = 0;
 
+  const holeInfo = await all(`
+  SELECT
+    hole_number,
+    handicap_men,
+    handicap_women
+  FROM holes
+  WHERE hole_number BETWEEN 1 AND 9
+  ORDER BY hole_number
+`);
   if (!selectedWeekId) {
-    return { leaderboard, holeDetails, participantScores, totalPot };
+    return { leaderboard, holeDetails, participantScores, totalPot, holeInfo };
   }
 
   const holeData = await all(
-    `SELECT hole_number, handicap_men FROM holes WHERE hole_number BETWEEN 1 AND 9`,
+    `
+    SELECT
+      hole_number,
+      handicap_men,
+      handicap_women
+    FROM holes
+    WHERE hole_number BETWEEN 1 AND 9
+    `,
   );
+
   holeData.forEach((h) => {
-    courseHandicaps[h.hole_number] = h.handicap_men;
+    courseHandicaps[h.hole_number] = {
+      men: h.handicap_men,
+      women: h.handicap_women,
+    };
   });
 
   leaderboard = await all(
-    `SELECT ws.member_id, m.name_first, m.name_last, ws.skins_won, ws.payout 
-     FROM weekly_skins ws LEFT JOIN members m ON ws.member_id = m.id 
-     WHERE ws.week_id = ? ORDER BY ws.skins_won DESC, m.name_last ASC`,
+    `
+    SELECT
+      ws.member_id,
+      m.name_first,
+      m.name_last,
+      ws.skins_won,
+      ws.payout
+    FROM weekly_skins ws
+    LEFT JOIN members m
+      ON ws.member_id = m.id
+    WHERE ws.week_id = ?
+    ORDER BY ws.skins_won DESC, m.name_last ASC
+    `,
     [selectedWeekId],
   );
-
+  console.log("REPORT LEADERBOARD", leaderboard);
   holeDetails = await all(
-    `SELECT sd.hole_number, sd.score AS net_score, sd.payout, m.name_first, m.name_last, sd.member_id 
-     FROM skin_details sd LEFT JOIN members m ON sd.member_id = m.id WHERE sd.week_id = ?`,
+    `
+    SELECT
+      sd.hole_number,
+      sd.score AS net_score,
+      sd.payout,
+      sd.skins_awarded,
+      m.name_first,
+      m.name_last,
+      sd.member_id
+    FROM skin_details sd
+    LEFT JOIN members m
+      ON sd.member_id = m.id
+    WHERE sd.week_id = ?
+    `,
     [selectedWeekId],
   );
 
   const rawCards = await all(
-    `SELECT s.*, m.name_first, m.name_last FROM scores s 
-     LEFT JOIN members m ON s.member_id = m.id 
-     WHERE s.week_id = ? AND s.skins_entered = 1 ORDER BY m.name_last ASC`,
+    `
+    SELECT
+      s.*,
+      m.name_first,
+      m.name_last,
+      m.sex
+    FROM scores s
+    LEFT JOIN members m
+      ON s.member_id = m.id
+    WHERE s.week_id = ?
+      AND s.skins_entered = 1
+    ORDER BY m.name_last ASC
+    `,
     [selectedWeekId],
   );
 
@@ -157,16 +210,23 @@ export const buildSkinsReport = async (selectedWeekId) => {
 
     for (let h = 1; h <= 9; h++) {
       const gross = player[`gross${h}`] || 0;
-      const holeDifficultyIndex = courseHandicaps[h] || 18;
+
+      const playerSex = (player.sex || "M").toUpperCase();
+
+      const holeDifficultyIndex =
+        playerSex === "F"
+          ? courseHandicaps[h]?.women || 18
+          : courseHandicaps[h]?.men || 18;
 
       let strokesAllowed = Math.floor(emulated18Handicap / 18);
+
       if (emulated18Handicap % 18 >= holeDifficultyIndex) {
         strokesAllowed += 1;
       }
 
       holesArray.push({
         holeNumber: h,
-        gross: gross,
+        gross,
         net: gross > 0 ? gross - strokesAllowed : 0,
         strokes: strokesAllowed,
       });
@@ -181,12 +241,18 @@ export const buildSkinsReport = async (selectedWeekId) => {
   });
 
   totalPot = leaderboard.reduce((sum, player) => sum + player.payout, 0);
-  console.log(totalPot);
 
-  return { leaderboard, holeDetails, participantScores, totalPot };
+  return {
+    leaderboard,
+    holeDetails,
+    participantScores,
+    totalPot,
+    holeInfo,
+  };
 };
 
 export const calculateAndSaveSkins = async (weekId) => {
+  console.log("***** calculateAndSaveSkins CALLED *****", weekId);
   const results = await calculateSkins(weekId);
 
   await run(
@@ -227,7 +293,7 @@ export const calculateAndSaveSkins = async (weekId) => {
         winner.memberId,
         1,
         results.payoutPerSkin,
-        winner.score,
+        winner.net_score,
       ],
     );
   }

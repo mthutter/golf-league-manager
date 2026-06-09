@@ -1,4 +1,5 @@
 import * as adminService from "../services/admin.service.js";
+import * as skinsService from "../services/skins.service.js";
 
 /**
  * Handles GET /admin
@@ -28,6 +29,8 @@ export const calculateSkinsMetrics = async (req, res) => {
     const weekId = Number(req.body.weekId);
 
     // Call service to do the heavy calculations and database queries
+    await skinsService.calculateAndSaveSkins(weekId);
+
     const results = await adminService.processSkinsForWeek(weekId);
 
     res.render("admin-utilities", {
