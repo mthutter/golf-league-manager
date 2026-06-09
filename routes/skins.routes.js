@@ -9,19 +9,6 @@ router.post("/calculate/:weekId", skinsController.calculateSkinsApi);
 // 2. GET /skins/ - Render the EJS template page
 router.get("/", skinsController.getSkinsReport);
 
-//router.get("/calculate/:weekId", async (req, res) => {
-//  try {
-//    const results = await skinsService.calculateAndSaveSkins(
-//      Number(req.params.weekId),
-//    );
-//
-//    res.json(results);
-//  } catch (err) {
-//    console.error(err);
-//    res.status(500).json(err);
-//  }
-//});
-
 router.get("/calculate/:weekId", skinsController.calculateSkinsApi);
 
 export default router;

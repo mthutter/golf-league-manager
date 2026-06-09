@@ -125,13 +125,36 @@
     <%- include('layouts/navbar') %>
     <div class="container">
       <div class="gallery-header">
+        <% var currentWeekObj = weeks.find(function(w) { return
+        Number(w.week_id) === Number(selectedWeekId); }); var activeDateString =
+        currentWeekObj ? currentWeekObj.display_date : '';
+        console.log(currentWeekObj); %>
         <h1>
           Skins Report - Week
           <%= selectedWeekId %>
+          <%= w.display_date%>
         </h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
     </div>
+
+    <div class="container my-4">
+      <div class="week-nav d-flex justify-content-center gap-2 flex-wrap">
+        <% weeks.forEach(function(week) { %>
+        <a
+          href="/skins-report?weekId=<%= week.week_id %>"
+          class="button-link btn btn-light btn-sm <%= Number(week.week_id) === Number(selectedWeekId) ? 'active-week' : '' %>"
+          style="min-width: 140px"
+        >
+          Week
+          <%= week.week_id %>
+          <%= week.display_date ? '/ ' +
+          week.display_date : '' %>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+
     <div class="container my-4">
       <% if (!selectedWeekId) { %>
       <div
@@ -171,7 +194,6 @@
                 class="table table-bordered align-middle text-center mb-0 skins-custom-table"
               >
                 <thead class="scorecard-header">
-                  <!-- ROW 1: Labels -->
                   <tr>
                     <th class="text-start" style="min-width: 110px">Player</th>
                     <th style="width: 70px">HCP</th>
@@ -184,9 +206,8 @@
                     <th style="width: 60px">Skins</th>
                     <th style="width: 100px">Payout ($)</th>
                   </tr>
-                  <!-- ROW 2: Men's Hole Handicap Indexes -->
                   <% if (participantScores && participantScores.length > 0 &&
-                  participantScores[0].holes) { %>
+                  participantScores[0] && participantScores[0].holes) { %>
                   <tr
                     class="bg-light text-dark"
                     style="
@@ -216,9 +237,8 @@
                     <td style="background-color: #f8f9fa !important"></td>
                   </tr>
                   <% } %>
-                  <!-- ROW 3: Women's Hole Handicap Indexes -->
                   <% if (participantScores && participantScores.length > 0 &&
-                  participantScores[0].holes) { %>
+                  participantScores[0] && participantScores[0].holes) { %>
                   <tr
                     class="bg-light text-dark"
                     style="
@@ -256,21 +276,18 @@
                       No active participant data found for this week.
                     </td>
                   </tr>
-                  <% } else { let grandTotalSkins = 0; let grandTotalPayout = 0;
-                  // Calculate carryover sequences across the hole details const
-                  baseValuePerHole = Number(totalPot || 0) / 9; let
-                  carriedPursePool = 0; const holeCarryoverStatus = {}; for (let
-                  hNum = 1; hNum <= 9; hNum++) { const winnersForThisHole =
-                  holeDetails.filter(function(d) { return Number(d.hole_number
-                  || d.holeNumber) === hNum; }).length; if (winnersForThisHole
-                  === 0) { carriedPursePool += baseValuePerHole;
-                  holeCarryoverStatus[hNum] = 1; } else { if (carriedPursePool >
-                  0) { holeCarryoverStatus[hNum] = 2; } else {
-                  holeCarryoverStatus[hNum] = 0; } carriedPursePool = 0; } }
-                  participantScores.forEach(function(player) { const
-                  currentPlayerId = player.memberId || player.member_id; const
-                  payoutSum = Number(player.payout || 0); let dynamicSkinsCount
-                  = 0; %>
+                  <% } else { 
+                      let grandTotalSkins = 0; 
+                      let grandTotalPayout = 0; 
+                      
+                      participantScores.forEach(function(player) { 
+                        const currentPlayerId = player.memberId; 
+                        const skinTotal = Number(player.skins_won || 0); 
+                        const payoutSum = Number(player.payout || 0); 
+                        
+                        grandTotalSkins += skinTotal; 
+                        grandTotalPayout += payoutSum; 
+                  %>
                   <tr>
                     <td class="text-start fw-semibold bg-light players">
                       <a
@@ -282,49 +299,14 @@
                     <td class="text-muted small bg-light players">
                       <%= player.handicap %>
                     </td>
-
-                    <!-- Individual Player Scoring Grid Loop -->
-                    <% if (player.holes && player.holes.length > 0) { %>
                     <% player.holes.forEach(function(h) { 
-                             const currentHoleNum = Number(h.holeNumber); 
-                             
-                             const isSkinWinner = holeDetails.some(function(d) { 
-                               const mId = Number(d.member_id || d.memberId); 
-                               const hNum = Number(d.hole_number || d.holeNumber); 
-                               return hNum === currentHoleNum && mId === Number(currentPlayerId); 
-                             });
-                             
-                             const carryStatus = holeCarryoverStatus[currentHoleNum] || 0;
-                             let playerWonThisSequence = false;
-
-                             if (carryStatus === 1) {
-                               for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) {
-                                 if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) {
-                                   if (holeDetails.some(function(d) { 
-                                     const mId = Number(d.member_id || d.memberId); 
-                                     const hNum = Number(d.hole_number || d.holeNumber); 
-                                     return hNum === nextHole && mId === Number(currentPlayerId); 
-                                   })) {
-                                     playerWonThisSequence = true;
-                                   }
-                                   break;
-                                 }
-                               }
-                             }
-                             
-                             let cellClass = ''; 
-                             if (isSkinWinner) { 
-                               if (carryStatus === 2) {
-                                 cellClass = 'skin-carryover-winner-card';
-                               } else {
-                                 cellClass = 'skin-winner-card fw-bold';
-                               }
-                               dynamicSkinsCount += 1;
-                             } else if (carryStatus === 1 && playerWonThisSequence) {
-                               cellClass = 'skin-carryover-feeder-cell'; 
-                               dynamicSkinsCount += 1; 
-                             }
-                        %>
+                           let cellClass = ''; 
+                           if (h.isSkinWinner) { 
+                             cellClass = h.isJackpot ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold'; 
+                           } else if (h.isFeeder) { 
+                             cellClass = 'skin-carryover-feeder-cell'; 
+                           } 
+                      %>
                     <td class="<%= cellClass %>">
                       <div class="score-cell">
                         <div class="gross-score">Gross: <%= h.gross %></div>
@@ -344,29 +326,14 @@
                       </div>
                     </td>
                     <% }); %>
-                    <% } else { %>
-                    <% for (let i = 1; i <= 9; i++) { %>
-                    <td>-</td>
-                    <% } %>
-                    <% } %>
-
-                    <% 
-                        grandTotalSkins += dynamicSkinsCount; 
-                        grandTotalPayout += payoutSum; 
-                      %>
-
-                    <!-- Aggregate Skins Won Column -->
                     <td class="fw-bold text-center players">
-                      <%= dynamicSkinsCount %>
+                      <%= skinTotal %>
                     </td>
-                    <!-- Net Financial Earnings Column -->
                     <td class="fw-bold text-end text-success bg-light pe-3">
                       $<%= payoutSum.toFixed(2) %>
                     </td>
                   </tr>
                   <% }); %>
-
-                  <!-- Grand Summary Bottom Matrix Row -->
                   <tr
                     class="fw-bold border-top border-dark"
                     style="background-color: #179117 !important; color: white"
@@ -387,35 +354,35 @@
       </div>
       <% } %>
     </div>
+
     <script>
-      document
-        .getElementById("recalcBtn")
-        ?.addEventListener("click", async () => {
-          const weekId = "<%= selectedWeekId || '' %>";
-          if (!weekId) return;
-          const btn = document.getElementById("recalcBtn");
-          const originalText = btn.innerHTML;
-          btn.disabled = true;
-          btn.innerHTML = "⏳ Calculating...";
-          try {
-            const response = await fetch(`/skins-report/calculate/${weekId}`, {
-              method: "POST",
-            });
-            const result = await response.json();
-            if (response.ok) {
-              window.location.reload();
-            } else {
-              alert("Error: " + (result.error || "Unknown error"));
-              btn.disabled = false;
-              btn.innerHTML = originalText;
-            }
-          } catch (err) {
-            alert("Server fetch error.");
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-          }
-        });
+      (function () {
+        var weekId = "<%= selectedWeekId || '' %>";
+        var recalcBtn = document.getElementById("recalcBtn");
+
+        if (recalcBtn && weekId) {
+          recalcBtn.addEventListener("click", function () {
+            var originalText = recalcBtn.innerHTML;
+            recalcBtn.disabled = true;
+            recalcBtn.innerHTML = "⏳ Calculating...";
+
+            fetch("/skins-report/calculate/" + weekId, { method: "POST" })
+              .then(function (res) {
+                return res.json();
+              })
+              .then(function (result) {
+                window.location.reload();
+              })
+              .catch(function (err) {
+                alert("Calculation transaction execution failed.");
+                recalcBtn.disabled = false;
+                recalcBtn.innerHTML = originalText;
+              });
+          });
+        }
+      })();
     </script>
+
     <%- include('layouts/scripts') %>
     <%- include('layouts/footer') %>
   </body>
