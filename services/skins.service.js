@@ -121,28 +121,37 @@ export const buildSkinsReport = async (selectedWeekId) => {
   let totalPot = 0;
 
   const holeInfo = await all(`
-  SELECT
-    hole_number,
-    handicap_men,
-    handicap_women
-  FROM holes
-  WHERE hole_number BETWEEN 1 AND 9
-  ORDER BY hole_number
-`);
-  if (!selectedWeekId) {
-    return { leaderboard, holeDetails, participantScores, totalPot, holeInfo };
-  }
-
-  const holeData = await all(
-    `
     SELECT
       hole_number,
       handicap_men,
       handicap_women
     FROM holes
     WHERE hole_number BETWEEN 1 AND 9
-    `,
-  );
+    ORDER BY hole_number
+  `);
+
+  if (!selectedWeekId) {
+    return {
+      leaderboard,
+      holeDetails,
+      participantScores,
+      totalPot,
+      holeInfo,
+      reportTotals: {
+        skins: 0,
+        payout: 0,
+      },
+    };
+  }
+
+  const holeData = await all(`
+    SELECT
+      hole_number,
+      handicap_men,
+      handicap_women
+    FROM holes
+    WHERE hole_number BETWEEN 1 AND 9
+  `);
 
   holeData.forEach((h) => {
     courseHandicaps[h.hole_number] = {
@@ -167,7 +176,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
     `,
     [selectedWeekId],
   );
-  console.log("REPORT LEADERBOARD", leaderboard);
+
   holeDetails = await all(
     `
     SELECT
@@ -203,9 +212,64 @@ export const buildSkinsReport = async (selectedWeekId) => {
     [selectedWeekId],
   );
 
+  totalPot = leaderboard.reduce(
+    (sum, player) => sum + Number(player.payout || 0),
+    0,
+  );
+
+  /*
+   * Build carryover map
+   *
+   * 0 = normal hole
+   * 1 = feeder hole
+   * 2 = carryover winner hole
+   */
+  const holeCarryoverStatus = {};
+
+  const baseValuePerHole = totalPot / 9;
+
+  let carriedPursePool = 0;
+  let currentFeederHoles = [];
+
+  for (let hNum = 1; hNum <= 9; hNum++) {
+    const winnersForThisHole = holeDetails.filter(
+      (d) => Number(d.hole_number) === hNum,
+    ).length;
+
+    if (winnersForThisHole === 0) {
+      carriedPursePool += baseValuePerHole;
+
+      holeCarryoverStatus[hNum] = -1;
+
+      currentFeederHoles.push(hNum);
+    } else {
+      if (carriedPursePool > 0) {
+        holeCarryoverStatus[hNum] = 2;
+
+        currentFeederHoles.forEach((fHole) => {
+          holeCarryoverStatus[fHole] = 1;
+        });
+      } else {
+        holeCarryoverStatus[hNum] = 0;
+      }
+
+      carriedPursePool = 0;
+      currentFeederHoles = [];
+    }
+  }
+
   participantScores = rawCards.map((player) => {
     const raw9HoleHandicap = player.handicap_used || 0;
+
     const emulated18Handicap = raw9HoleHandicap * 2;
+
+    const leaderboardRow = leaderboard.find(
+      (l) => Number(l.member_id) === Number(player.member_id),
+    ) || {
+      skins_won: 0,
+      payout: 0,
+    };
+
     const holesArray = [];
 
     for (let h = 1; h <= 9; h++) {
@@ -224,23 +288,87 @@ export const buildSkinsReport = async (selectedWeekId) => {
         strokesAllowed += 1;
       }
 
+      const net = gross > 0 ? gross - strokesAllowed : 0;
+
+      let cellClass = "";
+
+      const isSkinWinner = holeDetails.some((d) => {
+        return (
+          Number(d.hole_number) === h &&
+          Number(d.member_id) === Number(player.member_id)
+        );
+      });
+
+      const carryStatus = holeCarryoverStatus[h] || 0;
+
+      let playerWonThisSequence = false;
+
+      if (carryStatus === 1) {
+        for (let nextHole = h + 1; nextHole <= 9; nextHole++) {
+          const holeHasWinner = holeDetails.some(
+            (d) => Number(d.hole_number) === nextHole,
+          );
+
+          if (holeHasWinner) {
+            playerWonThisSequence = holeDetails.some((d) => {
+              return (
+                Number(d.hole_number) === nextHole &&
+                Number(d.member_id) === Number(player.member_id)
+              );
+            });
+
+            break;
+          }
+        }
+      }
+
+      if (isSkinWinner) {
+        cellClass =
+          carryStatus === 2
+            ? "skin-carryover-winner-card"
+            : "skin-winner-card fw-bold";
+      } else if (carryStatus === 1 && playerWonThisSequence) {
+        cellClass = "skin-carryover-feeder-cell";
+      }
+
       holesArray.push({
         holeNumber: h,
         gross,
-        net: gross > 0 ? gross - strokesAllowed : 0,
-        strokes: strokesAllowed,
+        net,
+        strokes: gross > 0 ? strokesAllowed : 0,
+        cellClass,
       });
     }
+
+    const displaySkinsWon = holesArray.filter((hole) => {
+      return (
+        hole.cellClass === "skin-winner-card fw-bold" ||
+        hole.cellClass === "skin-carryover-winner-card" ||
+        hole.cellClass === "skin-carryover-feeder-cell"
+      );
+    }).length;
 
     return {
       memberId: player.member_id,
       name: `${player.name_first} ${player.name_last}`,
       handicap: raw9HoleHandicap,
+      skinsWon: displaySkinsWon,
+      payout: Number(leaderboardRow.payout || 0),
       holes: holesArray,
     };
   });
 
-  totalPot = leaderboard.reduce((sum, player) => sum + player.payout, 0);
+  const reportTotals = {
+    skins: participantScores.reduce(
+      (sum, p) => sum + Number(p.skinsWon || 0),
+      0,
+    ),
+
+    payout: participantScores.reduce(
+      (sum, p) => sum + Number(p.payout || 0),
+      0,
+    ),
+  };
 
   return {
     leaderboard,
@@ -248,6 +376,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
     participantScores,
     totalPot,
     holeInfo,
+    reportTotals,
   };
 };
 

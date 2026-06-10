@@ -63,6 +63,10 @@ export const getSkinsReport = async (req, res) => {
       leaderboard: baseReportData?.leaderboard || [],
       holeDetails: baseReportData?.holeDetails || [],
       holeInfo: baseReportData?.holeInfo || [],
+      reportTotals: baseReportData?.reportTotals || {
+        skins: 0,
+        payout: 0,
+      },
     });
   } catch (error) {
     console.error("Skins Report Route Error:", error);

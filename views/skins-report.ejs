@@ -137,19 +137,6 @@
       </div>
     </div>
     <div class="container my-4">
-      <!-- Your New Week Navigation Structure -->
-      <!-- <div class="week-nav">
-        <% weeks.forEach(week => { %>
-        <a
-          href="/scores/weekly/<%= week.week_number %>"
-          class="button-link btn btn-light btn-sm <%= Number(week.week_number) === Number(selectedWeekId) ? 'active-week' : '' %>"
-        >
-          Week
-          <%= week.week_number %>
-        </a>
-        <% }) %>
-      </div>-->
-
       <% if (!selectedWeekId) { %>
       <div
         class="alert alert-warning text-center shadow-sm"
@@ -188,7 +175,6 @@
             </div>
 
             <div class="table-responsive">
-              <pre><%= JSON.stringify(leaderboard, null, 2) %></pre>
               <table
                 class="table table-bordered align-middle text-center mb-0 skins-custom-table"
               >
@@ -233,49 +219,13 @@
                       No active participant data found for this week.
                     </td>
                   </tr>
-                  <% } else { let grandTotalSkins = 0; let grandTotalPayout = 0;
-                  participantScores.forEach(function(player) { let skinTotal =
-                  0; let payoutSum = 0; const currentPlayerId = player.member_id
-                  || player.memberId; const leaderboardRow =
-                  leaderboard.find(function(l) { return Number(l.member_id) ===
-                  Number(currentPlayerId); }) || { skins_won: 0, payout: 0 };
-                  const baseValuePerHole = totalPot / 9; let carriedPursePool =
-                  0; const holeCarryoverStatus = {}; let currentFeederHoles =
-                  []; for (let hNum = 1; hNum <= 9; hNum++) { const
-                  winnersForThisHole = holeDetails.filter(function(d) { return
-                  Number(d.hole_number || d.holeNumber) === hNum; }).length; if
-                  (winnersForThisHole === 0) { carriedPursePool +=
-                  baseValuePerHole; holeCarryoverStatus[hNum] = 0;
-                  currentFeederHoles.push(hNum); } else { if (carriedPursePool >
-                  0) { holeCarryoverStatus[hNum] = 2;
-                  currentFeederHoles.forEach(function(fHole) {
-                  holeCarryoverStatus[fHole] = 1; }); } else {
-                  holeCarryoverStatus[hNum] = 0; } carriedPursePool = 0;
-                  currentFeederHoles = []; } } player.holes.forEach(function(h)
-                  { const currentHoleNum = Number(h.holeNumber); const
-                  skinRecord = holeDetails.find(function(d) { const
-                  checkMemberId = d.member_id || d.memberId; const checkHoleNum
-                  = d.hole_number || d.holeNumber; return Number(checkHoleNum)
-                  === currentHoleNum && Number(checkMemberId) ===
-                  Number(currentPlayerId); }); if (skinRecord) { skinTotal +=
-                  Number( skinRecord.skins_awarded || skinRecord.skins_won ||
-                  skinRecord.skinsWon || 0 ); payoutSum +=
-                  Number(skinRecord.payout || 0); } const carryStatus =
-                  holeCarryoverStatus[currentHoleNum] || 0; if (carryStatus ===
-                  1) { for (let nextHole = currentHoleNum + 1; nextHole <= 9;
-                  nextHole++) { const nextHoleWinnerRecord =
-                  holeDetails.find(function(d) { return Number(d.hole_number ||
-                  d.holeNumber) === nextHole; }); if (nextHoleWinnerRecord) {
-                  const nextHoleWinnerId = nextHoleWinnerRecord.member_id ||
-                  nextHoleWinnerRecord.memberId; if (Number(nextHoleWinnerId)
-                  === Number(currentPlayerId)) { skinTotal += 1; } break; } } }
-                  }); const roundedPayout = Number(leaderboardRow.payout || 0);
-                  grandTotalSkins += Number(leaderboardRow.skins_won || 0);
-                  grandTotalPayout += Number(leaderboardRow.payout || 0);%>
+                  <% } else { %>
+
+                  <% participantScores.forEach(function(player) { %>
                   <tr>
                     <td class="text-start fw-semibold bg-light players">
                       <a
-                        href="/scores/members/<%= currentPlayerId %>"
+                        href="/scores/members/<%= player.memberId %>"
                         class="player-link"
                         ><%= player.name %></a
                       >
@@ -283,37 +233,9 @@
                     <td class="text-muted small bg-light players">
                       <%= player.handicap %>
                     </td>
-                    <% player.holes.forEach(function(h) { 
-                        const currentHoleNum = Number(h.holeNumber); 
-                        const isSkinWinner = holeDetails.some(function(d) { 
-                          const mId = d.member_id || d.memberId; 
-                          const hNum = d.hole_number || d.holeNumber; 
-                          return Number(hNum) === currentHoleNum && Number(mId) === Number(currentPlayerId); 
-                        }); 
-                        const carryStatus = holeCarryoverStatus[currentHoleNum] || 0; 
-                        let playerWonThisSequence = false; 
-                        if (carryStatus === 1) { 
-                          for (let nextHole = currentHoleNum + 1; nextHole <= 9; nextHole++) { 
-                            if (holeDetails.some(function(d) { return Number(d.hole_number || d.holeNumber) === nextHole; })) { 
-                              if (holeDetails.some(function(d) { 
-                                const mId = d.member_id || d.memberId; 
-                                const hNum = d.hole_number || d.holeNumber; 
-                                return Number(hNum) === nextHole && Number(mId) === Number(currentPlayerId); 
-                              })) { 
-                                playerWonThisSequence = true; 
-                              } 
-                              break; 
-                            } 
-                          } 
-                        } 
-                        let cellClass = ''; 
-                        if (isSkinWinner) { 
-                          cellClass = carryStatus === 2 ? 'skin-carryover-winner-card' : 'skin-winner-card fw-bold'; 
-                        } else if (carryStatus === 1 && playerWonThisSequence) { 
-                          cellClass = 'skin-carryover-feeder-cell'; 
-                        } 
-                      %>
-                    <td class="<%= cellClass %>">
+                    <% player.holes.forEach(function(h) { %>
+
+                    <td class="<%= h.cellClass %>">
                       <div class="score-cell">
                         <div class="gross-score">Gross: <%= h.gross %></div>
                         <div class="net-score">
@@ -333,12 +255,13 @@
                     </td>
                     <% }); %>
                     <td class="fw-bold text-center players">
-                      <%= leaderboardRow.skins_won %>
+                      <%= player.skinsWon %>
                     </td>
                     <td class="fw-bold text-end text-success bg-light pe-3">
-                      $<%= roundedPayout.toFixed(2) %>
+                      $<%= player.payout.toFixed(2) %>
                     </td>
                   </tr>
+
                   <% }); %>
 
                   <!-- Grand Totals Row aligned under Hole 9 -->
@@ -353,11 +276,10 @@
                     <td class="text-center players">TOTALS:</td>
 
                     <td class="text-center players">
-                      <%= Number.isInteger(grandTotalSkins) ? grandTotalSkins :
-                      grandTotalSkins.toFixed(1) %>
+                      <%= reportTotals.skins %>
                     </td>
                     <td class="text-end pe-3">
-                      $<%= grandTotalPayout.toFixed(2) %>
+                      $<%= reportTotals.payout.toFixed(2) %>
                     </td>
                   </tr>
                   <% } %>
