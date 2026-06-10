@@ -7,12 +7,12 @@
     <section>
       <%- include('./layouts/navbar'); %>
     </section>
-
     <div class="container my-4">
       <div class="gallery-header">
         <h1>Admin Tools</h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
+
       <!-- Main Dashboard Header -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="/admin" class="btn btn-sm btn-secondary">Back to Dashboard</a>
@@ -77,7 +77,6 @@
           </div>
         </div>
       </div>
-
       <!-- Dynamic Results Presentation Section -->
       <% if (typeof results !== 'undefined' && results !== null) { %>
       <div class="card shadow-sm mb-4">
@@ -101,7 +100,7 @@
                 </tr>
               </thead>
               <tbody>
-                <% if (!results.winners || results.winners.length === 0) { %>
+                <% if (!results.leaderboard || results.leaderboard.length === 0) { %>
                 <tr>
                   <td colspan="4" class="text-center py-4 text-muted">
                     No unique skins claimed for Week <%= selectedWeek %>. All
@@ -109,16 +108,36 @@
                   </td>
                 </tr>
                 <% } else { %>
-                <% results.winners.forEach(winner => { %>
+                <% results.leaderboard.forEach(winner => { %> <% let
+                itemsToRender = []; if (results.holeDetails &&
+                Array.isArray(results.holeDetails)) { const playerWins =
+                results.holeDetails.filter(d => Number(d.member_id) ===
+                Number(winner.member_id)); playerWins.forEach(w => { const hNum
+                = Number(w.hole_number); const totalWinnersForHole =
+                results.holeDetails.filter(d => Number(d.hole_number) ===
+                hNum).length; const holeBaseValue = results.holePayouts ?
+                results.holePayouts[hNum] : 0; const absoluteShare =
+                holeBaseValue / (totalWinnersForHole || 1); if
+                (totalWinnersForHole > 1) { itemsToRender.push(`Hole ${hNum}
+                (Split • $${Math.round(absoluteShare)})`); } else {
+                itemsToRender.push(`Hole ${hNum}
+                ($${Math.round(absoluteShare)})`); } }); } const holesText =
+                itemsToRender.length > 0 ? itemsToRender.join(', ') : 'None';
+                const formattedSkins =
+                Number(winner.skins_won).toFixed(1).replace('.0', ''); %>
                 <tr>
-                  <td><div class="fw-bold"><%= winner.name %></div></td>
                   <td>
-                    <%= Array.isArray(winner.holes) ? winner.holes.join(', ') : winner.holes %>
+                    <div class="fw-bold">
+                      <%= winner.name_first %> <%= winner.name_last %>
+                    </div>
+                  </td>
+                  <td>
+                    <%= holesText %>
                   </td>
                   <td class="text-center">
-                    <span class="badge bg-secondary rounded-pill px-3"
-                      ><%= winner.skinsCount %></span
-                    >
+                    <span class="badge bg-secondary rounded-pill px-3">
+                      <%= formattedSkins %>
+                    </span>
                   </td>
                   <td class="text-end text-success fw-bold">
                     $<%= Number(winner.payout).toFixed(2) %>
@@ -178,11 +197,8 @@
     <!-- Interactive script bindings to initialize components -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // Wrapping the EJS tag in quotes stops the IDE "expression expected" error
         const showPopup =
           "<%= typeof showHandicapPopup !== 'undefined' && showHandicapPopup ? 'true' : 'false' %>";
-
-        // Check for the string literal value 'true'
         if (showPopup === "true") {
           const toastElement = document.getElementById("handicapToast");
           if (toastElement && typeof bootstrap !== "undefined") {

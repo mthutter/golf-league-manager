@@ -203,6 +203,7 @@ export const processSkinsForWeek = async (weekId) => {
     totalPot: totalPot || 0,
     leaderboard: correctedLeaderboard.sort((a, b) => b.payout - a.payout), // Automatically sorts by earnings
     holeDetails: detailsArray,
+    holePayouts: holePayouts,
   };
 };
 

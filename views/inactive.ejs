@@ -2,29 +2,24 @@
 <html lang="en">
   <head>
     <%- include('layouts/header'); %>
-
     <style>
       table {
         margin: 0 auto;
       }
-
       .players-table {
         width: 1%;
         border-collapse: separate;
       }
-
       .players-table th,
       .players-table td {
         white-space: nowrap;
         vertical-align: middle;
         padding: 0.65rem 0.8rem;
       }
-
       table.players-table {
         width: 1% !important;
         table-layout: auto !important;
       }
-
       table.players-table th,
       table.players-table td {
         text-align: center;
@@ -32,20 +27,27 @@
         padding: 0.45rem 0.7rem !important;
         vertical-align: middle;
       }
+      .action-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     </style>
   </head>
-
   <body>
     <%- include('layouts/navbar'); %>
+
     <div class="main-wrapper">
       <div class="gallery-header">
         <h1>Inactive Players</h1>
         <p>Bottoms Up Golf League</p>
       </div>
+
       <table class="table players-table">
         <thead class="table-success">
           <tr>
-            <th>ID</th>
+            <th>#</th>
+            <!-- Changed header from ID to # -->
             <th>Last Name</th>
             <th>First Name</th>
             <th>Phone</th>
@@ -54,39 +56,35 @@
             <th>Joined</th>
             <th>Active</th>
             <th>Status (Reg/Sub)</th>
+            <th>Actions</th>
+            <!-- Added table header -->
           </tr>
         </thead>
-
         <tbody>
-          <% players.forEach(player => { if ((player.status == 'No')) { %>
-
+          <!-- Tracking counter variable for inactive players -->
+          <% let inactiveCount = 1; %>
+          <% players.forEach(player => { if (player.status == 'No') { %>
           <tr>
+            <!-- Displays the sequential index and increments it -->
+            <td><%= inactiveCount++ %></td>
+            <td><%= player.name_last %></td>
+            <td><%= player.name_first %></td>
+            <td><%= player.phone %></td>
+            <td><%= player.handicap %></td>
+            <td><%= player.e_mail %></td>
+            <td><%= player.year_joined %></td>
+            <td><%= player.status %></td>
+            <td><%= player.type %></td>
             <td>
-              <%= player.id %>
-            </td>
-            <td>
-              <%= player.name_last %>
-            </td>
-            <td>
-              <%= player.name_first %>
-            </td>
-            <td>
-              <%= player.phone %>
-            </td>
-            <td>
-              <%= player.handicap %>
-            </td>
-            <td>
-              <%= player.e_mail %>
-            </td>
-            <td>
-              <%= player.year_joined %>
-            </td>
-            <td>
-              <%= player.status %>
-            </td>
-            <td>
-              <%= player.type %>
+              <div class="action-cell">
+                <!-- Green filled Edit button targeting the player's ID -->
+                <a
+                  href="/players/<%= player.id %>/edit"
+                  class="btn btn-sm btn-success text-white fw-bold"
+                >
+                  Edit
+                </a>
+              </div>
             </td>
           </tr>
           <% }}) %>
@@ -94,7 +92,6 @@
       </table>
     </div>
   </body>
-
   <%- include('layouts/footer'); %>
   <%- include('layouts/scripts'); %>
 </html>

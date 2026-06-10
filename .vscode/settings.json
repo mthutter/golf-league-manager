@@ -32,5 +32,8 @@
       "name": "Golf League",
       "database": "${workspaceFolder:golf-league-site}/golf-league-db.db"
     }
-  ] // set as "true" to run 'prettier' last not first
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  } // set as "true" to run 'prettier' last not first
 }
