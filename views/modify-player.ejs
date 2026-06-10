@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <%- include('layouts/header'); %>
   <style>
@@ -9,6 +10,7 @@
       --light-gray: #f5f5f5;
       --card-bg: #ffffff;
     }
+
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       background: var(--light-gray);
@@ -16,6 +18,7 @@
       margin: 0;
       padding: 0;
     }
+
     /* ========================= HERO ========================= */
     .form-hero {
       max-width: 800px;
@@ -26,15 +29,18 @@
       background-color: var(--green-main);
       color: white;
     }
+
     .form-hero h1 {
       margin: 0 0 0.5rem;
       font-size: 2.5rem;
       font-weight: 700;
     }
+
     .form-hero p {
       margin: 0;
       opacity: 0.9;
     }
+
     /* ========================= FORM CARD ========================= */
     .player-form-card {
       max-width: 800px;
@@ -44,10 +50,12 @@
       background-color: var(--card-bg);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     }
+
     /* ========================= FORM SECTIONS ========================= */
     .form-section {
       margin-bottom: 1.8rem;
     }
+
     .form-section h3 {
       font-size: 1.3rem;
       font-weight: 600;
@@ -56,12 +64,14 @@
       border-bottom: 1px solid #e0e0e0;
       padding-bottom: 0.5rem;
     }
+
     /* ========================= LABELS ========================= */
     .form-label {
       font-weight: 500;
       display: block;
       margin-bottom: 0.4rem;
     }
+
     /* ========================= INPUTS ========================= */
     .form-control {
       width: 100%;
@@ -72,17 +82,20 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
       background: rgba(255, 255, 255, 0.96);
     }
+
     .form-control:focus {
       border-color: var(--green-main);
       box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
       outline: none;
       transform: translateY(-1px);
     }
+
     /* ========================= SELECTS (Rounded) ========================= */
     .select-wrapper {
       position: relative;
       width: 100%;
     }
+
     .select-wrapper select {
       width: 100%;
       padding: 0.85rem 1rem;
@@ -99,6 +112,7 @@
       background-clip: padding-box;
       overflow: hidden;
     }
+
     .select-wrapper::after {
       content: "▾";
       position: absolute;
@@ -109,14 +123,17 @@
       color: #4f664f;
       font-size: 0.9rem;
     }
+
     .select-wrapper select:focus {
       border-color: var(--green-main);
       box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
       outline: none;
     }
+
     select::-ms-expand {
       display: none;
     }
+
     /* ========================= BUTTON ========================= */
     .btn-submit-player {
       display: inline-block;
@@ -130,34 +147,40 @@
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.2s ease;
     }
+
     .btn-submit-player:hover {
       background-color: var(--green-dark);
       transform: translateY(-1px);
     }
+
     /* ========================= RESPONSIVE ========================= */
     @media (max-width: 768px) {
       body {
         padding: 1rem;
       }
+
       .form-hero {
         padding: 1.5rem;
       }
+
       .player-form-card {
         padding: 1.5rem;
       }
+
       .btn-submit-player {
         width: 100%;
       }
     }
   </style>
 </head>
+
 <body>
   <%- include('layouts/navbar'); %>
 
   <!-- HERO -->
   <div class="main-wrapper">
-    <div class="form-hero">
-      <h1>Modify Player Form</h1>
+    <div class="gallery-header">
+      <h1>Modify Player</h1>
       <p>Bottoms Up Golf League</p>
     </div>
 
@@ -165,7 +188,7 @@
     <div class="player-form-card">
       <!-- Using query string override for method-override if you use PUT -->
       <form action="/players/<%= player.id %>?_method=PUT" method="POST">
-        
+
         <!-- PLAYER INFO -->
         <div class="form-section">
           <h3>Player Information</h3>
@@ -182,9 +205,9 @@
               <label class="form-label">Year Joined</label>
               <div class="select-wrapper">
                 <select name="year_joined">
-                  <option value="2024" <%= player.year_joined == '2024' ? 'selected' : '' %>>2024</option>
-                  <option value="2025" <%= player.year_joined == '2025' ? 'selected' : '' %>>2025</option>
-                  <option value="2026" <%= player.year_joined == '2026' ? 'selected' : '' %>>2026</option>
+                  <option value="2024" <%= player.year_joined === '2024' ? 'selected' : '' %>>2024</option>
+                  <option value="2025" <%= player.year_joined === '2025' ? 'selected' : '' %>>2025</option>
+                  <option value="2026" <%= player.year_joined === '2026' ? 'selected' : '' %>>2026</option>
                 </select>
               </div>
             </div>
@@ -263,4 +286,5 @@
     }
   </script>
 </body>
+
 </html>
