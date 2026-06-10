@@ -169,7 +169,7 @@
                   class="fs-5 fw-bold text-nowrap text-white"
                   style="letter-spacing: 0.5px"
                 >
-                  Pot: $35.00
+                  Pot: $<%= totalPot.toFixed(2) %>
                 </div>
               </div>
             </div>
@@ -198,16 +198,14 @@
 
                   <tr>
                     <% holeInfo.forEach(hole => { %>
-                    <th class="small text-warning">
-                      M <%= hole.handicap_men %>
-                    </th>
-                    <% }) %>
-                  </tr>
-
-                  <tr>
-                    <% holeInfo.forEach(hole => { %>
-                    <th class="small text-info">
-                      W <%= hole.handicap_women %>
+                    <th class="small py-1">
+                      <span class="text-warning fw-semibold">
+                        M<%= hole.handicap_men %>
+                      </span>
+                      /
+                      <span class="text-info fw-semibold">
+                        W<%= hole.handicap_women %>
+                      </span>
                     </th>
                     <% }) %>
                   </tr>
