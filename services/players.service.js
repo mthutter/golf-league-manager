@@ -5,6 +5,7 @@ const dbAll = (sql, params = []) =>
   new Promise((res, rej) =>
     db.all(sql, params, (e, r) => (e ? rej(e) : res(r))),
   );
+
 const dbRun = (sql, params = []) =>
   new Promise((res, rej) =>
     db.run(sql, params, function (e) {
@@ -12,16 +13,34 @@ const dbRun = (sql, params = []) =>
     }),
   );
 
+// Helper to fetch a single row
+const dbGet = (sql, params = []) =>
+  new Promise((res, rej) =>
+    db.get(sql, params, (e, r) => (e ? rej(e) : res(r))),
+  );
+
 /**
  * Fetches all member profiles ordered alphabetically
  */
 export async function getAllPlayers() {
   const sql = `
-    SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type 
-    FROM members 
+    SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex
+    FROM members
     ORDER BY name_last, name_first ASC
   `;
   return dbAll(sql);
+}
+
+/**
+ * Fetches a single member record by its primary key ID
+ */
+export async function getPlayerById(id) {
+  const sql = `
+    SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex
+    FROM members
+    WHERE id = ?
+  `;
+  return dbGet(sql, [id]);
 }
 
 /**
@@ -41,10 +60,13 @@ export async function createNewPlayer(playerData) {
     sex,
   } = playerData;
 
+  // Fixed: Added 'sex' column to the column list to match the 10 values being inserted
   const sql = `
-    INSERT INTO members ( 
-      name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type 
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO members (
+      name_last, name_first, phone, handicap, password, 
+      e_mail, year_joined, status, type, sex
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -61,4 +83,48 @@ export async function createNewPlayer(playerData) {
   ];
 
   return dbRun(sql, values); // Returns the newly created player's lastID
+}
+
+/**
+ * Updates an existing member record in the database
+ */
+export async function updatePlayerById(id, playerData) {
+  const {
+    name_last,
+    name_first,
+    phone,
+    e_mail,
+    year_joined,
+    status,
+    type,
+    sex,
+  } = playerData;
+
+  const sql = `
+    UPDATE members 
+    SET 
+      name_last = ?, 
+      name_first = ?, 
+      phone = ?, 
+      e_mail = ?, 
+      year_joined = ?, 
+      status = ?, 
+      type = ?, 
+      sex = ?
+    WHERE id = ?
+  `;
+
+  const values = [
+    name_last,
+    name_first,
+    phone,
+    e_mail,
+    year_joined,
+    status,
+    type,
+    sex,
+    id,
+  ];
+
+  return dbRun(sql, values);
 }

@@ -39,11 +39,10 @@ export function showAddPlayerForm(req, res) {
 export async function createPlayer(req, res) {
   const { name_first, name_last } = req.body;
 
-  // Basic Validation stays in controller to prevent hitting the DB unnecessarily
   if (!name_first || !name_last) {
-    return res.status(400).render("error", {
-      message: "First and last name are required.",
-    });
+    return res
+      .status(400)
+      .render("error", { message: "First and last name are required." });
   }
 
   try {
@@ -53,5 +52,54 @@ export async function createPlayer(req, res) {
   } catch (err) {
     console.error("Insert Error:", err.message);
     res.status(500).render("error", { message: "Unable to create player." });
+  }
+}
+
+/**
+ * GET /players/:id/edit - Show modification form with existing player data
+ */
+export async function showEditPlayerForm(req, res) {
+  const playerId = req.params.id;
+
+  try {
+    const player = await playersService.getPlayerById(playerId);
+
+    if (!player) {
+      return res.status(404).render("error", { message: "Player not found." });
+    }
+
+    // Renders modify-player.ejs and passes the player data
+    res.render("modify-player", { player: player });
+  } catch (err) {
+    console.error("Fetch Player Error:", err.message);
+    res.status(500).render("error", {
+      message: "Unable to retrieve player records for updating.",
+    });
+  }
+}
+
+/**
+ * POST /players/:id - Update existing player record
+ */
+export async function updatePlayer(req, res) {
+  const playerId = req.params.id;
+  const { name_first, name_last } = req.body;
+
+  // Basic validation checks
+  if (!name_first || !name_last) {
+    return res
+      .status(400)
+      .render("error", { message: "First and last name are required." });
+  }
+
+  try {
+    await playersService.updatePlayerById(playerId, req.body);
+    console.log(`Player with ID ${playerId} updated successfully.`);
+    res.redirect("/players");
+  } catch (err) {
+    console.error("Update Error:", err.message);
+    res
+      .status(500)
+      .render("error", { message: "Unable to update player information." });
   }
 }
