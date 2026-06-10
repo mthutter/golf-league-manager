@@ -38,12 +38,13 @@ export async function createNewPlayer(playerData) {
     year_joined,
     status,
     type,
+    sex,
   } = playerData;
 
   const sql = `
     INSERT INTO members ( 
       name_last, name_first, phone, handicap, password, e_mail, year_joined, status, type 
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -56,6 +57,7 @@ export async function createNewPlayer(playerData) {
     year_joined,
     status,
     type,
+    sex,
   ];
 
   return dbRun(sql, values); // Returns the newly created player's lastID
