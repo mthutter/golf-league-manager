@@ -1,1 +1,1 @@
-SELECT * FROM scores WHERE week_id = '5'
+SELECT * FROM skin_details

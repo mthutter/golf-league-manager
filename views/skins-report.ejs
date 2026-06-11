@@ -23,7 +23,7 @@
       }
       .skin-carryover-winner-card {
         background-color: #fff3cd !important;
-        border: 3px solid #ffc107 !important;
+        border: 3px solid #18aa24 !important;
         font-weight: 700;
       }
       .skin-carryover-winner-card .net-score {
@@ -69,7 +69,7 @@
         border: 1px solid rgba(27, 67, 50, 0.1);
       }
       .skin-carryover-feeder-cell {
-        border: 2px dashed #ffc107 !important;
+        border: 2px dashed #18aa24 !important;
         background-color: rgba(255, 243, 205, 0.25) !important;
       }
       .score-cell {
@@ -136,6 +136,21 @@
         </h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
+      <div class="week-nav">
+        <% if (locals.weeks && weeks.length > 0 && locals.currentWeek) { %> <%
+        weeks .filter(w => w.week_id <= currentWeek.week_number) .reverse()
+        .forEach(w => { %>
+        <a
+          href="/skins-report?weekId=<%= w.week_id %>"
+          class="button-link btn btn-light btn-sm <%= w.week_id === selectedWeekId ? 'active-week' : '' %>"
+        >
+          Week
+          <%= w.week_id %>
+        </a>
+        <% }) %>
+        <% } %>
+      </div>
+      <br />
     </div>
     <div class="container my-4">
       <% if (!selectedWeekId) { %>
@@ -192,11 +207,9 @@
                       <%= h %>
                     </th>
                     <% } %>
-
                     <th rowspan="3" style="width: 60px">Skins</th>
                     <th rowspan="3" style="width: 100px">Payout ($)</th>
                   </tr>
-
                   <tr>
                     <% holeInfo.forEach(hole => { %>
                     <th class="small py-1">

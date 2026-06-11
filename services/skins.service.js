@@ -1,4 +1,5 @@
 import { all, run } from "../config/db.js"; // Ensure your DB client includes promise or callback bindings
+import { getAllWeeks, getCurrentWeek } from "../services/weeks.service.js";
 
 export const calculateSkins = async (weekId) => {
   if (!weekId) throw new Error("A valid week ID is required.");
@@ -120,6 +121,11 @@ export const buildSkinsReport = async (selectedWeekId) => {
   let courseHandicaps = {};
   let totalPot = 0;
 
+  const week = await getAllWeeks();
+  const currentWeek = await getCurrentWeek();
+  console.log("WEEK NUMBER: ", week[0]);
+  console.log("CURRENT WEEK: ", currentWeek.week_number);
+
   const holeInfo = await all(`
     SELECT
       hole_number,
@@ -217,13 +223,6 @@ export const buildSkinsReport = async (selectedWeekId) => {
     0,
   );
 
-  /*
-   * Build carryover map
-   *
-   * 0 = normal hole
-   * 1 = feeder hole
-   * 2 = carryover winner hole
-   */
   const holeCarryoverStatus = {};
 
   const baseValuePerHole = totalPot / 9;
@@ -355,6 +354,8 @@ export const buildSkinsReport = async (selectedWeekId) => {
       skinsWon: displaySkinsWon,
       payout: Number(leaderboardRow.payout || 0),
       holes: holesArray,
+      currentWeek,
+      week,
     };
   });
 

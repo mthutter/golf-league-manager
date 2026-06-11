@@ -13,11 +13,7 @@ export const calculateSkinsApi = async (req, res) => {
       });
     }
 
-    console.log("calculateSkinsApi fired");
-
     const results = await skinsService.calculateAndSaveSkins(Number(weekId));
-
-    console.log(`[SKINS] Week ${weekId} calculated successfully`);
 
     return res.status(200).json({
       success: true,
@@ -56,13 +52,13 @@ export const getSkinsReport = async (req, res) => {
 
     const baseReportData = await skinsService.buildSkinsReport(selectedWeekId);
     const week = await weeksService.getWeek(selectedWeekId);
-
-    console.log("week before render:", week);
+    const currentWeek = await weeksService.getCurrentWeek();
 
     res.render("skins-report", {
       weeks: weeks || [],
       selectedWeekId,
       week,
+      currentWeek,
       totalPot: baseReportData?.totalPot || 0,
       participantScores: baseReportData?.participantScores || [],
       leaderboard: baseReportData?.leaderboard || [],
