@@ -363,7 +363,9 @@
           }
           const strokes = handicapStrokes(handicap, holeHcp);
           const net = gross ? gross - strokes : 0;
-          const skinsEntered = req.body.skins_entered ? 1 : 0;
+          const skinsEntered = document.getElementById("skinsEntered").checked
+            ? 1
+            : 0;
           const points = gross ? stablefordPoints(net, par) : 0;
 
           document.getElementById(`net${index + 1}`).textContent = net || "";

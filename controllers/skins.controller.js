@@ -1,4 +1,5 @@
 import * as skinsService from "../services/skins.service.js";
+import * as weeksService from "../services/weeks.service.js";
 /**
  * POST /skins/calculate/:weekId
  */
@@ -54,10 +55,14 @@ export const getSkinsReport = async (req, res) => {
     }
 
     const baseReportData = await skinsService.buildSkinsReport(selectedWeekId);
+    const week = await weeksService.getWeek(selectedWeekId);
+
+    console.log("week before render:", week);
 
     res.render("skins-report", {
       weeks: weeks || [],
       selectedWeekId,
+      week,
       totalPot: baseReportData?.totalPot || 0,
       participantScores: baseReportData?.participantScores || [],
       leaderboard: baseReportData?.leaderboard || [],

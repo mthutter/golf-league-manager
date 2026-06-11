@@ -11,7 +11,7 @@ export async function getAllWeeks() {
 }
 
 export async function getWeek(weekNumber) {
-  return await get(
+  const week = await get(
     `
     SELECT week_number, date
     FROM weeks2026
@@ -19,6 +19,31 @@ export async function getWeek(weekNumber) {
   `,
     [weekNumber],
   );
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const [, month, day] = week.date.split("-");
+
+  week.displayDate = `${monthNames[Number(month) - 1]} ${Number(day)}`;
+
+  console.log("week from db:", week);
+  console.log("week.date:", week.date);
+  console.log("typeof week.date:", typeof week.date);
+
+  return week;
 }
 
 export async function getCurrentWeek() {
