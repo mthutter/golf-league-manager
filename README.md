@@ -105,9 +105,9 @@ The application separates business rules from presentation concerns through a de
 ### Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/bottoms-up-golf-league-manager.git
+git clone https://github.com/mthutter/golf-league-site.git
 
-cd bottoms-up-golf-league-manager
+cd golf-league-site
 ```
 
 ### Install dependencies
