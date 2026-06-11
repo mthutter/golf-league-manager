@@ -71,7 +71,7 @@ export const calculateSkins = async (weekId) => {
   // Isolate outright skins (holes with exactly ONE winner)
   let totalSkinsWon = 0;
   const detailedHoleWinners = [];
-  console.log("HOLE SCORES", holeScores);
+
   Object.entries(holeScores).forEach(([hole, data]) => {
     if (data.winners.length === 1) {
       const winnerId = data.winners[0];
@@ -123,8 +123,6 @@ export const buildSkinsReport = async (selectedWeekId) => {
 
   const week = await getAllWeeks();
   const currentWeek = await getCurrentWeek();
-  console.log("WEEK NUMBER: ", week[0]);
-  console.log("CURRENT WEEK: ", currentWeek.week_number);
 
   const holeInfo = await all(`
     SELECT
@@ -382,7 +380,6 @@ export const buildSkinsReport = async (selectedWeekId) => {
 };
 
 export const calculateAndSaveSkins = async (weekId) => {
-  console.log("***** calculateAndSaveSkins CALLED *****", weekId);
   const results = await calculateSkins(weekId);
 
   await run(

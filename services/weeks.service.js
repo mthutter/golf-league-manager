@@ -39,10 +39,6 @@ export async function getWeek(weekNumber) {
 
   week.displayDate = `${monthNames[Number(month) - 1]} ${Number(day)}`;
 
-  console.log("week from db:", week);
-  console.log("week.date:", week.date);
-  console.log("typeof week.date:", typeof week.date);
-
   return week;
 }
 
