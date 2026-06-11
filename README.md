@@ -110,6 +110,17 @@ git clone https://github.com/mthutter/golf-league-site.git
 cd golf-league-site
 ```
 
+### Configure Environment Variables
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Update the values in `.env` as appropriate for your local environment before starting the application.
+
+
 ### Install dependencies
 
 ```bash
