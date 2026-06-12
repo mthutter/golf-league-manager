@@ -2,7 +2,7 @@
 
 ### Season Standings
 
-![Season Standings](docs/screenshots/standings-desktop.png)
+![Season Standings](/public/docs/screenshots/standings-desktop.png)
 
 # Bottoms Up Golf League Manager
 
