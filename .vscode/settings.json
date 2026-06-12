@@ -19,6 +19,21 @@
     "woot"
   ],
   "[html]": {
-    "editor.defaultFormatter": "j69.ejs-beautify"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "Golf League",
+      "database": "${workspaceFolder:golf-league-site}/golf-league-db.db"
+    }
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   } // set as "true" to run 'prettier' last not first
 }

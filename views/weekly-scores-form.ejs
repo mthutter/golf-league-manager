@@ -1,281 +1,418 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <%- include('layouts/header'); %>
 
-<%- include('layouts/header'); %>
+    <style>
+      body {
+        background-color: #f5f7fa;
+      }
 
-<style>
-  body {
-    background-color: #f5f7fa;
-  }
+      .score-card {
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
 
-  .score-card {
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
+      .score-card .card-header {
+        background: #198754;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 1.25rem;
+      }
 
-  .score-card .card-header {
-    background: #198754;
-    color: white;
-    font-weight: 600;
-    font-size: 1.1rem;
-    padding: 1rem 1.25rem;
-  }
+      table {
+        margin-bottom: 0;
+      }
 
-  table {
-    margin-bottom: 0;
-  }
+      th {
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
 
-  th {
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;
-  }
+      td {
+        text-align: center;
+        vertical-align: middle;
+        margin: 0 auto;
+      }
 
-  td {
-    text-align: center;
-    vertical-align: middle;
-  }
+      td,
+      input {
+        margin: 0 auto;
+      }
 
-  .score-input {
-    width: 65px;
-    text-align: center;
-    border-radius: 10px;
-  }
+      .score-input {
+        width: 65px;
+        text-align: center;
+        border-radius: 10px;
+      }
 
-  .hole-header {
-    min-width: 70px;
-  }
+      .hole-header {
+        min-width: 70px;
+      }
 
-  .total-box {
-    font-weight: bold;
-    background-color: #f1f3f5;
-  }
+      .total-box {
+        font-weight: bold;
+        background-color: #f1f3f5;
+      }
 
-  .btn-save {
-    border-radius: 12px;
-    padding: 0.65rem 1.5rem;
-    font-weight: 600;
-  }
+      .btn-save {
+        border-radius: 12px;
+        padding: 0.65rem 1.5rem;
+        font-weight: 600;
+      }
 
-  @media (max-width: 768px) {
-    .score-input {
-      width: 55px;
-    }
-  }
-</style>
+      @media (max-width: 768px) {
+        .score-input {
+          width: 55px;
+        }
+      }
+    </style>
+  </head>
 
-<%- include('layouts/navbar'); %>
+  <body>
+    <%- include('layouts/navbar'); %>
 
-<body>
-
-  <div class="main-wrapper">
-    <div class="gallery-header">
-      <h1>Enter Weekly Scores</h1>
-       <p>Bottoms Up Golf League • 2026 Season</p>
-    </div>
-
-    <div class="container py-5">
-
-      <div class="card score-card">
-        <div class="card-header">
-          Weekly League Score Entry
-        </div>
-
-        <div class="card-body">
-          <form method="POST" action="/scores/save">
-            <!-- League / Player Info -->
-            <div class="row mb-4">
-
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Week</label>
-                <select class="form-select" name="week" required>
-                  <option value="">Select Week</option>
-                  <option value="1">Week 1 - May 4</option>
-                  <option value="2">Week 2 - May 11</option>
-                  <option value="3">Week 3 - May 18</option>
-                  <option value="1">Week 4 - May 25</option>
-                  <option value="2">Week 5 - June 1</option>
-                  <option value="3">Week 6 - June 8</option>
-                  <option value="1">Week 7 - June 15</option>
-                  <option value="2">Week 8 - June 22</option>
-                  <option value="3">Week 9 - June 29</option>
-                  <option value="1">Week 10 - July 6</option>
-                  <option value="2">Week 11 - July 13</option>
-                  <option value="3">Week 12 - July 20</option>
-                  <option value="1">Week 13 - July 27</option>
-                  <option value="2">Week 14 - August 3</option>
-                  <option value="3">Week 15 - August 10</option>
-                  <option value="1">Week 16 - August 17</option>
-                  <option value="2">Week 17 - August 24</option>
-                  <option value="3">Week 18 - August 31</option>
-                  <option value="1">Week 19 - September 1</option>
-                  <option value="2">Week 20 - September 8</option>
-                  <option value="3">Week 21 - September 15</option>
-                  <option value="1">Week 22 - September 22</option>
-                </select>
-              </div>
-
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Player</label>
-                <select class="form-select" name="playerId" required>
-                  <option value="">Select Player</option>
-                  <option value="1">John Smith</option>
-                  <option value="2">Mike Johnson</option>
-                  <option value="3">Tom Wilson</option>
-                </select>
-              </div>
-
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Date</label>
-                <input type="date" class="form-control" name="scoreDate" required />
-              </div>
-
-            </div>
-
-            <!-- Score Table -->
-            <div class="table-responsive">
-
-              <table class="table table-bordered align-middle">
-
-                <thead class="table-success">
-
-                  <tr>
-                    <th>Hole</th>
-
-                    <th class="hole-header">1</th>
-                    <th class="hole-header">2</th>
-                    <th class="hole-header">3</th>
-                    <th class="hole-header">4</th>
-                    <th class="hole-header">5</th>
-                    <th class="hole-header">6</th>
-                    <th class="hole-header">7</th>
-                    <th class="hole-header">8</th>
-                    <th class="hole-header">9</th>
-
-                    <th>Total</th>
-                  </tr>
-
-                </thead>
-
-                <tbody>
-
-                  <!-- Par Row -->
-                  <tr>
-                    <th class="table-light">Par</th>
-
-                    <td>4</td>
-                    <td>5</td>
-                    <td>4</td>
-                    <td>3</td>
-                    <td>4</td>
-                    <td>4</td>
-                    <td>3</td>
-                    <td>4</td>
-                    <td>5</td>
-
-                    <td class="total-box">36</td>
-                  </tr>
-
-                  <!-- Handicap Row -->
-                  <tr>
-                    <th class="table-light">Handicap</th>
-                    <td>7</td>
-                    <td>1</td>
-                    <td>5</td>
-                    <td>17</td>
-                    <td>9</td>
-                    <td>13</td>
-                    <td>15</td>
-                    <td>11</td>
-                    <td>3</td>
-                  </tr>
-
-                  <!-- Score Entry Row -->
-                  <tr>
-                    <th class="table-light">Score</th>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole1" class="form-control score-input" required />
-                    </td>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole2" class="form-control score-input" required />
-                    </td>                   
-                    <td>
-                      <input type="number" min="1" max="8" name="hole3" class="form-control score-input" required />
-                    </td>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole4" class="form-control score-input" required />
-                    </td>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole5" class="form-control score-input" required />
-                    </td>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole6" class="form-control score-input" required />
-                    </td>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole7" class="form-control score-input" required />
-                    </td>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole8" class="form-control score-input" required />
-                    </td>
-                    <td>
-                      <input type="number" min="1" max="8" name="hole9" class="form-control score-input" required />
-                    </td>
-                    <td class="total-box">
-                      <span id="grossTotal">0</span>
-                    </td>
-                  </tr>
-
-</tbody>
-
-              </table>
-
-            </div>
-
-            <!-- Buttons -->
-            <div class="mt-4 d-flex justify-content-end gap-2">
-
-              <button type="reset" class="btn btn-outline-secondary btn-save">
-                Clear
-              </button>
-
-              <button type="submit" class="btn btn-success btn-save">
-                Save Scores
-              </button>
-
-            </div>
-
-          </form>
-
-        </div>
-
+    <div class="main-wrapper">
+      <div class="gallery-header">
+        <h1>Enter Weekly Scores</h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
 
+      <div class="container py-5">
+        <div class="card score-card">
+          <div class="card-header">Weekly League Score Entry</div>
+
+          <div class="card-body">
+            <form method="POST" action="/scores/save">
+              <!-- League / Player Info -->
+
+              <div class="row mb-4">
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold"
+                    >Week <span style="color: red">*</span></label
+                  >
+                  <select class="form-select" name="weekId" required>
+                    <option value="">Select Week</option>
+                    <option value="1">Week 1 - May 4</option>
+                    <option value="2">Week 2 - May 11</option>
+                    <option value="3">Week 3 - May 18</option>
+                    <option value="4">Week 4 - May 25</option>
+                    <option value="5">Week 5 - June 1</option>
+                    <option value="6">Week 6 - June 8</option>
+                    <option value="7">Week 7 - June 15</option>
+                    <option value="8">Week 8 - June 22</option>
+                    <option value="9">Week 9 - June 29</option>
+                    <option value="10">Week 10 - July 6</option>
+                    <option value="11">Week 11 - July 13</option>
+                    <option value="12">Week 12 - July 20</option>
+                    <option value="13">Week 13 - July 27</option>
+                    <option value="14">Week 14 - August 3</option>
+                    <option value="15">Week 15 - August 10</option>
+                    <option value="16">Week 16 - August 17</option>
+                    <option value="17">Week 17 - August 24</option>
+                    <option value="18">Week 18 - August 31</option>
+                    <option value="19">Week 19 - September 1</option>
+                    <option value="20">Week 20 - September 8</option>
+                    <option value="21">Week 21 - September 15</option>
+                    <option value="22">Week 22 - September 22</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">
+                    Player <span style="color: red">*</span>
+                  </label>
+
+                  <select
+                    id="memberSelect"
+                    name="memberId"
+                    class="form-select"
+                    required
+                  >
+                    <option value="">Select Player</option>
+
+                    <% members.forEach(member => { %>
+                    <option
+                      value="<%= member.id %>"
+                      data-handicap="<%= member.handicap %>"
+                    >
+                      <%= member.name_last %>,
+                      <%= member.name_first %>
+                    </option>
+                    <% }); %>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">Skins Game</label>
+
+                  <div class="form-check mt-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="skins_entered"
+                      id="skinsEntered"
+                      value="1"
+                    />
+                    <label class="form-check-label" for="skinsEntered">
+                      Entered Weekly Skins
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-4">
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold"> CTP Points </label>
+
+                  <select class="form-select" name="ctp_points">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold"
+                    >Birdie Points (Gross)</label
+                  >
+                  <input
+                    class="form-control"
+                    type="number"
+                    id="birdiePoints"
+                    name="birdie_points"
+                    readonly
+                    value="0"
+                  />
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">Player Handicap</label>
+                  <input
+                    type="number"
+                    id="handicap"
+                    class="form-control"
+                    name="handicap"
+                    readonly
+                  />
+                </div>
+              </div>
+
+              <!-- Score Table -->
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                  <thead class="table-success">
+                    <tr>
+                      <th>Hole</th>
+
+                      <% holes.forEach(hole => { %>
+                      <th class="hole-header"><%= hole.hole_number %></th>
+                      <% }) %>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <!-- Par Row -->
+                    <tr>
+                      <th class="table-light">Par</th>
+
+                      <% holes.forEach(hole => { %>
+                      <td><%= hole.par_men %></td>
+                      <% }) %>
+
+                      <td class="total-box">
+                        <%= holes.reduce((sum, hole) => sum + hole.par_men, 0)
+                        %>
+                      </td>
+                    </tr>
+
+                    <!-- Handicap Row -->
+                    <tr>
+                      <th class="table-light">Handicap</th>
+                      <% holes.forEach(hole => { %>
+                      <td><%= hole.handicap_men %></td>
+                      <% }) %>
+                      <td></td>
+                    </tr>
+
+                    <!-- Score Entry Row -->
+                    <tr>
+                      <th class="table-light">Score (Gross)</th>
+
+                      <% holes.forEach(hole => { %>
+                      <td>
+                        <input
+                          type="number"
+                          min="1"
+                          max="8"
+                          name="gross<%= hole.hole_number %>"
+                          class="form-control score-input"
+                          data-holehcp="<%= hole.handicap_men %>"
+                          data-par="<%= hole.par_men %>"
+                          required
+                        />
+                      </td>
+                      <% }) %>
+
+                      <td class="total-box">
+                        <span id="grossTotal">0</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="table-light">Score (Net)</th>
+
+                      <td id="net1"></td>
+                      <td id="net2"></td>
+                      <td id="net3"></td>
+                      <td id="net4"></td>
+                      <td id="net5"></td>
+                      <td id="net6"></td>
+                      <td id="net7"></td>
+                      <td id="net8"></td>
+                      <td id="net9"></td>
+
+                      <td class="total-box">
+                        <span id="netTotal">0</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="table-light">Points</th>
+
+                      <td id="pts1"></td>
+                      <td id="pts2"></td>
+                      <td id="pts3"></td>
+                      <td id="pts4"></td>
+                      <td id="pts5"></td>
+                      <td id="pts6"></td>
+                      <td id="pts7"></td>
+                      <td id="pts8"></td>
+                      <td id="pts9"></td>
+
+                      <td class="total-box">
+                        <span id="pointsTotal">0</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Buttons -->
+              <div class="mt-4 d-flex justify-content-end gap-2">
+                <button type="reset" class="btn btn-outline-secondary btn-save">
+                  Clear
+                </button>
+
+                <button type="submit" class="btn btn-success btn-save">
+                  Save Scores
+                </button>
+              </div>
+
+              <input type="hidden" name="gross_total" id="grossTotalInput" />
+              <input type="hidden" name="net_total" id="netTotalInput" />
+              <input
+                type="hidden"
+                name="stableford_total"
+                id="pointsTotalInput"
+              />
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
-  </div>
+    <%- include('layouts/footer'); %>
+    <%- include('layouts/scripts'); %>
+    <script>
+      function handicapStrokes(playerHandicap, holeHandicap) {
+        const playingHandicap = playerHandicap * 2;
+        const base = Math.floor(playingHandicap / 18);
+        const extra = playingHandicap % 18;
 
-  <script>
-    const scoreInputs = document.querySelectorAll(".score-input");
-    const grossTotal = document.getElementById("grossTotal");
+        return base + (holeHandicap <= extra ? 1 : 0);
+      }
 
-    function calculateTotal() {
-      let total = 0;
+      function stablefordPoints(net, par) {
+        const diff = net - par;
 
-      scoreInputs.forEach((input) => {
-        total += Number(input.value) || 0;
+        if (diff >= 2) return 0;
+        if (diff === 1) return 1;
+        if (diff === 0) return 2;
+        if (diff === -1) return 3;
+        if (diff === -2) return 4;
+
+        return 5;
+      }
+
+      function calculateCard() {
+        let birdiePoints = 0;
+        const handicap =
+          parseInt(document.getElementById("handicap").value) || 0;
+
+        let grossTotal = 0;
+        let netTotal = 0;
+        let pointsTotal = 0;
+
+        document.querySelectorAll(".score-input").forEach((input, index) => {
+          const gross = parseInt(input.value) || 0;
+          const holeHcp = parseInt(input.dataset.holehcp);
+          const par = parseInt(input.dataset.par);
+          if (gross && gross <= par - 1) {
+            birdiePoints++; // birdie or better
+          }
+          const strokes = handicapStrokes(handicap, holeHcp);
+          const net = gross ? gross - strokes : 0;
+          const skinsEntered = document.getElementById("skinsEntered").checked
+            ? 1
+            : 0;
+          const points = gross ? stablefordPoints(net, par) : 0;
+
+          document.getElementById(`net${index + 1}`).textContent = net || "";
+
+          document.getElementById(`pts${index + 1}`).textContent = points || "";
+
+          grossTotal += gross;
+          netTotal += net;
+          pointsTotal += points;
+        });
+
+        document.getElementById("grossTotal").textContent = grossTotal;
+        document.getElementById("netTotal").textContent = netTotal;
+        document.getElementById("pointsTotal").textContent = pointsTotal;
+        document.getElementById("birdiePoints").value = birdiePoints;
+
+        document.getElementById("grossTotalInput").value = grossTotal;
+        document.getElementById("netTotalInput").value = netTotal;
+        document.getElementById("pointsTotalInput").value = pointsTotal;
+      }
+
+      document.querySelectorAll(".score-input").forEach((input) => {
+        input.addEventListener("input", calculateCard);
       });
 
-      grossTotal.textContent = total;
-    }
+      document
+        .getElementById("handicap")
+        .addEventListener("change", calculateCard);
 
-    scoreInputs.forEach((input) => {
-      input.addEventListener("input", calculateTotal);
-    });
-  </script>
+      document
+        .querySelector('button[type="reset"]')
+        .addEventListener("click", () => {
+          setTimeout(calculateCard, 0);
+        });
+    </script>
 
-</body>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const memberSelect = document.getElementById("memberSelect");
+        const handicapInput = document.getElementById("handicap");
 
-<%- include('layouts/scripts'); %>
+        memberSelect.addEventListener("change", () => {
+          const selected = memberSelect.options[memberSelect.selectedIndex];
 
+          handicapInput.value = selected.dataset.handicap || "";
+        });
+      });
+    </script>
+  </body>
 </html>

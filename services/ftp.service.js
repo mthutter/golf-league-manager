@@ -16,6 +16,9 @@ export async function getFilenames(year) {
     return list.map((item) => item.name);
   } catch (err) {
     console.error(err);
+    if ((err.port = "21")) {
+      console.log("FTP Connect Error");
+    }
     return [];
   } finally {
     client.close();

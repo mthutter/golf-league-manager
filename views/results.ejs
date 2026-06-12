@@ -1,149 +1,189 @@
 <!doctype html>
 <html lang="en">
-
-<%- include('./layouts/header'); -%>
-<style>
-  /* ========================
+  <head>
+    <%- include('./layouts/header') %>
+    <style>
+      /* ========================
   RESULTS PAGE
   ======================== */
 
-  .results-card {
-    background: rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
-    padding: 18px 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(4px);
-  }
+      .results-card {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        padding: 18px 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(4px);
+      }
 
-  /* section titles */
-  .results-card h4 {
-    color: rgba(255, 255, 255, 0.92);
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
+      /* section titles */
+      .results-card h4 {
+        color: rgba(255, 255, 255, 0.92);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
 
-  .results-card h5 {
-    font-size: 14px;
-    margin-bottom: 18px;
-  }
+      .results-card h5 {
+        font-size: 14px;
+        margin-bottom: 18px;
+      }
 
-  /* week links */
-  .results-card a {
-    display: block;
-    padding: 6px 10px;
-    margin-bottom: 3px;
+      /* week links */
+      .results-card a {
+        display: block;
+        padding: 6px 10px;
+        margin-bottom: 3px;
 
-    border-radius: 8px;
+        border-radius: 8px;
 
-    background: rgba(0, 0, 0, 0.12);
-    color: #d8f5d8 !important;
+        background: rgba(0, 0, 0, 0.12);
+        color: #d8f5d8 !important;
 
-    transition: all 0.18s ease;
-  }
+        transition: all 0.18s ease;
+      }
 
-  /* hover effect */
-  .results-card a:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateX(4px);
-    text-decoration: none;
-  }
+      /* hover effect */
+      .results-card a:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(4px);
+        text-decoration: none;
+      }
 
-  /* inactive weeks */
-  .results-card a:not([href]) {
-    opacity: 0.65;
-    cursor: default;
-  }
+      /* inactive weeks */
+      .results-card a:not([href]) {
+        opacity: 0.65;
+        cursor: default;
+      }
 
-  /* active downloadable weeks */
-  .results-card a[href] {
-    border-left: 3px solid #90ee90;
-  }
+      /* active downloadable weeks */
+      .results-card a[href] {
+        border-left: 3px solid #90ee90;
+      }
 
-  /* subtle divider */
-  .results-card::after {
-    content: "";
-    display: block;
-    width: 40px;
-    height: 1px;
-    margin: 16px auto 0;
-    background: rgba(255, 255, 255, 0.15);
-  }
+      /* subtle divider */
+      .results-card::after {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 1px;
+        margin: 16px auto 0;
+        background: rgba(255, 255, 255, 0.15);
+      }
 
-  .week-label {
-    font-weight: 600;
-  }
+      .week-label {
+        font-weight: 600;
+      }
 
-  .week-date {
-    opacity: 0.75;
-    font-size: 13px;
-    margin-left: 4px;
-  }
-</style>
+      .week-date {
+        opacity: 0.75;
+        font-size: 13px;
+        margin-left: 4px;
+      }
+    </style>
+  </head>
 
+  <body>
+    <%- include('./layouts/navbar') %>
 
-<body>
-  <%- include('./layouts/navbar'); -%>
+    <div class="main-wrapper">
+      <div class="gallery-header">
+        <h1>Weekly Results</h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
+      </div>
 
-  <div class=" main-wrapper">
-    <div class="gallery-header">
-      <h1>Weekly Results</h1>
-      <p>Bottoms Up Golf League • 2026 Season</p>
-    </div>
-
-    <div class="container justify-content-center align-items-center results">
-      <div class="row">
-        <div class="col-xl-4 col-lg-5 col-md-10 mx-auto my-3">
-          <div class="results-card">
-            <div class="text-center">
-
-              <h4>First Half (Weeks 1-11)</h4>
-              <h5><span style="color: white">White</span>/<span style="color: red">Red</span> Tees</h5>
-
+      <div class="container justify-content-center align-items-center results">
+        <div class="row">
+          <div class="col-xl-4 col-lg-5 col-md-10 mx-auto my-3">
+            <div class="results-card">
+              <div class="text-center">
+                <h4>First Half (Weeks 1-11)</h4>
+                <h5>
+                  <span style="color: white">White</span>/<span
+                    style="color: red"
+                    >Red</span
+                  >
+                  Tees
+                </h5>
+              </div>
+              <a
+                style="color: rgb(20, 20, 85)"
+                href="/results/2026/2026 Weekly Stats - Week 1.xlsx"
+                ><span class="week-label">Week 1</span>
+                <span class="week-date">May 4</span></a
+              >
+              <a
+                style="color: rgb(20, 20, 85)"
+                href="/results/2026/2026 Weekly Stats - Week 2.xlsx"
+                ><span class="week-label">Week 2</span>
+                <span class="week-date">May 11</span></a
+              >
+              <a
+                style="color: rgb(20, 20, 85)"
+                href="/results/2026/2026 Weekly Stats - Week 3.xlsx"
+                ><span class="week-label">Week 3</span>
+                <span class="week-date">May 18</span></a
+              >
+              <a
+                style="color: rgb(20, 20, 85)"
+                href="/results/2026/2026 Weekly Stats - Week 4.xlsx"
+                ><span class="week-label">Week 4</span>
+                <span class="week-date">May 25</span></a
+              >
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 5 - June 1&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 6 - June 8&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 7 - June 15&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 8 - June 22&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 9 - June 29&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 10 - July 6&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 11 - July 13&nbsp</a>
             </div>
-            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 1.xlsx"><span class="week-label">Week 1</span>
-              <span class="week-date">May 4</span></a>
-            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 2.xlsx"><span class="week-label">Week 2</span>
-              <span class="week-date">May 11</span></a>
-            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 3.xlsx"><span class="week-label">Week 3</span>
-              <span class="week-date">May 18</span></a>
-            <a style="color: rgb(20, 20, 85)" href="/results/2026/2026 Weekly Stats - Week 4.xlsx"><span class="week-label">Week 4</span>
-              <span class="week-date">May 25</span></a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 5 - June 1&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 6 - June 8&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 7 - June 15&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 8 - June 22&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 9 - June 29&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 10 - July 6&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 11 - July 13&nbsp</a>
           </div>
-        </div>
 
-        <div class="col-xl-4 col-lg-5 col-md-10 mx-auto my-3">
-          <div class="results-card">
-            <div class="text-center">
-
-              <h4>Second Half (Weeks 12-22)</h4>
-              <h5><span style="color: blue">Blue</span>/<span style="color: gold">Gold</span> Tees</h5>
-
+          <div class="col-xl-4 col-lg-5 col-md-10 mx-auto my-3">
+            <div class="results-card">
+              <div class="text-center">
+                <h4>Second Half (Weeks 12-22)</h4>
+                <h5>
+                  <span style="color: blue">Blue</span>/<span
+                    style="color: gold"
+                    >Gold</span
+                  >
+                  Tees
+                </h5>
+              </div>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 12 - July 20&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 13 - July 27&nbsp</a>
+              <a style="color: rgb(20, 20, 85)">&nbspWeek 14 - August 4&nbsp</a>
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 15 - August 10&nbsp</a
+              >
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 16 - August 17&nbsp</a
+              >
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 17 - August 24&nbsp</a
+              >
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 18 - August 31&nbsp</a
+              >
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 19 - September 7&nbsp</a
+              >
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 20 - September 14&nbsp</a
+              >
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 21 - September 21&nbsp</a
+              >
+              <a style="color: rgb(20, 20, 85)"
+                >&nbspWeek 22 - September 28&nbsp</a
+              >
             </div>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 12 - July 20&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 13 - July 27&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 14 - August 4&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 15 - August 10&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 16 - August 17&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 17 - August 24&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 18 - August 31&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 19 - September 7&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 20 - September 14&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 21 - September 21&nbsp</a>
-            <a style="color: rgb(20, 20, 85)">&nbspWeek 22 - September 28&nbsp</a>
           </div>
         </div>
       </div>
     </div>
 
-    <%- include('./layouts/footer'); -%>
-</body>
-<%- include('layouts/scripts'); %>
-
+    <%- include('./layouts/footer') %>
+    <%- include('./layouts/scripts')  %>
+  </body>
 </html>

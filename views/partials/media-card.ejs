@@ -1,12 +1,15 @@
 <div class="media-card">
-
   <% if (type === 'image') { %>
   <a href="<%= src %>" class="glightbox" data-title="<%= title %>">
     <div class="media-wrapper image-wrapper">
-      <img src="<%= src %>" alt="<%= title %>" loading="lazy" class="media-img" decoding="async">
-      <div class="media-caption">
-        <%= title %>
-      </div>
+      <img
+        src="<%= src %>"
+        alt="<%= title %>"
+        loading="lazy"
+        class="media-img"
+        decoding="async"
+      />
+      <div class="media-caption"><%= title %></div>
     </div>
   </a>
   <% } %>
@@ -14,13 +17,15 @@
   <% if (type === 'video') { %>
   <div class="video-block">
     <div class="media-wrapper video-wrapper">
-      <iframe src="<%= src %>" loading="lazy" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen>
+      <iframe
+        src="<%= src %>"
+        loading="lazy"
+        allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
+        allowfullscreen
+      >
       </iframe>
     </div>
-    <div class="video-caption">
-      <%= title %>
-    </div>
+    <div class="video-caption"><%= title %></div>
   </div>
   <% } %>
-
 </div>

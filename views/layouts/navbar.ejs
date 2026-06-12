@@ -1,11 +1,20 @@
 <nav class="navbar navbar-expand-xl bg-body-tertiary">
   <div class="container-fluid" style="background-color: lightgreen">
     <a class="navbar-brand d-flex align-items-center" href="/">
-      <img src="/images/bottoms-up-logo.png" alt="Bottoms Up Logo" class="nav-logo" />
+      <img
+        src="/images/bottoms-up-logo.png"
+        alt="Bottoms Up Logo"
+        class="nav-logo"
+      />
       <span class="ms-2">Bottoms Up Golf</span>
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -18,21 +27,21 @@
         <li class="nav-item">
           <a class="nav-link px-3 text-success" href="/tee-times">Tee Times</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link px-3 text-success" href="/overall">Standings</a>
+        <li>
+          <a class="dropdown-item" href="/scores/standings"> Standings </a>
         </li>
 
-        <!-- DROPDOWN -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle px-3 text-success" href="#" data-bs-toggle="dropdown">Weekly Results</a>
-          <ul class="dropdown-menu custom-dropdown">
-            <li><a class="dropdown-item" href="/results">Weekly Scoring</a></li>
-            <li><a class="dropdown-item" href="/skins">Weekly Skins</a></li>
-          </ul>
+        <li>
+          <a class="dropdown-item" href="/skins-report"> Skins </a>
         </li>
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle px-3 text-success" href="#" data-bs-toggle="dropdown">Images</a>
+          <a
+            class="nav-link dropdown-toggle px-3 text-success"
+            href="#"
+            data-bs-toggle="dropdown"
+            >Images</a
+          >
           <ul class="dropdown-menu custom-dropdown">
             <li><a class="dropdown-item" href="/images/2024">2024</a></li>
             <li><a class="dropdown-item" href="/images/2025">2025</a></li>
@@ -41,7 +50,12 @@
         </li>
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle px-3 text-success" href="#" data-bs-toggle="dropdown">Videos</a>
+          <a
+            class="nav-link dropdown-toggle px-3 text-success"
+            href="#"
+            data-bs-toggle="dropdown"
+            >Videos</a
+          >
           <ul class="dropdown-menu custom-dropdown">
             <li><a class="dropdown-item" href="/videos/2024">2024</a></li>
             <li><a class="dropdown-item" href="/videos/2025">2025</a></li>
@@ -49,51 +63,59 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link px-3 text-success" href="/course">Course Information</a>
+          <a class="nav-link px-3 text-success" href="/course"
+            >Course Information</a
+          >
         </li>
-
+      </ul>
+      <ul class="navbar-nav ms-auto">
         <% if (isAdmin) { %>
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+          >
             Admin
           </a>
 
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item" href="/players">
-                List Players
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="/players/new">
-                Add Player
-              </a>
+              <a class="dropdown-item" href="/players/new"> Add Player </a>
             </li>
             <li>
               <a class="dropdown-item" href="/scores/new">
                 Enter Weekly Scores
               </a>
             </li>
+            <li>
+              <a class="dropdown-item" href="/players">List Active Players</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/players/inactive"
+                >List Inactive Players</a
+              >
+            </li>
+
+            <li>
+              <a class="dropdown-item" href="/admin">Admin Tools</a>
+            </li>
           </ul>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="/logout">
-            Logout
-          </a>
+          <a class="nav-link" href="/logout">Logout </a>
         </li>
 
         <% } else { %>
 
         <li class="nav-item">
-          <a class="nav-link" href="/login">
-            Login
-          </a>
+          <a class="nav-link" href="/login"> Login </a>
         </li>
 
         <% } %>
-
       </ul>
     </div>
   </div>

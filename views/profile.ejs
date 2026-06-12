@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('layouts/header'); %>
+    <style>
+      html {
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+
+      :root {
+        --league-dark: #1b4332;
+        --league-green: #18aa24;
+        --league-light: #53da80;
+        --gridline: rgba(255, 255, 255, 0.15);
+      }
+
+      .player-link {
+        color: var(--league-dark);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .player-link:hover {
+        color: var(--league-green);
+        text-decoration: underline;
+      }
+
+      .button-link {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: var(--league-light);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+
+      /* ===== Header ===== */
+
+      .gallery-header {
+        text-align: center;
+      }
+
+      .gallery-header h1 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .gallery-header p {
+        opacity: 0.9;
+        margin-bottom: 1rem;
+      }
+
+      /* ===== Results Card ===== */
+
+      .results-card {
+        border: 2px solid var(--gridline);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+
+      /* ===== Table ===== */
+
+      .results-table {
+        margin-bottom: 0;
+      }
+
+      .results-table th {
+        background-color: var(--league-green);
+        color: white;
+        padding: 14px;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: 1.5px solid var(--gridline);
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+
+      .results-table td {
+        background-color: var(--league-light);
+        text-align: center;
+        vertical-align: middle;
+        padding: 12px;
+        border: 2px solid var(--gridline);
+      }
+
+      .results-table tbody tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      .results-table td:nth-child(2) {
+        text-align: left;
+      }
+
+      th.sort-asc::after {
+        content: " ▲";
+        position: absolute;
+        right: 8px;
+      }
+
+      th.sort-desc::after {
+        content: " ▼";
+        position: absolute;
+        right: 8px;
+      }
+      .results-table th {
+        background-color: #18aa24 !important;
+        color: white !important;
+      }
+
+      .results-table td {
+        background-color: #53da80 !important;
+      }
+
+      .results-table th,
+      .results-table td {
+        border: 1.5px solid rgba(255, 255, 255, 0.15);
+      }
+      .back-btn {
+        display: inline-block;
+        padding: 10px 18px;
+        background-color: var(--league-light);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(22, 172, 79, 0.15);
+      }
+
+      .back-btn:hover {
+        background-color: var(--league-green);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+
+      .back-btn:active {
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('layouts/navbar'); %>
+
+    <!-- Header Banner -->
+    <div class="container">
+      <div class="gallery-header">
+        <h1>
+          <%= member.name_first %>
+          <%= member.name_last %>
+        </h1>
+        <p>Player Performance • Bottoms Up Golf League • 2026 Season</p>
+      </div>
+
+      <div class="mb-4">
+        <a href="/scores/standings" class="back-btn"> ← Back to Standings </a>
+      </div>
+    </div>
+
+    <!-- Performance History Table -->
+    <div class="container">
+      <div class="card results-card shadow-lg mb-5">
+        <div class="card-body p-0">
+          <table class="table results-table table-hover">
+            <thead>
+              <tr>
+                <th>Week / Round</th>
+                <th>Gross Score</th>
+                <th>Net Score</th>
+                <th>Stableford Pts</th>
+                <th>Birdie Pts</th>
+                <th>CTP Pts</th>
+                <th>Total Pts Earned</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (scores.length === 0) { %>
+              <tr>
+                <td colspan="7" class="text-center py-4 text-white">
+                  No rounds recorded for this player yet.
+                </td>
+              </tr>
+              <% } else { %>
+              <% scores.forEach(row => { %>
+              <tr>
+                <td>
+                  <strong
+                    >Week
+                    <%= row.week_number %></strong
+                  >
+                </td>
+                <td><%= row.gross_total %></td>
+                <td><%= row.net_total %></td>
+                <td><%= row.stableford_total %></td>
+                <td><%= row.birdie_points %></td>
+                <td><%= row.ctp_points %></td>
+                <td>
+                  <strong><%= row.total_points %></strong>
+                </td>
+              </tr>
+              <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%- include('layouts/scripts'); %>
+    <%- include('layouts/footer'); %>
+  </body>
+</html>
