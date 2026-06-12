@@ -14,13 +14,8 @@
       }
       .button-link {
         display: inline-block;
-        padding: 10px 20px;
-        background-color: #53da80;
-        color: white;
         text-decoration: none;
-        border-radius: 5px;
       }
-
       .standings-table th {
         background-color: #18aa24;
         color: white;
@@ -167,7 +162,7 @@
 
         <a
           href="/scores/weekly/<%= week.week_number %>"
-          class="button-link btn btn-light btn-sm <%= week.week_number === currentWeek.week_number ? 'active-week' : '' %>"
+          class="button-link btn btn-light btn-sm"
         >
           Week
           <%= week.week_number %>
