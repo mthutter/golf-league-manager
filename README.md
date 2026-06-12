@@ -77,7 +77,7 @@ Automatic calculation of skins including hole carryovers.
 
 ### Architecture
 
-* MVC-inspired application structure
+* MVC application structure
 * Service layer for business logic
 * Controller layer for request orchestration
 * Reusable EJS templates and partials
