@@ -1,9 +1,3 @@
-## Screenshots
-
-### Season Standings
-
-![Season Standings](/public/docs/screenshots/standings-desktop.png)
-
 # Bottoms Up Golf League Manager
 
 A full-stack web application designed to streamline the administration of a recreational golf league.
@@ -44,6 +38,14 @@ Originally developed to solve real-world league administration challenges, the a
 * Weekly score summaries
 * Player scoring history
 * Skins payout reports
+
+---
+
+## Screenshots
+
+### Season Standings
+
+![Season Standings](/public/docs/screenshots/standings-desktop.png)
 
 ---
 
