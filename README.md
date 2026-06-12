@@ -100,26 +100,6 @@ The application separates business rules from presentation concerns through a de
 
 ---
 
-## Screenshots
-
-### Season Standings
-
-*(Add screenshot here)*
-
-### Weekly Score Entry
-
-*(Add screenshot here)*
-
-### Weekly Skins Report
-
-*(Add screenshot here)*
-
-### Player Profile
-
-*(Add screenshot here)*
-
----
-
 ## Getting Started
 
 ### Clone the repository
@@ -146,10 +126,6 @@ Update the values in `.env` as appropriate for your local environment before sta
 ```bash
 npm install
 ```
-
-### Configure environment variables
-
-Create a `.env` file containing any required configuration values.
 
 ### Start the application
 
