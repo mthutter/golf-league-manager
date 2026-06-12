@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 
-const dbPath = process.env.DB_PATH || "./golf-league-db.db";
+const dbPath = process.env.DB_PATH || "./golf-league-db-public.db";
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
