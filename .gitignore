@@ -13,6 +13,10 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+# DB - Production DB with member PII
+golf-league-db-production.db
+*backup.db
+
 # Runtime data
 pids
 *.pid
