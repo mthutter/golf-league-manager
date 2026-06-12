@@ -96,7 +96,7 @@ config/
 public/
 ```
 
-The application separates business rules from presentation concerns through a dedicated service layer, enabling cleaner controllers, improved maintainability, and easier testing.
+The application separates business rules from presentation concerns through a service layer, enabling cleaner controllers, improved maintainability, and easier testing.
 
 ---
 
@@ -105,9 +105,9 @@ The application separates business rules from presentation concerns through a de
 ### Clone the repository
 
 ```bash
-git clone https://github.com/mthutter/golf-league-site.git
+git clone https://github.com/mthutter/golf-league-manager.git
 
-cd golf-league-site
+cd golf-league-manager
 ```
 
 ### Configure Environment Variables
@@ -143,7 +143,7 @@ http://localhost:8080
 
 ## Data Privacy
 
-This repository contains a demonstration dataset intended solely for portfolio purposes.
+This repository contains database data intended solely for demonstration and portfolio purposes.
 
 All participant names, email addresses, phone numbers, and other identifying information have been replaced with fictitious data while preserving the relationships necessary to demonstrate the application's functionality.
 
@@ -166,6 +166,6 @@ No personally identifiable information (PII) from actual league participants is 
 
 As an active participant in a recreational golf league, I recognized several opportunities to improve the efficiency and accuracy of league administration.
 
-Manual calculations for standings, skins payouts, and historical reporting were time-consuming and prone to error. This application was developed to automate those processes while providing league members with timely access to scoring and performance information.
+Manual calculations for standings, skins payouts, and historical reporting were time-consuming and prone to error. This application was developed to automate those processes while providing league members with real-timeaccess to week-to-week scoring and standings information.
 
 The project continues to evolve through real-world usage and ongoing feedback from league participants, serving as both a practical tool and an ongoing software engineering exercise in iterative development, refactoring, and feature enhancement.
