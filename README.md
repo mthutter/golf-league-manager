@@ -47,6 +47,12 @@ Originally developed to solve real-world league administration challenges, the a
 
 ![Season Standings](/public/docs/screenshots/standings-desktop.png)
 
+### Weekly Score Entry
+
+League administrators can record weekly rounds using a streamlined score-entry interface with automatic calculations and validation.
+
+![Weekly Score Entry](/public/docs/screenshots/weekly-score-entry.png)
+
 ---
 
 ## Technology Stack
