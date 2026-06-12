@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('layouts/header') %>
+    <style>
+      .player-link {
+        color: #1b4332;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      .player-link:hover {
+        color: #18aa24;
+        text-decoration: underline;
+      }
+      .skin-winner-card {
+        background-color: #d1e7dd;
+        border: 3px solid #18aa24 !important;
+        font-weight: 700;
+      }
+      .skin-winner-card .net-score {
+        color: #0f5132;
+        font-weight: 700;
+      }
+      .skin-carryover-winner-card {
+        background-color: #fff3cd !important;
+        border: 3px solid #18aa24 !important;
+        font-weight: 700;
+      }
+      .skin-carryover-winner-card .net-score {
+        color: #664d03 !important;
+        font-weight: 700;
+      }
+      .border-dashed {
+        border: 1.5px dashed rgba(27, 67, 50, 0.25) !important;
+      }
+      .stroke-marker {
+        color: #dc3545;
+        font-weight: bold;
+        margin-left: 2px;
+      }
+      .gallery-header {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+      .gallery-header h1 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .gallery-header p {
+        opacity: 0.9;
+        margin-bottom: 1rem;
+      }
+      .skins-table-card {
+        border: 1.5px solid rgba(27, 67, 50, 0.15);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .skins-custom-table th {
+        background-color: #1b4332 !important;
+        color: white !important;
+        padding: 14px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .skins-custom-table td {
+        vertical-align: middle;
+        padding: 4px 6px;
+        border: 1px solid rgba(27, 67, 50, 0.1);
+      }
+      .skin-carryover-feeder-cell {
+        border: 2px dashed #18aa24 !important;
+        background-color: rgba(255, 243, 205, 0.25) !important;
+      }
+      .score-cell {
+        line-height: 1.05;
+      }
+      .gross-score {
+        font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+      }
+      .net-score {
+        font-size: clamp(0.45rem, 0.8vw, 0.65rem);
+      }
+      .players {
+        font-size: clamp(0.65rem, 1vw, 0.85rem);
+      }
+      .scorecard td:first-child,
+      .scorecard th:first-child {
+        padding-left: clamp(4px, 0.5vw, 10px);
+      }
+      .scorecard-header th {
+        font-size: clamp(0.55rem, 1vw, 0.8rem);
+        padding: clamp(2px, 0.4vw, 5px) clamp(3px, 0.6vw, 8px);
+        font-weight: 700;
+      }
+
+      /* Optional custom style for your new active-week class if needed */
+      .active-week {
+        background-color: #18aa24 !important;
+        color: white !important;
+        font-weight: bold;
+        border-color: #1b4332 !important;
+      }
+      /* ===== Fix Button Link Conflict ===== */
+      .button-link {
+        display: inline-block;
+        text-decoration: none;
+      }
+
+      .week-nav {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .week-nav .btn {
+        min-width: 85px;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        transition: all 0.2s ease;
+      }
+      .week-nav .btn:hover {
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('layouts/navbar') %>
+    <div class="container">
+      <div class="gallery-header">
+        <h1>
+          Skins Results - Week
+          <%= week.week_number %>
+          (<%= week.displayDate %>)
+        </h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
+      </div>
+      <div class="week-nav">
+        <% if (locals.weeks && weeks.length > 0 && locals.currentWeek) { %> <%
+        weeks .filter(w => w.week_id <= currentWeek.week_number) .reverse()
+        .forEach(w => { %>
+        <a
+          href="/skins-report?weekId=<%= w.week_id %>"
+          class="button-link btn btn-light btn-sm <%= w.week_id === selectedWeekId ? 'active-week' : '' %>"
+        >
+          Week
+          <%= w.week_id %>
+        </a>
+        <% }) %>
+        <% } %>
+      </div>
+    </div>
+    <div class="container my-4">
+      <% if (!selectedWeekId) { %>
+      <div
+        class="alert alert-warning text-center shadow-sm"
+        style="border-radius: 12px"
+      >
+        No game data has been processed yet.
+      </div>
+      <% } else { %>
+      <div class="row mt-2">
+        <div class="col-12">
+          <div class="card shadow-sm skins-table-card">
+            <div
+              class="card-header text-white py-3 d-flex justify-content-between align-items-center"
+              style="background-color: #1b4332"
+            >
+              <div>
+                <h5 class="card-title mb-0 fw-bold">
+                  Participant Gross/Net Scores
+                </h5>
+                <small class="text-white-50"
+                  >Displays Gross / Net scores. Green cells indicate standard
+                  skins; Gold cells highlight dynamic carryover jackpot
+                  wins.</small
+                >
+              </div>
+
+              <!-- Sleek inline pot tracker matching the rest of the white header layout -->
+              <div class="text-end ps-3">
+                <div
+                  class="fs-5 fw-bold text-nowrap text-white"
+                  style="letter-spacing: 0.5px"
+                >
+                  Pot: $<%= totalPot.toFixed(2) %>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table
+                class="table table-bordered align-middle text-center mb-0 skins-custom-table"
+              >
+                <thead class="scorecard-header">
+                  <tr>
+                    <th rowspan="3" class="text-start" style="min-width: 110px">
+                      Player
+                    </th>
+                    <th rowspan="3" style="width: 70px">HCP</th>
+
+                    <% for (let h = 1; h <= 9; h++) { %>
+                    <th>
+                      Hole
+                      <%= h %>
+                    </th>
+                    <% } %>
+                    <th rowspan="3" style="width: 60px">Skins</th>
+                    <th rowspan="3" style="width: 100px">Payout ($)</th>
+                  </tr>
+                  <tr>
+                    <% holeInfo.forEach(hole => { %>
+                    <th class="small py-1">
+                      <span class="text-warning fw-semibold">
+                        M<%= hole.handicap_men %>
+                      </span>
+                      /
+                      <span class="text-info fw-semibold">
+                        W<%= hole.handicap_women %>
+                      </span>
+                    </th>
+                    <% }) %>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (participantScores.length === 0) { %>
+                  <tr>
+                    <td colspan="13" class="text-muted py-4">
+                      No active participant data found for this week.
+                    </td>
+                  </tr>
+                  <% } else { %>
+
+                  <% participantScores.forEach(function(player) { %>
+                  <tr>
+                    <td class="text-start fw-semibold bg-light players">
+                      <a
+                        href="/scores/members/<%= player.memberId %>"
+                        class="player-link"
+                        ><%= player.name %></a
+                      >
+                    </td>
+                    <td class="text-muted small bg-light players">
+                      <%= player.handicap %>
+                    </td>
+                    <% player.holes.forEach(function(h) { %>
+
+                    <td class="<%= h.cellClass %>">
+                      <div class="score-cell">
+                        <div class="gross-score">Gross: <%= h.gross %></div>
+                        <div class="net-score">
+                          <strong
+                            >Net:
+                            <%= h.net %></strong
+                          >
+                          <% if (h.strokes > 0) { %>
+                          <span
+                            class="stroke-marker"
+                            title="<%= h.strokes %> handicap stroke(s)"
+                            >*</span
+                          >
+                          <% } %>
+                        </div>
+                      </div>
+                    </td>
+                    <% }); %>
+                    <td class="fw-bold text-center players">
+                      <%= player.skinsWon %>
+                    </td>
+                    <td class="fw-bold text-end text-success bg-light pe-3">
+                      $<%= player.payout.toFixed(2) %>
+                    </td>
+                  </tr>
+
+                  <% }); %>
+
+                  <!-- Grand Totals Row aligned under Hole 9 -->
+                  <tr
+                    class="fw-bold border-top border-dark"
+                    style="background-color: #179117 !important; color: white"
+                  >
+                    <!-- Blank spacer covering Player, HCP, and Holes 1 through 8 (10 columns) -->
+                    <td colspan="10"></td>
+
+                    <!-- TOTALS text rests directly under Hole 9 (11th column space) -->
+                    <td class="text-center players">TOTALS:</td>
+
+                    <td class="text-center players">
+                      <%= reportTotals.skins %>
+                    </td>
+                    <td class="text-end pe-3">
+                      $<%= reportTotals.payout.toFixed(2) %>
+                    </td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <script>
+      document
+        .getElementById("recalcBtn")
+        ?.addEventListener("click", async () => {
+          const weekId = "<%= selectedWeekId || '' %>";
+          if (!weekId) return;
+          const btn = document.getElementById("recalcBtn");
+          const originalText = btn.innerHTML;
+          btn.disabled = true;
+          btn.innerHTML = "⏳ Calculating...";
+          try {
+            const response = await fetch(`/skins-report/calculate/${weekId}`, {
+              method: "POST",
+            });
+            const result = await response.json();
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              alert("Error: " + (result.error || "Unknown error"));
+              btn.disabled = false;
+              btn.innerHTML = originalText;
+            }
+          } catch (err) {
+            alert("Server fetch error.");
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+          }
+        });
+    </script>
+    <%- include('layouts/scripts') %>
+    <%- include('layouts/footer') %>
+  </body>
+</html>

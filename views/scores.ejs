@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('layouts/header'); %>
+
+    <style>
+      html {
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+
+      table {
+        margin: 0 auto;
+      }
+
+      .players-table {
+        width: 1%;
+        border-collapse: separate;
+      }
+
+      .players-table th,
+      .players-table td {
+        white-space: nowrap;
+        vertical-align: middle;
+        padding: 0.65rem 0.8rem;
+      }
+
+      table.players-table {
+        width: 1% !important;
+        table-layout: auto !important;
+      }
+
+      table.players-table th,
+      table.players-table td {
+        text-align: center;
+        white-space: nowrap;
+        padding: 0.45rem 0.7rem !important;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+
+  <body>
+    <%- include('layouts/navbar'); %>
+
+    <div class="main-wrapper">
+      <div class="gallery-header">
+        <h1>Weekly Scores</h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
+      </div>
+      <table class="table players-table">
+        <thead class="table-success">
+          <tr>
+            <th colspan="15">All</th>
+          </tr>
+          <tr>
+            <th>Week</th>
+            <th>Member ID</th>
+            <th>Handicap Used</th>
+            <th>Gross Hole 1</th>
+            <th>Gross Hole 2</th>
+            <th>Gross Hole 3</th>
+            <th>Gross Hole 4</th>
+            <th>Gross Hole 5</th>
+            <th>Gross Hole 6</th>
+            <th>Gross Hole 7</th>
+            <th>Gross Hole 8</th>
+            <th>Gross Hole 9</th>
+            <th>Gross Total</th>
+            <th>Net Total</th>
+            <th>Points Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% scores.forEach(score => { %>
+
+          <tr>
+            <td>
+              <%= score.week_id %>
+            </td>
+            <td>
+              <%= score.member_id %>
+            </td>
+
+            <td>
+              <%= score.handicap_used %>
+            </td>
+            <td>
+              <%= score.gross1 %>
+            </td>
+            <td>
+              <%= score.gross2 %>
+            </td>
+            <td>
+              <%= score.gross3 %>
+            </td>
+            <td>
+              <%= score.gross4 %>
+            </td>
+            <td>
+              <%= score.gross5 %>
+            </td>
+            <td>
+              <%= score.gross6 %>
+            </td>
+            <td>
+              <%= score.gross7 %>
+            </td>
+            <td>
+              <%= score.gross8 %>
+            </td>
+            <td>
+              <%= score.gross9 %>
+            </td>
+            <td>
+              <%= score.gross_total %>
+            </td>
+            <td>
+              <%= score.net_total %>
+            </td>
+            <td>
+              <%= score.stableford_total %>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </body>
+
+  <%- include('layouts/scripts'); %>
+</html>

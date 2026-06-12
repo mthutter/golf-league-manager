@@ -1,51 +1,39 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <%- include('./layouts/header'); %>
+  </head>
+  <body>
+    <%- include('./layouts/navbar'); %>
 
-<%- include('./layouts/header'); %>
+    <div class="main-wrapper">
+      <div class="gallery-header">
+        <h1>
+          <%= year %>
+          Images
+        </h1>
+        <p>Bottoms Up Golf League</p>
+      </div>
 
-<body>
+      <div class="container">
+        <div class="row g-3">
+          <% filenames.forEach(name => { %>
+          <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <%- include('partials/media-card', { type: 'image', src:
+            `https://bottoms-up.b-cdn.net/${year}/${name}`, title: name
+            .replace(/[-_]/g, ' ') .replace('.jpg', '') }) %>
+          </div>
 
-  <%- include('./layouts/navbar'); %>
-
-  <div class="main-wrapper">
-    <div class="gallery-header">
-      <h1>
-        <%= year %> Images
-      </h1>
-      <p>
-        Bottoms Up Golf League
-      </p>
-    </div>
-
-    <div class="container">
-      <div class="row g-3">
-        <% filenames.forEach(name => { %>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-          <%- include('partials/media-card', {
-              type: 'image',
-              src: `https://bottoms-up.b-cdn.net/${year}/${name}`,
-              title: name
-                .replace(/[-_]/g, ' ')
-                .replace('.jpg', '')
-            }) %>
+          <% }) %>
         </div>
-
-        <% }) %>
-
       </div>
     </div>
-  </div>
 
-  <%- include('./layouts/footer'); %>
-
-  <%- include('./layouts/scripts.ejs'); %>
-
-  <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
-
-  <script>
-    const lightbox = GLightbox();
-  </script>
-
-</body>
-
+    <%- include('./layouts/footer'); %>
+    <%- include('./layouts/scripts'); %>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script>
+      const lightbox = GLightbox();
+    </script>
+  </body>
 </html>

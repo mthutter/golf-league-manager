@@ -1,25 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <%- include('./layouts/header'); %>
+    <style></style>
+  </head>
 
-<%- include('./layouts/header'); -%>
+  <body>
+    <section>
+      <%- include('./layouts/navbar'); %>
+    </section>
 
-    <body>
+    <section>
+      <%- include('./layouts/footer'); %>
+    </section>
 
-        <section>
-            <%- include('./layouts/navbar'); -%>
-        </section>
-
-        <section id="meat">
-        </section>
-
-        <section>
-            <%- include('./layouts/footer'); -%>
-        </section>
-
-        <section>
-            <%- include('./layouts/scripts'); -%>
-        </section>
-
-    </body>
-
+    <section>
+      <%- include('./layouts/scripts'); %>
+    </section>
+  </body>
 </html>

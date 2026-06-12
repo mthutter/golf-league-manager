@@ -1,103 +1,95 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <%- include('layouts/header'); %>
+    <style>
+      table {
+        margin: 0 auto;
+      }
+      .players-table {
+        width: 1%;
+        border-collapse: separate;
+      }
+      .players-table th,
+      .players-table td {
+        white-space: nowrap;
+        vertical-align: middle;
+        padding: 0.65rem 0.8rem;
+      }
+      table.players-table {
+        width: 1% !important;
+        table-layout: auto !important;
+      }
+      table.players-table th,
+      table.players-table td {
+        text-align: center;
+        white-space: nowrap;
+        padding: 0.45rem 0.7rem !important;
+        vertical-align: middle;
+      }
+      .action-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('layouts/navbar'); %>
 
-<%- include('layouts/header'); %>
+    <div class="main-wrapper">
+      <div class="gallery-header">
+        <h1>Active Players</h1>
+        <p>Bottoms Up Golf League</p>
+      </div>
 
-<style>
-  table {
-    margin: 0 auto;
-  }
-
-  .players-table {
-    width: 1%;
-    border-collapse: separate;
-  }
-
-  .players-table th,
-  .players-table td {
-    white-space: nowrap;
-    vertical-align: middle;
-    padding: 0.65rem 0.8rem;
-  }
-
-  table.players-table {
-    width: 1% !important;
-    table-layout: auto !important;
-  }
-
-  table.players-table th,
-  table.players-table td {
-    text-align: center;
-    white-space: nowrap;
-    padding: 0.45rem 0.7rem !important;
-    vertical-align: middle;
-  }
-</style>
-
-<%- include('layouts/navbar'); %>
-
-<body>
-  <div class="main-wrapper">
-    <div class="gallery-header">
-      <h1>Current Players</h1>
-      <p>Bottoms Up Golf League</p>
+      <table class="table players-table">
+        <thead class="table-success">
+          <tr>
+            <th>#</th>
+            <!-- Changed header from ID to # -->
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Phone</th>
+            <th>Current Handicap</th>
+            <th>E-Mail</th>
+            <th>Joined</th>
+            <th>Active</th>
+            <th>Status (Reg/Sub)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Added a tracking counter variable for active players -->
+          <% let activeCount = 1; %>
+          <% players.forEach(player => { if (player.status == 'Yes') { %>
+          <tr>
+            <!-- Displays the sequential index and increments it -->
+            <td><%= activeCount++ %></td>
+            <td><%= player.name_last %></td>
+            <td><%= player.name_first %></td>
+            <td><%= player.phone %></td>
+            <td><%= player.handicap %></td>
+            <td><%= player.e_mail %></td>
+            <td><%= player.year_joined %></td>
+            <td><%= player.status %></td>
+            <td><%= player.type %></td>
+            <td>
+              <div class="action-cell">
+                <a
+                  href="/players/<%= player.id %>/edit"
+                  class="btn btn-sm btn-success text-white fw-bold"
+                >
+                  Edit
+                </a>
+              </div>
+            </td>
+          </tr>
+          <% }}) %>
+        </tbody>
+      </table>
     </div>
-    <table class="table players-table">
-      <thead class="table-success">
-        <tr>
-          <th>ID</th>
-          <th>Last Name</th>
-          <th>First Name</th>
-          <th>Phone</th>
-          <th>Current Handicap</th>
-          <th>E-Mail</th>
-          <th>Joined</th>
-          <th>Active</th>
-          <th>Status (Reg/Sub)</th>
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        <% players.forEach(player => { %>
-
-        <tr>
-          <td>
-            <%= player.id %>
-          </td>
-          <td>
-            <%= player.name_last %>
-          </td>
-          <td>
-            <%= player.name_first %>
-          </td>
-          <td>
-            <%= player.phone %>
-          </td>
-          <td>
-            <%= player.handicap %>
-          </td>
-          <td>
-            <%= player.e_mail %>
-          </td>
-          <td>
-            <%= player.year_joined %>
-          </td>
-          <td>
-            <%= player.status ? 'true' : 'false' %>
-          </td>
-          <td>
-            <%= player.type %>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-
-    </table>
-  </div>
-</body>
-
-<%- include('layouts/scripts'); %>
-
+  </body>
+  <%- include('layouts/footer'); %>
+  <%- include('layouts/scripts'); %>
 </html>
