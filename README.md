@@ -8,6 +8,16 @@ Originally developed to solve real-world league administration challenges, the a
 
 ---
 
+## Project Background
+
+As an active participant in a recreational golf league, I recognized several opportunities to improve the efficiency and accuracy of league administration.
+
+Manual calculations for standings, skins payouts, and historical reporting were time-consuming and prone to error. This application was developed to automate those processes while providing league members with real-timeaccess to week-to-week scoring and standings information.
+
+The project continues to evolve through real-world usage and ongoing feedback from league participants, serving as both a practical tool and an ongoing software engineering exercise in iterative development, refactoring, and feature enhancement.
+
+---
+
 ## Features
 
 ### League Administration
@@ -161,11 +171,3 @@ No personally identifiable information (PII) from actual league participants is 
 * Expanded historical reporting capabilities
 
 ---
-
-## Project Background
-
-As an active participant in a recreational golf league, I recognized several opportunities to improve the efficiency and accuracy of league administration.
-
-Manual calculations for standings, skins payouts, and historical reporting were time-consuming and prone to error. This application was developed to automate those processes while providing league members with real-timeaccess to week-to-week scoring and standings information.
-
-The project continues to evolve through real-world usage and ongoing feedback from league participants, serving as both a practical tool and an ongoing software engineering exercise in iterative development, refactoring, and feature enhancement.
