@@ -53,6 +53,12 @@ League administrators can record weekly rounds using a streamlined score-entry i
 
 ![Weekly Score Entry](/public/docs/screenshots/weekly-score-entry.png)
 
+### Weekly Skins Results
+
+Automatic calculation of skins including hole carryovers.
+
+![Weekly Score Entry](/public/docs/screenshots/skins-results.png)
+
 ---
 
 ## Technology Stack
