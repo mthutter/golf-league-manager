@@ -17,6 +17,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 *backup.db
 golf-league-db-production.db
 .prettierrc
+sessions.db
 
 # Runtime data
 pids
