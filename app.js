@@ -3,10 +3,11 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import session from "express-session";
-import { MemoryStore } from "express-session";
 import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import SQLiteStoreFactory from "connect-sqlite3";
+import { RedisStore } from "connect-redis";
+import { RedisClient } from "redis";
 
 // ROUTES
 import publicRoutes from "./routes/public.routes.js";
@@ -29,12 +30,13 @@ const SQLiteStore = SQLiteStoreFactory(session);
 store: new SQLiteStore({
   db: "sessions.db",
   dir: "./",
-}),
-  /* =========================================
+});
+
+/* =========================================
    BASIC APP SETTINGS
 ========================================= */
 
-  app.disable("x-powered-by");
+app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
 
@@ -76,8 +78,9 @@ app.use(
   session({
     name: "SessionCookie",
     secret: process.env.EXPRESS_SESSION_SECRET,
-    store: new MemoryStore({
-      checkPeriod: 86400000,
+    store: new RedisStore({
+      client: RedisClient,
+      prefix: "sess:",
     }),
     resave: false,
     saveUninitialized: false,
