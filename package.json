@@ -11,7 +11,7 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {    
+  "dependencies": {
     "@bunny.net/edgescript-sdk": "^0.12.0",
     "@bunny.net/storage-sdk": "^0.3.0",
     "@cloudinary/url-gen": "^1.21.0",
@@ -23,6 +23,8 @@
     "chat": "^4.27.0",
     "cloudinary": "^2.6.0",
     "connect-flash": "^0.1.1",
+    "connect-redis": "^9.0.0",
+    "connect-sqlite3": "^0.9.16",
     "cookie-parser": "^1.4.6",
     "corepack": "^0.29.4",
     "dotenv": "^16.4.5",
@@ -46,6 +48,7 @@
     "process": "^0.11.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "redis": "^6.0.0",
     "sequelize": "^6.37.8",
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1",

@@ -6,6 +6,7 @@ import session from "express-session";
 import { MemoryStore } from "express-session";
 import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
+import SQLiteStoreFactory from "connect-sqlite3";
 
 // ROUTES
 import publicRoutes from "./routes/public.routes.js";
@@ -23,11 +24,17 @@ import authMiddleware from "./middleware/auth.middleware.js";
 
 const app = express();
 
-/* =========================================
+const SQLiteStore = SQLiteStoreFactory(session);
+
+store: new SQLiteStore({
+  db: "sessions.db",
+  dir: "./",
+}),
+  /* =========================================
    BASIC APP SETTINGS
 ========================================= */
 
-app.disable("x-powered-by");
+  app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
 
