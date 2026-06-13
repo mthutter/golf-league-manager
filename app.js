@@ -6,8 +6,6 @@ import session from "express-session";
 import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import SQLiteStoreFactory from "connect-sqlite3";
-import { RedisStore } from "connect-redis";
-import { RedisClient } from "redis";
 
 // ROUTES
 import publicRoutes from "./routes/public.routes.js";
@@ -78,9 +76,9 @@ app.use(
   session({
     name: "SessionCookie",
     secret: process.env.EXPRESS_SESSION_SECRET,
-    store: new RedisStore({
-      client: RedisClient,
-      prefix: "sess:",
+    store: new SQLiteStore({
+      db: "sessions.db",
+      dir: "./",
     }),
     resave: false,
     saveUninitialized: false,
