@@ -1,246 +1,264 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <%- include('layouts/header'); %>
-    <style>
-      .player-link {
-        color: #1b4332;
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-      .player-link:hover {
-        color: #18aa24;
-        text-decoration: underline;
-      }
-      .button-link {
-        display: inline-block;
-        text-decoration: none;
-      }
-      .standings-table th {
-        background-color: #18aa24;
-        color: white;
-      }
 
-      .standings-table td {
-        background-color: #53da80;
-      }
-      .gallery-header {
-        text-align: center;
-      }
-      .gallery-header h1 {
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-      .gallery-header p {
-        opacity: 0.9;
-        margin-bottom: 1rem;
-      }
-      .week-nav {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .week-nav .btn {
-        min-width: 85px;
-        font-weight: 600;
-        border-radius: 50px;
-        border: none;
-        transition: all 0.2s ease;
-      }
-      .week-nav .btn:hover {
-        transform: translateY(-1px);
-      }
-      /* ===== Standings Card ===== */
+<head>
+  <%- include('layouts/header'); %>
+  <style>
+    .player-link {
+      color: #1b4332;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
 
-      .standings-card {
-        border: 1.5px solid rgba(255, 255, 255, 0.15);
-        border-radius: 18px;
-        overflow: hidden;
-      }
-      /* Top-left corner */
-      .standings-table thead tr th:first-child {
-        border-top-left-radius: 18px;
-      }
+    .player-link:hover {
+      color: #18aa24;
+      text-decoration: underline;
+    }
 
-      /* Top-right corner */
-      .standings-table thead tr th:last-child {
-        border-top-right-radius: 18px;
-      }
+    .button-link {
+      display: inline-block;
+      text-decoration: none;
+    }
 
-      /* Bottom-left corner */
-      .standings-table tbody tr:last-child td:first-child {
-        border-bottom-left-radius: 18px;
-      }
+    .standings-table th {
+      background-color: #18aa24;
+      color: white;
+    }
 
-      /* Bottom-right corner */
-      .standings-table tbody tr:last-child td:last-child {
-        border-bottom-right-radius: 18px;
-      }
-      /* ===== Table ===== */
-      .standings-table {
-        margin-bottom: 0;
-      }
-      .standings-table thead {
-        background: #1b4332;
-        color: white;
-      }
-      .standings-table th {
-        border: #19c477;
-        padding: 14px;
-        text-align: center;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-        user-select: none;
-      }
-      .standings-table td {
-        text-align: center;
-        vertical-align: middle;
-        padding: 12px;
-      }
-      .standings-table th,
-      .standings-table td {
-        border: 2px solid rgba(255, 255, 255, 0.15);
-      }
-      .standings-table tbody tr:hover {
-        background-color: #f8f9fa;
-      }
-      /* Player column left aligned */
-      .standings-table td:nth-child(2) {
-        text-align: left;
-      }
-      /* ===== Position Column ===== */
-      .position-cell {
-        width: 70px;
-        font-size: 1.15rem;
-        font-weight: 700;
-        text-align: center !important;
-      }
+    .standings-table td {
+      background-color: #53da80;
+    }
 
-      /* ===== Podium Colors ===== */
-      .gold-cell {
-        background-color: #ffd700 !important;
-        font-weight: bold;
-      }
-      .silver-cell {
-        background-color: #c0c0c0 !important;
-        font-weight: bold;
-      }
-      .bronze-cell {
-        background-color: #cd7f32 !important;
-        color: white;
-        font-weight: bold;
-      }
-      .points-average {
-        font-size: 1.05rem;
-        font-weight: 700;
-      }
-      .active-week {
-        background-color: #1b4332 !important;
-        color: white !important;
-        font-weight: 700;
-        transform: scale(1.05);
-      }
-    </style>
-  </head>
-  <body>
-    <%- include('layouts/navbar'); %>
+    .gallery-header {
+      text-align: center;
+    }
 
-    <!-- Header Banner -->
-    <div class="container">
-      <div class="gallery-header">
-        <h1>2026 Season Standings</h1>
-        <p>
-          Through Week <%= currentWeek.week_number %> (<%=
+    .gallery-header h1 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .gallery-header p {
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+
+    .week-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .week-nav .btn {
+      min-width: 85px;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .week-nav .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ===== Standings Card ===== */
+
+    .standings-card {
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    /* Top-left corner */
+    .standings-table thead tr th:first-child {
+      border-top-left-radius: 18px;
+    }
+
+    /* Top-right corner */
+    .standings-table thead tr th:last-child {
+      border-top-right-radius: 18px;
+    }
+
+    /* Bottom-left corner */
+    .standings-table tbody tr:last-child td:first-child {
+      border-bottom-left-radius: 18px;
+    }
+
+    /* Bottom-right corner */
+    .standings-table tbody tr:last-child td:last-child {
+      border-bottom-right-radius: 18px;
+    }
+
+    /* ===== Table ===== */
+    .standings-table {
+      margin-bottom: 0;
+    }
+
+    .standings-table thead {
+      background: #1b4332;
+      color: white;
+    }
+
+    .standings-table th {
+      border: #19c477;
+      padding: 14px;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .standings-table td {
+      text-align: center;
+      vertical-align: middle;
+      padding: 12px;
+    }
+
+    .standings-table th,
+    .standings-table td {
+      border: 2px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .standings-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    /* Player column left aligned */
+    .standings-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    /* ===== Position Column ===== */
+    .position-cell {
+      width: 70px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-align: center !important;
+    }
+
+    /* ===== Podium Colors ===== */
+    .gold-cell {
+      background-color: #ffd700 !important;
+      font-weight: bold;
+    }
+
+    .silver-cell {
+      background-color: #c0c0c0 !important;
+      font-weight: bold;
+    }
+
+    .bronze-cell {
+      background-color: #cd7f32 !important;
+      color: white;
+      font-weight: bold;
+    }
+
+    .points-average {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .active-week {
+      background-color: #1b4332 !important;
+      color: white !important;
+      font-weight: 700;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('layouts/navbar'); %>
+
+  <!-- Header Banner -->
+  <div class="container">
+    <div class="gallery-header">
+      <h1>2026 Season Standings</h1>
+      <p>
+        Through Week <%= currentWeek.week_number %> (<%=
           currentWeek.displayDate %>) • Bottoms Up Golf League
-        </p>
-      </div>
-      <div class="week-nav">
-        <% weeks .filter(week => week.week_number <= currentWeek.week_number)
+      </p>
+    </div>
+
+    <div class="week-nav">
+
+
+      <% weeks .filter(week => week.week_number <= currentWeek.week_number)
         .forEach(week => { %>
 
-        <a
-          href="/scores/weekly/<%= week.week_number %>"
-          class="button-link btn btn-light btn-sm"
-        >
-          Week
-          <%= week.week_number %>
-        </a>
+      <a href="/scores/weekly/<%= week.week_number %>" class="button-link btn btn-light btn-sm">
+        Week
+        <%= week.week_number %>
+      </a>
 
-        <% }) %>
-      </div>
-      <br />
+      <% }) %>
     </div>
+    <br />
+  </div>
 
-    <!-- Standings -->
-    <div class="container">
-      <div class="card standings-card shadow-lg mb-5">
-        <div class="card-body p-0">
-          <table id="sortableTable" class="table standings-table table-hover">
-            <thead>
-              <tr>
-                <th>Pos</th>
-                <th>Player</th>
-                <th>Rounds</th>
-                <th>Birdies</th>
-                <th>CTP</th>
-                <th>Total Pts</th>
-                <th>Gross Avg</th>
-                <th>Net Avg</th>
-                <th>Avg Pts</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% standings.forEach((player, idx) => { %>
-              <tr>
-                <td class="position-cell">
-                  <% if (idx > 0 && player.rank === standings[idx - 1].rank) {
+  <!-- Standings -->
+  <div class="container">
+    <div class="card standings-card shadow-lg mb-5">
+      <div class="card-body p-0">
+        <table id="sortableTable" class="table standings-table table-hover">
+          <thead>
+            <tr>
+              <th>Pos</th>
+              <th>Player</th>
+              <th>Rounds</th>
+              <th>Birdies</th>
+              <th>CTP</th>
+              <th>Total Pts</th>
+              <th>Gross Avg</th>
+              <th>Net Avg</th>
+              <th>Avg Pts</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% standings.forEach((player, idx) => { %>
+            <tr>
+              <td class="position-cell">
+                <% if (idx > 0 && player.rank === standings[idx - 1].rank) {
                   %>
-                  <!-- Leave blank for subsequent tied players -->
-                  <% } else { %>
-                  <%= player.rank %>
-                  <% } %>
-                </td>
-                <td>
-                  <strong
-                    ><a
-                      href="/scores/members/<%= player.id %>"
-                      class="player-link"
-                      ><%= player.player_name %></a
-                    ></strong
-                  >
-                </td>
-                <td>
-                  <%= player.weeks_played %>
-                </td>
-                <td>
-                  <%= player.birdie_points %>
-                </td>
-                <td>
-                  <%= player.ctp_points %>
-                </td>
-                <td><%= player.total_points %></td>
-                <td>
-                  <%= Number(player.avg_gross).toFixed(2) %>
-                </td>
-                <td>
-                  <%= Number(player.avg_net).toFixed(2) %>
-                </td>
-                <td
-                  class="points-average <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>"
-                >
-                  <%= Number(player.avg_points).toFixed(2) %>
-                </td>
-              </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </div>
+                <!-- Leave blank for subsequent tied players -->
+                <% } else { %>
+                <%= player.rank %>
+                <% } %>
+              </td>
+              <td>
+                <strong><a href="/scores/members/<%= player.id %>" class="player-link"><%= player.player_name %></a></strong>
+              </td>
+              <td>
+                <%= player.weeks_played %>
+              </td>
+              <td>
+                <%= player.birdie_points %>
+              </td>
+              <td>
+                <%= player.ctp_points %>
+              </td>
+              <td><%= player.total_points %></td>
+              <td>
+                <%= Number(player.avg_gross).toFixed(2) %>
+              </td>
+              <td>
+                <%= Number(player.avg_net).toFixed(2) %>
+              </td>
+              <td class="points-average <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>">
+                <%= Number(player.avg_points).toFixed(2) %>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
       </div>
     </div>
+  </div>
 
-    <%- include('layouts/scripts'); %>
-    <%- include('layouts/footer'); %>
-  </body>
+  <%- include('layouts/scripts'); %>
+  <%- include('layouts/footer'); %>
+</body>
+
 </html>
