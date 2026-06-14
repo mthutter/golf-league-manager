@@ -183,7 +183,7 @@ export const processSkinsForWeek = async (weekId) => {
  * Core handicap calculation engine runner
  */
 export const runHandicapEngine = async (weekId) => {
-  console.log(`[HANDICAP ENGINE] Recalculating up to week ${weekId}...`);
+  console.log(`[HANDICAP ENGINE] Recalculating player handicaps...`);
 
   await calculateHandicaps();
 
