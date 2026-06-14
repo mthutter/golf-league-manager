@@ -39,9 +39,7 @@ export async function calculateHandicaps(coursePar = 36) {
     const average = total / rounds.length;
     const handicap = Math.round(average - coursePar);
 
-    console.log(
-      `${player.name_last}: avg=${average.toFixed(2)} hcp=${handicap} rnds=${rounds.length}`,
-    );
+    console.log(`${player.name_last}: avg=${average.toFixed(2)} hcp=${handicap} rnds=${rounds.length}`);
 
     await run(
       `
