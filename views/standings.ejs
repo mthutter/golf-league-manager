@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <%- include('layouts/header'); %>
+  <%- include('./layouts/header') %>
   <style>
     .player-link {
       color: #1b4332;
@@ -170,7 +170,7 @@
 </head>
 
 <body>
-  <%- include('layouts/navbar'); %>
+  <%- include('./layouts/navbar') %>
 
   <!-- Header Banner -->
   <div class="container">
@@ -183,10 +183,7 @@
     </div>
 
     <div class="week-nav">
-
-
-      <% weeks .filter(week => week.week_number <= currentWeek.week_number)
-        .forEach(week => { %>
+      <% weeks .filter(week => week.week_number <= currentWeek.week_number).forEach(week => { %>
 
       <a href="/scores/weekly/<%= week.week_number %>" class="button-link btn btn-light btn-sm">
         Week
@@ -207,6 +204,7 @@
             <tr>
               <th>Pos</th>
               <th>Player</th>
+              <th>HCP</th>
               <th>Rounds</th>
               <th>Birdies</th>
               <th>CTP</th>
@@ -220,8 +218,7 @@
             <% standings.forEach((player, idx) => { %>
             <tr>
               <td class="position-cell">
-                <% if (idx > 0 && player.rank === standings[idx - 1].rank) {
-                  %>
+                <% if (idx > 0 && player.rank === standings[idx - 1].rank) { %>
                 <!-- Leave blank for subsequent tied players -->
                 <% } else { %>
                 <%= player.rank %>
@@ -229,6 +226,9 @@
               </td>
               <td>
                 <strong><a href="/scores/members/<%= player.id %>" class="player-link"><%= player.player_name %></a></strong>
+              </td>
+              <td style="color: #2a35c2;">
+                <strong><%= player.current_handicap %></strong>
               </td>
               <td>
                 <%= player.weeks_played %>
@@ -257,8 +257,8 @@
     </div>
   </div>
 
-  <%- include('layouts/scripts'); %>
-  <%- include('layouts/footer'); %>
+  <%- include('./layouts/scripts') %>
+  <%- include('./layouts/footer') %>
 </body>
 
 </html>

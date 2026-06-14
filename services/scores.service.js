@@ -79,7 +79,8 @@ export const getSeasonStandings = async () => {
              TOTAL(s.ctp_points) AS ctp_points, TOTAL(s.birdie_points) AS birdie_points, 
              TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points,
              ROUND(TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) / NULLIF(COUNT(s.score_id), 0), 2) AS avg_points, 
-             ROUND(AVG(s.gross_total), 2) AS avg_gross, ROUND(AVG(s.net_total), 2) AS avg_net 
+             ROUND(AVG(s.gross_total), 2) AS avg_gross, ROUND(AVG(s.net_total), 2) AS avg_net,
+             m.current_handicap
       FROM members m LEFT JOIN scores s ON s.member_id = m.id GROUP BY m.id
     ) 
     SELECT RANK() OVER (ORDER BY avg_points DESC) AS rank, * FROM raw_standings 
