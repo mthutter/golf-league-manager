@@ -50,8 +50,6 @@ export const calculateSkinsMetrics = async (req, res) => {
  */
 export const calculateHandicaps = async (req, res) => {
   try {
-    const weekId = Number(req.body.weekId);
-
     // Call service to run engine logic
     await adminService.runHandicapEngine(weekId);
 

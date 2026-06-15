@@ -3,9 +3,9 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import session from "express-session";
-import { MemoryStore } from "express-session";
 import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
+import SQLiteStoreFactory from "connect-sqlite3";
 
 // ROUTES
 import publicRoutes from "./routes/public.routes.js";
@@ -22,6 +22,13 @@ import errorHandler from "./middleware/error.middleware.js";
 import authMiddleware from "./middleware/auth.middleware.js";
 
 const app = express();
+
+const SQLiteStore = SQLiteStoreFactory(session);
+
+store: new SQLiteStore({
+  db: "sessions.db",
+  dir: "./",
+});
 
 /* =========================================
    BASIC APP SETTINGS
@@ -69,8 +76,9 @@ app.use(
   session({
     name: "SessionCookie",
     secret: process.env.EXPRESS_SESSION_SECRET,
-    store: new MemoryStore({
-      checkPeriod: 86400000,
+    store: new SQLiteStore({
+      db: "sessions.db",
+      dir: "./",
     }),
     resave: false,
     saveUninitialized: false,

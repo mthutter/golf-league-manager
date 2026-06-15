@@ -2,14 +2,8 @@ import db from "../config/db.js";
 import { getAllWeeks, getWeek, getCurrentWeekPlayed } from "./weeks.service.js";
 
 // --- Promise Helpers for SQLite Callbacks ---
-const dbAll = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.all(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
-const dbGet = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.get(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
+const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => (e ? rej(e) : res(r))));
+const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => (e ? rej(e) : res(r))));
 const dbRun = (sql, params = []) =>
   new Promise((res, rej) =>
     db.run(sql, params, function (e) {
@@ -21,13 +15,18 @@ const dbRun = (sql, params = []) =>
  * Fetches initial data needed to construct the score form
  */
 export const getFormData = async () => {
-  const memberSql = `SELECT id, name_first, name_last, handicap FROM members ORDER BY name_last, name_first`;
+  const memberSql = `
+  SELECT
+    id,
+    name_first,
+    name_last,
+    COALESCE(current_handicap, handicap) AS handicap
+  FROM members
+  ORDER BY name_last, name_first
+`;
   const holesSql = `SELECT * FROM holes WHERE hole_number <= 9 ORDER BY hole_number`;
 
-  const [members, holes] = await Promise.all([
-    dbAll(memberSql),
-    dbAll(holesSql),
-  ]);
+  const [members, holes] = await Promise.all([dbAll(memberSql), dbAll(holesSql)]);
 
   return { members, holes };
 };
@@ -80,7 +79,8 @@ export const getSeasonStandings = async () => {
              TOTAL(s.ctp_points) AS ctp_points, TOTAL(s.birdie_points) AS birdie_points, 
              TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points,
              ROUND(TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) / NULLIF(COUNT(s.score_id), 0), 2) AS avg_points, 
-             ROUND(AVG(s.gross_total), 2) AS avg_gross, ROUND(AVG(s.net_total), 2) AS avg_net 
+             ROUND(AVG(s.gross_total), 2) AS avg_gross, ROUND(AVG(s.net_total), 2) AS avg_net,
+             m.current_handicap
       FROM members m LEFT JOIN scores s ON s.member_id = m.id GROUP BY m.id
     ) 
     SELECT RANK() OVER (ORDER BY avg_points DESC) AS rank, * FROM raw_standings 
@@ -88,9 +88,7 @@ export const getSeasonStandings = async () => {
   `;
 
   if (currentWeek && currentWeek.date) {
-    currentWeek.displayDate = new Date(
-      currentWeek.date + "T12:00:00",
-    ).toLocaleDateString("en-US", {
+    currentWeek.displayDate = new Date(currentWeek.date + "T12:00:00").toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
