@@ -70,3 +70,12 @@ export async function createPost(req, res) {
     res.status(500).send(`Database Error: ${error.message}`);
   }
 }
+
+export async function deletePost(req, res) {
+  try {
+    await blogService.deletePostById(req.params.id);
+    res.redirect("/blog");
+  } catch (error) {
+    res.status(500).send(`Database Erasure Error: ${error.message}`);
+  }
+}

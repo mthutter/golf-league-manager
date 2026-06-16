@@ -41,4 +41,11 @@ router.get("/:slug", requireLogin, blogController.renderPost);
 // 🔒 Block regular players from submitting new post data
 router.post("/", requireLogin, requireAdmin, blogController.createPost);
 
+router.post(
+  "/:id/delete",
+  requireLogin,
+  requireAdmin,
+  blogController.deletePost,
+);
+
 export default router;

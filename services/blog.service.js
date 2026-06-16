@@ -37,3 +37,8 @@ export async function createNewPost(title, content, imageUrl) {
     [title, slug, content, imageUrl || null],
   );
 }
+
+export async function deletePostById(id) {
+  // Uses your db.cfg run() promise wrapper to purge the matching key row
+  return run("DELETE FROM posts WHERE id = ?", [id]);
+}
