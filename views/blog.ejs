@@ -48,11 +48,15 @@
       <div class="gallery-header text-center">
         <h1>League Blog & Announcements</h1>
         <p>Bottoms Up Golf League</p>
+
+        <!-- 🔒 Hide button completely from standard 'player' roles -->
+        <% if (isAdmin) { %>
         <div class="mt-3">
           <a href="/blog/new" class="btn btn-success text-white fw-bold"
             >✍️ Write a New Post</a
           >
         </div>
+        <% } %>
       </div>
 
       <div class="blog-container mt-4">
@@ -95,7 +99,7 @@
         <% } %>
       </div>
 
-      <!-- VIEW 2: NEW BLOG POST COMPOSITION LAYOUT (Fixed Chaining Node Structure Here) -->
+      <!-- VIEW 2: NEW BLOG POST COMPOSITION LAYOUT -->
       <% } else if (view === 'new') { %>
       <div class="gallery-header text-center">
         <h1>Create New Post</h1>
@@ -185,7 +189,7 @@
             onerror="this.style.display='none'"
           />
           <% } %>
-          <div class="blog-content"><%= post.content %></div>
+          <div class="blog-content"><%- post.content %></div>
         </article>
       </div>
       <% } %>
