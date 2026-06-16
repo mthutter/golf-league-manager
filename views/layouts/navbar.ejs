@@ -65,11 +65,11 @@
 
       <!-- RIGHT SIDE (Dynamic Auth & Portal Options) -->
       <ul class="navbar-nav ms-auto">
-        <!-- ⛳ Player Portal Dropdown (Visible to both logged-in Players and Admins) -->
-        <% if (locals.isUser) { %>
+        <!-- ⛳ Player Portal Dropdown (Visible ONLY to standard players, hidden from Admin) -->
+        <% if (locals.isUser && !locals.isAdmin) { %>
         <li class="nav-item dropdown">
           <a
-            class="nav-link dropdown-toggle px-3 text-success fw-bold"
+            class="nav-link dropdown-toggle px-3"
             href="#"
             role="button"
             data-bs-toggle="dropdown"
@@ -118,9 +118,7 @@
               >
             </li>
             <li>
-              <a class="dropdown-item fw-bold text-success" href="/blog/new"
-                >Write Blog Post</a
-              >
+              <a class="dropdown-item" href="/blog/new">Write Blog Post</a>
             </li>
             <li><hr class="dropdown-divider" /></li>
             <li><a class="dropdown-item" href="/admin">Admin Tools</a></li>
