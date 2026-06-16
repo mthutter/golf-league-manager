@@ -16,6 +16,7 @@ import authRoutes from "./routes/auth.routes.js";
 import scoreRoutes from "./routes/scores.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import skinsRouter from "./routes/skins.routes.js";
+import blogRoutes from "./routes/blog.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -89,18 +90,21 @@ app.use(
   }),
 );
 
+app.use((req, res, next) => {
+  // Binds session data straight to EJS global context templates
+  res.locals.isAdmin = req.session.isAdmin || false;
+  res.locals.isUser = req.session.isUser || false;
+  next();
+});
+
 app.use(flash());
 
 /* =========================================
    ROUTES
 ========================================= */
 
-app.use((req, res, next) => {
-  res.locals.isAdmin = req.session?.isAdmin || false;
-  next();
-});
-
 app.use("/", publicRoutes);
+app.use("/blog", blogRoutes);
 app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);
 app.use("/videos", videoRoutes);
