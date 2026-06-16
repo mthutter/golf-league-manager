@@ -2,8 +2,14 @@ import db from "../config/db.js";
 import { getAllWeeks, getWeek, getCurrentWeekPlayed } from "./weeks.service.js";
 
 // --- Promise Helpers for SQLite Callbacks ---
-const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => (e ? rej(e) : res(r))));
-const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => (e ? rej(e) : res(r))));
+const dbAll = (sql, params = []) =>
+  new Promise((res, rej) =>
+    db.all(sql, params, (e, r) => (e ? rej(e) : res(r))),
+  );
+const dbGet = (sql, params = []) =>
+  new Promise((res, rej) =>
+    db.get(sql, params, (e, r) => (e ? rej(e) : res(r))),
+  );
 const dbRun = (sql, params = []) =>
   new Promise((res, rej) =>
     db.run(sql, params, function (e) {
@@ -26,7 +32,10 @@ export const getFormData = async () => {
 `;
   const holesSql = `SELECT * FROM holes WHERE hole_number <= 9 ORDER BY hole_number`;
 
-  const [members, holes] = await Promise.all([dbAll(memberSql), dbAll(holesSql)]);
+  const [members, holes] = await Promise.all([
+    dbAll(memberSql),
+    dbAll(holesSql),
+  ]);
 
   return { members, holes };
 };
@@ -88,7 +97,9 @@ export const getSeasonStandings = async () => {
   `;
 
   if (currentWeek && currentWeek.date) {
-    currentWeek.displayDate = new Date(currentWeek.date + "T12:00:00").toLocaleDateString("en-US", {
+    currentWeek.displayDate = new Date(
+      currentWeek.date + "T12:00:00",
+    ).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
@@ -119,7 +130,7 @@ export const getMemberProfileData = async (memberId) => {
   const memberSql = `SELECT id, name_first, name_last FROM members WHERE id = ?`;
   const historySql = `
     WITH RECURSIVE league_weeks(week_number) AS (
-      SELECT 1 UNION ALL SELECT week_number + 1 FROM league_weeks WHERE week_number < 5
+      SELECT 1 UNION ALL SELECT week_number + 1 FROM league_weeks WHERE week_number < 7
     ) 
     SELECT lw.week_number, COALESCE(s.score_id, '') AS score_id, 
            COALESCE(s.stableford_total, '') AS stableford_total, COALESCE(s.ctp_points, '') AS ctp_points, 
