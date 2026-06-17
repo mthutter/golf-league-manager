@@ -19,6 +19,7 @@ golf-league-db-production.db
 .prettierrc
 sessions.db
 sanitize*.sql
+.env
 
 # Runtime data
 pids
