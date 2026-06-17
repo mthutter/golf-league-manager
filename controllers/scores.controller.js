@@ -1,4 +1,5 @@
 import * as scoresService from "../services/scores.service.js";
+import * as weeksService from "../services/weeks.service.js";
 
 export const getNewScoresForm = async (req, res) => {
   try {
@@ -17,9 +18,7 @@ export const saveScore = async (req, res) => {
   } catch (err) {
     console.error("Error saving score payload:", err);
     if (err.message.includes("UNIQUE")) {
-      return res
-        .status(400)
-        .send("Scores already entered for this player/week.");
+      return res.status(400).send("Scores already entered for this player/week.");
     }
     res.status(500).send("Database error");
   }
@@ -39,7 +38,9 @@ export const getWeeklyScores = async (req, res) => {
   try {
     const weekId = req.params.weekId;
     const results = await scoresService.getWeeklyBreakdown(weekId);
-    res.render("weekly", { weekId, results });
+    const weekDate = await weeksService.getWeek(weekId);
+
+    res.render("weekly", { weekId, results, weekDate });
   } catch (err) {
     console.error("Error gathering weekly scores:", err);
     res.status(500).send("Database Error");
