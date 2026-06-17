@@ -165,6 +165,22 @@
         font-weight: 700;
         transform: scale(1.05);
       }
+
+      .week-results-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .week-results-label {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0;
+      }
     </style>
   </head>
 
@@ -180,19 +196,22 @@
           currentWeek.displayDate %>) • Bottoms Up Golf League
         </p>
       </div>
+      <div class="week-results-container">
+        <span class="week-results-label">Weekly Results:</span>
+        <div class="week-nav">
+          <% weeks .filter(week => week.week_number <=
+          currentWeek.week_number).forEach(week => { %>
 
-      <div class="week-nav">
-        <% weeks .filter(week => week.week_number <=
-        currentWeek.week_number).forEach(week => { %>
+          <a
+            href="/scores/weekly/<%= week.week_number %>"
+            class="button-link btn btn-light btn-sm"
+          >
+            Week
+            <%= week.week_number %>
+          </a>
 
-        <a
-          href="/scores/weekly/<%= week.week_number %>"
-          class="button-link btn btn-light btn-sm"
-        >
-          Week <%= week.week_number %>
-        </a>
-
-        <% }) %>
+          <% }) %>
+        </div>
       </div>
       <br />
     </div>
