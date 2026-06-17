@@ -26,9 +26,6 @@ export async function getWeek(weekNumber) {
 
   week.displayDate = `${monthNames[Number(month) - 1]} ${Number(day)}`;
 
-  console.log(week.displayDate);
-  console.log(week);
-
   return week;
 }
 
