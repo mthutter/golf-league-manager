@@ -135,6 +135,10 @@ export const getMemberProfileData = async (memberId) => {
 
   const lastWeekPlayed = await getCurrentWeekPlayed();
 
+  if (!lastWeekPlayed) {
+    return { member, scores: [] };
+  }
+
   const historySql = `
     WITH RECURSIVE league_weeks(week_number) AS (
       SELECT 1
