@@ -127,24 +127,50 @@ export const getWeeklyBreakdown = async (weekId) => {
  * Gathers member biographical details combined with recursively joined historical records
  */
 export const getMemberProfileData = async (memberId) => {
-  const memberSql = `SELECT id, name_first, name_last FROM members WHERE id = ?`;
+  const memberSql = `
+    SELECT id, name_first, name_last
+    FROM members
+    WHERE id = ?
+  `;
+
+  const lastWeekPlayed = await getCurrentWeekPlayed();
+
   const historySql = `
     WITH RECURSIVE league_weeks(week_number) AS (
-      SELECT 1 UNION ALL SELECT week_number + 1 FROM league_weeks WHERE week_number < 7
-    ) 
-    SELECT lw.week_number, COALESCE(s.score_id, '') AS score_id, 
-           COALESCE(s.stableford_total, '') AS stableford_total, COALESCE(s.ctp_points, '') AS ctp_points, 
-           COALESCE(s.birdie_points, '') AS birdie_points, 
-           CASE WHEN s.score_id IS NOT NULL THEN (s.stableford_total + s.ctp_points + s.birdie_points) ELSE '' END AS total_points, 
-           COALESCE(s.gross_total, '') AS gross_total, COALESCE(s.net_total, '') AS net_total 
-    FROM league_weeks lw 
-    LEFT JOIN scores s ON s.week_id = lw.week_number AND s.member_id = ? 
+      SELECT 1
+      UNION ALL
+      SELECT week_number + 1
+      FROM league_weeks
+      WHERE week_number < ?
+    )
+    SELECT
+      lw.week_number,
+      COALESCE(s.score_id, '') AS score_id,
+      COALESCE(s.stableford_total, '') AS stableford_total,
+      COALESCE(s.ctp_points, '') AS ctp_points,
+      COALESCE(s.birdie_points, '') AS birdie_points,
+      CASE
+        WHEN s.score_id IS NOT NULL
+        THEN (s.stableford_total + s.ctp_points + s.birdie_points)
+        ELSE ''
+      END AS total_points,
+      COALESCE(s.gross_total, '') AS gross_total,
+      COALESCE(s.net_total, '') AS net_total
+    FROM league_weeks lw
+    LEFT JOIN scores s
+      ON s.week_id = lw.week_number
+      AND s.member_id = ?
     ORDER BY lw.week_number ASC
   `;
 
   const member = await dbGet(memberSql, [memberId]);
+
   if (!member) return null;
 
-  const scores = await dbAll(historySql, [memberId]);
+  const scores = await dbAll(historySql, [
+    lastWeekPlayed.week_number,
+    memberId,
+  ]);
+
   return { member, scores };
 };
