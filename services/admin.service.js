@@ -1,5 +1,8 @@
 import { calculateSkins } from "./skins.service.js";
-import { calculateHandicaps } from "./handicap.service.js";
+import {
+  calculateHandicaps,
+  writeCurrentHandicaps,
+} from "./handicap.service.js";
 import { get, all, run } from "../config/db.js"; // Added 'all' for complete lookup support
 
 /**
@@ -207,16 +210,18 @@ export const processSkinsForWeek = async (weekId) => {
     holePayouts: holePayouts,
   };
 };
-
 /**
  * Core handicap calculation engine runner
  */
+
 export const runHandicapEngine = async () => {
   console.log(`[HANDICAP ENGINE] Recalculating player handicaps...`);
 
-  await calculateHandicaps();
+  await writeCurrentHandicaps();
+  console.log("[HANDICAP ENGINE] Current handicaps have been archived.");
 
-  console.log("[HANDICAP ENGINE] Complete.");
+  await calculateHandicaps();
+  console.log("[HANDICAP ENGINE] Current handicaps have been computed.");
 
   return true;
 };
