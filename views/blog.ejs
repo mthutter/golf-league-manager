@@ -3,12 +3,13 @@
   <head>
     <%- include('layouts/header'); %>
     <style>
-      .blog-editor-container  {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
+      .blog-editor-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
       .blog-container {
+        min-width: 675px;
         max-width: 1000px;
         margin: 0 auto;
         padding: 0 1rem;
@@ -43,15 +44,15 @@
         margin-bottom: 1.5rem;
       }
       .blog-gallery img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-.gallery-badge {
-  font-size: 0.8rem;
-  vertical-align: middle;
-}
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      .gallery-badge {
+        font-size: 0.8rem;
+        vertical-align: middle;
+      }
     </style>
   </head>
   <body>
@@ -102,15 +103,14 @@
 
           <!-- 🕒 Mountain Time Zone Formatting -->
           <div class="meta-text mb-2">
-  Published: <%= post.displayDate %>
-
-  <% if (post.galleryCount > 0) { %>
-   <span class="badge bg-success ms-2 gallery-badge">
-  📸 <%= post.galleryCount %>
-  <%= post.galleryCount === 1 ? 'Photo' : 'Photos' %>
-</span>
-  <% } %>
-</div>
+            Published: <%= post.displayDate %> <% if (post.galleryCount > 0) {
+            %>
+            <span class="badge bg-success ms-2 gallery-badge">
+              📸 <%= post.galleryCount %> <%= post.galleryCount === 1 ? 'Photo'
+              : 'Photos' %>
+            </span>
+            <% } %>
+          </div>
 
           <p class="text-muted"><%= post.content.substring(0, 180) %>...</p>
 
@@ -204,11 +204,11 @@
                 >Gallery Images</label
               >
               <textarea
-              id="gallery_urls"                
+                id="gallery_urls"
                 name="gallery_urls"
                 rows="5"
                 class="form-control"
-                    placeholder="https://bottom-up.b-cdn.net/images/2025/photo1.jpg&#10;https://bottom-up.b-cdn.net/images/2025/photo2.jpg"
+                placeholder="https://bottom-up.b-cdn.net/images/2025/photo1.jpg&#10;https://bottom-up.b-cdn.net/images/2025/photo2.jpg"
                 required
               ></textarea>
             </div>
@@ -240,15 +240,16 @@
           <div
             class="meta-text mb-3 pb-2 border-bottom d-flex justify-content-between align-items-center"
           >
-          <div>
-           <h2 class="h4">
-            <a
-              href="/blog/<%= post.slug %>"
-              class="text-decoration-none text-dark fw-bold"
-            >
-              <%= post.title %>
-            </a>
-          </h2></div>
+            <div>
+              <h2 class="h4">
+                <a
+                  href="/blog/<%= post.slug %>"
+                  class="text-decoration-none text-dark fw-bold"
+                >
+                  <%= post.title %>
+                </a>
+              </h2>
+            </div>
 
             <div>
               Published:
@@ -271,35 +272,32 @@
             </form>
             <% } %>
           </div>
-<% if (post.galleryUrls && post.galleryUrls.length > 0) { %>
+          <% if (post.galleryUrls && post.galleryUrls.length > 0) { %>
 
-<div class="row g-3 mb-4">
-  <% post.galleryUrls.forEach(url => { %>
-    <div class="col-md-3">
-      <img
-        src="<%= url %>"
-        class="img-fluid rounded shadow-sm"
-        onerror="this.style.display='none'"
-      />
-    </div>
-  <% }) %>
-</div>
+          <div class="row g-3 mb-4">
+            <% post.galleryUrls.forEach(url => { %>
+            <div class="col-md-3">
+              <img
+                src="<%= url %>"
+                class="img-fluid rounded shadow-sm"
+                onerror="this.style.display='none'"
+              />
+            </div>
+            <% }) %>
+          </div>
 
-<% } else if (post.image_url) { %>
+          <% } else if (post.image_url) { %>
 
-<img
-  src="<%= post.image_url %>"
-  alt="<%= post.title %>"
-  class="blog-banner"
-  onerror="this.style.display='none'"
-/>
+          <img
+            src="<%= post.image_url %>"
+            alt="<%= post.title %>"
+            class="blog-banner"
+            onerror="this.style.display='none'"
+          />
 
-<% } %>
+          <% } %>
 
-<div class="blog-content">
-  <%= post.content %>
-</div>
-          
+          <div class="blog-content"><%= post.content %></div>
         </article>
       </div>
       <% } %>
