@@ -141,7 +141,7 @@
         weeks .filter(w => w.week_id <= currentWeek.week_number) .reverse()
         .forEach(w => { %>
         <a
-          href="/skins-report?weekId=<%= w.week_id %>"
+          href="/skins?weekId=<%= w.week_id %>"
           class="button-link btn btn-light btn-sm <%= w.week_id === selectedWeekId ? 'active-week' : '' %>"
         >
           Week

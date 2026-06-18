@@ -110,7 +110,7 @@ app.use("/images", imageRoutes);
 app.use("/videos", videoRoutes);
 app.use("/scores", scoreRoutes);
 app.use("/admin", adminRoutes);
-app.use("/skins-report", skinsRouter);
+app.use("/skins", skinsRouter);
 
 /* =========================================
    404 HANDLER
