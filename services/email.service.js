@@ -1,6 +1,6 @@
+import "../config/db.js";
 import nodemailer from "nodemailer";
 import "../config/env.js"; // Adjust relative path based on folder depth
-// import db from "../config/db.js"; // Un-comment and add your database instance here
 
 const transporter = nodemailer.createTransport({
   host: "smtp.titan.email",
@@ -16,7 +16,9 @@ export const fetchAndSendEmails = async (subject, htmlBody) => {
   try {
     // 1. Fetch your members from the database
     // Replace with your real DB call (e.g., await db.query() or Member.find())
-    const [members] = await db.query("SELECT e_mail FROM members WHERE e_mail IS NOT NULL");
+    const [members] = await all(
+      "SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'",
+    );
 
     if (members.length === 0) {
       return { success: true, count: 0, messageId: null };
@@ -33,7 +35,11 @@ export const fetchAndSendEmails = async (subject, htmlBody) => {
       html: htmlBody,
     });
 
-    return { success: true, count: emailList.length, messageId: info.messageId };
+    return {
+      success: true,
+      count: emailList.length,
+      messageId: info.messageId,
+    };
   } catch (error) {
     console.error("Email service execution failed:", error);
     throw error;
