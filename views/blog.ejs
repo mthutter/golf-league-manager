@@ -65,15 +65,37 @@
         <h1>League Blog and Announcements</h1>
         <p>Bottoms Up Golf League</p>
 
+        <!-- Blog Search -->
+        <form action="/blog" method="GET" class="mt-3 mb-3">
+          <div class="input-group" style="max-width: 500px; margin: 0 auto">
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              placeholder="Search blog posts..."
+              value="<%= search || '' %>"
+            />
+            <button class="btn btn-success" type="submit">Search</button>
+
+            <% if (search) { %>
+            <a href="/blog" class="btn btn-outline-secondary"> Clear </a>
+            <% } %>
+          </div>
+        </form>
+
         <% if (isAdmin) { %>
         <div class="mt-3">
-          <a href="/blog/new" class="btn btn-success text-white fw-bold"
-            >Write a New Post</a
-          >
+          <a href="/blog/new" class="btn btn-success text-white fw-bold">
+            Write a New Post
+          </a>
         </div>
         <% } %>
       </div>
-
+      <% if (search) { %>
+      <div class="text-center mb-3">
+        <span class="badge bg-success"> Search Results: "<%= search %>" </span>
+      </div>
+      <% } %>
       <div class="blog-container mt-4">
         <% if (posts.length === 0) { %>
         <div class="text-center text-muted p-5">

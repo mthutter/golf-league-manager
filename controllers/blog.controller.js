@@ -3,7 +3,10 @@ import * as blogService from "../services/blog.service.js";
 
 export async function renderIndex(req, res) {
   try {
-    const rawPosts = await blogService.getAllPosts();
+    const search = req.query.search?.trim();
+    const rawPosts = search
+      ? await blogService.searchPosts(search)
+      : await blogService.getAllPosts();
 
     // Clean up timestamps here before rendering the template
     const formattedPosts = rawPosts.map((post) => {
@@ -12,7 +15,9 @@ export async function renderIndex(req, res) {
       try {
         galleryCount = JSON.parse(post.gallery_urls || "[]").length;
       } catch {
-        galleryCount = post.gallery_urls ? post.gallery_urls.split("\n").filter(Boolean).length : 0;
+        galleryCount = post.gallery_urls
+          ? post.gallery_urls.split("\n").filter(Boolean).length
+          : 0;
       }
 
       return {
@@ -28,7 +33,7 @@ export async function renderIndex(req, res) {
         }),
       };
     });
-    res.render("blog", { view: "index", posts: formattedPosts });
+    res.render("blog", { view: "index", posts: formattedPosts, search });
   } catch (error) {
     res.status(500).send(`Database Error: ${error.message}`);
   }
@@ -40,21 +45,26 @@ export async function renderPost(req, res) {
     try {
       post.galleryUrls = JSON.parse(post.gallery_urls || "[]");
     } catch {
-      post.galleryUrls = post.gallery_urls ? post.gallery_urls.split("\n").filter(Boolean) : [];
+      post.galleryUrls = post.gallery_urls
+        ? post.gallery_urls.split("\n").filter(Boolean)
+        : [];
     }
 
     if (!post) return res.status(404).send("Blog post not found");
 
     // Clean up the single post date string
-    post.displayDate = new Date(post.created_at + " Z").toLocaleString("en-US", {
-      timeZone: "America/Denver",
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    post.displayDate = new Date(post.created_at + " Z").toLocaleString(
+      "en-US",
+      {
+        timeZone: "America/Denver",
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      },
+    );
     console.log("gallery_urls from DB:", post.gallery_urls);
     console.log("galleryUrls array:", post.galleryUrls);
 
@@ -77,7 +87,8 @@ export async function createPost(req, res) {
     .map((url) => url.trim())
     .filter(Boolean);
 
-  if (!title || !content) return res.status(400).send("Title and content are required.");
+  if (!title || !content)
+    return res.status(400).send("Title and content are required.");
 
   try {
     await blogService.createNewPost(title, content, image_url); // 👈 Pass to service

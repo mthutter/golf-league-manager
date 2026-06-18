@@ -50,7 +50,7 @@
             <th>Phone</th>
             <th>E-Mail</th>
             <th>Joined</th>
-            <th>Active</th>
+
             <th>Status (Reg/Sub)</th>
             <!-- 🔒 Hides the header column from regular players -->
             <% if (isAdmin) { %>
@@ -70,7 +70,7 @@
               <a href="mailto: <%= player.e_mail %>"><%= player.e_mail %></a>
             </td>
             <td><%= player.year_joined %></td>
-            <td><%= player.status %></td>
+
             <td><%= player.type %></td>
             <!-- 🔒 Hides the Edit button completely from regular players -->
             <% if (isAdmin) { %>

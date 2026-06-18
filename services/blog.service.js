@@ -11,7 +11,9 @@ run(`
     image_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
-`).catch((err) => console.error("Failed to initialize blog table:", err.message));
+`).catch((err) =>
+  console.error("Failed to initialize blog table:", err.message),
+);
 
 const makeSlug = (title) =>
   title
@@ -27,13 +29,26 @@ export async function getPostBySlug(slug) {
   return get("SELECT * FROM posts WHERE slug = ?", [slug]);
 }
 
+export async function searchPosts(searchTerm) {
+  return all(
+    `
+    SELECT *
+    FROM posts
+    WHERE title LIKE ?
+       OR content LIKE ?
+    ORDER BY created_at DESC
+    `,
+    [`%${searchTerm}%`, `%${searchTerm}%`],
+  );
+}
+
 // Updated to accept and pass the image_url
 export async function createNewPost(title, content, imageUrl, galleryUrls) {
   const slug = makeSlug(title);
   return run(
     "INSERT INTO posts (title, slug, content, image_url, gallery_urls) VALUES (?, ?, ?, ?, ?)",
     [title, slug, content, imageUrl || null],
-    JSON.stringify(galleryUrls || [])
+    JSON.stringify(galleryUrls || []),
   );
 }
 

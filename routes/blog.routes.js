@@ -29,13 +29,13 @@ function requireAdmin(req, res, next) {
 /* ========================================= READ BLOG (Players & Admins) ========================================= */
 
 // Both players and admins can see the feed list and read articles
-router.get("/", requireLogin, blogController.renderIndex);
-
+//router.get("/", requireLogin, blogController.renderIndex);
+router.get("/", blogController.renderIndex);
 // 🔒 Block regular players from opening the composition form
 router.get("/new", requireLogin, requireAdmin, blogController.renderNewForm);
 
-router.get("/:slug", requireLogin, blogController.renderPost);
-
+//router.get("/:slug", requireLogin, blogController.renderPost);
+router.get("/:slug", blogController.renderPost);
 /* ========================================= WRITE BLOG (Admin ONLY) ========================================= */
 
 // 🔒 Block regular players from submitting new post data
