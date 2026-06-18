@@ -3,8 +3,13 @@
   <head>
     <%- include('layouts/header'); %>
     <style>
+      .blog-editor-container  {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
       .blog-container {
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 0 1rem;
       }
@@ -37,6 +42,16 @@
         border-radius: 6px;
         margin-bottom: 1.5rem;
       }
+      .blog-gallery img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.gallery-badge {
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
     </style>
   </head>
   <body>
@@ -86,7 +101,16 @@
           </h2>
 
           <!-- 🕒 Mountain Time Zone Formatting -->
-          <div class="meta-text mb-2">Published: <%= post.displayDate %></div>
+          <div class="meta-text mb-2">
+  Published: <%= post.displayDate %>
+
+  <% if (post.galleryCount > 0) { %>
+   <span class="badge bg-success ms-2 gallery-badge">
+  📸 <%= post.galleryCount %>
+  <%= post.galleryCount === 1 ? 'Photo' : 'Photos' %>
+</span>
+  <% } %>
+</div>
 
           <p class="text-muted"><%= post.content.substring(0, 180) %>...</p>
 
@@ -127,7 +151,7 @@
         <p>Bottoms Up Golf League</p>
       </div>
 
-      <div class="blog-container mt-4">
+      <div class="blog-editor-container mt-4">
         <div class="mb-3">
           <a href="/blog" class="btn btn-sm btn-secondary fw-bold"
             >Back to Blog</a
@@ -172,6 +196,19 @@
                 rows="10"
                 class="form-control"
                 placeholder="Type league updates or news here..."
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="content" class="form-label fw-bold"
+                >Gallery Images</label
+              >
+              <textarea
+              id="gallery_urls"                
+                name="gallery_urls"
+                rows="5"
+                class="form-control"
+                    placeholder="https://bottom-up.b-cdn.net/images/2025/photo1.jpg&#10;https://bottom-up.b-cdn.net/images/2025/photo2.jpg"
                 required
               ></textarea>
             </div>
@@ -224,16 +261,35 @@
             </form>
             <% } %>
           </div>
+<% if (post.galleryUrls && post.galleryUrls.length > 0) { %>
 
-          <% if (post.image_url) { %>
-          <img
-            src="<%= post.image_url %>"
-            alt="<%= post.title %>"
-            class="blog-banner"
-            onerror="this.style.display='none'"
-          />
-          <% } %>
-          <div class="blog-content"><%= post.content %></div>
+<div class="row g-3 mb-4">
+  <% post.galleryUrls.forEach(url => { %>
+    <div class="col-md-3">
+      <img
+        src="<%= url %>"
+        class="img-fluid rounded shadow-sm"
+        onerror="this.style.display='none'"
+      />
+    </div>
+  <% }) %>
+</div>
+
+<% } else if (post.image_url) { %>
+
+<img
+  src="<%= post.image_url %>"
+  alt="<%= post.title %>"
+  class="blog-banner"
+  onerror="this.style.display='none'"
+/>
+
+<% } %>
+
+<div class="blog-content">
+  <%= post.content %>
+</div>
+          
         </article>
       </div>
       <% } %>
