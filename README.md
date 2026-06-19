@@ -22,32 +22,32 @@ The project continues to evolve through real-world usage and ongoing feedback fr
 
 ### League Administration
 
-* Weekly score entry and validation
-* Authentication-protected administrative workflows
-* Historical score tracking
-* Individual player profiles
+- Weekly score entry and validation
+- Authentication-protected administrative workflows
+- Historical score tracking
+- Individual player profiles
 
 ### Scoring Engine
 
-* Stableford point calculations
-* Gross and net score tracking
-* Automatic handicap stroke allocation
-* Hole-by-hole scoring summaries
+- Stableford point calculations
+- Gross and net score tracking
+- Automatic handicap stroke allocation
+- Hole-by-hole scoring summaries
 
 ### Dynamic Skins Competition
 
-* Automated skins calculations
-* Carryover jackpot support
-* Weekly skins reporting
-* Participant payout tracking
-* Historical skins result navigation
+- Automated skins calculations
+- Carryover jackpot support
+- Weekly skins reporting
+- Participant payout tracking
+- Historical skins result navigation
 
 ### Reporting
 
-* Season standings leaderboard
-* Weekly score summaries
-* Player scoring history
-* Skins payout reports
+- Season standings leaderboard
+- Weekly score summaries
+- Player scoring history
+- Skins payout reports
 
 ---
 
@@ -75,22 +75,22 @@ Automatic calculation of skins including hole carryovers.
 
 ### Backend
 
-* Node.js
-* Express.js
-* SQLite
+- Node.js
+- Express.js
+- SQLite
 
 ### Frontend
 
-* EJS
-* Bootstrap 5
-* Vanilla JavaScript
+- EJS
+- Bootstrap 5
+- Vanilla JavaScript
 
 ### Architecture
 
-* MVC application structure
-* Service layer for business logic
-* Controller layer for request orchestration
-* Reusable EJS templates and partials
+- MVC application structure
+- Service layer for business logic
+- Controller layer for request orchestration
+- Reusable EJS templates and partials
 
 ---
 
@@ -130,7 +130,6 @@ cp .env.example .env
 
 Update the values in `.env` as appropriate for your local environment before starting the application.
 
-
 ### Install dependencies
 
 ```bash
@@ -163,11 +162,11 @@ No personally identifiable information (PII) from actual league participants is 
 
 ## Future Enhancements
 
-* Enhanced player statistics and analytics
-* Exportable reports
-* Email notifications and reminders
-* Mobile-first UI refinements
-* Administrative dashboard enhancements
-* Expanded historical reporting capabilities
+- Enhanced player statistics and analytics
+- Exportable reports
+- Email notifications and reminders
+- Mobile-first UI refinements
+- Administrative dashboard enhancements
+- Expanded historical reporting capabilities
 
 ---

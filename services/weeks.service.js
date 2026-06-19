@@ -17,10 +17,23 @@ export async function getWeek(weekNumber) {
     FROM weeks2026
     WHERE week_number = ?
   `,
-    [weekNumber]
+    [weekNumber],
   );
 
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const [, month, day] = week.date.split("-");
 

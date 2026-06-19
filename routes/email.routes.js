@@ -1,5 +1,8 @@
 import express from "express";
-import { renderEmailForm, sendBulkEmail } from "../controllers/email.controller.js";
+import {
+  renderEmailForm,
+  sendBulkEmail,
+} from "../controllers/email.controller.js";
 
 const router = express.Router();
 

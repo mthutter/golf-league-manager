@@ -84,7 +84,7 @@ export const fetchAndSendEmails = async (
           <tr>
             <td class="footer">
               <p style="margin: 0 0 5px 0;">Bottoms Up Golf League &copy; 2026</p>
-              <p style="margin: 0;">You are receiving this because you are an active member of our league grid.</p>
+              <p style="margin: 0;">You are receiving this because you are a league member.</p>
             </td>
           </tr>
         </table>

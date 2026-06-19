@@ -28,8 +28,8 @@
     }
 
     .button-link {
-      display: inline-block;    
-      text-decoration: none;      
+      display: inline-block;
+      text-decoration: none;
     }
 
     /* ===== Header ===== */
@@ -117,35 +117,39 @@
     }
 
     .week-nav {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
 
-.week-nav .btn {
-  min-width: 85px;
-  font-weight: 600;
-  border-radius: 50px;
-  border: none;
-  transition: all 0.2s ease;
-}
+    .week-nav .btn {
+      min-width: 85px;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      transition: all 0.2s ease;
+    }
 
-.week-nav .btn:hover {
-  transform: translateY(-1px);
-}    
+    .week-nav .btn:hover {
+      transform: translateY(-1px);
+    }
   </style>
   <body>
     <%- include('./layouts/navbar'); %>
     <div class="container">
       <div class="gallery-header">
         <h1>
-          Week <%= weekId %> (<%= weekDate.displayDate %>) Results
+          Week
+          <%= weekId %>
+          (<%= weekDate.displayDate %>) Results
         </h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
       <div class="week-nav mb-4">
-        <a href="/scores/standings" class="button-link btn btn-light"> ← Back to Standings </a>
+        <a href="/scores/standings" class="button-link btn btn-light">
+          ← Back to Standings
+        </a>
       </div>
     </div>
     <div class="container">

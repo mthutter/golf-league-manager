@@ -18,7 +18,9 @@ export const saveScore = async (req, res) => {
   } catch (err) {
     console.error("Error saving score payload:", err);
     if (err.message.includes("UNIQUE")) {
-      return res.status(400).send("Scores already entered for this player/week.");
+      return res
+        .status(400)
+        .send("Scores already entered for this player/week.");
     }
     res.status(500).send("Database error");
   }
