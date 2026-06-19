@@ -57,8 +57,9 @@
     /* 💡 FIXED: Hardened constraints for feed images */
     .blog-thumb {
       width: 100%;
-      height: 220px; /* Lock concrete height for index card alignment */
-      object-fit: contain;
+      height: auto; /* 💡 FORCE: Scales naturally to prevent cropping */
+      max-height: 380px; /* Prevents massive vertical photos from blowing out height */
+      object-fit: scale-down; /* Preserves pixel geometric aspect ratio cleanly */
       border-radius: 8px;
       margin-bottom: 1rem;
       display: block;
@@ -67,9 +68,15 @@
     /* 💡 FIXED: Banner layout handles mobile viewport aspect ratios gracefully */
     .blog-banner {
       width: 100%;
-      height: auto; /* 💡 CHANGED: Allows natural vertical scaling */
-      max-height: 350px; /* Stops massive vertical images from taking over the screen */
-      object-fit: scale-down;
+      height: auto; /* 💡 FORCE: Prevents vertical squishing */
+      max-height: 450px;
+      object-fit: contain; /* Shows the entire image asset completely uncropped */
+      background-color: rgba(
+        0,
+        0,
+        0,
+        0.03
+      ); /* Adds a very soft framing backdrop */
       border-radius: 8px;
       margin-bottom: 1.5rem;
       display: block;
@@ -280,11 +287,6 @@
         <p>Bottoms Up Golf League</p>
       </div>
       <div class="blog-container mt-4">
-        <div class="mb-3">
-          <a href="/blog" class="btn btn-sm btn-secondary fw-bold"
-            >Back to Blog</a
-          >
-        </div>
         <article class="blog-card">
           <div
             class="meta-text mb-3 pb-2 border-bottom d-flex justify-content-between align-items-center"
@@ -326,10 +328,16 @@
           >
             <% post.galleryUrls.forEach(url => { %>
             <div class="col">
+              <!-- Inside VIEW 3 Gallery Loop: Changed object-fit to contain and added safe framing bg -->
               <img
                 src="<%= url %>"
                 class="img-fluid rounded shadow-sm"
-                style="width: 100%; height: 180px; object-fit: cover"
+                style="
+                  width: 100%;
+                  height: 200px;
+                  object-fit: contain;
+                  background-color: #f8f9fa;
+                "
                 onerror="this.style.display='none'"
               />
             </div>
