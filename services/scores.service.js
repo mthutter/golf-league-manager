@@ -114,10 +114,6 @@ export const getSeasonStandings = async () => {
     previousRanks[player.id] = player.rank;
   });
 
-  previousStandings.forEach((player) => {
-    previousRanks[player.id] = player.rank;
-  });
-
   standings.forEach((player) => {
     const previousRank = previousRanks[player.id];
 
@@ -141,6 +137,16 @@ export const getSeasonStandings = async () => {
     }
   });
 
+  const biggestUp = standings
+    .filter((p) => p.movement === "up")
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 3);
+
+  const biggestDown = standings
+    .filter((p) => p.movement === "down")
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 3);
+
   console.log(
     standings.map((p) => ({
       player: p.player_name,
@@ -150,7 +156,7 @@ export const getSeasonStandings = async () => {
     })),
   );
 
-  return { standings, weeks, currentWeek };
+  return { standings, weeks, currentWeek, biggestUp, biggestDown };
 };
 
 /**

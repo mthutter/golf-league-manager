@@ -3,6 +3,176 @@
   <head>
     <%- include('./layouts/header'); %>
   </head>
+  <style>
+    .movers-container {
+      max-width: 700px;
+      margin: 2rem auto;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .movers-header {
+      background: #1b4332;
+      color: white;
+      text-align: center;
+      padding: 0.9rem;
+      font-weight: 700;
+    }
+
+    .movers-title {
+      font-size: 1.1rem;
+    }
+
+    .movers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .movers-column {
+      padding: 0.5rem;
+    }
+
+    .movers-up-heading {
+      color: #198754;
+      text-align: center;
+    }
+
+    .movers-down-heading {
+      color: #dc3545;
+      text-align: center;
+    }
+
+    .mover-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      font-weight: 600;
+    }
+
+    .trend-up {
+      color: #198754;
+      font-weight: 700;
+    }
+
+    .trend-down {
+      color: #dc3545;
+      font-weight: 700;
+    }
+
+    .top-mover {
+      background: linear-gradient(
+        90deg,
+        rgba(255, 215, 0, 0.15),
+        rgba(255, 215, 0, 0.05)
+      );
+      border-left: 4px solid gold;
+    }
+
+    .movers-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .movers-header {
+      background: linear-gradient(135deg, #1b4332, #2d6a4f);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .movers-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .movers-subtitle {
+      font-size: 0.9rem;
+      opacity: 0.85;
+      margin-top: 0.25rem;
+    }
+
+    .movers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .mover-panel {
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .up-panel {
+      background: rgba(25, 135, 84, 0.08);
+    }
+
+    .down-panel {
+      background: rgba(220, 53, 69, 0.08);
+    }
+
+    .panel-title {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      font-size: 1.05rem;
+    }
+
+    .mover-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.4rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .mover-name {
+      font-weight: 600;
+    }
+
+    .trend-up {
+      color: #198754;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .trend-down {
+      color: #dc3545;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .top-mover {
+      border-left: 4px solid gold;
+      background: rgba(255, 215, 0, 0.12);
+    }
+
+    .top-faller {
+      border-left: 4px solid #dc3545;
+    }
+
+    @media (max-width: 768px) {
+      .movers-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .movers-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
   <body>
     <%- include('./layouts/navbar'); %>
 
@@ -28,41 +198,47 @@
       <!-- CONTENT -->
 
       <div style="margin: 0 auto" class="winners">
-        <div class="winners-container">
-          <div class="winners-header">
-            <span class="winners-icon">🏆</span>
-            <span class="winners-title">2025 Winners</span>
-          </div>
-          <div class="winner-card gold">
-            <div class="winner-left">
-              <div class="winner-place">🥇 1st Place</div>
-              <div class="winner-name">Jon Dickey</div>
+        <div class="movers-container">
+          <div class="movers-header">
+            <div class="movers-title">🔥 This Week's Movers</div>
+            <div class="movers-subtitle">
+              Week <%= currentWeek.week_number %> • Compared to Previous
+              Completed Week
             </div>
-            <div class="winner-score">20.18</div>
           </div>
 
-          <div class="winner-card silver">
-            <div class="winner-left">
-              <div class="winner-place">🥈 2nd Place</div>
-              <div class="winner-name">Matthew Shirola</div>
-            </div>
-            <div class="winner-score">19.92</div>
-          </div>
+          <div class="movers-grid">
+            <!-- MOVING UP -->
+            <div class="mover-panel up-panel">
+              <div class="panel-title">📈 Moving Up</div>
 
-          <div class="winner-card bronze">
-            <div class="winner-left">
-              <div class="winner-place">🥉 3rd Place</div>
-              <div class="winner-name">Jeff Vest</div>
-            </div>
-            <div class="winner-score">19.89</div>
-          </div>
+              <% biggestUp.forEach((player, idx) => { %>
+              <div class="mover-row <%= idx === 0 ? 'top-mover' : '' %>">
+                <span class="mover-name">
+                  <%= player.player_name.split(',')[1].trim() %> <%=
+                  player.player_name.split(',')[0] %>
+                </span>
 
-          <div class="winner-card">
-            <div class="winner-left">
-              <div class="winner-place">🏌️ CTP</div>
-              <div style="color: #d4aa7f" class="winner-name">Ryan Miller</div>
+                <span class="trend-up">▲<%= player.delta %></span>
+              </div>
+              <% }) %>
             </div>
-            <div class="winner-score">4</div>
+
+            <!-- MOVING DOWN -->
+            <div class="mover-panel down-panel">
+              <div class="panel-title">📉 Moving Down</div>
+
+              <% biggestDown.forEach((player, idx) => { %>
+              <div class="mover-row <%= idx === 0 ? 'top-faller' : '' %>">
+                <span class="mover-name">
+                  <%= player.player_name.split(',')[1].trim() %> <%=
+                  player.player_name.split(',')[0] %>
+                </span>
+
+                <span class="trend-down">▼<%= player.delta %></span>
+              </div>
+              <% }) %>
+            </div>
           </div>
         </div>
       </div>
