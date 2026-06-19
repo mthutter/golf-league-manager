@@ -1,209 +1,351 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <%- include('layouts/header'); %>
-    <style>
-      .blog-editor-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
-      }
-      .blog-container {
-        min-width: 675px;
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 1rem;
-      }
+    <%- include ('./layouts/header') %>
+  </head>
+
+  <style>
+    :root {
+      --green-main: rgb(47, 138, 47);
+      --green-dark: rgb(30, 110, 30);
+      --light-gray: #f5f5f5;
+      --card-bg: #ffffff;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--light-gray);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ========================= CONTAINERS ========================= */
+    .blog-editor-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* 💡 FIXED: Changed min-width: 675px to width: 100% to ensure true responsiveness */
+    .blog-container {
+      width: 100%;
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      box-sizing: border-box;
+    }
+
+    /* ========================= CARDS ========================= */
+    .blog-card {
+      background: #fff;
+      border-radius: 12px; /* Smoother corner framing */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .meta-text {
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+    .blog-content {
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    /* ========================= IMAGE MANAGEMENT ========================= */
+
+    /* 💡 FIXED: Hardened constraints for feed images */
+    .blog-thumb {
+      width: 100%;
+      height: 220px; /* Lock concrete height for index card alignment */
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    /* 💡 FIXED: Banner layout handles mobile viewport aspect ratios gracefully */
+    .blog-banner {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    /* 💡 FIXED: Outbound article image overrides to stop layout blowouts */
+    .blog-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin: 1rem auto;
+      display: block;
+    }
+
+    /* ========================= GALLERY ELEMENTS ========================= */
+    .blog-gallery img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .gallery-badge {
+      font-size: 1rem;
+      vertical-align: middle;
+    }
+
+    /* ========================= MOBILE BREAKPOINTS ========================= */
+    @media (max-width: 576px) {
       .blog-card {
-        background: #fff;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .meta-text {
-        font-size: 0.85rem;
-        color: #6c757d;
-      }
-      .blog-content {
-        white-space: pre-wrap;
-        line-height: 1.6;
+        padding: 1rem; /* Condense internal whitespace on small screens */
       }
       .blog-thumb {
-        width: 100%;
-        max-height: 200px;
-        object-fit: cover;
-        border-radius: 4px;
-        margin-bottom: 1rem;
+        height: 160px; /* Make card thumbnails shallower on phone screens */
       }
       .blog-banner {
-        width: 100%;
-        max-height: 400px;
-        object-fit: cover;
-        border-radius: 6px;
-        margin-bottom: 1.5rem;
+        max-height: 220px; /* Keep post headers compact on tiny viewports */
       }
-      .blog-gallery img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        border-radius: 6px;
-      }
-      .gallery-badge {
-        font-size: 1rem;
-        vertical-align: middle;
-      }
-    </style>
-  </head>
+    }
+  </style>
   <body>
     <%- include('layouts/navbar'); %>
     <div class="main-wrapper">
       <!-- VIEW 1: MAIN BLOG INDEX FEED -->
       <% if (view === 'index') { %>
-        <div class="gallery-header text-center">
-          <h1>League Blog and Announcements</h1>
-          <p>Bottoms Up Golf League</p>
-          <!-- Blog Search -->
-          <form action="/blog" method="GET" class="mt-3 mb-3">
-            <div class="input-group" style="max-width: 500px; margin: 0 auto">
-              <input type="text" name="search" class="form-control" placeholder="Search blog posts..." value="<%= search || '' %>" />
-              <button class="btn btn-success" type="submit">Search</button>
-              <% if (search) { %>
-                <a href="/blog" class="btn btn-outline-secondary"> Clear </a>
-              <% } %>
-            </div>
-          </form>
-          <% if (isAdmin) { %>
-            <div class="mt-3">
-              <a href="/blog/new" class="btn btn-success text-white fw-bold"> Write a New Post </a>
-            </div>
-          <% } %>
-        </div>
-
-        <% if (search) { %>
-          <div class="text-center mb-3">
-            <span class="badge bg-success"> Search Results: "<%= search %>" </span>
+      <div class="gallery-header text-center">
+        <h1>League Blog and Announcements</h1>
+        <p>Bottoms Up Golf League</p>
+        <!-- Blog Search -->
+        <form action="/blog" method="GET" class="mt-3 mb-3">
+          <div class="input-group" style="max-width: 500px; margin: 0 auto">
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              placeholder="Search blog posts..."
+              value="<%= search || '' %>"
+            />
+            <button class="btn btn-success" type="submit">Search</button>
+            <% if (search) { %>
+            <a href="/blog" class="btn btn-outline-secondary"> Clear </a>
+            <% } %>
           </div>
+        </form>
+        <% if (isAdmin) { %>
+        <div class="mt-3">
+          <a href="/blog/new" class="btn btn-success text-white fw-bold">
+            Write a New Post
+          </a>
+        </div>
         <% } %>
+      </div>
 
-        <div class="blog-container mt-4">
-          <% if (posts.length === 0) { %>
-            <div class="text-center text-muted p-5">
-              <% if (search) { %>
-                <!-- Displayed when a search yielded 0 results -->
-                <p class="fw-bold fs-5 mb-1">No search results found.</p>
-                <p class="text-sm">Check your spelling or search for another keyword or phrase.</p>
-              <% } else { %>
-                <!-- Displayed when the database has 0 posts overall -->
-                <p>No announcements or updates posted yet.</p>
-              <% } %>
-            </div>
+      <% if (search) { %>
+      <div class="text-center mb-3">
+        <span class="badge bg-success"> Search Results: "<%= search %>" </span>
+      </div>
+      <% } %>
+
+      <div class="blog-container mt-4">
+        <% if (posts.length === 0) { %>
+        <div class="text-center text-muted p-5">
+          <% if (search) { %>
+          <p class="fw-bold fs-5 mb-1">No search results found.</p>
+          <p class="text-sm">
+            Check your spelling or search for another keyword or phrase.
+          </p>
           <% } else { %>
-            <% posts.forEach(post => { %>
-              <article class="blog-card">
-                <% if (post.image_url) { %>
-                  <a href="/blog/<%= post.slug %>">
-                    <img src="<%= post.image_url %>" alt="<%= post.title %>" class="blog-thumb" onerror="this.style.display='none'" />
-                  </a>
-                <% } %>
-                <h2 class="h4">
-                  <a href="/blog/<%= post.slug %>" class="text-decoration-none text-dark fw-bold">
-                    <%= post.title %>
-                  </a>
-                </h2>
-                <!-- 🕒 Mountain Time Zone Formatting -->
-                <div class="meta-text mb-2">
-                  Published: <%= post.displayDate %>
-                  <% if (post.galleryCount > 0) { %>
-                    <span class="badge bg-success ms-2 gallery-badge"> 📸 <%= post.galleryCount %> <%= post.galleryCount === 1 ? 'Photo' : 'Photos' %> </span>
-                  <% } %>
-                </div>
-                <p class="text-muted"><%= post.content.substring(0, 180) %>...</p>
-                <!-- Card Actions Area -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                  <a href="/blog/<%= post.slug %>" class="btn btn-sm btn-outline-success fw-bold">Read Full Post</a>
-                  <!-- %F0%9F%94%92 Admin Quick Delete Tool -->
-                  <% if (isAdmin) { %>
-                    <form action="/blog/<%= post.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this league announcement?');" style="display: inline">
-                      <button type="submit" class="btn btn-sm btn-outline-danger fw-bold"> Delete </button>
-                    </form>
-                  <% } %>
-                </div>
-              </article>
-            <% }) %>
+          <p>No announcements or updates posted yet.</p>
           <% } %>
         </div>
+        <% } else { %>
+        <% posts.forEach(post => { %>
+        <article class="blog-card">
+          <% if (post.image_url) { %>
+          <a href="/blog/<%= post.slug %>">
+            <img
+              src="<%= post.image_url %>"
+              alt="<%= post.title %>"
+              class="blog-thumb"
+              onerror="this.style.display='none'"
+            />
+          </a>
+          <% } %>
+          <h2 class="h4">
+            <a
+              href="/blog/<%= post.slug %>"
+              class="text-decoration-none text-dark fw-bold"
+            >
+              <%= post.title %>
+            </a>
+          </h2>
+          <div class="meta-text mb-2">
+            Published: <%= post.displayDate %> <% if (post.galleryCount > 0) {
+            %>
+            <span class="badge bg-success ms-2 gallery-badge">
+              📸 <%= post.galleryCount %> <%= post.galleryCount === 1 ? 'Photo'
+              : 'Photos' %>
+            </span>
+            <% } %>
+          </div>
+          <p class="text-muted"><%= post.content.substring(0, 180) %>...</p>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <a
+              href="/blog/<%= post.slug %>"
+              class="btn btn-sm btn-outline-success fw-bold"
+              >Read Full Post</a
+            >
+            <% if (isAdmin) { %>
+            <form
+              action="/blog/<%= post.id %>/delete"
+              method="POST"
+              onsubmit="return confirm('Are you sure you want to permanently delete this league announcement?');"
+              style="display: inline"
+            >
+              <button
+                type="submit"
+                class="btn btn-sm btn-outline-danger fw-bold"
+              >
+                Delete
+              </button>
+            </form>
+            <% } %>
+          </div>
+        </article>
+        <% }) %>
+        <% } %>
+      </div>
 
       <!-- VIEW 2: NEW BLOG POST COMPOSITION LAYOUT -->
       <% } else if (view === 'new') { %>
-        <div class="gallery-header text-center">
-          <h1>Create Blog Post</h1>
-          <p>Bottoms Up Golf League</p>
+      <div class="gallery-header text-center">
+        <h1>Create Blog Post</h1>
+        <p>Bottoms Up Golf League</p>
+      </div>
+      <div class="blog-container mt-4">
+        <div class="blog-card">
+          <form action="/blog" method="POST">
+            <div class="mb-3">
+              <label for="title" class="form-label fw-bold">Post Title</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                class="form-control"
+                placeholder="e.g., Spring Tournament Updates"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="content" class="form-label fw-bold"
+                >Article Content</label
+              >
+              <textarea
+                id="content"
+                name="content"
+                rows="7"
+                class="form-control"
+                placeholder="Type league updates or news here..."
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="gallery_urls" class="form-label fw-bold"
+                >Gallery Images (Optional)</label
+              >
+              <textarea
+                id="gallery_urls"
+                name="gallery_urls"
+                rows="5"
+                class="form-control"
+                placeholder="https://b-cdn.net"
+                required
+              ></textarea>
+            </div>
+            <div class="text-end">
+              <button type="submit" class="btn btn-success text-white fw-bold">
+                Publish Announcement
+              </button>
+            </div>
+          </form>
         </div>
-        <div class="blog-container mt-4">          
-          <div class="blog-card">
-            <form action="/blog" method="POST">
-              <div class="mb-3">
-                <label for="title" class="form-label fw-bold">Post Title</label>
-                <input type="text" id="title" name="title" class="form-control" placeholder="e.g., Spring Tournament Updates" required />
-              </div>
-              <div class="mb-3">
-                <label for="content" class="form-label fw-bold">Article Content</label>
-                <textarea id="content" name="content" rows="7" class="form-control" placeholder="Type league updates or news here..." required></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="content" class="form-label fw-bold">Gallery Images (Optional)</label>
-                <textarea id="gallery_urls" name="gallery_urls" rows="5" class="form-control" placeholder="https://b-cdn.net" required></textarea>
-              </div>
-              <div class="text-end">
-                <button type="submit" class="btn btn-success text-white fw-bold"> Publish Announcement </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      </div>
 
       <!-- VIEW 3: SINGLE FULL ARTICLE DISPLAY PAGE -->
       <% } else if (view === 'show') { %>
-        <div class="gallery-header text-center">
-          <h1><%= post.title %></h1>
-          <p>Bottoms Up Golf League</p>
+      <div class="gallery-header text-center">
+        <h1><%= post.title %></h1>
+        <p>Bottoms Up Golf League</p>
+      </div>
+      <div class="blog-container mt-4">
+        <div class="mb-3">
+          <a href="/blog" class="btn btn-sm btn-secondary fw-bold"
+            >Back to Blog</a
+          >
         </div>
-        <div class="blog-container mt-4">
-          <div class="mb-3">
-            <a href="/blog" class="btn btn-sm btn-secondary fw-bold">Back to Blog</a>
-          </div>
-          <article class="blog-card">
-            <!-- 🕒 Full Post Mountain Time Formatting Row with Delete Hook -->
-            <div class="meta-text mb-3 pb-2 border-bottom d-flex justify-content-between align-items-center">
-              <div>
-                <h2 class="h4">
-                  <a href="/blog/<%= post.slug %>" class="text-decoration-none text-dark fw-bold">
-                    <%= post.title %>
-                  </a>
-                </h2>
-              </div>
-              <div> Published: <%= post.displayDate %> </div>
-              <!-- %F0%9F%94%92 Admin View Delete Tool -->
-              <% if (isAdmin) { %>
-                <form action="/blog/<%= post.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this league announcement?');">
-                  <button type="submit" class="btn btn-sm btn-danger text-white fw-bold"> Delete Post </button>
-                </form>
-              <% } %>
+        <article class="blog-card">
+          <div
+            class="meta-text mb-3 pb-2 border-bottom d-flex justify-content-between align-items-center"
+          >
+            <div>
+              <h2 class="h4">
+                <a
+                  href="/blog/<%= post.slug %>"
+                  class="text-decoration-none text-dark fw-bold"
+                >
+                  <%= post.title %>
+                </a>
+              </h2>
             </div>
-            <% if (post.galleryUrls && post.galleryUrls.length > 0) { %>
-              <div class="row g-3 mb-4">
-                <% post.galleryUrls.forEach(url => { %>
-                  <div class="col-md-3">
-                    <img src="<%= url %>" class="img-fluid rounded shadow-sm" onerror="this.style.display='none'" />
-                  </div>
-                <% }) %>
-              </div>
-            <% } else if (post.image_url) { %>
-              <img src="<%= post.image_url %>" alt="<%= post.title %>" class="blog-banner" onerror="this.style.display='none'" />
+            <div>
+              Published:
+              <%= post.displayDate %>
+            </div>
+            <% if (isAdmin) { %>
+            <form
+              action="/blog/<%= post.id %>/delete"
+              method="POST"
+              onsubmit="return confirm('Are you sure you want to permanently delete this league announcement?');"
+            >
+              <button
+                type="submit"
+                class="btn btn-sm btn-danger text-white fw-bold"
+              >
+                Delete Post
+              </button>
+            </form>
             <% } %>
-            <div class="blog-content"><%= post.content %></div>
-          </article>
-        </div>
+          </div>
+
+          <!-- 💡 FIXED: Grid handles multiple stacked gallery images responsively on mobile -->
+          <% if (post.galleryUrls && post.galleryUrls.length > 0) { %>
+          <div
+            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 mb-4"
+          >
+            <% post.galleryUrls.forEach(url => { %>
+            <div class="col">
+              <img
+                src="<%= url %>"
+                class="img-fluid rounded shadow-sm"
+                style="width: 100%; height: 180px; object-fit: cover"
+                onerror="this.style.display='none'"
+              />
+            </div>
+            <% }) %>
+          </div>
+          <% } else if (post.image_url) { %>
+          <img
+            src="<%= post.image_url %>"
+            alt="<%= post.title %>"
+            class="blog-banner"
+            onerror="this.style.display='none'"
+          />
+          <% } %>
+          <div class="blog-content"><%= post.content %></div>
+        </article>
+      </div>
       <% } %>
     </div>
   </body>
