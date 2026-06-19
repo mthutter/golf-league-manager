@@ -47,7 +47,7 @@ app.set("trust proxy", 1);
 app.use(
   helmet({
     contentSecurityPolicy: false,
-  }),
+  })
 );
 
 app.use((req, res, next) => {
@@ -88,7 +88,7 @@ app.use(
       maxAge: 86400000,
     },
     genid: () => uuid(),
-  }),
+  })
 );
 
 app.use((req, res, next) => {
@@ -127,5 +127,9 @@ app.use((req, res) => {
 ========================================= */
 
 app.use(errorHandler);
+
+// app.js or index.js
+
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : "Bottoms Up Golf (LOCAL)";
 
 export default app;

@@ -1,25 +1,14 @@
 import db from "../config/db.js";
-import {
-  getAllWeeks,
-  getCurrentWeekPlayed,
-  getPreviousWeekPlayed,
-  getWeek,
-} from "./weeks.service.js";
+import { getAllWeeks, getCurrentWeekPlayed, getPreviousWeekPlayed, getWeek } from "./weeks.service.js";
 
 // --- Promise Helpers for SQLite Callbacks ---
-const dbAll = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.all(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
-const dbGet = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.get(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
+const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => (e ? rej(e) : res(r))));
+const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => (e ? rej(e) : res(r))));
 const dbRun = (sql, params = []) =>
   new Promise((res, rej) =>
     db.run(sql, params, function (e) {
       e ? rej(e) : res(this);
-    }),
+    })
   );
 
 /**
@@ -37,10 +26,7 @@ export const getFormData = async () => {
 `;
   const holesSql = `SELECT * FROM holes WHERE hole_number <= 9 ORDER BY hole_number`;
 
-  const [members, holes] = await Promise.all([
-    dbAll(memberSql),
-    dbAll(holesSql),
-  ]);
+  const [members, holes] = await Promise.all([dbAll(memberSql), dbAll(holesSql)]);
 
   return { members, holes };
 };
@@ -82,32 +68,21 @@ export const createScoreRecord = async (body) => {
  * Fetches season standings and maps localized dates
  */
 export const getSeasonStandings = async () => {
-  console.log("getSeasonStandings() running");
-
   const weeks = await getAllWeeks();
   const latestWeekPlayed = await getCurrentWeekPlayed();
   const currentWeekNumber = latestWeekPlayed.week_number;
   const previousWeekPlayed = await getPreviousWeekPlayed(currentWeekNumber);
-
-  console.log("Current Week:", currentWeekNumber);
-  console.log("Previous Week:", previousWeekPlayed?.week_number);
   const currentWeek = await getWeek(latestWeekPlayed.week_number);
 
   if (currentWeek && currentWeek.date) {
-    currentWeek.displayDate = new Date(
-      currentWeek.date + "T12:00:00",
-    ).toLocaleDateString("en-US", {
+    currentWeek.displayDate = new Date(currentWeek.date + "T12:00:00").toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
   }
 
   const standings = await getStandingsThroughWeek(currentWeekNumber);
-  console.log("Standings Count: ", standings.length);
-
-  const previousStandings = await getStandingsThroughWeek(
-    previousWeekPlayed.week_number,
-  );
+  const previousStandings = await getStandingsThroughWeek(previousWeekPlayed.week_number);
   const previousRanks = {};
 
   previousStandings.forEach((player) => {
@@ -146,15 +121,6 @@ export const getSeasonStandings = async () => {
     .filter((p) => p.movement === "down")
     .sort((a, b) => b.delta - a.delta)
     .slice(0, 3);
-
-  console.log(
-    standings.map((p) => ({
-      player: p.player_name,
-      rank: p.rank,
-      movement: p.movement,
-      delta: p.delta,
-    })),
-  );
 
   return { standings, weeks, currentWeek, biggestUp, biggestDown };
 };
@@ -221,10 +187,7 @@ export const getMemberProfileData = async (memberId) => {
 
   if (!member) return null;
 
-  const scores = await dbAll(historySql, [
-    lastWeekPlayed.week_number,
-    memberId,
-  ]);
+  const scores = await dbAll(historySql, [lastWeekPlayed.week_number, memberId]);
 
   return { member, scores };
 };
