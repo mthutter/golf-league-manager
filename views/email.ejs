@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <%- include('layouts/header'); %>
-
     <style>
       :root {
         --green-main: rgb(47, 138, 47);
@@ -10,7 +9,6 @@
         --light-gray: #f5f5f5;
         --card-bg: #ffffff;
       }
-
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         background: var(--light-gray);
@@ -18,48 +16,36 @@
         margin: 0;
         padding: 0;
       }
-
-      /* =========================
-       HERO
-  ========================= */
+      /* ========================= HERO ========================= */
       .gallery-header {
         max-width: 1000px;
         margin: 1.5rem auto 1rem;
         text-align: center;
-        padding: 1.5rem 1.5rem; /* Compressed padding */
+        padding: 1.5rem 1.5rem;
         border-radius: 12px;
         background-color: var(--green-main);
         color: white;
       }
-
       .gallery-header h1 {
         margin: 0 0 0.25rem;
-        font-size: 2.2rem; /* Slightly smaller typography for compact look */
+        font-size: 2.2rem;
         font-weight: 700;
       }
-
       .gallery-header p {
         margin: 0;
         opacity: 0.9;
       }
-
-      /* =========================
-       FORM & RECIPIENT CARDS
-  ========================= */
+      /* ========================= FORM & RECIPIENT CARDS ========================= */
       .player-form-card {
-        padding: 1.5rem; /* Decreased from 2rem to reduce overall height */
+        padding: 1.5rem;
         border-radius: 12px;
         background-color: var(--card-bg);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       }
-
-      /* =========================
-       FORM SECTIONS
-  ========================= */
+      /* ========================= FORM SECTIONS ========================= */
       .form-section {
-        margin-bottom: 1rem; /* Decreased spacing */
+        margin-bottom: 1rem;
       }
-
       .form-section h3 {
         font-size: 1.25rem;
         font-weight: 600;
@@ -68,22 +54,16 @@
         border-bottom: 1px solid #e0e0e0;
         padding-bottom: 0.4rem;
       }
-
-      /* =========================
-       LABELS
-  ========================= */
+      /* ========================= LABELS ========================= */
       .form-label {
         font-weight: 500;
         display: block;
         margin-bottom: 0.3rem;
       }
-
-      /* =========================
-       INPUTS & TEXTAREAS
-  ========================= */
+      /* ========================= INPUTS & TEXTAREAS ========================= */
       .form-control {
         width: 100%;
-        padding: 0.75rem 1rem; /* Marginally shallower inputs */
+        padding: 0.75rem 1rem;
         border-radius: 14px;
         border: 2px solid #d8e8d8;
         font-size: 1rem;
@@ -93,20 +73,16 @@
           transform 0.15s ease;
         background: rgba(255, 255, 255, 0.96);
       }
-
       .form-control:focus {
         border-color: var(--green-main);
         box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
         outline: none;
         transform: translateY(-1px);
       }
-
-      /* =========================
-       BUTTON
-  ========================= */
+      /* ========================= BUTTON ========================= */
       .btn-submit-player {
         display: inline-block;
-        padding: 0.75rem 2rem; /* Slimmer button profile */
+        padding: 0.75rem 2rem;
         font-size: 1rem;
         font-weight: 600;
         color: white;
@@ -118,192 +94,294 @@
           background-color 0.2s ease,
           transform 0.2s ease;
       }
-
       .btn-submit-player:hover {
         background-color: var(--green-dark);
         transform: translateY(-1px);
       }
-
       .btn-submit-player:disabled {
         background-color: #a3cfa3;
         cursor: not-allowed;
         transform: none;
       }
-
-      /* =========================
-       GRID-BASED RECIPIENT LIST
-  ========================= */
+      /* ========================= GRID-BASED RECIPIENT LIST ========================= */
       .recipient-list-container {
-        max-height: 320px; 
+        max-height: 320px;
         overflow-y: auto;
         padding-right: 5px;
       }
-
       .recipient-list-container::-webkit-scrollbar {
         width: 6px;
       }
-
       .recipient-list-container::-webkit-scrollbar-track {
         background: #f1f1f1;
         border-radius: 10px;
       }
-
       .recipient-list-container::-webkit-scrollbar-thumb {
         background: #c2dec2;
         border-radius: 10px;
       }
-
       .recipient-grid-item {
-        padding: 0.6rem 1rem; /* Slightly tighter vertical spacing */
-        border: 1px solid #d8e8d8;
+        padding: 0.6rem 1rem;
+        border: 2px solid #d8e8d8;
         border-radius: 10px;
         font-size: 0.95rem;
         word-break: break-all;
-        display: block; /* Removed flex layout since bullet is gone */
-        text-align: center; /* Centers text nicely inside its box grid */
+        display: block;
+        text-align: center;
         background-color: rgba(47, 138, 47, 0.03);
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.15s ease-in-out;
       }
-
-      /* =========================
-       RESPONSIVE
-  ========================= */
+      /* Style for highlighted email cards */
+      .recipient-grid-item.selected {
+        background-color: var(--green-main);
+        color: white;
+        border-color: var(--green-dark);
+        font-weight: 600;
+        box-shadow: 0 4px 8px rgba(47, 138, 47, 0.2);
+      }
+      /* ========================= RESPONSIVE ========================= */
       @media (max-width: 768px) {
         body {
           padding: 1rem;
         }
-
         .gallery-header {
           padding: 1.25rem;
         }
-
         .player-form-card {
           padding: 1.25rem;
         }
-
         .btn-submit-player {
           width: 100%;
         }
       }
     </style>
   </head>
-
   <body>
     <%- include('layouts/navbar'); %>
-
     <div class="main-wrapper container-fluid px-md-5">
       <!-- HERO -->
       <div class="gallery-header">
         <h1>Email Broadcast System</h1>
         <p>Bottoms Up Golf League • Communications Hub</p>
       </div>
-
       <!-- MAIN CONTENT STACK -->
-      <div class="row max-width-wrapper mx-auto g-4" style="max-width: 1000px; margin-bottom: 3rem;">
-        
-        <!-- TOP: Messaging Terminal Form (Compressed Height) -->
+      <div
+        class="row max-width-wrapper mx-auto g-4"
+        style="max-width: 1000px; margin-bottom: 3rem"
+      >
         <div class="col-12">
-          <div class="player-form-card">
-            <div id="alertBox" class="alert d-none mb-3" role="alert"></div>
+          <div id="alertBox" class="alert d-none mb-3" role="alert"></div>
+        </div>
 
-            <form id="broadcastForm">
-              <div class="form-section">
-                <h3>Compose Message</h3>
-                
-                <div class="mb-3"> <!-- Reduced from mb-4 -->
-                  <label for="subject" class="form-label">Email Subject <span style="color: red">*</span></label>
-                  <input type="text" id="subject" class="form-control" placeholder="Enter the email topic" required />
-                </div>
-
-                <div class="mb-2"> <!-- Reduced margin bottom -->
-                  <label for="message" class="form-label">Message Content <span style="color: red">*</span></label>
-                  <!-- Decreased rows from 8 down to 6 to compress overall form height -->
-                  <textarea id="message" class="form-control" rows="6" placeholder="Type your announcement details here..." required></textarea>
+        <!-- MAIN FORM WINDOW -->
+        <div class="col-12">
+          <form id="broadcastForm">
+            <div class="row g-4">
+              <!-- TOP SECTION: Message Text Area Container -->
+              <div class="col-12">
+                <div class="player-form-card">
+                  <div class="form-section">
+                    <h3>Compose Message</h3>
+                    <div class="mb-3">
+                      <label for="subject" class="form-label"
+                        >Email Subject <span style="color: red">*</span></label
+                      >
+                      <input
+                        type="text"
+                        id="subject"
+                        class="form-control"
+                        placeholder="Enter the email topic"
+                        required
+                      />
+                    </div>
+                    <div class="mb-2">
+                      <label for="message" class="form-label"
+                        >Message Content
+                        <span style="color: red">*</span></label
+                      >
+                      <textarea
+                        id="message"
+                        class="form-control"
+                        rows="6"
+                        placeholder="Type your announcement details here..."
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="text-center mt-3">
+              <!-- BOTTOM SECTION: Multi-Select Recipients Directory Layout -->
+              <div class="col-12">
+                <div class="player-form-card">
+                  <div class="form-section mb-0">
+                    <div
+                      class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3"
+                    >
+                      <h3 style="border-bottom: none; margin: 0; padding: 0">
+                        Target Recipients (<%= members.length %>)
+                      </h3>
+                      <span
+                        id="selectionBadge"
+                        class="badge bg-secondary text-white p-2"
+                        style="border-radius: 8px; font-size: 0.85rem"
+                        >Global Broadcast Mode</span
+                      >
+                    </div>
+                    <p class="text-muted small mb-3">
+                      Optional: Click on individual player cards to highlight
+                      them for a targeted email. Leave all cards unselected to
+                      email the entire league.
+                    </p>
+
+                    <div class="recipient-list-container">
+                      <% if (members.length === 0) { %>
+                      <div class="p-3 text-muted text-center italic">
+                        No available email addresses found in the system.
+                      </div>
+                      <% } else { %>
+                      <div
+                        class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2"
+                      >
+                        <% members.forEach(function(member) { %>
+                        <div class="col">
+                          <div
+                            class="recipient-grid-item email-selectable-card"
+                            data-email="<%= member.e_mail %>"
+                          >
+                            <span><%= member.e_mail %></span>
+                          </div>
+                        </div>
+                        <% }); %>
+                      </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SUBMIT BUTTON -->
+              <div class="col-12 text-center mt-3">
                 <button type="submit" id="submitBtn" class="btn-submit-player">
                   <span id="btnText">Send Broadcast</span>
-                  <span id="btnSpinner" class="spinner-border spinner-border-sm d-none ms-2" role="status"></span>
+                  <span
+                    id="btnSpinner"
+                    class="spinner-border spinner-border-sm d-none ms-2"
+                    role="status"
+                  ></span>
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- BOTTOM: Active Recipient Directory (No Bullets) -->
-        <div class="col-12">
-          <div class="player-form-card">
-            <div class="form-section mb-0">
-              <h3>Recipients (<%= members.length %>)</h3>
-              
-              <div class="recipient-list-container mt-3">
-                <% if (members.length === 0) { %>
-                  <div class="p-3 text-muted text-center italic">No available email addresses found in the system.</div>
-                <% } else { %>
-                  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
-                    <% members.forEach(function(member) { %>
-                      <div class="col">
-                        <div class="recipient-grid-item">
-                          <!-- 💡 Bullet element and flex properties successfully stripped -->
-                          <span><%= member.e_mail %></span>
-                        </div>
-                      </div>
-                    <% }); %>
-                  </div>
-                <% } %>
-              </div>
             </div>
-          </div>
+          </form>
         </div>
-
       </div>
     </div>
 
     <%- include('layouts/scripts'); %>
 
     <script>
-      document.getElementById('broadcastForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const subject = document.getElementById('subject').value;
-        const message = document.getElementById('message').value;
-        const alertBox = document.getElementById('alertBox');
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnSpinner = document.getElementById('btnSpinner');
+      const selectedEmails = [];
+      const cards = document.querySelectorAll(".email-selectable-card");
+      const badge = document.getElementById("selectionBadge");
 
-        alertBox.className = 'alert d-none';
-        submitBtn.disabled = true;
-        btnText.textContent = 'Sending...';
-        btnSpinner.classList.remove('d-none');
-
-        try {
-          const response = await fetch('/email/admin/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ subject, message })
-          });
-
-          const data = await response.json();
-
-          if (response.ok) {
-            alertBox.className = 'alert alert-success bg-success text-white border-0';
-            alertBox.textContent = data.message || 'Broadcast deployed successfully!';
-            document.getElementById('broadcastForm').reset();
+      // Handle click selections on individual grid element cards
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          const email = card.getAttribute("data-email");
+          if (card.classList.contains("selected")) {
+            card.classList.remove("selected");
+            const index = selectedEmails.indexOf(email);
+            if (index > -1) selectedEmails.splice(index, 1);
           } else {
-            alertBox.className = 'alert alert-danger bg-danger text-white border-0';
-            alertBox.textContent = data.error || 'Failed to dispatch email matrix.';
+            card.classList.add("selected");
+            selectedEmails.push(email);
           }
-        } catch (err) {
-          alertBox.className = 'alert alert-danger bg-danger text-white border-0';
-          alertBox.textContent = 'A critical network disconnection occurred. Please check connection.';
-        } finally {
-          submitBtn.disabled = false;
-          btnText.textContent = 'Send Broadcast';
-          btnSpinner.classList.add('d-none');
-        }
+
+          // Refresh UI Selection Display Mode Indicators
+          if (selectedEmails.length > 0) {
+            badge.className = "badge bg-success text-white p-2";
+            badge.textContent = `${selectedEmails.length} Player(s) Selected`;
+          } else {
+            badge.className = "badge bg-secondary text-white p-2";
+            badge.textContent = "Global Broadcast Mode";
+          }
+        });
       });
+
+      // Broadcast Form Submission Dispatch Interface Broker
+      document
+        .getElementById("broadcastForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const subject = document.getElementById("subject").value;
+          const message = document.getElementById("message").value;
+          const alertBox = document.getElementById("alertBox");
+          const submitBtn = document.getElementById("submitBtn");
+          const btnText = document.getElementById("btnText");
+          const btnSpinner = document.getElementById("btnSpinner");
+
+          alertBox.className = "alert d-none";
+          submitBtn.disabled = true;
+          btnText.textContent = "Sending...";
+          btnSpinner.classList.remove("d-none");
+
+          console.log(
+            "Submitting payload containing targeted recipients array:",
+            selectedEmails,
+          );
+
+          try {
+            // 💡 ADJUSTED PATH: Fallback query parameters setup to trace your endpoint layout configuration paths.
+            // If your original route was "/admin/send-email" instead of "/email/admin/send", modify this target URL line.
+            const response = await fetch("/email/admin/send", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                subject: subject,
+                message: message, // 💡 CHANGED from htmlBody to message to fix the backend requirement error
+                recipients: selectedEmails,
+              }),
+            });
+
+            const data = await response.json();
+            console.log("Server application execution response payload:", data);
+
+            if (response.ok) {
+              alertBox.className =
+                "alert alert-success bg-success text-white border-0";
+              alertBox.textContent =
+                data.message || "Broadcast deployed successfully!";
+
+              // Complete cleanup reset routines
+              document.getElementById("broadcastForm").reset();
+              cards.forEach((c) => c.classList.remove("selected"));
+              selectedEmails.length = 0;
+              badge.className = "badge bg-secondary text-white p-2";
+              badge.textContent = "Global Broadcast Mode";
+            } else {
+              alertBox.className =
+                "alert alert-danger bg-danger text-white border-0";
+              alertBox.textContent =
+                data.error || `Error status response code: ${response.status}`;
+            }
+          } catch (err) {
+            console.error(
+              "Critical client fetch pipeline execution exception:",
+              err,
+            );
+            alertBox.className =
+              "alert alert-danger bg-danger text-white border-0";
+            alertBox.textContent =
+              "A critical communication exception occurred. Verify your console panels.";
+          } finally {
+            submitBtn.disabled = false;
+            btnText.textContent = "Send Broadcast";
+            btnSpinner.classList.add("d-none");
+          }
+        });
     </script>
   </body>
 </html>
