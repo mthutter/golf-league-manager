@@ -48,50 +48,145 @@ export const fetchAndSendEmails = async (
 
     // 2. Build the email framework wrapping around your form text body
     const formattedHtmlTemplate = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-        body { margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Helvetica Neue', Arial, sans-serif; }
-        table { border-spacing: 0; border-collapse: collapse; width: 100%; }
-        .wrapper { width: 100%; background-color: #f4f6f8; padding-bottom: 40px; }
-        .main-table { max-width: 600px; margin: 20px auto 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .header { background-color: #1b4332; padding: 40px 20px; text-align: center; } 
-        .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px; }
-        .body-content { padding: 40px 30px; color: #333333; font-size: 16px; line-height: 1.6; }
-        .footer { background-color: #f4f6f8; padding: 20px; text-align: center; font-size: 12px; color: #777777; }
-        @media screen and (max-width: 600px) {
-          .body-content { padding: 30px 20px !important; }
-        }
-      </style>
-    </head>
-    <body>
-      <center class="wrapper">
-        <table class="main-table">
-          <tr>
-            <td class="header">
-              <h1>Bottoms Up Golf League</h1>
-            </td>
-          </tr>
-          <tr>
-            <td class="body-content">
-              <!-- Dynamically outputs what you typed into the form input text field -->
-              ${rawBodyContent}
-            </td>
-          </tr>
-          <tr>
-            <td class="footer">
-              <p style="margin: 0 0 5px 0;">Bottoms Up Golf League &copy; 2026</p>
-              <p style="margin: 0;">You are receiving this because you are a league member.</p>
-            </td>
-          </tr>
-        </table>
-      </center>
-    </body>
-    </html>
-    `;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .wrapper {
+      width: 100%;
+      background-color: #f4f6f8;
+      padding: 30px 0;
+    }
+
+    .main-table {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #dce5dc;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2f8a2f, #1b4332);
+      padding: 30px 15px;
+      text-align: center;
+    }
+
+    .header-logo {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      color: #ffffff;
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .header p {
+      color: rgba(255,255,255,0.9);
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    .body-content {
+      padding: 40px 30px;
+      color: #333;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .body-content h2,
+    .body-content h3 {
+      color: #1b4332;
+    }
+
+    .divider {
+      height: 4px;
+      background-color: #2f8a2f;
+    }
+
+    .footer {
+      background-color: #f7faf7;
+      border-top: 1px solid #e5ece5;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+    }
+
+    .footer a {
+      color: #2f8a2f;
+      text-decoration: none;
+    }
+
+    @media screen and (max-width: 600px) {
+      .body-content {
+        padding: 25px 20px !important;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <center class="wrapper">
+    <table class="main-table">
+      <tr>
+        <td class="header">
+          <div class="header-logo">⛳</div>
+          <h1>Bottoms Up Golf League</h1>
+          <p>Colorado Springs • 2026 Season</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="divider"></td>
+      </tr>
+
+      <tr>
+        <td class="body-content">
+          ${rawBodyContent}
+        </td>
+      </tr>
+
+      <tr>
+        <td class="footer">
+          <p style="margin:0 0 8px 0;">
+            <strong>Bottoms Up Golf League © 2026</strong>
+          </p>        
+          <p style="margin:0;">
+            You are receiving this email because you are a league member.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>
+`;
 
     // 3. Dispatch via Titan Mail
     const info = await transporter.sendMail({

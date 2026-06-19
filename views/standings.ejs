@@ -125,7 +125,7 @@
       }
 
       /* Player column left aligned */
-      .standings-table td:nth-child(2) {
+      .standings-table td:nth-child(3) {
         text-align: left;
       }
 
@@ -135,6 +135,30 @@
         font-size: 1.15rem;
         font-weight: 700;
         text-align: center !important;
+      }
+
+      .movement-header,
+      .movement-cell {
+        width: 55px;
+        text-align: center !important;
+        white-space: nowrap;
+      }
+
+      .trend-up {
+        color: #198754;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .trend-down {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .trend-same {
+        color: #adb5bd;
+        font-weight: 700;
       }
 
       /* ===== Podium Colors ===== */
@@ -224,6 +248,7 @@
             <thead>
               <tr>
                 <th>Pos</th>
+                <th class="movement-header"></th>
                 <th>Player</th>
                 <th>HCP</th>
                 <th>Rounds</th>
@@ -244,6 +269,15 @@
                   <!-- Leave blank for subsequent tied players -->
                   <% } else { %>
                   <%= player.rank %>
+                  <% } %>
+                </td>
+                <td class="movement-cell">
+                  <% if (player.movement === "up") { %>
+                  <span class="trend-up">▲<%= player.delta %></span>
+                  <% } else if (player.movement === "down") { %>
+                  <span class="trend-down">▼<%= player.delta %></span>
+                  <% } else { %>
+                  <span class="trend-same">—</span>
                   <% } %>
                 </td>
                 <td>

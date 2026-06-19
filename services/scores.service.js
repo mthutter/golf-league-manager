@@ -1,5 +1,10 @@
 import db from "../config/db.js";
-import { getAllWeeks, getWeek, getCurrentWeekPlayed } from "./weeks.service.js";
+import {
+  getAllWeeks,
+  getCurrentWeekPlayed,
+  getPreviousWeekPlayed,
+  getWeek,
+} from "./weeks.service.js";
 
 // --- Promise Helpers for SQLite Callbacks ---
 const dbAll = (sql, params = []) =>
@@ -77,24 +82,16 @@ export const createScoreRecord = async (body) => {
  * Fetches season standings and maps localized dates
  */
 export const getSeasonStandings = async () => {
+  console.log("getSeasonStandings() running");
+
   const weeks = await getAllWeeks();
   const latestWeekPlayed = await getCurrentWeekPlayed();
-  const currentWeek = await getWeek(latestWeekPlayed.week_number);
+  const currentWeekNumber = latestWeekPlayed.week_number;
+  const previousWeekPlayed = await getPreviousWeekPlayed(currentWeekNumber);
 
-  const standingsSql = `
-    WITH raw_standings AS (
-      SELECT m.id, m.name_last || ', ' || m.name_first AS player_name, 
-             COUNT(s.score_id) AS weeks_played, TOTAL(s.stableford_total) AS stableford_points, 
-             TOTAL(s.ctp_points) AS ctp_points, TOTAL(s.birdie_points) AS birdie_points, 
-             TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points,
-             ROUND(TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) / NULLIF(COUNT(s.score_id), 0), 2) AS avg_points, 
-             ROUND(AVG(s.gross_total), 2) AS avg_gross, ROUND(AVG(s.net_total), 2) AS avg_net,
-             m.current_handicap
-      FROM members m LEFT JOIN scores s ON s.member_id = m.id GROUP BY m.id
-    ) 
-    SELECT RANK() OVER (ORDER BY avg_points DESC) AS rank, * FROM raw_standings 
-    ORDER BY rank ASC, total_points DESC
-  `;
+  console.log("Current Week:", currentWeekNumber);
+  console.log("Previous Week:", previousWeekPlayed?.week_number);
+  const currentWeek = await getWeek(latestWeekPlayed.week_number);
 
   if (currentWeek && currentWeek.date) {
     currentWeek.displayDate = new Date(
@@ -105,7 +102,54 @@ export const getSeasonStandings = async () => {
     });
   }
 
-  const standings = await dbAll(standingsSql);
+  const standings = await getStandingsThroughWeek(currentWeekNumber);
+  console.log("Standings Count: ", standings.length);
+
+  const previousStandings = await getStandingsThroughWeek(
+    previousWeekPlayed.week_number,
+  );
+  const previousRanks = {};
+
+  previousStandings.forEach((player) => {
+    previousRanks[player.id] = player.rank;
+  });
+
+  previousStandings.forEach((player) => {
+    previousRanks[player.id] = player.rank;
+  });
+
+  standings.forEach((player) => {
+    const previousRank = previousRanks[player.id];
+
+    if (!previousRank) {
+      player.movement = "new";
+      player.delta = 0;
+      return;
+    }
+
+    const diff = previousRank - player.rank;
+
+    if (diff > 0) {
+      player.movement = "up";
+      player.delta = diff;
+    } else if (diff < 0) {
+      player.movement = "down";
+      player.delta = Math.abs(diff);
+    } else {
+      player.movement = "same";
+      player.delta = 0;
+    }
+  });
+
+  console.log(
+    standings.map((p) => ({
+      player: p.player_name,
+      rank: p.rank,
+      movement: p.movement,
+      delta: p.delta,
+    })),
+  );
+
   return { standings, weeks, currentWeek };
 };
 
@@ -178,3 +222,38 @@ export const getMemberProfileData = async (memberId) => {
 
   return { member, scores };
 };
+
+async function getStandingsThroughWeek(weekNumber) {
+  const sql = `
+    WITH raw_standings AS (
+      SELECT
+        m.id,
+        m.name_last || ', ' || m.name_first AS player_name,
+        COUNT(s.score_id) AS weeks_played,
+        TOTAL(s.stableford_total) AS stableford_points,
+        TOTAL(s.ctp_points) AS ctp_points,
+        TOTAL(s.birdie_points) AS birdie_points,
+        TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points,
+        ROUND(
+          TOTAL(s.stableford_total + s.ctp_points + s.birdie_points)
+          / NULLIF(COUNT(s.score_id), 0),
+          2
+        ) AS avg_points,
+        ROUND(AVG(s.gross_total), 2) AS avg_gross,
+        ROUND(AVG(s.net_total), 2) AS avg_net,
+        m.current_handicap
+      FROM members m
+      LEFT JOIN scores s
+        ON s.member_id = m.id
+       AND s.week_id <= ?
+      GROUP BY m.id
+    )
+    SELECT
+      RANK() OVER (ORDER BY avg_points DESC) AS rank,
+      *
+    FROM raw_standings
+    ORDER BY rank ASC, total_points DESC
+  `;
+
+  return await dbAll(sql, [weekNumber]);
+}

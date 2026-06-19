@@ -203,14 +203,27 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Year Joined</label>
-              <div class="select-wrapper">
+       
+            
+  <% const selectedYear = player.year_joined; %>
+
+<div class="select-wrapper">
   <select name="year_joined">
-    <option value="2024" <%= player.year_joined === '2024' ? 'selected' : '' %>>2024</option>
-    <option value="2025" <%= player.year_joined === '2025' ? 'selected' : '' %>>2025</option>
-    <option value="2026" <%= player.year_joined === '2026' ? 'selected' : '' %>>2026</option>
-  </select>
+  <% ["2024", "2025", "2026"].forEach((year) => { %>
+    <% if (selectedYear === year) { %>
+      <option value="<%= year %>" selected>
+        <%= year %>
+      </option>
+    <% } else { %>
+      <option value="<%= year %>">
+        <%= year %>
+      </option>
+    <% } %>
+  <% }) %>
+</select>
+
 </div>
-            </div>
+    </div>
             <div class="col-md-6">
               <label class="form-label">Sex (for skins calculations)</label>
               <div class="select-wrapper">
