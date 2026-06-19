@@ -67,9 +67,9 @@
     /* 💡 FIXED: Banner layout handles mobile viewport aspect ratios gracefully */
     .blog-banner {
       width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: cover;
+      height: auto; /* 💡 CHANGED: Allows natural vertical scaling */
+      max-height: 350px; /* Stops massive vertical images from taking over the screen */
+      object-fit: scale-down;
       border-radius: 8px;
       margin-bottom: 1.5rem;
       display: block;
