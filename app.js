@@ -60,6 +60,19 @@ app.use((req, res, next) => {
   next();
 });
 
+/*==========================================
+   Environment
+========================================= */
+
+app.locals.siteTitle =
+  process.env.NODE_ENV === "production"
+    ? "Bottoms Up Golf"
+    : process.env.NODE_ENV === "development"
+      ? "Bottoms Up Golf (DEV)"
+      : process.env.NODE_ENV === "local"
+        ? "Bottoms Up Golf (LOCAL)"
+        : "UNKNOWN";
+
 /* =========================================
    PARSERS / STATIC
 ========================================= */
@@ -129,14 +142,5 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // app.js or index.js
-
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : process.env.NODE_ENV === "local"
-        ? "Bottoms Up Golf (LOCAL)"
-        : "UNKNOWN";
 
 export default app;
