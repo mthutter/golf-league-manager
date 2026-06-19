@@ -1,33 +1,32 @@
 import db from "../config/db.js";
-import { getAllWeeks, getWeek, getCurrentWeekPlayed } from "./weeks.service.js";
+import { getAllWeeks, getCurrentWeekPlayed, getPreviousWeekPlayed, getWeek } from "./weeks.service.js";
 
 // --- Promise Helpers for SQLite Callbacks ---
-const dbAll = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.all(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
-const dbGet = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.get(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
+const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => (e ? rej(e) : res(r))));
+const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => (e ? rej(e) : res(r))));
 const dbRun = (sql, params = []) =>
   new Promise((res, rej) =>
     db.run(sql, params, function (e) {
       e ? rej(e) : res(this);
-    }),
+    })
   );
 
 /**
  * Fetches initial data needed to construct the score form
  */
 export const getFormData = async () => {
-  const memberSql = `SELECT id, name_first, name_last, handicap FROM members ORDER BY name_last, name_first`;
+  const memberSql = `
+  SELECT
+    id,
+    name_first,
+    name_last,
+    COALESCE(current_handicap, handicap) AS handicap
+  FROM members
+  ORDER BY name_last, name_first
+`;
   const holesSql = `SELECT * FROM holes WHERE hole_number <= 9 ORDER BY hole_number`;
 
-  const [members, holes] = await Promise.all([
-    dbAll(memberSql),
-    dbAll(holesSql),
-  ]);
+  const [members, holes] = await Promise.all([dbAll(memberSql), dbAll(holesSql)]);
 
   return { members, holes };
 };
@@ -71,33 +70,59 @@ export const createScoreRecord = async (body) => {
 export const getSeasonStandings = async () => {
   const weeks = await getAllWeeks();
   const latestWeekPlayed = await getCurrentWeekPlayed();
+  const currentWeekNumber = latestWeekPlayed.week_number;
+  const previousWeekPlayed = await getPreviousWeekPlayed(currentWeekNumber);
   const currentWeek = await getWeek(latestWeekPlayed.week_number);
 
-  const standingsSql = `
-    WITH raw_standings AS (
-      SELECT m.id, m.name_last || ', ' || m.name_first AS player_name, 
-             COUNT(s.score_id) AS weeks_played, TOTAL(s.stableford_total) AS stableford_points, 
-             TOTAL(s.ctp_points) AS ctp_points, TOTAL(s.birdie_points) AS birdie_points, 
-             TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points,
-             ROUND(TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) / NULLIF(COUNT(s.score_id), 0), 2) AS avg_points, 
-             ROUND(AVG(s.gross_total), 2) AS avg_gross, ROUND(AVG(s.net_total), 2) AS avg_net 
-      FROM members m LEFT JOIN scores s ON s.member_id = m.id GROUP BY m.id
-    ) 
-    SELECT RANK() OVER (ORDER BY avg_points DESC) AS rank, * FROM raw_standings 
-    ORDER BY rank ASC, total_points DESC
-  `;
-
   if (currentWeek && currentWeek.date) {
-    currentWeek.displayDate = new Date(
-      currentWeek.date + "T12:00:00",
-    ).toLocaleDateString("en-US", {
+    currentWeek.displayDate = new Date(currentWeek.date + "T12:00:00").toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
   }
 
-  const standings = await dbAll(standingsSql);
-  return { standings, weeks, currentWeek };
+  const standings = await getStandingsThroughWeek(currentWeekNumber);
+  const previousStandings = await getStandingsThroughWeek(previousWeekPlayed.week_number);
+  const previousRanks = {};
+
+  previousStandings.forEach((player) => {
+    previousRanks[player.id] = player.rank;
+  });
+
+  standings.forEach((player) => {
+    const previousRank = previousRanks[player.id];
+
+    if (!previousRank) {
+      player.movement = "new";
+      player.delta = 0;
+      return;
+    }
+
+    const diff = previousRank - player.rank;
+
+    if (diff > 0) {
+      player.movement = "up";
+      player.delta = diff;
+    } else if (diff < 0) {
+      player.movement = "down";
+      player.delta = Math.abs(diff);
+    } else {
+      player.movement = "same";
+      player.delta = 0;
+    }
+  });
+
+  const biggestUp = standings
+    .filter((p) => p.movement === "up")
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 3);
+
+  const biggestDown = standings
+    .filter((p) => p.movement === "down")
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 3);
+
+  return { standings, weeks, currentWeek, biggestUp, biggestDown };
 };
 
 /**
@@ -118,24 +143,86 @@ export const getWeeklyBreakdown = async (weekId) => {
  * Gathers member biographical details combined with recursively joined historical records
  */
 export const getMemberProfileData = async (memberId) => {
-  const memberSql = `SELECT id, name_first, name_last FROM members WHERE id = ?`;
+  const memberSql = `
+    SELECT id, name_first, name_last
+    FROM members
+    WHERE id = ?
+  `;
+
+  const lastWeekPlayed = await getCurrentWeekPlayed();
+
+  if (!lastWeekPlayed) {
+    return { member, scores: [] };
+  }
+
   const historySql = `
     WITH RECURSIVE league_weeks(week_number) AS (
-      SELECT 1 UNION ALL SELECT week_number + 1 FROM league_weeks WHERE week_number < 5
-    ) 
-    SELECT lw.week_number, COALESCE(s.score_id, '') AS score_id, 
-           COALESCE(s.stableford_total, '') AS stableford_total, COALESCE(s.ctp_points, '') AS ctp_points, 
-           COALESCE(s.birdie_points, '') AS birdie_points, 
-           CASE WHEN s.score_id IS NOT NULL THEN (s.stableford_total + s.ctp_points + s.birdie_points) ELSE '' END AS total_points, 
-           COALESCE(s.gross_total, '') AS gross_total, COALESCE(s.net_total, '') AS net_total 
-    FROM league_weeks lw 
-    LEFT JOIN scores s ON s.week_id = lw.week_number AND s.member_id = ? 
+      SELECT 1
+      UNION ALL
+      SELECT week_number + 1
+      FROM league_weeks
+      WHERE week_number < ?
+    )
+    SELECT
+      lw.week_number,
+      COALESCE(s.score_id, '') AS score_id,
+      COALESCE(s.stableford_total, '') AS stableford_total,
+      COALESCE(s.ctp_points, '') AS ctp_points,
+      COALESCE(s.birdie_points, '') AS birdie_points,
+      CASE
+        WHEN s.score_id IS NOT NULL
+        THEN (s.stableford_total + s.ctp_points + s.birdie_points)
+        ELSE ''
+      END AS total_points,
+      COALESCE(s.gross_total, '') AS gross_total,
+      COALESCE(s.net_total, '') AS net_total
+    FROM league_weeks lw
+    LEFT JOIN scores s
+      ON s.week_id = lw.week_number
+      AND s.member_id = ?
     ORDER BY lw.week_number ASC
   `;
 
   const member = await dbGet(memberSql, [memberId]);
+
   if (!member) return null;
 
-  const scores = await dbAll(historySql, [memberId]);
+  const scores = await dbAll(historySql, [lastWeekPlayed.week_number, memberId]);
+
   return { member, scores };
 };
+
+async function getStandingsThroughWeek(weekNumber) {
+  const sql = `
+    WITH raw_standings AS (
+      SELECT
+        m.id,
+        m.name_last || ', ' || m.name_first AS player_name,
+        COUNT(s.score_id) AS weeks_played,
+        TOTAL(s.stableford_total) AS stableford_points,
+        TOTAL(s.ctp_points) AS ctp_points,
+        TOTAL(s.birdie_points) AS birdie_points,
+        TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points,
+        ROUND(
+          TOTAL(s.stableford_total + s.ctp_points + s.birdie_points)
+          / NULLIF(COUNT(s.score_id), 0),
+          2
+        ) AS avg_points,
+        ROUND(AVG(s.gross_total), 2) AS avg_gross,
+        ROUND(AVG(s.net_total), 2) AS avg_net,
+        m.current_handicap
+      FROM members m
+      LEFT JOIN scores s
+        ON s.member_id = m.id
+       AND s.week_id <= ?
+      GROUP BY m.id
+    )
+    SELECT
+      RANK() OVER (ORDER BY avg_points DESC) AS rank,
+      *
+    FROM raw_standings
+    ORDER BY rank ASC, total_points DESC
+  `;
+
+  return await dbAll(sql, [weekNumber]);
+}

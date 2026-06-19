@@ -3,9 +3,9 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import session from "express-session";
-import { MemoryStore } from "express-session";
 import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
+import SQLiteStoreFactory from "connect-sqlite3";
 
 // ROUTES
 import publicRoutes from "./routes/public.routes.js";
@@ -16,12 +16,21 @@ import authRoutes from "./routes/auth.routes.js";
 import scoreRoutes from "./routes/scores.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import skinsRouter from "./routes/skins.routes.js";
+import blogRoutes from "./routes/blog.routes.js";
+import emailRoutes from "./routes/email.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
 import authMiddleware from "./middleware/auth.middleware.js";
 
 const app = express();
+
+const SQLiteStore = SQLiteStoreFactory(session);
+
+store: new SQLiteStore({
+  db: "sessions.db",
+  dir: "./",
+});
 
 /* =========================================
    BASIC APP SETTINGS
@@ -38,7 +47,7 @@ app.set("trust proxy", 1);
 app.use(
   helmet({
     contentSecurityPolicy: false,
-  }),
+  })
 );
 
 app.use((req, res, next) => {
@@ -50,6 +59,19 @@ app.use((req, res, next) => {
   res.setHeader("Permission-Policy", "fullscreen=('*')");
   next();
 });
+
+/*==========================================
+   Environment
+========================================= */
+
+app.locals.siteTitle =
+  process.env.NODE_ENV === "production"
+    ? "Bottoms Up Golf"
+    : process.env.NODE_ENV === "development"
+      ? "Bottoms Up Golf (DEV)"
+      : process.env.NODE_ENV === "local"
+        ? "Bottoms Up Golf (LOCAL)"
+        : "UNKNOWN";
 
 /* =========================================
    PARSERS / STATIC
@@ -69,8 +91,9 @@ app.use(
   session({
     name: "SessionCookie",
     secret: process.env.EXPRESS_SESSION_SECRET,
-    store: new MemoryStore({
-      checkPeriod: 86400000,
+    store: new SQLiteStore({
+      db: "sessions.db",
+      dir: "./",
     }),
     resave: false,
     saveUninitialized: false,
@@ -78,8 +101,15 @@ app.use(
       maxAge: 86400000,
     },
     genid: () => uuid(),
-  }),
+  })
 );
+
+app.use((req, res, next) => {
+  // Binds session data straight to EJS global context templates
+  res.locals.isAdmin = req.session.isAdmin || false;
+  res.locals.isUser = req.session.isUser || false;
+  next();
+});
 
 app.use(flash());
 
@@ -87,18 +117,15 @@ app.use(flash());
    ROUTES
 ========================================= */
 
-app.use((req, res, next) => {
-  res.locals.isAdmin = req.session?.isAdmin || false;
-  next();
-});
-
 app.use("/", publicRoutes);
+app.use("/blog", blogRoutes);
 app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);
 app.use("/videos", videoRoutes);
 app.use("/scores", scoreRoutes);
 app.use("/admin", adminRoutes);
-app.use("/skins-report", skinsRouter);
+app.use("/skins", skinsRouter);
+app.use("/email", emailRoutes);
 
 /* =========================================
    404 HANDLER
@@ -113,5 +140,7 @@ app.use((req, res) => {
 ========================================= */
 
 app.use(errorHandler);
+
+// app.js or index.js
 
 export default app;

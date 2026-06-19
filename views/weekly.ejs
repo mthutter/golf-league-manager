@@ -29,11 +29,7 @@
 
     .button-link {
       display: inline-block;
-      padding: 10px 20px;
-      background-color: var(--league-light);
-      color: white;
       text-decoration: none;
-      border-radius: 5px;
     }
 
     /* ===== Header ===== */
@@ -119,27 +115,24 @@
     .results-table td {
       border: 1.5px solid rgba(255, 255, 255, 0.15);
     }
-    .back-btn {
-      display: inline-block;
-      padding: 10px 18px;
-      background-color: var(--league-light);
-      color: white;
-      text-decoration: none;
-      border-radius: 50px;
+
+    .week-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .week-nav .btn {
+      min-width: 85px;
       font-weight: 600;
+      border-radius: 50px;
+      border: none;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(22, 172, 79, 0.15);
     }
 
-    .back-btn:hover {
-      background-color: var(--league-green);
-      color: white;
-      text-decoration: none;
+    .week-nav .btn:hover {
       transform: translateY(-1px);
-    }
-
-    .back-btn:active {
-      transform: translateY(0);
     }
   </style>
   <body>
@@ -149,12 +142,14 @@
         <h1>
           Week
           <%= weekId %>
-          Results
+          (<%= weekDate.displayDate %>) Results
         </h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
-      <div class="mb-4">
-        <a href="/scores/standings" class="back-btn"> ← Back to Standings </a>
+      <div class="week-nav mb-4">
+        <a href="/scores/standings" class="button-link btn btn-light">
+          ← Back to Standings
+        </a>
       </div>
     </div>
     <div class="container">

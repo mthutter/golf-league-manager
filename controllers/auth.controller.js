@@ -8,19 +8,31 @@ export function showLoginForm(req, res) {
 }
 
 /**
- * POST /login - Process user authorization
+ * POST /login - Process user authorization (Supports Admin & League Member)
  */
 export function handleLogin(req, res) {
   const { username, password } = req.body;
 
-  // Delegate credential check to service layer
-  const isValid = authService.verifyAdminCredentials(username, password);
-
-  if (isValid) {
+  // 1. Check for Admin Credentials
+  const isAdminValid = authService.verifyAdminCredentials(username, password);
+  if (isAdminValid) {
     req.session.isAdmin = true;
+    req.session.isUser = true; // Admins also count as general users
     return res.redirect("/");
   }
 
+  // 2. Check for Non-Admin Member Credentials
+  // Note: You will need to create 'verifyUserCredentials' in your auth.service.js
+  const isUserValid = authService.verifyUserCredentials
+    ? authService.verifyUserCredentials(username, password)
+    : false;
+  if (isUserValid) {
+    req.session.isAdmin = false;
+    req.session.isUser = true; // Flag identifying them as a standard authenticated league member
+    return res.redirect("/");
+  }
+
+  // 3. Fallback if both checks fail
   res.render("login", { error: "Invalid username or password" });
 }
 
@@ -28,8 +40,6 @@ export function handleLogin(req, res) {
  * GET /logout - Destroy current session context
  */
 export function handleLogout(req, res) {
-  // If your service or workflow ever scales beyond local sessions,
-  // you can hook service logic directly here.
   req.session.destroy((err) => {
     if (err) {
       console.error("Session destruction failure:", err);

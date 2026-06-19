@@ -60,3 +60,14 @@ export async function getCurrentWeekPlayed() {
     FROM scores
   `);
 }
+
+export async function getPreviousWeekPlayed(currentWeekNumber) {
+  return await get(
+    `
+    SELECT MAX(week_id) AS week_number
+    FROM scores
+    WHERE week_id < ?
+  `,
+    [currentWeekNumber],
+  );
+}

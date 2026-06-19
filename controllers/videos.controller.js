@@ -1,13 +1,14 @@
-import { getFilenames } from "../services/ftp.service.js";
+import { getVideos } from "../services/videos.service.js";
 
 export async function videosByYear(req, res) {
   try {
     const { year } = req.params;
-    const filenames = await getFilenames(year);
+
+    const videos = await getVideos(year);
 
     res.render("videos", {
       year,
-      filenames,
+      videos,
     });
   } catch (err) {
     console.error(err);

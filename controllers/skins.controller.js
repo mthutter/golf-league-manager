@@ -40,7 +40,7 @@ export const getSkinsReport = async (req, res) => {
       : weeks[0]?.week_id || null;
 
     if (!selectedWeekId) {
-      return res.render("skins-report", {
+      return res.render("skins", {
         weeks: weeks || [],
         selectedWeekId: null,
         totalPot: 0,
@@ -54,7 +54,7 @@ export const getSkinsReport = async (req, res) => {
     const week = await weeksService.getWeek(selectedWeekId);
     const currentWeek = await weeksService.getCurrentWeek();
 
-    res.render("skins-report", {
+    res.render("skins", {
       weeks: weeks || [],
       selectedWeekId,
       week,

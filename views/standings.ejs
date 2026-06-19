@@ -1,21 +1,24 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <%- include('layouts/header'); %>
+    <%- include('./layouts/header') %>
     <style>
       .player-link {
         color: #1b4332;
         text-decoration: none;
         transition: color 0.2s ease;
       }
+
       .player-link:hover {
         color: #18aa24;
         text-decoration: underline;
       }
+
       .button-link {
         display: inline-block;
         text-decoration: none;
       }
+
       .standings-table th {
         background-color: #18aa24;
         color: white;
@@ -24,23 +27,28 @@
       .standings-table td {
         background-color: #53da80;
       }
+
       .gallery-header {
         text-align: center;
       }
+
       .gallery-header h1 {
         font-weight: 700;
         margin-bottom: 0.5rem;
       }
+
       .gallery-header p {
         opacity: 0.9;
         margin-bottom: 1rem;
       }
+
       .week-nav {
         display: flex;
         justify-content: center;
         gap: 0.5rem;
         flex-wrap: wrap;
       }
+
       .week-nav .btn {
         min-width: 85px;
         font-weight: 600;
@@ -48,9 +56,11 @@
         border: none;
         transition: all 0.2s ease;
       }
+
       .week-nav .btn:hover {
         transform: translateY(-1px);
       }
+
       /* ===== Standings Card ===== */
 
       .standings-card {
@@ -58,6 +68,7 @@
         border-radius: 18px;
         overflow: hidden;
       }
+
       /* Top-left corner */
       .standings-table thead tr th:first-child {
         border-top-left-radius: 18px;
@@ -77,14 +88,17 @@
       .standings-table tbody tr:last-child td:last-child {
         border-bottom-right-radius: 18px;
       }
+
       /* ===== Table ===== */
       .standings-table {
         margin-bottom: 0;
       }
+
       .standings-table thead {
         background: #1b4332;
         color: white;
       }
+
       .standings-table th {
         border: #19c477;
         padding: 14px;
@@ -94,22 +108,27 @@
         cursor: pointer;
         user-select: none;
       }
+
       .standings-table td {
         text-align: center;
         vertical-align: middle;
         padding: 12px;
       }
+
       .standings-table th,
       .standings-table td {
         border: 2px solid rgba(255, 255, 255, 0.15);
       }
+
       .standings-table tbody tr:hover {
         background-color: #f8f9fa;
       }
+
       /* Player column left aligned */
-      .standings-table td:nth-child(2) {
+      .standings-table td:nth-child(3) {
         text-align: left;
       }
+
       /* ===== Position Column ===== */
       .position-cell {
         width: 70px;
@@ -118,34 +137,79 @@
         text-align: center !important;
       }
 
+      .movement-header,
+      .movement-cell {
+        width: 55px;
+        text-align: center !important;
+        white-space: nowrap;
+      }
+
+      .trend-up {
+        color: #198754;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .trend-down {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .trend-same {
+        color: #adb5bd;
+        font-weight: 700;
+      }
+
       /* ===== Podium Colors ===== */
       .gold-cell {
         background-color: #ffd700 !important;
         font-weight: bold;
       }
+
       .silver-cell {
         background-color: #c0c0c0 !important;
         font-weight: bold;
       }
+
       .bronze-cell {
         background-color: #cd7f32 !important;
         color: white;
         font-weight: bold;
       }
+
       .points-average {
         font-size: 1.05rem;
         font-weight: 700;
       }
+
       .active-week {
         background-color: #1b4332 !important;
         color: white !important;
         font-weight: 700;
         transform: scale(1.05);
       }
+
+      .week-results-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .week-results-label {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0;
+      }
     </style>
   </head>
+
   <body>
-    <%- include('layouts/navbar'); %>
+    <%- include('./layouts/navbar') %>
 
     <!-- Header Banner -->
     <div class="container">
@@ -156,19 +220,22 @@
           currentWeek.displayDate %>) • Bottoms Up Golf League
         </p>
       </div>
-      <div class="week-nav">
-        <% weeks .filter(week => week.week_number <= currentWeek.week_number)
-        .forEach(week => { %>
+      <div class="week-results-container">
+        <span class="week-results-label">Weekly Results:</span>
+        <div class="week-nav">
+          <% weeks .filter(week => week.week_number <=
+          currentWeek.week_number).forEach(week => { %>
 
-        <a
-          href="/scores/weekly/<%= week.week_number %>"
-          class="button-link btn btn-light btn-sm"
-        >
-          Week
-          <%= week.week_number %>
-        </a>
+          <a
+            href="/scores/weekly/<%= week.week_number %>"
+            class="button-link btn btn-light btn-sm"
+          >
+            Week
+            <%= week.week_number %>
+          </a>
 
-        <% }) %>
+          <% }) %>
+        </div>
       </div>
       <br />
     </div>
@@ -181,7 +248,9 @@
             <thead>
               <tr>
                 <th>Pos</th>
+                <th class="movement-header"></th>
                 <th>Player</th>
+                <th>HCP</th>
                 <th>Rounds</th>
                 <th>Birdies</th>
                 <th>CTP</th>
@@ -202,6 +271,15 @@
                   <%= player.rank %>
                   <% } %>
                 </td>
+                <td class="movement-cell">
+                  <% if (player.movement === "up") { %>
+                  <span class="trend-up">▲<%= player.delta %></span>
+                  <% } else if (player.movement === "down") { %>
+                  <span class="trend-down">▼<%= player.delta %></span>
+                  <% } else { %>
+                  <span class="trend-same">—</span>
+                  <% } %>
+                </td>
                 <td>
                   <strong
                     ><a
@@ -210,6 +288,9 @@
                       ><%= player.player_name %></a
                     ></strong
                   >
+                </td>
+                <td style="color: #2a35c2">
+                  <strong><%= player.current_handicap %></strong>
                 </td>
                 <td>
                   <%= player.weeks_played %>
@@ -240,7 +321,7 @@
       </div>
     </div>
 
-    <%- include('layouts/scripts'); %>
-    <%- include('layouts/footer'); %>
+    <%- include('./layouts/scripts') %>
+    <%- include('./layouts/footer') %>
   </body>
 </html>

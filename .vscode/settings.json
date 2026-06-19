@@ -29,8 +29,20 @@
     {
       "previewLimit": 50,
       "driver": "SQLite",
-      "name": "Golf League",
-      "database": "${workspaceFolder:golf-league-site}/golf-league-db.db"
+      "name": "golf-league",
+      "database": "./golf-league-db-production.db"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "redis",
+      "database": "./sessions.db"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "public",
+      "database": "./golf-league-db-public.db"
     }
   ],
   "[jsonc]": {

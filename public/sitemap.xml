@@ -9,62 +9,237 @@
 
 <url>
   <loc>https://bottoms-up-cos.org/</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
+  <loc>https://bottoms-up-cos.org/rules</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
   <loc>https://bottoms-up-cos.org/tee-times</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/overall</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/scores/standings</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/results/</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/skins-report</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/skins</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/images/2024</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/images2024</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/images/2025</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/images2025</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/images/2026</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/videos2024</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/videos/2024</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/videos2025</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/videos/2025</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://bottoms-up-cos.org/course</loc>
-  <lastmod>2025-11-24T17:20:10+00:00</lastmod>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/results/2025/2025%20Overall%20Standings.pdf</loc>
-  <lastmod>2025-11-18T00:32:06+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/login</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/docs/Bottoms%20Up%202025%20League%20Info%20and%20Rules%20(04-16-25).pdf</loc>
+  <lastmod>2026-06-15T17:23:06+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
-  <loc>https://bottoms-up-cos.org/results/2025/Week%2021%20Skins.pdf?t=</loc>
-  <lastmod>2025-11-18T00:32:06+00:00</lastmod>
+  <loc>https://bottoms-up-cos.org/scores/weekly/1</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/weekly/2</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/weekly/3</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/weekly/4</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/weekly/5</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/weekly/6</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/8</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/9</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/15</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/13</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/11</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/3</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/14</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/10</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/27</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/12</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/7</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/21</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/17</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/23</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/16</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/20</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/18</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/19</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/26</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/25</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/22</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/scores/members/24</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/skins-report?weekId=1</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/skins-report?weekId=2</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/skins-report?weekId=3</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/skins-report?weekId=4</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/skins-report?weekId=5</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://bottoms-up-cos.org/skins-report?weekId=6</loc>
+  <lastmod>2026-06-15T17:31:31+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 
