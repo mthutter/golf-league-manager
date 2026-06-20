@@ -27,11 +27,6 @@ const app = express();
 
 const SQLiteStore = SQLiteStoreFactory(session);
 
-store: new SQLiteStore({
-  db: "sessions.db",
-  dir: "./",
-});
-
 /* =========================================
    BASIC APP SETTINGS
 ========================================= */
@@ -47,7 +42,7 @@ app.set("trust proxy", 1);
 app.use(
   helmet({
     contentSecurityPolicy: false,
-  })
+  }),
 );
 
 app.use((req, res, next) => {
@@ -101,7 +96,7 @@ app.use(
       maxAge: 86400000,
     },
     genid: () => uuid(),
-  })
+  }),
 );
 
 app.use((req, res, next) => {
