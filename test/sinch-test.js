@@ -23,7 +23,7 @@ async function run() {
       },
       message: {
         text_message: {
-          text: "This is a test message using the Sinch Node.js SDK",
+          text: "BOTTOMS-UP: Tee-times for 6/22 (Week 8) are posted.",
         },
       },
       channel_properties: {
