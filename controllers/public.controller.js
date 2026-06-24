@@ -24,5 +24,5 @@ export const rules = async (req, res) => {
 
 export const tee_times = async (req, res) => {
   res.render("tee-times");
-  console.table(req.sessionID);
+  console.log(req.session.id);
 };

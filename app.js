@@ -136,6 +136,4 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-// app.js or index.js
-
 export default app;

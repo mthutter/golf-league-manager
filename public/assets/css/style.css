@@ -701,6 +701,27 @@ iframe {
   transform: translateY(100%);
   transition: all 0.25s ease;
 }
+
+.hero-wrapper {
+  margin: .5rem;
+  padding: 5px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    #f7d774,
+    #1b5e20
+  );
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.25);
+}
+
+.hero-image {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  object-position: center 35%;
+}
 /* show on hover */
 .media-wrapper:hover .media-caption {
   opacity: 1;
