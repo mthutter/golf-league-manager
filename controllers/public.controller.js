@@ -9,6 +9,8 @@ export const index = async (req, res) => {
   const { currentWeek, biggestUp, biggestDown } = await getSeasonStandings();
 
   res.render("index", {
+    metaDescription:
+      "Bottoms Up Golf League in Colorado Springs. Standings, tee times, scores, photos, and league information.",
     currentWeek,
     biggestUp,
     biggestDown,

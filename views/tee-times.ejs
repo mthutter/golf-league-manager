@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <%- include('./layouts/header'); -%>
+    <%- include('./partials/header'); -%>
+    <link rel="stylesheet" href="/assets/css/scorecard.css" />
     <style>
       @media (max-width: 680px) {
         table {
@@ -12,7 +13,7 @@
   </head>
 
   <body>
-    <%- include('./layouts/navbar'); %>
+    <%- include('./partials/navbar'); %>
 
     <div class="main-wrapper">
       <div class="gallery-header">
@@ -21,7 +22,10 @@
       </div>
       <div class="tee-card">
         <div class="tee-card-header">
-          <h2><span style="color: red">Red</span> / <span style="color: white">White</span> First 11 Weeks</h2>
+          <h2>
+            <span style="color: red">Red</span> /
+            <span style="color: white">White</span> First 11 Weeks
+          </h2>
         </div>
         <div class="table-wrapper">
           <table class="tee-table">
@@ -64,10 +68,13 @@
             </tbody>
           </table>
         </div>
-        <h5 style="text-align: center; font-weight: normal">(we will adjust if needed at the course)</h5>
+        <h5 style="text-align: center; font-weight: normal">
+          (we will adjust if needed at the course)
+        </h5>
       </div>
     </div>
-    <%- include('layouts/footer'); %> <%- include('layouts/scripts'); %>
+    <%- include('partials/footer'); %>
+    <%- include('partials/scripts'); %>
     <script>
       const table = document.querySelector(".tee-table");
       let currentCol = -1;

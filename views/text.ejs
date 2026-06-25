@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <%- include('layouts/header'); %>
+    <%- include('partials/header'); %>
     <style>
       :root {
         --green-main: rgb(47, 138, 47);
@@ -159,7 +159,7 @@
     </style>
   </head>
   <body>
-    <%- include('layouts/navbar'); %>
+    <%- include('partials/navbar'); %>
     <div class="main-wrapper container-fluid px-md-5">
       <!-- HERO -->
       <div class="gallery-header">
@@ -183,7 +183,7 @@
               <div class="col-12">
                 <div class="player-form-card">
                   <div class="form-section">
-                    <h3>Compose Message</h3>                    
+                    <h3>Compose Message</h3>
                     <div class="mb-2">
                       <label for="message" class="form-label"
                         >SMS Message Content
@@ -220,8 +220,8 @@
                     </div>
                     <p class="text-muted small mb-3">
                       Optional: Click on individual player cards to highlight
-                      them for a targeted text message. Leave all cards unselected to
-                      text the entire league.
+                      them for a targeted text message. Leave all cards
+                      unselected to text the entire league.
                     </p>
 
                     <div class="recipient-list-container">
@@ -267,7 +267,7 @@
       </div>
     </div>
 
-    <%- include('layouts/scripts'); %>
+    <%- include('partials/scripts'); %>
 
     <script>
       const selectedEmails = [];

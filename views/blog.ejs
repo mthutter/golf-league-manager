@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <%- include ('./layouts/header') %>
+    <%- include ('./partials/header') %>
   </head>
 
   <style>
@@ -110,7 +110,7 @@
     }
   </style>
   <body>
-    <%- include('layouts/navbar'); %>
+    <%- include('partials/navbar'); %>
     <div class="main-wrapper">
       <!-- VIEW 1: MAIN BLOG INDEX FEED -->
       <% if (view === 'index') { %>
@@ -358,6 +358,6 @@
       <% } %>
     </div>
   </body>
-  <%- include('layouts/footer'); %>
-  <%- include('layouts/scripts'); %>
+  <%- include('partials/footer'); %>
+  <%- include('partials/scripts'); %>
 </html>

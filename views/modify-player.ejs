@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <%- include('layouts/header'); %>
+  <%- include('partials/header'); %>
   <style>
     :root {
       --green-main: rgb(47, 138, 47);
@@ -175,7 +175,7 @@
 </head>
 
 <body>
-  <%- include('layouts/navbar'); %>
+  <%- include('partials/navbar'); %>
 
   <!-- HERO -->
   <div class="main-wrapper">
@@ -288,7 +288,7 @@
     </div>
   </div>
 
-  <%- include('layouts/scripts'); %>
+  <%- include('partials/scripts'); %>
   <script>
     function formatPhoneNumber(input) {
       let value = input.value.replace(/\D/g, "");
