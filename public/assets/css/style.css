@@ -8,24 +8,20 @@
 }
 
 /* ======================== BASE ======================== */
-html,
-body {
+html {
   height: 100%;
-  margin: 0;
+  overflow-x: hidden;
   background: var(--green-dark);
 }
 
 body {
+  height: 100%;
+  margin: 0;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: Arial, Helvetica, sans-serif;
   background: linear-gradient(180deg, var(--green-main), var(--green-dark));
-  min-height: 100vh;
-}
-
-html {
-  overflow-x: hidden;
-  background: var(--green-dark);
 }
 
 a {
@@ -38,7 +34,6 @@ iframe {
 }
 
 /* ========================= Site Hero Image ==============================*/
-
 .hero-wrapper {
   width: min(100%, 1260px);
   margin: 0 auto;
@@ -57,37 +52,34 @@ iframe {
   object-position: center 42%;
 }
 
-/* ---------- Tablet ---------- */
-
+/* ---------- Responsive Layout Breakpoints ---------- */
 @media (max-width: 992px) {
   .hero-wrapper {
     width: calc(100% - 20px);
     height: 320px;
-
     border-radius: 16px;
   }
-
   .hero-image {
     object-position: center 38%;
   }
 }
 
-/* ---------- Phone ---------- */
-
 @media (max-width: 768px) {
   .hero-wrapper {
     width: calc(100% - 12px);
     height: 240px;
-
     border-radius: 12px;
   }
-
   .hero-image {
     object-position: center 35%;
   }
+  /* Consolidated from Standings Section */
+  .movers-grid {
+    grid-template-columns: 1fr;
+  }
 }
-/* ============================= Site Hero Image ================================*/
 
+/* ============================= TABLES ================================*/
 th,
 td {
   border: 2px solid #dddddd;
@@ -111,7 +103,7 @@ th.sort-desc::after {
   background: transparent;
 }
 
-/* ========================MAIN LAYOUT======================== */
+/* ======================== MAIN LAYOUT ======================== */
 .main-wrapper {
   width: 100%;
   padding: 10px;
@@ -135,9 +127,8 @@ th.sort-desc::after {
   text-overflow: ellipsis;
   margin: 4px 0;
 }
-/* ========================MAIN LAYOUT======================== */
 
-/* ======================== TABLES ============================ */
+/* ======================== TEE TABLES ============================ */
 .table-wrapper {
   display: flex;
   justify-content: center;
@@ -149,7 +140,6 @@ th.sort-desc::after {
   border-radius: 10px;
 }
 
-/* TEE TABLE */
 .tee-table {
   width: auto;
   margin: 0 auto;
@@ -165,7 +155,6 @@ th.sort-desc::after {
   font-size: clamp(14px, 2vw, 18px);
 }
 
-/* table styling */
 .table-date th {
   background: rgba(0, 0, 0, 0.2);
   color: white;
@@ -215,19 +204,19 @@ th.sort-desc::after {
     text-align: center;
   }
 }
-/* ======================= FOOTER END ======================= */
 
+/* ======================= LANDSCAPE FALLBACKS ======================= */
 @media (max-height: 500px) and (orientation: landscape) {
   .center-content {
     max-width: 100%;
     padding: 10px;
   }
-
   .center-content p {
     font-size: clamp(10px, 2.5vw, 14px);
   }
 }
 
+/* ======================= WINNERS / CARDS ======================= */
 .badge {
   background: gold;
   color: black;
@@ -250,7 +239,6 @@ th.sort-desc::after {
   width: 100%;
 }
 
-/* Card layout */
 .winner-card {
   display: flex;
   justify-content: space-between;
@@ -263,13 +251,11 @@ th.sort-desc::after {
   transition: all 0.2s ease;
 }
 
-/* Subtle hover (feels modern) */
 .winner-card:hover {
   background: rgba(0, 0, 0, 0.35);
   transform: translateX(3px);
 }
 
-/* Left side text */
 .winner-place {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -278,55 +264,39 @@ th.sort-desc::after {
   color: rgb(98, 228, 98);
 }
 
-/* Score highlight */
+.winner-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
 .winner-score {
   font-size: 1.1rem;
   font-weight: 700;
   color: #90ee90;
 }
 
-/* Optional: medal colors */
-.winner-card:nth-child(1) {
+/* Combined Medal Rules (Classes and Nth-child logic combined seamlessly) */
+.winner-card:nth-child(1),
+.winner-card.gold {
   border-left-color: gold;
 }
-
-.winner-card:nth-child(2) {
+.winner-card:nth-child(2),
+.winner-card.silver {
   border-left-color: silver;
 }
-
-.winner-card:nth-child(3) {
+.winner-card:nth-child(3),
+.winner-card.bronze {
   border-left-color: #cd7f32;
 }
 
-.winner-name {
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-/* Medal Colors */
 .winner-card.gold .winner-name {
   color: #ffd700;
 }
-
 .winner-card.silver .winner-name {
   color: #c0c0c0;
 }
-
 .winner-card.bronze .winner-name {
   color: #cd7f32;
-}
-
-/* Optional: match border accent too */
-.winner-card.gold {
-  border-left-color: #ffd700;
-}
-
-.winner-card.silver {
-  border-left-color: #c0c0c0;
-}
-
-.winner-card.bronze {
-  border-left-color: #cd7f32;
 }
 
 .winners-header {
@@ -354,11 +324,11 @@ th.sort-desc::after {
   }
 }
 
+/* ======================= VIDEO & MEDIA ======================= */
 .video-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 56.25%;
-  /* 16:9 aspect ratio */
+  padding-top: 56.25%; /* 16:9 aspect ratio */
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -374,15 +344,18 @@ th.sort-desc::after {
   border: none;
 }
 
-.video-caption {
-  text-align: center;
+.video-caption,
+.media-caption {
   font-size: 12px;
-  margin-top: 6px;
+  text-align: center;
   color: #c8f7c5;
 }
 
-/*============================NEW MEDIA CSS (video/image)============================*/
-/* card hover */
+.video-caption {
+  margin-top: 6px;
+}
+
+/*============================ NEW MEDIA CSS (video/image) ============================*/
 .media-card {
   transition: transform 0.2s ease;
 }
@@ -391,7 +364,6 @@ th.sort-desc::after {
   transform: translateY(-4px);
 }
 
-/* shared wrapper */
 .media-wrapper {
   position: relative;
   overflow: hidden;
@@ -399,7 +371,6 @@ th.sort-desc::after {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* ========================IMAGE======================== */
 .image-wrapper img {
   width: 100%;
   height: auto;
@@ -411,16 +382,12 @@ th.sort-desc::after {
   transform: scale(1.05);
 }
 
-/* ========================CAPTION (shared)======================== */
 .media-caption {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   padding: 6px 8px;
-  font-size: 12px;
-  text-align: center;
-  color: #c8f7c5;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
   opacity: 0;
   transform: translateY(100%);
@@ -432,7 +399,6 @@ th.sort-desc::after {
   transform: translateY(0);
 }
 
-/* mobile fallback */
 @media (hover: none) {
   .media-caption {
     opacity: 1;
@@ -440,7 +406,7 @@ th.sort-desc::after {
   }
 }
 
-/* ========================GALLERY HEADER======================== */
+/* ======================== GALLERY HEADER ======================== */
 .gallery-header {
   text-align: center;
   padding: 20px 10px 10px;
@@ -461,27 +427,20 @@ th.sort-desc::after {
   letter-spacing: 0.3px;
 }
 
-/* subtle divider (the part you liked) */
 .gallery-header::after {
   content: "";
   display: block;
   width: 40px;
   height: 1px;
   margin: 10px auto 0;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
-/*===============STANDINGS START=================*/
+/*=============== STANDINGS SECTION =================*/
 .movers-container {
-  margin: 2rem auto;
-  border: 2px solid rgba(255, 255, 255, 0.15);
   max-width: 800px;
   margin: 2rem auto;
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 18px;
   overflow: hidden;
   background: white;
@@ -489,7 +448,6 @@ th.sort-desc::after {
 }
 
 .movers-header {
-  background: #1b4332;
   color: white;
   text-align: center;
   padding: 0.9rem;
@@ -506,37 +464,6 @@ th.sort-desc::after {
 
 .movers-column {
   padding: 0.5rem;
-}
-
-.movers-up-heading {
-  color: #198754;
-  text-align: center;
-}
-
-.movers-down-heading {
-  color: #dc3545;
-  text-align: center;
-}
-
-.trend-up {
-  color: #198754;
-  font-weight: 700;
-}
-
-.trend-down {
-  color: #dc3545;
-  font-weight: 700;
-}
-/*==============STANDINGS START======================*/
-
-/*==============INDEX MOVER TABLE START==============*/
-.top-mover {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 215, 0, 0.15),
-    rgba(255, 215, 0, 0.05)
-  );
-  border-left: 4px solid gold;
 }
 
 .movers-title {
@@ -584,14 +511,23 @@ th.sort-desc::after {
   font-weight: 600;
 }
 
+.movers-up-heading,
 .trend-up {
   color: #198754;
-  font-weight: 800;
-  font-size: 1.1rem;
 }
 
+.movers-down-heading,
 .trend-down {
   color: #dc3545;
+}
+
+.movers-up-heading,
+.movers-down-heading {
+  text-align: center;
+}
+
+.trend-up,
+.trend-down {
   font-weight: 800;
   font-size: 1.1rem;
 }
@@ -604,10 +540,3 @@ th.sort-desc::after {
 .top-faller {
   border-left: 4px solid #dc3545;
 }
-
-@media (max-width: 768px) {
-  .movers-grid {
-    grid-template-columns: 1fr;
-  }
-}
-/*==============INDEX MOVER TABLE END==============*/

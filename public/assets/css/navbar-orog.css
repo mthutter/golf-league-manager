@@ -1,4 +1,4 @@
-/* ======================== NAVBAR MAIN ======================== */
+/* ======================== NAVBAR START ======================== */
 .navbar {
   margin-top: 0px;
   border: 5px solid green;
@@ -25,42 +25,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.nav-logo {
-  height: 42px;
-  border-radius: 50%;
-}
-
-/* ======================== NAVBAR DROPDOWN ======================== */
-.navbar .dropdown-menu {
-  background-color: rgba(144, 238, 144, 0.95);
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  padding: 6px 0;
-  transition: all 0.2s ease;
-  /* Combined transform values to prevent overwrites */
-  transform: translateX(-50%) translateY(6px) !important;
-  left: 50% !important;
-  right: auto !important;
-}
-
-.navbar .dropdown-item {
-  color: #1e4d1e;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-  text-align: center;
-}
-
-.navbar .dropdown-item:hover,
-.navbar .dropdown-item:focus {
-  background-color: rgb(89, 195, 62);
-  color: #1e4d1e;
-}
-
-/* ======================== RESPONSIVE BREAKPOINTS ======================== */
-
-/* Tablet & Mobile Layouts */
+/* MOBILE NAV */
 @media (max-width: 1200px) {
   .navbar-collapse {
     background: var(--green-light);
@@ -75,8 +40,51 @@
   .navbar-nav .nav-link {
     padding: 10px 0;
   }
+}
 
-  /* Unify mobile dropdown styling to match collapse breakpoint */
+.nav-logo {
+  height: 42px;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .nav-logo {
+    height: 32px;
+  }
+}
+
+/* ========================NAVBAR DROPDOWN (FIXED)======================== */
+
+.navbar .dropdown-menu {
+  background-color: rgba(144, 238, 144, 0.95);
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 6px 0;
+  transform: translateY(6px);
+  transition: all 0.2s ease;
+  transform: translateX(-50%) !important;
+  left: 50% !important;
+  right: auto !important;
+  margin-left: 0;
+}
+
+.navbar .dropdown-item {
+  color: #1e4d1e;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  text-align: center;
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  background-color: rgb(89, 195, 62);
+  /* your hover green */
+  color: #1e4d1e;
+}
+
+@media (max-width: 1199px) {
   .navbar .dropdown-menu {
     inset: auto !important;
     transform: none !important;
@@ -87,10 +95,4 @@
     width: 100%;
   }
 }
-
-/* Phone Layouts */
-@media (max-width: 768px) {
-  .nav-logo {
-    height: 32px;
-  }
-}
+/* ======================== NAVBAR END ======================== */

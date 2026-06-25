@@ -1,87 +1,4 @@
-.scorecard-header td {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.hole-row td {
-  background: rgba(0, 0, 0, 0.25);
-  color: white;
-  font-weight: 600;
-}
-
-/* Blue tees */
-.tee.blue td {
-  background: #1e6fb6;
-  color: white;
-}
-
-/* White tees */
-.tee.white td {
-  background: #f5f5f5;
-  color: black;
-}
-
-/* Red tees */
-.tee.red td {
-  background: #c62828;
-  color: white;
-}
-
-/* GOLD tees */
-.tee.gold td {
-  background: #d4af37;
-  color: #1e1e1e;
-}
-
-.tee td {
-  border-top: 2px solid rgba(0, 0, 0, 0.4);
-}
-
-.tee td:first-child {
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-@media (max-width: 768px) {
-  .scorecard td,
-  .scorecard th {
-    padding: 3px 4px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 900px) and (orientation: landscape) {
-  .scorecard {
-    min-width: 650px;
-  }
-
-  .scorecard td,
-  .scorecard th {
-    padding: 4px 5px;
-    font-size: 12px;
-  }
-}
-
-/* ========================OUT / IN DIVIDER======================== */
-/* optional: slight spacing effect */
-.scorecard td:nth-child(12),
-.scorecard th:nth-child(12) {
-  padding-left: 8px;
-}
-
-/* tee colors */
-.tee.white td {
-  background: #f5f5f5;
-  color: #111;
-}
-
-.tee.red td {
-  background: #c62828;
-  color: white;
-}
-
+/* ======================== BASE STRUCTURE & LAYOUT ======================== */
 .scorecard {
   border: 4px solid #000;
   border-collapse: collapse;
@@ -95,11 +12,6 @@
   border-bottom: 3px solid #000;
 }
 
-.scorecard th,
-.scorecard td {
-  border: 1px solid rgba(0, 0, 0, 0.35);
-}
-
 .scorecard td,
 .scorecard th {
   border: 1px solid rgba(0, 0, 0, 0.35);
@@ -108,7 +20,7 @@
   white-space: nowrap;
 }
 
-/* first column sticky */
+/* First Column Sticky Formatting */
 .scorecard td:first-child,
 .scorecard th:first-child {
   position: sticky;
@@ -118,49 +30,24 @@
   color: #c8f7c5;
   text-align: left;
   font-weight: 600;
+  padding-left: 10px;
 }
 
-/* header */
-.scorecard-header th {
+/* ======================== ROWS & HEADERS ======================== */
+.scorecard-header th,
+.scorecard-header td {
   background: rgba(0, 0, 0, 0.85);
   color: white;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-/* FRONT 9 (dark band) */
-.scorecard td:nth-child(n + 2):nth-child(-n + 10),
-.scorecard th:nth-child(n + 2):nth-child(-n + 10) {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* BACK 9 (lighter band) */
-.scorecard td:nth-child(n + 12):nth-child(-n + 20),
-.scorecard th:nth-child(n + 12):nth-child(-n + 20) {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* MEN (white → blue) */
-.tee.men td:nth-child(n + 2):nth-child(-n + 11) {
-  background: #f5f5f5;
-  color: #111;
-}
-
-.tee.men td:nth-child(n + 12):nth-child(-n + 21) {
-  background: #1e6fb6;
+.hole-row td {
+  background: rgba(0, 0, 0, 0.25);
   color: white;
+  font-weight: 600;
 }
 
-/* WOMEN (red → gold) */
-.tee.women td:nth-child(n + 2):nth-child(-n + 11) {
-  background: #c62828;
-  color: white;
-}
-
-.tee.women td:nth-child(n + 12):nth-child(-n + 21) {
-  background: #d4af37;
-  color: #111;
-}
-
-/* HCP / PAR */
 .hcp-row td {
   background: #1b7f3a;
   color: white;
@@ -168,22 +55,84 @@
 
 .par-row td {
   background: rgba(0, 0, 0, 0.2);
-  color: rgb(209, 188, 188);
+  color: white;
 }
 
-/* OUT divider */
+/* ======================== TEES & COLORS ======================== */
+.tee td {
+  border-top: 2px solid rgba(0, 0, 0, 0.4);
+}
+
+.tee td:first-child {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Global Tee Color Signatures */
+.tee.blue td,
+.men-back td {
+  background: #1e6fb6;
+  color: white;
+}
+.tee.white td,
+.men-front td {
+  background: #f5f5f5;
+  color: #111;
+}
+.tee.red td,
+.women-front td {
+  background: #c62828;
+  color: white;
+}
+.tee.gold td,
+.women-back td {
+  background: #d4af37;
+  color: #111;
+}
+
+/* ======================== BANDS & DIVIDERS ======================== */
+/* FRONT 9 & BACK 9 (Dark bands) */
+.scorecard td:nth-child(n + 2):nth-child(-n + 10),
+.scorecard th:nth-child(n + 2):nth-child(-n + 10),
+.scorecard td:nth-child(n + 12):nth-child(-n + 20),
+.scorecard th:nth-child(n + 12):nth-child(-n + 20) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* MEN split columns (white → blue) */
+.tee.men td:nth-child(n + 2):nth-child(-n + 11) {
+  background: #f5f5f5;
+  color: #111;
+}
+.tee.men td:nth-child(n + 12):nth-child(-n + 21) {
+  background: #1e6fb6;
+  color: white;
+}
+
+/* WOMEN split columns (red → gold) */
+.tee.women td:nth-child(n + 2):nth-child(-n + 11) {
+  background: #c62828;
+  color: white;
+}
+.tee.women td:nth-child(n + 12):nth-child(-n + 21) {
+  background: #d4af37;
+  color: #111;
+}
+
+/* Column Separator Formatting */
 .scorecard td:nth-child(11),
-.scorecard th:nth-child(11) {
-  border-right: 3px solid rgba(0, 0, 0, 0.7);
-}
-
-/* TOTAL divider */
+.scorecard th:nth-child(11),
 .scorecard td:nth-child(21),
 .scorecard th:nth-child(21) {
   border-right: 3px solid rgba(0, 0, 0, 0.7);
 }
 
-/* TOTAL column */
+.scorecard td:nth-child(12),
+.scorecard th:nth-child(12) {
+  padding-left: 8px;
+}
+
+/* TOTAL column styling */
 .scorecard td:nth-child(22),
 .scorecard th:nth-child(22) {
   font-weight: 700;
@@ -191,19 +140,7 @@
   background: rgba(0, 0, 0, 0.25);
 }
 
-/* mobile */
-@media (max-width: 768px) {
-  .scorecard td,
-  .scorecard th {
-    padding: 3px 4px;
-    font-size: 12px;
-  }
-}
-
-/* ========================
-  COURSE INFO
-  ======================== */
-
+/* ======================== WRAPPERS & TEXT ELEMENTS ======================== */
 .course-info {
   text-align: center;
   margin-bottom: 20px;
@@ -214,26 +151,14 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* ========================
-  SCORECARD CARD
-  ======================== */
-
 .scorecard-card {
   max-width: 1000px;
-
   margin: 20px auto;
   padding: 16px;
-
   background: rgba(255, 255, 255, 0.06);
-
   border-radius: 14px;
-
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
-
-/* ========================
-  SECTION HEADER
-  ======================== */
 
 .scorecard-section-header {
   text-align: center;
@@ -250,229 +175,7 @@
   font-size: 14px;
 }
 
-.scorecard {
-  border-collapse: collapse;
-
-  width: auto;
-  margin: 0 auto;
-
-  font-size: 13px;
-}
-
-.scorecard td,
-.scorecard th {
-  border: 1px solid rgba(0, 0, 0, 0.35);
-
-  padding: 5px 8px;
-
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* first column */
-
-.scorecard td:first-child,
-.scorecard th:first-child {
-  font-weight: 600;
-  text-align: left;
-
-  padding-left: 10px;
-}
-
-/* header */
-
-.scorecard-header th {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-}
-
-/* FRONT */
-
-.men-front td {
-  background: #f5f5f5;
-  color: #111;
-}
-
-.women-front td {
-  background: #c62828;
-  color: white;
-}
-
-/* BACK */
-
-.men-back td {
-  background: #1e6fb6;
-  color: white;
-}
-
-.women-back td {
-  background: #d4af37;
-  color: #111;
-}
-
-/* PAR */
-
-.par-row td {
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
-}
-
-/* HCP */
-
-.hcp-row td {
-  background: #1b7f3a;
-  color: white;
-}
-
-/* ========================
-  MOBILE - PORTRAIT
-  ======================== */
-
-@media (orientation: portrait) and (max-width: 768px) {
-  .scorecard-card {
-    padding: 6px;
-    margin: 10px auto;
-  }
-
-  .table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .scorecard {
-    min-width: 100%;
-    width: 100%;
-    font-size: 10px;
-  }
-
-  .scorecard td,
-  .scorecard th {
-    padding: 2px 3px;
-    font-size: 10px;
-  }
-
-  .scorecard td:first-child,
-  .scorecard th:first-child {
-    min-width: 60px;
-    padding-left: 4px;
-    font-size: 10px;
-  }
-
-  .scorecard-section-header h3 {
-    font-size: 16px;
-  }
-
-  .scorecard-section-header p {
-    font-size: 11px;
-  }
-
-  .course-info p {
-    font-size: 12px;
-    line-height: 1.2;
-  }
-}
-
-/* ========================
-  MOBILE - LANDSCAPE
-  ======================== */
-
-@media (orientation: landscape) and (max-width: 1024px) {
-  .scorecard-card {
-    padding: 6px;
-    margin: 10px auto;
-  }
-
-  .table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .scorecard {
-    min-width: 100%;
-    width: 100%;
-    font-size: 10px;
-  }
-
-  .scorecard td,
-  .scorecard th {
-    padding: 2px 3px;
-    font-size: 10px;
-  }
-
-  .scorecard td:first-child,
-  .scorecard th:first-child {
-    min-width: 60px;
-    padding-left: 4px;
-    font-size: 10px;
-  }
-
-  .scorecard-section-header h3 {
-    font-size: 15px;
-  }
-
-  .scorecard-section-header p {
-    font-size: 11px;
-  }
-
-  .course-info p {
-    font-size: 11px;
-    line-height: 1.2;
-  }
-}
-
-/* ========================
-  DESKTOP
-  ======================== */
-
-@media (min-width: 769px) {
-  .scorecard {
-    font-size: 13px;
-  }
-
-  .scorecard td,
-  .scorecard th {
-    padding: 5px 8px;
-  }
-}
-
-/* ========================TEE TABLE ENHANCEMENTS======================== */
-/* subtle card feel */
-/* soften header */
-.tee-table th {
-  background: rgba(0, 0, 0, 0.25);
-  color: #c8f7c5;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-/* improve row spacing feel */
-.tee-table td {
-  padding: 10px 14px;
-}
-
-/* zebra striping (subtle) */
-.tee-table tbody tr:nth-child(even) {
-  background: rgba(0, 0, 0, 0.12);
-}
-
-/* softer hover */
-.tee-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* highlight time column */
-.tee-table th:first-child {
-  color: #c8f7c5;
-  font-weight: 600;
-}
-
-/* smooth hover transitions */
-.tee-table td,
-.tee-table th {
-  transition: background 0.12s ease;
-}
-
-/* ========================TEE TABLE CARD WRAPPER======================== */
+/* ======================== TEE TABLE ENHANCEMENTS ======================== */
 .tee-card {
   max-width: 900px;
   margin: 20px auto;
@@ -482,7 +185,6 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* header above table */
 .tee-card-header {
   text-align: center;
   margin-bottom: 10px;
@@ -503,21 +205,131 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.tee-table .active-col {
-  background: rgba(255, 255, 255, 0.12);
+.tee-table th {
+  background: rgba(0, 0, 0, 0.25);
+  color: #c8f7c5;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
-/* FORCE first column color */
-.tee-table tbody th:first-child {
+.tee-table td {
+  padding: 10px 14px;
+  color: rgb(23, 241, 41);
+}
+
+.tee-table td,
+.tee-table th {
+  transition: background 0.12s ease;
+}
+
+.tee-table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.tee-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tee-table th:first-child,
+.tee-table tbody th:first-child,
+.tee-table tbody th:first-child.active-col {
   color: #c8f7c5;
   font-weight: 600;
 }
 
-/* prevent overrides from hover / active-col */
-.tee-table tbody th:first-child.active-col {
-  color: #c8f7c5;
+.tee-table .active-col {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.tee-table tbody td {
-  color: rgb(23, 241, 41);
+/* ======================== RESPONSIVE MEDIA QUERIES ======================== */
+@media (min-width: 769px) {
+  .scorecard td,
+  .scorecard th {
+    padding: 5px 8px;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .scorecard {
+    min-width: 650px;
+  }
+  .scorecard td,
+  .scorecard th {
+    padding: 4px 5px;
+    font-size: 12px;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .scorecard-card {
+    padding: 6px;
+    margin: 10px auto;
+  }
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scorecard {
+    min-width: 100%;
+    width: 100%;
+    font-size: 10px;
+  }
+  .scorecard td,
+  .scorecard th {
+    padding: 2px 3px;
+    font-size: 10px;
+  }
+  .scorecard td:first-child,
+  .scorecard th:first-child {
+    min-width: 60px;
+    padding-left: 4px;
+    font-size: 10px;
+  }
+  .scorecard-section-header h3 {
+    font-size: 16px;
+  }
+  .scorecard-section-header p {
+    font-size: 11px;
+  }
+  .course-info p {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1024px) {
+  .scorecard-card {
+    padding: 6px;
+    margin: 10px auto;
+  }
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scorecard {
+    min-width: 100%;
+    width: 100%;
+    font-size: 10px;
+  }
+  .scorecard td,
+  .scorecard th {
+    padding: 2px 3px;
+    font-size: 10px;
+  }
+  .scorecard td:first-child,
+  .scorecard th:first-child {
+    min-width: 60px;
+    padding-left: 4px;
+    font-size: 10px;
+  }
+  .scorecard-section-header h3 {
+    font-size: 15px;
+  }
+  .scorecard-section-header p {
+    font-size: 11px;
+  }
+  .course-info p {
+    font-size: 11px;
+    line-height: 1.2;
+  }
 }
