@@ -18,6 +18,7 @@ import adminRoutes from "./routes/admin.routes.js";
 import skinsRouter from "./routes/skins.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
 import emailRoutes from "./routes/email.routes.js";
+import groupingRoutes from "./routes/grouping.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -113,6 +114,7 @@ app.use(flash());
 ========================================= */
 
 app.use("/", publicRoutes);
+app.use("/", groupingRoutes);
 app.use("/blog", blogRoutes);
 app.use("/players", playerRoutes);
 app.use("/images", imageRoutes);
