@@ -30,12 +30,13 @@ export const showTeeTimes = async (req, res) => {
     const weekId = Number(req.query.week) || 1;
 
     // 2. Safely call the updated SQLite service wrapper
-    const { groupings, outPlayers } = await getGroupingsForWeek(weekId);
+    const { groupings, outPlayers, subPlayers } = await getGroupingsForWeek(weekId);
     const weeks = Array.from({ length: 22 }, (_, i) => ({ id: i + 1 }));
     // 3. EXPLICITLY send variables to EJS to eliminate the ReferenceError
     res.render("tee-times", {
       groupings: groupings || [],
       outPlayers: outPlayers || [],
+      subPlayers: subPlayers || [],
       weekId: weekId, // <-- This natively fixes your line 48 crash!
       weeks: weeks,
     });

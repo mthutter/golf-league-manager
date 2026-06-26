@@ -21,6 +21,10 @@ function shuffle(array) {
  * Retrieves a finalized tee time schedule for a specific week,
  * dynamically merging name_first and name_last into a single 'name' field.
  */
+/**
+ * Retrieves a finalized tee time schedule for a specific week,
+ * dynamically calculating unassigned regular players and available substitutes.
+ */
 export const getGroupingsForWeek = async (weekId) => {
   try {
     const sql = `
@@ -39,7 +43,9 @@ export const getGroupingsForWeek = async (weekId) => {
     const assignedMemberIds = [];
 
     rows.forEach((row) => {
-      assignedMemberIds.push(row.member_id);
+      if (row.member_id && row.member_id !== 0) {
+        assignedMemberIds.push(row.member_id);
+      }
 
       if (!groupMap[row.group_number]) {
         groupMap[row.group_number] = {
@@ -49,26 +55,36 @@ export const getGroupingsForWeek = async (weekId) => {
         };
       }
 
-      groupMap[row.group_number].players.push({
-        position: row.position,
-        memberId: row.member_id,
-        name: row.name || "Vacant",
-      });
+      // Only push if a valid member exists, otherwise let it render as empty/vacant
+      if (row.member_id) {
+        groupMap[row.group_number].players.push({
+          position: row.position,
+          memberId: row.member_id,
+          name: row.name || "Vacant",
+        });
+      }
     });
 
-    // Find who was left out by comparing ALL active regular members against assigned IDs
-    const allRegularSql = `
-            SELECT id, (name_first || ' ' || name_last) AS name 
-            FROM members 
-            WHERE status = 'Yes' and type = 'Regular'
-        `;
-    const allRegularMembers = await all(allRegularSql);
+    // 1. Fetch ALL active members (both regulars and substitutes)
+    const allActiveSql = `
+        SELECT id, (name_first || ' ' || name_last) AS name, type 
+        FROM members 
+        WHERE status = 'Yes'
+    `;
+    const allActiveMembers = await all(allActiveSql);
 
-    const outPlayers = allRegularMembers.filter((member) => !assignedMemberIds.includes(member.id));
+    // 2. Filter out anyone who is already assigned a tee time on the grid
+    const unassignedPool = allActiveMembers.filter((member) => !assignedMemberIds.includes(member.id));
 
+    // 3. Split the unassigned pool into Regulars (Out) and Substitutes
+    const outPlayers = unassignedPool.filter((member) => member.type === "Regular");
+    const subPlayers = unassignedPool.filter((member) => member.type === "Substitute");
+    console.log("Out Players: ", outPlayers);
+    console.log("Subs: ", subPlayers);
     return {
       groupings: Object.values(groupMap),
       outPlayers: outPlayers,
+      subPlayers: subPlayers,
     };
   } catch (err) {
     throw new Error(`Failed to retrieve groupings: ${err.message}`);
@@ -199,71 +215,49 @@ export const deleteGroupingsForWeek = async (weekId) => {
 /**
  * Swaps two players' database slots for a given week safely.
  */
-export const swapPlayerPositions = (weekId, p1, p2) => {
-  return new Promise((resolve, reject) => {
-    dbInstance.serialize(() => {
-      // 🛠️ THE MASTER FIX: Defer foreign key/unique verification checks 
-      // until the entire transaction block commits. This stops SQLite from crashing mid-swap!
-      dbInstance.run("PRAGMA defer_foreign_keys = ON;");
-      dbInstance.run("BEGIN TRANSACTION;");
+export const swapPlayerPositions = async (weekId, p1, p2) => {
+  try {
+    const updateSql = `
+            UPDATE groupings 
+            SET member_id = ? 
+            WHERE week_id = ? AND group_number = ? AND position = ?
+        `;
 
-      try {
-        // Scenario A: Both players are currently on the grid
-        if (p1.groupNumber && p2.groupNumber) {
-          const bulkUpdateSql = `
-              UPDATE groupings
-              SET member_id = CASE 
-                  WHEN group_number = ? AND position = ? THEN ?
-                  WHEN group_number = ? AND position = ? THEN ?
-              END
-              WHERE week_id = ? 
-                AND ((group_number = ? AND position = ?) OR (group_number = ? AND position = ?))
-          `;
+    // Scenario A: Both players are currently on the grid (Standard Swap)
+    if (p1.groupNumber && p2.groupNumber) {
+      const tempP1 = -1;
+      const tempP2 = -2;
 
-          dbInstance.run(bulkUpdateSql, [
-              p1.groupNumber, p1.position, p2.memberId, 
-              p2.groupNumber, p2.position, p1.memberId, 
-              weekId,
-              p1.groupNumber, p1.position,
-              p2.groupNumber, p2.position
-          ], function(err) {
-              if (err) throw err;
-          });
-        } 
-        // Scenario B: One player is on the grid, and one is sitting out ("Out list")
-        else if (p1.groupNumber || p2.groupNumber) {
-          const gridPlayer = p1.groupNumber ? p1 : p2;
-          const outPlayer = p1.groupNumber ? p2 : p1;
+      await run(updateSql, [tempP1, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [tempP2, weekId, p2.groupNumber, p2.position]);
 
-          const updateGridSql = `
-              UPDATE groupings 
-              SET member_id = ? 
-              WHERE week_id = ? AND group_number = ? AND position = ?
-          `;
-          
-          dbInstance.run(updateGridSql, [
-              outPlayer.memberId, 
-              weekId, 
-              gridPlayer.groupNumber, 
-              gridPlayer.position
-          ], function(err) {
-              if (err) throw err;
-          });
-        }
+      await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
+    }
 
-        dbInstance.run("COMMIT;", (commitErr) => {
-          if (commitErr) {
-            dbInstance.run("ROLLBACK;");
-            return reject(commitErr);
-          }
-          console.log(`Successfully swapped member ${p1.memberId} and ${p2.memberId} for week ${weekId}`);
-          resolve(true);
-        });
+    // Scenario B1: Dragging a Sub/Out player onto an OCCUPIED grid cell
+    else if (p1.groupNumber && p2.memberId && !p2.groupNumber) {
+      await run(updateSql, [-99, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
+    }
+    // Scenario B2: Dragging a Sub/Out player onto an OCCUPIED grid cell (reverse direction)
+    else if (p2.groupNumber && p1.memberId && !p1.groupNumber) {
+      await run(updateSql, [-99, weekId, p2.groupNumber, p2.position]);
+      await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
+    }
 
-      } catch (err) {
-        dbInstance.run("ROLLBACK;");
-        reject(err);
-      }
-    });
-  });
+    // 🎯 NEW SCENARIO C: Dragging a player OUT of the grid and dropping them into an unassigned Pool
+    // Sets the slot value to 0 to satisfy the database table's NOT NULL constraint!
+    else if (p1.groupNumber && !p2.groupNumber && !p2.memberId) {
+      await run(updateSql, [0, weekId, p1.groupNumber, p1.position]);
+    } else if (p2.groupNumber && !p1.groupNumber && !p1.memberId) {
+      await run(updateSql, [0, weekId, p2.groupNumber, p2.position]);
+    }
+
+    console.log(`Successfully completed manual database grid structural sync for week ${weekId}`);
+    return true;
+  } catch (err) {
+    console.error("Database execution error during swap:", err.message);
+    throw new Error(`Failed to execute swap: ${err.message}`);
+  }
 };
