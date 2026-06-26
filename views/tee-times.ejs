@@ -1,37 +1,227 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Include global head metadata -->
     <%- include('./partials/header'); -%>
     <link rel="stylesheet" href="/assets/css/scorecard.css" />
     <style>
+      :root {
+        --primary-green: #1b4d3e;
+        --accent-gold: #c5a059;
+        --light-gray: #f7fafc;
+        --border-gray: #e2e8f0;
+        --text-muted: #718096;
+      }
+      /* Layout & Structure */
+      .main-wrapper {
+        padding: 40px 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      /* Dashboard Controls Grid */
+      .dashboard-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        margin-bottom: 30px;
+        border: 1px solid var(--border-gray);
+      }
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .control-label {
+        font-weight: 700;
+        color: #4a5568;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .select-dropdown {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e0;
+        background-color: white;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2d3748;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .select-dropdown:focus {
+        border-color: var(--primary-green);
+      }
+      /* Admin Buttons */
+      .btn-shuffle {
+        background-color: var(--primary-green);
+        color: white;
+        border: none;
+        padding: 9px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: background 0.2s, transform 0.1s;
+      }
+      .btn-shuffle:hover {
+        background-color: #123329;
+      }
+      .btn-shuffle:active {
+        transform: scale(0.98);
+      }
+      /* Table Styles & Column Highlighting */
+      .tee-table tbody tr:hover {
+        background-color: transparent; /* Disable standard row hover */
+      }
+      .active-col {
+        background-color: rgba(197, 160, 89, 0.08) !important; /* Gold tint tint on column hover */
+        border-left: 1px dashed rgba(197, 160, 89, 0.3);
+        border-right: 1px dashed rgba(197, 160, 89, 0.3);
+      }
+      .vacant-slot {
+        color: var(--text-muted);
+        font-style: italic;
+        font-weight: 400;
+      }
+      /* Out List Section */
+      .out-section {
+        margin-top: 35px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border-gray);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        text-align: center;
+      }
+      .out-title {
+        color: #e53e3e;
+        margin: 0 0 15px 0;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .badge-container {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .player-badge {
+        background-color: #fff5f5;
+        color: #c53030;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid #feb2b2;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        transition: background-color 0.15s, border-color 0.15s;
+      }
+      .nobody-out {
+        color: var(--text-muted);
+        font-style: italic;
+        font-size: 0.95rem;
+      }
       @media (max-width: 680px) {
         table {
           table-layout: auto;
         }
+        .dashboard-controls {
+          flex-direction: column;
+          gap: 15px;
+          align-items: stretch;
+          text-align: center;
+        }
+        .control-group {
+          flex-direction: column;
+        }
+      }
+      /* Drag and Drop Visual States */
+      .draggable-cell {
+        cursor: move;
+        transition: background-color 0.15s;
+      }
+      .draggable-cell:hover {
+        background-color: #f0fdf4 !important;
+      }
+      .draggable-badge {
+        cursor: move !important;
+      }
+      .draggable-badge:hover {
+        background-color: #fee2e2 !important;
+        border-color: #f87171 !important;
+      }
+      .drag-enter-cell {
+        background-color: #bbf7d0 !important;
+        outline: 2px dashed #1b4d3e !important;
+        outline-offset: -2px;
+      }
+      .drag-enter-badge {
+        background-color: #fca5a5 !important;
+        border-color: #b91c1c !important;
+        transform: scale(1.05);
       }
     </style>
   </head>
-
   <body>
     <%- include('./partials/navbar'); %>
-
     <div class="main-wrapper">
+      <!-- Page Header Banner -->
       <div class="gallery-header">
         <h1>Tee Times</h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
+
+      <!-- Action Panel Dashboard Controls (Only Visible if Admin is Authenticated) -->
+      <% if (locals.isAdmin) { %>
+        <div class="dashboard-controls">
+          <!-- Week Selector Nav Dropdown -->
+          <div class="control-group">
+            <label for="weekSelect" class="control-label">📅 Select Week</label>
+            <select id="weekSelect" class="select-dropdown" onchange="window.location.href='/tee-times?week=' + this.value">
+              <% for (let w = 1; w <= 22; w++) { %>
+                <option value="<%= w %>" <%= weekId === w ? 'selected' : '' %>>Week <%= w %></option>
+              <% } %>
+            </select>
+          </div>
+
+          <!-- Scramble Action Generator -->
+          <div class="control-group">
+            <form action="/groupings/generate/<%= weekId %>" method="POST" style="margin: 0;">
+              <button type="submit" class="btn-shuffle">
+                🎲 Scramble & Assign Week <%= weekId %>
+              </button>
+            </form>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Card Container wrapper housing the structural grid layout sheet -->
       <div class="tee-card">
         <div class="tee-card-header">
           <h2>
-            <span style="color: red">Red</span> /
-            <span style="color: white">White</span> First 11 Weeks
+            <span style="color: red">Red</span> / <span style="color: white">White</span> First 11 Weeks
           </h2>
         </div>
+        
         <div class="table-wrapper">
           <table class="tee-table">
             <thead>
               <tr class="table-date">
-                <th colspan="4">June 29 (Week 9 of 22)</th>
+                <th colspan="4">Week <%= weekId %> Assignments</th>
               </tr>
               <tr class="table-times">
                 <th>4:50p</th>
@@ -41,68 +231,98 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td><span style="color: black"></span></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><span style="color: black"></span></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
+              <% if (groupings && groupings.length > 0) { %>
+                <% for (let posIdx = 0; posIdx < 4; posIdx++) { %>
+                  <tr>
+                    <% for (let groupIdx = 0; groupIdx < 4; groupIdx++) { %>
+                      <% 
+                        const currentGroup = groupings.find(g => g.groupNumber === (groupIdx + 1));
+                        const player = currentGroup && currentGroup.players ? currentGroup.players.find(p => p.position === (posIdx + 1)) : null;
+                      %>
+                      <!-- Add data coordinates and drag events if user is Admin -->
+                      <td 
+                        class="<%= locals.isAdmin && player ? 'draggable-cell' : '' %>" 
+                        <%- locals.isAdmin && player ? `draggable="true" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : '' %> 
+                        data-member-id="<%= player ? player.memberId : '' %>" 
+                        data-group="<%= groupIdx + 1 %>" 
+                        data-position="<%= posIdx + 1 %>" 
+                      >
+                        <% if (player) { %>
+                          <span style="color: black; font-weight: 500; pointer-events: none;"><%= player.name %></span>
+                        <% } else { %>
+                          <span class="vacant-slot" style="pointer-events: none;">Vacant Slot</span>
+                        <% } %>
+                      </td>
+                    <% } %>
+                  </tr>
+                <% } %>
+              <% } else { %>
+                <tr><td colspan="4" style="text-align: center; padding: 40px;">No groupings generated.</td></tr>
+              <% } %>
             </tbody>
           </table>
         </div>
-        <h5 style="text-align: center; font-weight: normal">
+        
+        <h5 style="text-align: center; font-weight: normal; margin-top: 15px; color: var(--text-muted);">
           (we will adjust if needed at the course)
         </h5>
       </div>
-    </div>
+      <!-- Leftout/Roster Overflow Sheet Row Display -->
+      <% if (groupings && groupings.length > 0) { %>
+        <div class="out-section">
+          <h3 class="out-title">
+            <span>🚫</span> Out for Week <%= weekId %>
+          </h3>
+          <div class="badge-container">
+            <% if (outPlayers && outPlayers.length > 0) { %>
+              <% outPlayers.forEach(function(player) { %>
+                <span 
+                  class="player-badge <%= locals.isAdmin ? 'draggable-badge' : '' %>"
+                  <%- locals.isAdmin ? `draggable="true" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : '' %>
+                  data-member-id="<%= player.id %>"
+                  data-group=""
+                  data-position=""
+                >
+                  <%= player.name %>
+                </span>
+              <% }); %>
+            <% } else { %>
+              <span class="nobody-out">Full roster assigned. Nobody sitting out this week!</span>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    </div> <!-- /main-wrapper -->
+
     <%- include('partials/footer'); %>
     <%- include('partials/scripts'); %>
+
+    <!-- Interactive Column Hover Highlighter Script Injection Block -->
     <script>
       const table = document.querySelector(".tee-table");
       let currentCol = -1;
-
+      
       table.addEventListener("pointerover", (e) => {
         const cell = e.target.closest("td, th");
         if (!cell) return;
-
+        
         const row = cell.parentElement;
-
-        // ❌ IGNORE header row
-        if (row.closest("thead")) return;
-
+        if (row.closest("thead")) return; // Skip headers
+        
         const col = cell.cellIndex;
         if (col === currentCol) return;
-
         currentCol = col;
-
-        // clear previous
+        
+        // Remove previous highlighting states
         table.querySelectorAll(".active-col").forEach((el) => {
           el.classList.remove("active-col");
         });
-
-        // apply ONLY to tbody
-        //table.querySelectorAll('tbody tr').forEach(row => {
-        //  const target = row.children[col];
-        //  if (target) target.classList.add('active-col');
-        //});
+        
+        // Apply target highlight style downward into the selected column slot matrix cells
+        table.querySelectorAll('tbody tr').forEach(r => {
+          const target = r.children[col];
+          if (target) target.classList.add('active-col');
+        });
       });
 
       table.addEventListener("pointerleave", () => {
@@ -111,6 +331,85 @@
           el.classList.remove("active-col");
         });
       });
+    </script>
+
+    <!-- HTML5 Drag and Drop Integration Script -->
+    <script>
+      let draggedElement = null;
+
+      function handleDragStart(e) {
+        draggedElement = e.currentTarget;
+        e.dataTransfer.effectAllowed = "move";
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      }
+
+      function handleDragEnter(e) {
+        e.preventDefault();
+        const target = e.currentTarget;
+        if (target === draggedElement) return;
+
+        if (target.tagName === "TD") {
+          target.classList.add("drag-enter-cell");
+        } else if (target.classList.contains("player-badge")) {
+          target.classList.add("drag-enter-badge");
+        }
+      }
+
+      function handleDragLeave(e) {
+        const target = e.currentTarget;
+        target.classList.remove("drag-enter-cell", "drag-enter-badge");
+      }
+
+      async function handleDrop(e) {
+        e.preventDefault();
+        const targetElement = e.currentTarget;
+        
+        // Clean up visual classes immediately on drop execution
+        targetElement.classList.remove("drag-enter-cell", "drag-enter-badge");
+        
+        if (!draggedElement || draggedElement === targetElement) return;
+
+        // Package target coordinate objects
+        const p1 = {
+          memberId: draggedElement.getAttribute("data-member-id"),
+          groupNumber: draggedElement.getAttribute("data-group"),
+          position: draggedElement.getAttribute("data-position")
+        };
+
+        const p2 = {
+          memberId: targetElement.getAttribute("data-member-id"),
+          groupNumber: targetElement.getAttribute("data-group"),
+          position: targetElement.getAttribute("data-position")
+        };
+
+        // Safety break out if dragging/dropping over text placeholders with no user payload
+        if (!p1.memberId || !p2.memberId) return;
+
+        try {
+          const response = await fetch("/groupings/swap", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              weekId: "<%= weekId %>",
+              player1: p1,
+              player2: p2
+            })
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            window.location.reload();
+          } else {
+            alert("Failed to swap players: " + result.error);
+          }
+        } catch (err) {
+          console.error("Error sending swap payload:", err);
+        }
+      }
     </script>
   </body>
 </html>
