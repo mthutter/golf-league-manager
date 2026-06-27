@@ -7,6 +7,7 @@ import {
 import {
   getAllWeeks,
   getWeek,
+  getUpcomingWeek,
   formatDateTime,
 } from "../services/weeks.service.js";
 
@@ -16,8 +17,12 @@ import {
  */
 export const showTeeTimes = async (req, res) => {
   try {
-    const weekId = Number(req.query.week) || 1;
+    let weekId = Number(req.query.week);
 
+    if (!weekId) {
+      const upcomingWeek = await getUpcomingWeek();
+      weekId = upcomingWeek.week_number;
+    }
     // Extended to match your complete 22-week league season calendar
     const weeks = await getAllWeeks();
     const currentWeek = await getWeek(weekId);

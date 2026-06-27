@@ -95,3 +95,13 @@ export function formatDateTime(dateString) {
     minute: "2-digit",
   });
 }
+
+export async function getUpcomingWeek() {
+  return await get(`
+    SELECT week_number, date
+    FROM weeks2026
+    WHERE date >= date('now')
+    ORDER BY date
+    LIMIT 1
+  `);
+}
