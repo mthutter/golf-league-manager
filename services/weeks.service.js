@@ -3,11 +3,17 @@
 import { all, get } from "../config/db.js";
 
 export async function getAllWeeks() {
-  return await all(`
+  const weeks = await all(`
     SELECT week_number, date
     FROM weeks2026
     ORDER BY week_number
   `);
+
+  weeks.forEach((week) => {
+    week.displayDate = formatLeagueDate(week.date);
+  });
+
+  return weeks;
 }
 
 export async function getWeek(weekNumber) {
@@ -70,4 +76,22 @@ export async function getPreviousWeekPlayed(currentWeekNumber) {
   `,
     [currentWeekNumber],
   );
+}
+
+export function formatLeagueDate(dateString) {
+  return new Date(dateString + "T12:00:00").toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
+}
+export function formatDateTime(dateString) {
+  if (!dateString) return "Never";
+
+  return new Date(dateString + "Z").toLocaleString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }

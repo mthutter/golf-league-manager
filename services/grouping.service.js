@@ -1,5 +1,5 @@
 // Import your database helper functions and the raw connection instance
-import dbInstance, { all, run } from "../config/db.js";
+import dbInstance, { get, all, run } from "../config/db.js";
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +42,15 @@ export const getGroupingsForWeek = async (weekId) => {
     const groupMap = {};
     const assignedMemberIds = [];
 
+    const updateSql = `
+    SELECT updated_at
+    FROM grouping_updates
+    WHERE week_id = ?
+`;
+
+    const updateRows = await all(updateSql, [weekId]);
+    const updateRow = updateRows[0];
+
     rows.forEach((row) => {
       if (row.member_id && row.member_id !== 0) {
         assignedMemberIds.push(row.member_id);
@@ -74,17 +83,23 @@ export const getGroupingsForWeek = async (weekId) => {
     const allActiveMembers = await all(allActiveSql);
 
     // 2. Filter out anyone who is already assigned a tee time on the grid
-    const unassignedPool = allActiveMembers.filter((member) => !assignedMemberIds.includes(member.id));
+    const unassignedPool = allActiveMembers.filter(
+      (member) => !assignedMemberIds.includes(member.id),
+    );
 
     // 3. Split the unassigned pool into Regulars (Out) and Substitutes
-    const outPlayers = unassignedPool.filter((member) => member.type === "Regular");
-    const subPlayers = unassignedPool.filter((member) => member.type === "Substitute");
-    console.log("Out Players: ", outPlayers);
-    console.log("Subs: ", subPlayers);
+    const outPlayers = unassignedPool.filter(
+      (member) => member.type === "Regular",
+    );
+    const subPlayers = unassignedPool.filter(
+      (member) => member.type === "Substitute",
+    );
+
     return {
       groupings: Object.values(groupMap),
       outPlayers: outPlayers,
       subPlayers: subPlayers,
+      lastUpdated: updateRow?.updated_at ?? null,
     };
   } catch (err) {
     throw new Error(`Failed to retrieve groupings: ${err.message}`);
@@ -121,7 +136,11 @@ export const generateRandomGroupings = async (weekId) => {
       const timeSlot = teeTimes[gIdx];
 
       for (let pos = 1; pos <= 4; pos++) {
-        if (currentMemberIndex >= 16 || currentMemberIndex >= randomizedMembers.length) break;
+        if (
+          currentMemberIndex >= 16 ||
+          currentMemberIndex >= randomizedMembers.length
+        )
+          break;
 
         const member = randomizedMembers[currentMemberIndex];
 
@@ -140,6 +159,7 @@ export const generateRandomGroupings = async (weekId) => {
     // Bulk save calculated rows to the SQLite database
     if (dbRowsToInsert.length > 0) {
       await saveGroupings(weekId, dbRowsToInsert);
+      await updateGroupingTimestamp(weekId);
     }
 
     // Capture players left over after index 16
@@ -167,17 +187,26 @@ export const saveGroupings = (weekId, rows) => {
       const stmt = dbInstance.prepare(sql, (err) => {
         if (err) {
           dbInstance.run("ROLLBACK;");
-          return reject(new Error(`Failed to prepare insert statement: ${err.message}`));
+          return reject(
+            new Error(`Failed to prepare insert statement: ${err.message}`),
+          );
         }
       });
 
       rows.forEach((row) => {
-        stmt.run(row.week_id, row.tee_time, row.group_number, row.member_id, row.position, (err) => {
-          if (err) {
-            dbInstance.run("ROLLBACK;");
-            return reject(new Error(`Failed insertion step: ${err.message}`));
-          }
-        });
+        stmt.run(
+          row.week_id,
+          row.tee_time,
+          row.group_number,
+          row.member_id,
+          row.position,
+          (err) => {
+            if (err) {
+              dbInstance.run("ROLLBACK;");
+              return reject(new Error(`Failed insertion step: ${err.message}`));
+            }
+          },
+        );
       });
 
       stmt.finalize((err) => {
@@ -188,9 +217,13 @@ export const saveGroupings = (weekId, rows) => {
 
         dbInstance.run("COMMIT;", (commitErr) => {
           if (commitErr) {
-            return reject(new Error(`Transaction commit failed: ${commitErr.message}`));
+            return reject(
+              new Error(`Transaction commit failed: ${commitErr.message}`),
+            );
           }
-          console.log(`Successfully saved ${rows.length} rows for week ${weekId}`);
+          console.log(
+            `Successfully saved ${rows.length} rows for week ${weekId}`,
+          );
           resolve(true);
         });
       });
@@ -212,6 +245,19 @@ export const deleteGroupingsForWeek = async (weekId) => {
   }
 };
 
+/**
+ * Updates the "last modified" timestamp for a week's tee sheet.
+ */
+export const updateGroupingTimestamp = async (weekId) => {
+  const sql = `
+    INSERT INTO grouping_updates (week_id, updated_at)
+    VALUES (?, CURRENT_TIMESTAMP)
+    ON CONFLICT(week_id)
+    DO UPDATE SET updated_at = CURRENT_TIMESTAMP
+  `;
+
+  await run(sql, [weekId]);
+};
 /**
  * Swaps two players' database slots for a given week safely.
  */
@@ -254,7 +300,10 @@ export const swapPlayerPositions = async (weekId, p1, p2) => {
       await run(updateSql, [0, weekId, p2.groupNumber, p2.position]);
     }
 
-    console.log(`Successfully completed manual database grid structural sync for week ${weekId}`);
+    console.log(
+      `Successfully completed manual database grid structural sync for week ${weekId}`,
+    );
+    await updateGroupingTimestamp(weekId);
     return true;
   } catch (err) {
     console.error("Database execution error during swap:", err.message);
