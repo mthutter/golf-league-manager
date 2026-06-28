@@ -92,8 +92,6 @@ export const getGroupingsForWeek = async (weekId) => {
     const subPlayers = unassignedPool.filter(
       (member) => member.type === "Substitute" || "Regular",
     );
-    console.log("outPlayers: ", outPlayers);
-    console.log("subPlayers: ", subPlayers);
 
     return {
       groupings: Object.values(groupMap),

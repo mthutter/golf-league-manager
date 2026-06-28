@@ -2,6 +2,8 @@
 
 import { all, get } from "../config/db.js";
 
+const LEAGUE_TIME_ZONE = "America/Denver";
+
 export async function getAllWeeks() {
   const weeks = await all(`
     SELECT week_number, date
@@ -93,7 +95,7 @@ export function formatDateTime(dateString) {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    timeZone: "America/Denver",
+    timeZone: LEAGUE_TIME_ZONE,
   });
 }
 
