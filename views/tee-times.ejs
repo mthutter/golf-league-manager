@@ -6,10 +6,6 @@
   <%- include('./partials/header'); -%>
   <link rel="stylesheet" href="/assets/css/scorecard.css" />
   <link rel="stylesheet" href="/assets/css/tee-times.css" />
-  <style>
-
-  </style>
-
 </head>
 
 <body>
@@ -19,15 +15,12 @@
     <div class="gallery-header">
       <h1>Tee Times</h1>
       <p>Bottoms Up Golf League • 2026 Season</p>
-
       <h6>
         <span class="tees-red">Red</span> /
         <span class="tees-white">White</span>
         Tees
       </h6>
     </div>
-
-
     <!-- Action Panel Dashboard Controls (Only Visible if Admin is Authenticated) -->
     <% if (locals.isAdmin) { %>
     <div class="dashboard-controls">
@@ -36,11 +29,10 @@
         <label for="weekSelect" class="control-label">📅 Select Week</label>
         <select id="weekSelect" class="select-dropdown" onchange="window.location.href='/tee-times?week=' + this.value">
           <% weeks.forEach(function(w) { %>
-         <option
-  value="<%= w.week_number %>"
-  <% if (weekId === w.week_number) { %>selected<% } %>>
-  Week <%= w.week_number %> (<%= w.displayDate %>)
-</option>
+          <!-- prettier-ignore -->
+          <option value="<%= w.week_number %>" <% if (weekId === w.week_number) { %>selected<% } %>>
+            Week <%= w.week_number %> (<%= w.displayDate %>)
+          </option>
           <% }); %>
         </select>
       </div>
@@ -61,110 +53,79 @@
 
       <!-- Card Header -->
       <div class="tee-card-header">
-
-       
-
         <h2 class="tee-sheet-title">
-          Week <%= currentWeek.we ek_number %>
+          Week <%= currentWeek.week_number %>
           (<%= currentWeek.displayDate %>)
           Tee Times
         </h2>
-         <div class="update-chip">
+        <div class="update-chip">
           <span class="update-label">Updated</span>
           <span class="update-value"><%= lastUpdated %></span>
         </div>
       </div>
 
       <div class="table-wrapper">
-
         <table class="tee-table">
-
           <thead>
-
             <tr class="table-times">
               <th>4:50 PM</th>
               <th>5:00 PM</th>
               <th>5:10 PM</th>
               <th>5:20 PM</th>
             </tr>
-
           </thead>
-
+          <!-- prettier-ignore -->
           <tbody>
-
             <% if (groupings && groupings.length > 0) { %>
-
             <% for (let posIdx = 0; posIdx < 4; posIdx++) { %>
-
             <tr>
-
               <% for (let groupIdx = 0; groupIdx < 4; groupIdx++) { %>
+              <% const currentGroup = groupings.find(g => g.groupNumber === (groupIdx + 1));
+                 const player = currentGroup && currentGroup.players
+                 ? currentGroup.players.find(p => p.position === (posIdx + 1)) : null;
+              %>
+              <td
+  class="<%= locals.isAdmin ? 'draggable-cell' : '' %>"
 
-              <%
-                  const currentGroup =
-                    groupings.find(g => g.groupNumber === (groupIdx + 1));
-
-                  const player =
-                    currentGroup && currentGroup.players
-                      ? currentGroup.players.find(
-                          p => p.position === (posIdx + 1)
-                        )
-                      : null;
-                %>
-
-<td
-  class="<%= locals.isAdmin && player ? 'draggable-cell' : '' %>"
-
-  <% if (locals.isAdmin && player) { %>
-    draggable="true"
-    ondragstart="handleDragStart(event)"
+  <% if (locals.isAdmin) { %>
     ondragover="handleDragOver(event)"
     ondragenter="handleDragEnter(event)"
     ondragleave="handleDragLeave(event)"
     ondrop="handleDrop(event)"
   <% } %>
 
+  <% if (locals.isAdmin && player) { %>
+    draggable="true"
+    ondragstart="handleDragStart(event)"
+  <% } %>
+
   data-member-id="<%= player ? player.memberId : '' %>"
   data-group="<%= groupIdx + 1 %>"
   data-position="<%= posIdx + 1 %>"
 >
-
                 <% if (player) { %>
-
                 <span style="color:black;font-weight:500;pointer-events:none;">
                   <%= player.name %>
                 </span>
-
                 <% } else { %>
 
                 <span class="vacant-slot" style="pointer-events:none;">
-                  Vacant Slot
+                  OPEN
                 </span>
-
                 <% } %>
-
               </td>
-
               <% } %>
-
             </tr>
-
             <% } %>
-
             <% } else { %>
-
             <tr>
               <td colspan="4" style="text-align:center;padding:40px;">
                 No groupings generated.
               </td>
             </tr>
-
             <% } %>
-
           </tbody>
-
         </table>
-
       </div>
 
       <h5 class="tee-note">
@@ -178,7 +139,7 @@
       style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-top: 35px;">
 
       <!-- Column 1: Out For Week (Regulars Container Target) -->
-      <div class="out-section"
+     <!-- <div class="out-section"
         <%- locals.isAdmin ? `ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handlePoolDrop(event)"` : '' %>
         style="text-align: left; padding: 20px; transition: background-color 0.2s;">
         <h3 class="out-title" style="justify-content: flex-start; color: #e53e3e; pointer-events: none;">
@@ -194,17 +155,17 @@
           </span>
           <% }); %>
           <% } else { %>
-          <span class="nobody-out">Full roster assigned.</span>
+          <span class="nobody-out">None</span>
           <% } %>
         </div>
       </div>
-
+    -->
       <!-- Column 2: Available Substitutes Bench Container Target -->
       <div class="out-section"
         <%- locals.isAdmin ? `ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handlePoolDrop(event)"` : '' %>
         style="text-align: left; padding: 20px; border-left: 5px solid var(--accent-gold); transition: background-color 0.2s;">
         <h3 class="out-title" style="justify-content: flex-start; color: var(--primary-green); pointer-events: none;">
-          <span>🏌️‍♂️</span> Available Substitutes
+          <span>🏌️‍♂️</span> Available for Week <%= weekId %>
         </h3>
         <div class="badge-container" style="justify-content: flex-start; pointer-events: none;">
           <% if (locals.subPlayers && subPlayers.length > 0) { %>
@@ -266,7 +227,7 @@
     });
   </script>
 
-  
+
   <script>
     let draggedElement = null;
 
@@ -298,7 +259,9 @@
     }
 
     async function handleDrop(e) {
-      e.preventDefault();
+       e.preventDefault();
+      console.error("ENTERED handleDrop");     
+     
       const targetElement = e.currentTarget;
 
       // Clean up visual classes immediately on drop execution
@@ -318,11 +281,13 @@
         groupNumber: targetElement.getAttribute("data-group"),
         position: targetElement.getAttribute("data-position")
       };
-
+      console.log("p1", p1);
+        console.log("p2", p2);     
       // Safety breakout if dragging/dropping over text placeholders with no user payload
-      if (!p1.memberId || !p2.memberId) return;
-
+      if (!p1.memberId) return;;
+ 
       try {
+         
         const response = await fetch("/groupings/swap", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -342,6 +307,7 @@
       } catch (err) {
         console.error("Error sending swap payload:", err);
       }
+
     }
   </script>
   <script>

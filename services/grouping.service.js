@@ -88,12 +88,12 @@ export const getGroupingsForWeek = async (weekId) => {
     );
 
     // 3. Split the unassigned pool into Regulars (Out) and Substitutes
-    const outPlayers = unassignedPool.filter(
-      (member) => member.type === "Regular",
-    );
+    const outPlayers = null;
     const subPlayers = unassignedPool.filter(
-      (member) => member.type === "Substitute",
+      (member) => member.type === "Substitute" || "Regular",
     );
+    console.log("outPlayers: ", outPlayers);
+    console.log("subPlayers: ", subPlayers);
 
     return {
       groupings: Object.values(groupMap),

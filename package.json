@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "prettier": "^3.8.4",
+    "prettier-eslint": "^16.4.2",
     "prettier-plugin-ejs": "^1.0.3"
   }
 }
