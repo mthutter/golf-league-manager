@@ -93,6 +93,7 @@ export function formatDateTime(dateString) {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZone: "America/Denver",
   });
 }
 
