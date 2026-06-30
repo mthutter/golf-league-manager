@@ -83,15 +83,11 @@ export const getGroupingsForWeek = async (weekId) => {
     const allActiveMembers = await all(allActiveSql);
 
     // 2. Filter out anyone who is already assigned a tee time on the grid
-    const unassignedPool = allActiveMembers.filter(
-      (member) => !assignedMemberIds.includes(member.id),
-    );
+    const unassignedPool = allActiveMembers.filter((member) => !assignedMemberIds.includes(member.id));
 
     // 3. Split the unassigned pool into Regulars (Out) and Substitutes
     const outPlayers = null;
-    const subPlayers = unassignedPool.filter(
-      (member) => member.type === "Substitute" || "Regular",
-    );
+    const subPlayers = unassignedPool.filter((member) => member.type === "Substitute" || "Regular");
 
     return {
       groupings: Object.values(groupMap),
@@ -108,13 +104,17 @@ export const getGroupingsForWeek = async (weekId) => {
  * Generates completely randomized groups for a given week using your 4 time slots.
  * Captures name strings correctly using string concatenation.
  */
+/**
+ * Generates completely randomized groups for a given week using your 4 time slots.
+ * Enforces the Bess constraint: Ami and John Bess are always paired in the final 5:20pm slot.
+ */
 export const generateRandomGroupings = async (weekId) => {
   try {
     const memberSql = `
-            SELECT id, (name_first || ' ' || name_last) AS name 
-            FROM members 
-            WHERE status = 'Yes' and type = 'Regular'
-        `;
+      SELECT id, (name_first || ' ' || name_last) AS name
+      FROM members 
+      WHERE status = 'Yes' and type = 'Regular'
+    `;
     const members = await all(memberSql);
 
     if (members.length === 0) {
@@ -122,35 +122,69 @@ export const generateRandomGroupings = async (weekId) => {
     }
 
     await deleteGroupingsForWeek(weekId);
-    const randomizedMembers = shuffle(members);
 
-    const teeTimes = ["4:50pm", "5:00pm", "5:10pm", "5:20pm"];
+    // 1. Isolate Ami and John Bess from the pool if they are active this week
+    const bessPlayers = members.filter((m) => m.name === "Ami Bess" || m.name === "John Bess");
+    const otherPlayers = members.filter((m) => m.name !== "Ami Bess" && m.name !== "John Bess");
+
+    // Shuffle only the remaining league members
+    const randomizedOthers = shuffle(otherPlayers);
     const dbRowsToInsert = [];
-    let currentMemberIndex = 0;
 
-    // Build up the 4 groups position-by-position (max 16 players)
+    // Define times slots (Note: 5:20pm is index 3 / Group 4)
+    const teeTimes = ["4:50pm", "5:00pm", "5:10pm", "5:20pm"];
+    let otherIndex = 0;
+
+    // 2. Loop through every time slot to assign positions
     for (let gIdx = 0; gIdx < teeTimes.length; gIdx++) {
       const groupNum = gIdx + 1;
       const timeSlot = teeTimes[gIdx];
 
-      for (let pos = 1; pos <= 4; pos++) {
-        if (
-          currentMemberIndex >= 16 ||
-          currentMemberIndex >= randomizedMembers.length
-        )
-          break;
+      // Handle the Special 5:20pm Slot (Group 4)
+      if (timeSlot === "5:20pm") {
+        let currentPos = 1;
 
-        const member = randomizedMembers[currentMemberIndex];
-
-        dbRowsToInsert.push({
-          week_id: weekId,
-          tee_time: timeSlot,
-          group_number: groupNum,
-          member_id: member.id,
-          position: pos,
+        // Force Ami and John into the first positions of this group
+        bessPlayers.forEach((bessMember) => {
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: bessMember.id,
+            position: currentPos,
+          });
+          currentPos++;
         });
 
-        currentMemberIndex++;
+        // Fill remaining spaces in the 5:20pm slot with random regular players
+        while (currentPos <= 4 && otherIndex < randomizedOthers.length) {
+          const member = randomizedOthers[otherIndex];
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: member.id,
+            position: currentPos,
+          });
+          otherIndex++;
+          currentPos++;
+        }
+      }
+      // Handle normal time slots (4:50pm, 5:00pm, 5:10pm)
+      else {
+        for (let pos = 1; pos <= 4; pos++) {
+          if (otherIndex >= randomizedOthers.length) break;
+
+          const member = randomizedOthers[otherIndex];
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: member.id,
+            position: pos,
+          });
+          otherIndex++;
+        }
       }
     }
 
@@ -160,8 +194,8 @@ export const generateRandomGroupings = async (weekId) => {
       await updateGroupingTimestamp(weekId);
     }
 
-    // Capture players left over after index 16
-    const outPlayers = randomizedMembers.slice(currentMemberIndex);
+    // Capture players left over after filling the 16 maximum spots
+    const outPlayers = randomizedOthers.slice(otherIndex);
 
     return { dbRowsToInsert, outPlayers };
   } catch (err) {
@@ -185,26 +219,17 @@ export const saveGroupings = (weekId, rows) => {
       const stmt = dbInstance.prepare(sql, (err) => {
         if (err) {
           dbInstance.run("ROLLBACK;");
-          return reject(
-            new Error(`Failed to prepare insert statement: ${err.message}`),
-          );
+          return reject(new Error(`Failed to prepare insert statement: ${err.message}`));
         }
       });
 
       rows.forEach((row) => {
-        stmt.run(
-          row.week_id,
-          row.tee_time,
-          row.group_number,
-          row.member_id,
-          row.position,
-          (err) => {
-            if (err) {
-              dbInstance.run("ROLLBACK;");
-              return reject(new Error(`Failed insertion step: ${err.message}`));
-            }
-          },
-        );
+        stmt.run(row.week_id, row.tee_time, row.group_number, row.member_id, row.position, (err) => {
+          if (err) {
+            dbInstance.run("ROLLBACK;");
+            return reject(new Error(`Failed insertion step: ${err.message}`));
+          }
+        });
       });
 
       stmt.finalize((err) => {
@@ -215,13 +240,9 @@ export const saveGroupings = (weekId, rows) => {
 
         dbInstance.run("COMMIT;", (commitErr) => {
           if (commitErr) {
-            return reject(
-              new Error(`Transaction commit failed: ${commitErr.message}`),
-            );
+            return reject(new Error(`Transaction commit failed: ${commitErr.message}`));
           }
-          console.log(
-            `Successfully saved ${rows.length} rows for week ${weekId}`,
-          );
+          console.log(`Successfully saved ${rows.length} rows for week ${weekId}`);
           resolve(true);
         });
       });
@@ -298,9 +319,7 @@ export const swapPlayerPositions = async (weekId, p1, p2) => {
       await run(updateSql, [0, weekId, p2.groupNumber, p2.position]);
     }
 
-    console.log(
-      `Successfully completed manual database grid structural sync for week ${weekId}`,
-    );
+    console.log(`Successfully completed manual database grid structural sync for week ${weekId}`);
     await updateGroupingTimestamp(weekId);
     return true;
   } catch (err) {

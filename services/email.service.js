@@ -37,7 +37,7 @@ export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = [
     const formattedBodyContent = rawBodyContent.replace(/(?:\r\n|\r|\n)/g, "<br />");
 
     // 💡 REMINDER: Update this to your real production domain
-    const domain = "https://yourleaguedomain.com";
+    const domain = "https://bottoms-up-cos.org";
 
     const formattedHtmlTemplate = `
 <!DOCTYPE html>
@@ -70,7 +70,7 @@ export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = [
  <table class="main-table">
  <tr>
  <td class="header">
- <div class="header-logo"><img src="https://bottoms-up.b-cdn.net/bottoms-up-logo.png" alt="Bottoms Up Golf League" height="40px" width="40px"></div>
+ <div class="header-logo"><img src="https://bottoms-up.b-cdn.net/bottoms-up-logo.png" alt="Bottoms Up Golf League" height="30px" width="30px"></div>
  <h1>Bottoms Up Golf League</h1>
  <p>Colorado Springs • 2026 Season</p>
  </td>
