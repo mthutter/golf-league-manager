@@ -6,19 +6,9 @@ export const calculateSkins = async (weekId) => {
   if (!weekId) throw new Error("A valid week ID is required.");
 
   // Fetch hole difficulties
-  const holeData = await all(
-    `
-  SELECT
-    hole_number,
-    handicap_men,
-    handicap_women
-  FROM holes
-  WHERE hole_number BETWEEN 1 AND 9
-  `,
-  );
+  const holeData = await all(`SELECT hole_number, handicap_men, handicap_women FROM holes WHERE hole_number BETWEEN 1 AND 9`);
 
   const courseHandicaps = {};
-
   holeData.forEach((h) => {
     courseHandicaps[h.hole_number] = {
       men: h.handicap_men,
@@ -27,15 +17,12 @@ export const calculateSkins = async (weekId) => {
   });
 
   // Fetch match scorecards signed up for skins
-  const rawCards = await all(
-    `SELECT s.*, m.name_first, m.name_last, m.sex FROM scores s 
-     LEFT JOIN members m ON s.member_id = m.id 
-     WHERE s.week_id = ? AND s.skins_entered = 1`,
-    [weekId],
-  );
+  const rawCards = await all(`SELECT s.*, m.name_first, m.name_last, m.sex FROM scores s LEFT JOIN members m ON s.member_id = m.id WHERE s.week_id = ? AND s.skins_entered = 1`, [
+    weekId,
+  ]);
 
-  const skinTotals = {}; // Stores total count per player { playerId: { count: X, holes: [] } }
-  const holeScores = {}; // Tracks lowest scores per hole { hole: { minNet: X, winners: [playerId] } }
+  const skinTotals = {}; // Stores total count/fraction per player
+  const holeScores = {}; // Tracks lowest scores per hole
 
   // Map net scores for each hole
   rawCards.forEach((player) => {
@@ -48,12 +35,13 @@ export const calculateSkins = async (weekId) => {
       if (gross <= 0) continue;
 
       const playerSex = (player.sex || "M").toUpperCase();
-
       const holeDifficultyIndex = playerSex === "F" ? courseHandicaps[h]?.women || 18 : courseHandicaps[h]?.men || 18;
+
       let strokesAllowed = Math.floor(emulated18Handicap / 18);
       if (emulated18Handicap % 18 >= holeDifficultyIndex) {
         strokesAllowed += 1;
       }
+
       const net = gross - strokesAllowed;
 
       if (!holeScores[h]) {
@@ -61,47 +49,48 @@ export const calculateSkins = async (weekId) => {
       } else if (net < holeScores[h].minNet) {
         holeScores[h] = { minNet: net, winners: [pId] }; // New outright low score
       } else if (net === holeScores[h].minNet) {
-        holeScores[h].winners.push(pId); // Tied hole (halved)
+        holeScores[h].winners.push(pId); // ✅ Ties are now preserved instead of wiped out
       }
     }
   });
 
-  // Isolate outright skins (holes with exactly ONE winner)
-  let totalSkinsWon = 0;
+  const totalPot = rawCards.length * SKINS_BUY_IN;
+  const baseValuePerHole = totalPot / 9;
   const detailedHoleWinners = [];
 
+  // Isolate skins won (including shared/split skins)
   Object.entries(holeScores).forEach(([hole, data]) => {
-    if (data.winners.length === 1) {
-      const winnerId = data.winners[0];
-      totalSkinsWon += 1;
+    const winnerCount = data.winners.length;
 
-      if (!skinTotals[winnerId]) {
-        skinTotals[winnerId] = { count: 0, holes: [] };
-      }
-      skinTotals[winnerId].count += 1;
-      skinTotals[winnerId].holes.push(Number(hole));
+    // In your format, all holes that have scores recorded are awarded,
+    // even if multiple players tie for the lowest score.
+    if (winnerCount > 0) {
+      // Split the hole's financial value evenly among the tied winners
+      const splitPayout = baseValuePerHole / winnerCount;
+      const splitSkinAwarded = 1 / winnerCount; // e.g. 0.5 skin if 2 players tie
 
-      detailedHoleWinners.push({
-        holeNumber: Number(hole),
-        memberId: winnerId,
-        net_score: data.minNet,
-        skins_won: 1,
+      data.winners.forEach((winnerId) => {
+        if (!skinTotals[winnerId]) {
+          skinTotals[winnerId] = { count: 0, payout: 0, holes: [] };
+        }
+
+        skinTotals[winnerId].count += splitSkinAwarded;
+        skinTotals[winnerId].payout += splitPayout;
+        skinTotals[winnerId].holes.push(Number(hole));
+
+        detailedHoleWinners.push({
+          holeNumber: Number(hole),
+          memberId: winnerId,
+          net_score: data.minNet,
+          skins_won: splitSkinAwarded,
+          payout: splitPayout,
+        });
       });
     }
   });
 
-  // Calculate distributions based on financial pots
-  const buyInCost = SKINS_BUY_IN; // Adjust based on league rules
-  const totalPot = rawCards.length * buyInCost;
-  const payoutPerSkin = (SKINS_BUY_IN * rawCards.length) / 9;
-  //const payoutPerSkin = totalSkinsWon > 0 ? Object.freeze(totalPot / totalSkinsWon) : 0;
-  console.log("Pot: ", totalPot);
-  console.log("Payout per skin: ", payoutPerSkin);
-  console.log("Participants: ", rawCards.length);
-
   return {
     skinTotals,
-    payoutPerSkin,
     totalPot,
     detailedHoleWinners,
   };
@@ -352,53 +341,27 @@ export const buildSkinsReport = async (selectedWeekId) => {
 export const calculateAndSaveSkins = async (weekId) => {
   const results = await calculateSkins(weekId);
 
-  await run(
-    `
-    DELETE FROM skin_details
-    WHERE week_id = ?
-    `,
-    [weekId],
-  );
+  await run(`DELETE FROM skin_details WHERE week_id = ?`, [weekId]);
+  await run(`DELETE FROM weekly_skins WHERE week_id = ?`, [weekId]);
 
-  await run(
-    `
-  DELETE FROM weekly_skins
-  WHERE week_id = ?
-  `,
-    [weekId],
-  );
+  const baseValuePerHole = results.totalPot / 9;
 
   for (const winner of results.detailedHoleWinners) {
     await run(
-      `
-      INSERT INTO skin_details
-      (
-        week_id,
-        hole_number,
-        skins_available,
-        member_id,
-        skins_awarded,
-        payout,
-        score
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-      `,
-      [weekId, winner.holeNumber, results.payoutPerSkin, winner.memberId, 1, results.payoutPerSkin, winner.net_score],
+      `INSERT INTO skin_details (
+        week_id, hole_number, skins_available, member_id, skins_awarded, payout, score
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      // Save fractional skin values and split payout amounts to db
+      [weekId, winner.holeNumber, baseValuePerHole, winner.memberId, winner.skins_won, winner.payout, winner.net_score],
     );
   }
+
   for (const [memberId, data] of Object.entries(results.skinTotals)) {
     await run(
-      `
-    INSERT INTO weekly_skins
-    (
-      week_id,
-      member_id,
-      skins_won,
-      payout
-    )
-    VALUES (?, ?, ?, ?)
-    `,
-      [weekId, Number(memberId), data.count, data.count * results.payoutPerSkin],
+      `INSERT INTO weekly_skins (
+        week_id, member_id, skins_won, payout
+      ) VALUES (?, ?, ?, ?)`,
+      [weekId, Number(memberId), data.count, data.payout],
     );
   }
 
