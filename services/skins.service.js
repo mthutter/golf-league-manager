@@ -47,9 +47,9 @@ export const calculateSkins = async (weekId) => {
       if (!holeScores[h]) {
         holeScores[h] = { minNet: net, winners: [pId] };
       } else if (net < holeScores[h].minNet) {
-        holeScores[h] = { minNet: net, winners: [pId] }; // New outright low score
+        holeScores[h] = { minNet: net, winners: [pId] };
       } else if (net === holeScores[h].minNet) {
-        holeScores[h].winners.push(pId); // ✅ Ties are now preserved instead of wiped out
+        holeScores[h].winners.push(pId);
       }
     }
   });
@@ -58,16 +58,27 @@ export const calculateSkins = async (weekId) => {
   const baseValuePerHole = totalPot / 9;
   const detailedHoleWinners = [];
 
-  // Isolate skins won (including shared/split skins)
-  Object.entries(holeScores).forEach(([hole, data]) => {
+  let carryoverAccumulator = 0;
+
+  // Chronological evaluation from Hole 1 to Hole 9 to manage progressive pots
+  for (let h = 1; h <= 9; h++) {
+    const data = holeScores[h];
+    carryoverAccumulator += baseValuePerHole;
+
+    if (!data || data.winners.length === 0) {
+      // No scores recorded for this hole, money automatically carries over
+      continue;
+    }
+
     const winnerCount = data.winners.length;
 
-    // In your format, all holes that have scores recorded are awarded,
-    // even if multiple players tie for the lowest score.
-    if (winnerCount > 0) {
-      // Split the hole's financial value evenly among the tied winners
-      const splitPayout = baseValuePerHole / winnerCount;
-      const splitSkinAwarded = 1 / winnerCount; // e.g. 0.5 skin if 2 players tie
+    // Rule: 1 or 2 players win/split the skin. 3+ triggers a carryover.
+    if (winnerCount === 1 || winnerCount === 2) {
+      const finalPayoutPool = carryoverAccumulator;
+      carryoverAccumulator = 0; // Reset the carry pool since it's being paid out
+
+      const splitPayout = finalPayoutPool / winnerCount;
+      const splitSkinAwarded = 1 / winnerCount;
 
       data.winners.forEach((winnerId) => {
         if (!skinTotals[winnerId]) {
@@ -76,23 +87,31 @@ export const calculateSkins = async (weekId) => {
 
         skinTotals[winnerId].count += splitSkinAwarded;
         skinTotals[winnerId].payout += splitPayout;
-        skinTotals[winnerId].holes.push(Number(hole));
+        skinTotals[winnerId].holes.push(h);
 
         detailedHoleWinners.push({
-          holeNumber: Number(hole),
+          holeNumber: h,
           memberId: winnerId,
           net_score: data.minNet,
           skins_won: splitSkinAwarded,
           payout: splitPayout,
         });
       });
+    } else {
+      // 3+ players tied! Money stays in carryoverAccumulator and advances to the next hole
+      console.log(`Hole ${h} tied by ${winnerCount} players. Value of ${baseValuePerHole.toFixed(2)} carries over.`);
     }
-  });
+  }
+
+  // Handle leftover money on Hole 9 if it was a carryover
+  // Depending on your league, this either goes back to the league, roll over to next week,
+  // or gets paid back to the players. Currently, it just remains unallocated.
 
   return {
     skinTotals,
     totalPot,
     detailedHoleWinners,
+    leftoverPot: carryoverAccumulator, // Tracking unresolved money just in case
   };
 };
 
@@ -206,7 +225,8 @@ export const buildSkinsReport = async (selectedWeekId) => {
     [selectedWeekId],
   );
 
-  totalPot = leaderboard.reduce((sum, player) => sum + Number(player.payout || 0), 0);
+  //totalPot = leaderboard.reduce((sum, player) => sum + Number(player.payout || 0), 0);
+  totalPot = rawCards.length * SKINS_BUY_IN;
 
   const holeCarryoverStatus = {};
 
@@ -351,7 +371,6 @@ export const calculateAndSaveSkins = async (weekId) => {
       `INSERT INTO skin_details (
         week_id, hole_number, skins_available, member_id, skins_awarded, payout, score
       ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      // Save fractional skin values and split payout amounts to db
       [weekId, winner.holeNumber, baseValuePerHole, winner.memberId, winner.skins_won, winner.payout, winner.net_score],
     );
   }
