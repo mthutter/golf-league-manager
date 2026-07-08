@@ -65,8 +65,6 @@ export async function renderPost(req, res) {
         minute: "2-digit",
       },
     );
-    console.log("gallery_urls from DB:", post.gallery_urls);
-    console.log("galleryUrls array:", post.galleryUrls);
 
     res.render("blog", { view: "show", post });
   } catch (error) {
