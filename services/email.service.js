@@ -23,9 +23,9 @@ export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = [
     let emailList = [];
     if (recipients && recipients.length > 0) {
       emailList = recipients;
-      console.log(`Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`);
+      logger.info(`Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`);
     } else {
-      console.log("Global Broadcast Mode Activated. Fetching entire league...");
+      logger.info("Global Broadcast Mode Activated. Fetching entire league...");
       const members = await all("SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'");
       if (!members || members.length === 0) {
         return { success: true, count: 0, messageId: null };
@@ -120,7 +120,7 @@ export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = [
       messageId: info.messageId,
     };
   } catch (error) {
-    console.error("Email service execution failed:", error);
+    logger.erroror("Email service execution failed:", error);
     throw error;
   }
 };

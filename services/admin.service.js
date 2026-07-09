@@ -16,7 +16,7 @@ export const processSkinsForWeek = async (weekId) => {
 
   const holeBreakdown = detailedHoleWinners;
 
-  console.log("--- SKINS CALCULATION ENGINE RAW OUTPUT ---", {
+  logger.info("--- SKINS CALCULATION ENGINE RAW OUTPUT ---", {
     skinTotals,
     payoutPerSkin,
     totalPot,
@@ -38,7 +38,7 @@ export const processSkinsForWeek = async (weekId) => {
           name_last = member.name_last;
         }
       } catch (sqlError) {
-        console.error(
+        logger.erroror(
           `SQLite look up failed for player ID ${playerId}:`,
           sqlError,
         );
@@ -170,7 +170,7 @@ export const processSkinsForWeek = async (weekId) => {
       }
     }
   }
-  console.log("DETAILS ARRAY", detailsArray);
+  logger.info("DETAILS ARRAY", detailsArray);
   // 4. Update the formattedWinners Leaderboard standings with dynamic carryover math values
   const correctedLeaderboard = formattedWinners.map((winner) => {
     const totalCashWon = detailsArray
@@ -188,7 +188,7 @@ export const processSkinsForWeek = async (weekId) => {
       payout: Math.round(totalCashWon), // Apply custom league rounding criteria (.50 rounds up)
     };
   });
-  console.log("CORRECTED LEADERBOARD", correctedLeaderboard);
+  logger.info("CORRECTED LEADERBOARD", correctedLeaderboard);
   for (const winner of correctedLeaderboard) {
     await run(
       `
@@ -215,13 +215,13 @@ export const processSkinsForWeek = async (weekId) => {
  */
 
 export const runHandicapEngine = async () => {
-  console.log(`[HANDICAP ENGINE] Recalculating player handicaps...`);
+  logger.info(`[HANDICAP ENGINE] Recalculating player handicaps...`);
 
   //await writeCurrentHandicaps();
-  //console.log("[HANDICAP ENGINE] Current handicaps have been archived.");
+  //logger.info("[HANDICAP ENGINE] Current handicaps have been archived.");
 
   await calculateHandicaps();
-  console.log("[HANDICAP ENGINE] Current handicaps have been computed.");
+  logger.info("[HANDICAP ENGINE] Current handicaps have been computed.");
 
   return true;
 };

@@ -1,12 +1,13 @@
 import sqlite3 from "sqlite3";
+import logger from "../utilities/logger.js";
 
 const dbPath = process.env.DB_PATH;
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error(err.message);
+    logger.error(err.message);
   } else {
-    console.log(`Connected to SQLite: ${dbPath}`);
+    logger.info(`Connected to SQLite: ${dbPath}`);
   }
 });
 

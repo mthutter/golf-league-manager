@@ -5,7 +5,7 @@ export async function writeCurrentHandicaps() {
   // 1. Keep await ONLY for your week service if it returns a promise
   const weekResult = await getCurrentWeekPlayed();
   const currentWeek = weekResult?.week_number;
-  console.log("Current week: ", currentWeek);
+  logger.info("Current week: ", currentWeek);
 
   if (currentWeek === undefined || currentWeek === null) {
     throw new Error("Cannot proceed: week_number is missing or undefined.");
@@ -14,7 +14,7 @@ export async function writeCurrentHandicaps() {
   // 2. Pure native sqlite3 callback chain
   db.all(`SELECT id, current_handicap FROM members`, [], (err, rows) => {
     if (err) {
-      console.error("Error reading members:", err.message);
+      logger.erroror("Error reading members:", err.message);
       return;
     }
 
@@ -23,7 +23,7 @@ export async function writeCurrentHandicaps() {
     const totalRows = rows.length;
 
     if (totalRows === 0) {
-      console.log("No member rows found to process.");
+      logger.info("No member rows found to process.");
       closeDatabase();
       return;
     }
@@ -43,12 +43,12 @@ export async function writeCurrentHandicaps() {
         [row.id, currentWeek, "2026", row.current_handicap],
         function (insertErr) {
           if (insertErr) {
-            console.error(
+            logger.erroror(
               `Error inserting row for ID ${row.id}:`,
               insertErr.message,
             );
           } else {
-            console.log(`Inserted row with ID: ${this.lastID}`);
+            logger.info(`Inserted row with ID: ${this.lastID}`);
           }
           checkCompletion();
         },
@@ -59,7 +59,7 @@ export async function writeCurrentHandicaps() {
     function checkCompletion() {
       completed++;
       if (completed === totalRows) {
-        console.log(`Successfully completed iteration over ${completed} rows.`);
+        logger.info(`Successfully completed iteration over ${completed} rows.`);
       }
     }
   });
@@ -69,9 +69,9 @@ export async function writeCurrentHandicaps() {
 function closeDatabase() {
   db.close((closeErr) => {
     if (closeErr) {
-      console.error("Error closing database:", closeErr.message);
+      logger.erroror("Error closing database:", closeErr.message);
     } else {
-      console.log("Database connection closed cleanly.");
+      logger.info("Database connection closed cleanly.");
     }
   });
 }
@@ -115,7 +115,7 @@ export async function calculateHandicaps(coursePar = 36) {
     const average = total / rounds.length;
     const handicap = Math.round(average - coursePar);
 
-    console.log(
+    logger.info(
       `${player.name_last}: avg=${average.toFixed(2)} hcp=${handicap} rnds=${rounds.length}`,
     );
 

@@ -5,15 +5,10 @@ export async function imagesByYear(req, res) {
     const { year } = req.params;
     const filenames = await getFilenames(year);
 
-    res.render("images", {
-      year,
-      filenames,
-    });
+    res.render("images", { year, filenames });
   } catch (err) {
-    console.error(err);
+    logger.erroror(err);
 
-    res.status(500).render("error", {
-      message: "Unable to load images.",
-    });
+    res.status(500).render("error", { message: "Unable to load images." });
   }
 }

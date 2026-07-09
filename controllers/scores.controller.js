@@ -6,7 +6,7 @@ export const getNewScoresForm = async (req, res) => {
     const { members, holes } = await scoresService.getFormData();
     res.render("weekly-scores-form", { members, holes });
   } catch (err) {
-    console.error("Error loading score form layout:", err);
+    logger.erroror("Error loading score form layout:", err);
     res.status(500).send("Database error");
   }
 };
@@ -16,7 +16,7 @@ export const saveScore = async (req, res) => {
     await scoresService.createScoreRecord(req.body);
     res.redirect("/scores/new");
   } catch (err) {
-    console.error("Error saving score payload:", err);
+    logger.erroror("Error saving score payload:", err);
     if (err.message.includes("UNIQUE")) {
       return res
         .status(400)
@@ -31,7 +31,7 @@ export const getStandings = async (req, res) => {
     const data = await scoresService.getSeasonStandings();
     res.render("standings", data);
   } catch (err) {
-    console.error("Error rendering season standings:", err);
+    logger.erroror("Error rendering season standings:", err);
     res.status(500).send("Database Error");
   }
 };
@@ -44,7 +44,7 @@ export const getWeeklyScores = async (req, res) => {
 
     res.render("weekly", { weekId, results, weekDate });
   } catch (err) {
-    console.error("Error gathering weekly scores:", err);
+    logger.erroror("Error gathering weekly scores:", err);
     res.status(500).send("Database Error");
   }
 };
@@ -60,7 +60,7 @@ export const getMemberProfile = async (req, res) => {
 
     res.render("profile", profileData);
   } catch (err) {
-    console.error("Error populating member profile:", err);
+    logger.erroror("Error populating member profile:", err);
     res.status(500).send("Database Error");
   }
 };

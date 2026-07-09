@@ -316,7 +316,7 @@
           btnText.textContent = "Sending...";
           btnSpinner.classList.remove("d-none");
 
-          console.log(
+          logger.info(
             "Submitting payload containing targeted recipients array:",
             selectedEmails,
           );
@@ -335,7 +335,7 @@
             });
 
             const data = await response.json();
-            console.log("Server application execution response payload:", data);
+            logger.info("Server application execution response payload:", data);
 
             if (response.ok) {
               alertBox.className =
@@ -356,7 +356,7 @@
                 data.error || `Error status response code: ${response.status}`;
             }
           } catch (err) {
-            console.error(
+            logger.erroror(
               "Critical client fetch pipeline execution exception:",
               err,
             );

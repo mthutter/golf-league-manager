@@ -12,7 +12,7 @@ run(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `).catch((err) =>
-  console.error("Failed to initialize blog table:", err.message),
+  logger.erroror("Failed to initialize blog table:", err.message),
 );
 
 // Helper function to turn post titles into URLs

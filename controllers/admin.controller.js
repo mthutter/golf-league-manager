@@ -16,7 +16,7 @@ export const getDashboard = async (req, res) => {
       showHandicapPopup: handicapSuccess,
     });
   } catch (err) {
-    console.error("Dashboard render error:", err);
+    logger.erroror("Dashboard render error:", err);
     res.status(500).send("Error loading admin control panel.");
   }
 };
@@ -40,7 +40,7 @@ export const calculateSkinsMetrics = async (req, res) => {
       results: results,
     });
   } catch (err) {
-    console.error("Skins calculation breakdown:", err);
+    logger.erroror("Skins calculation breakdown:", err);
     res.status(500).send("Error running skins calculation framework.");
   }
 };
@@ -58,7 +58,7 @@ export const calculateHandicaps = async (req, res) => {
     }
     res.redirect("/admin");
   } catch (err) {
-    console.error("Handicap engine breakdown:", err);
+    logger.erroror("Handicap engine breakdown:", err);
     res.status(500).send("Error recalculating league handicaps.");
   }
 };

@@ -20,7 +20,7 @@ export const calculateSkinsApi = async (req, res) => {
       results,
     });
   } catch (error) {
-    console.error("Skins calculation route error:", error);
+    logger.erroror("Skins calculation route error:", error);
 
     return res.status(500).json({
       error: error.message,
@@ -70,7 +70,7 @@ export const getSkinsReport = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Skins Report Route Error:", error);
+    logger.erroror("Skins Report Route Error:", error);
     res.status(500).send("Internal Server Error");
   }
 };

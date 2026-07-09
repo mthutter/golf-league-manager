@@ -242,7 +242,7 @@ export const saveGroupings = (weekId, rows) => {
           if (commitErr) {
             return reject(new Error(`Transaction commit failed: ${commitErr.message}`));
           }
-          console.log(`Successfully saved ${rows.length} rows for week ${weekId}`);
+          logger.info(`Successfully saved ${rows.length} rows for week ${weekId}`);
           resolve(true);
         });
       });
@@ -257,7 +257,7 @@ export const deleteGroupingsForWeek = async (weekId) => {
   try {
     const sql = `DELETE FROM groupings WHERE week_id = ?`;
     await run(sql, [weekId]);
-    console.log(`Cleared old records for week ${weekId}`);
+    logger.info(`Cleared old records for week ${weekId}`);
     return true;
   } catch (err) {
     throw new Error(`Failed to clear old records: ${err.message}`);
@@ -319,11 +319,11 @@ export const swapPlayerPositions = async (weekId, p1, p2) => {
       await run(updateSql, [0, weekId, p2.groupNumber, p2.position]);
     }
 
-    console.log(`Successfully completed manual database grid structural sync for week ${weekId}`);
+    logger.info(`Successfully completed manual database grid structural sync for week ${weekId}`);
     await updateGroupingTimestamp(weekId);
     return true;
   } catch (err) {
-    console.error("Database execution error during swap:", err.message);
+    logger.erroror("Database execution error during swap:", err.message);
     throw new Error(`Failed to execute swap: ${err.message}`);
   }
 };

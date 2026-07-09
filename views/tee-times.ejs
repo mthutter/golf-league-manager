@@ -307,7 +307,7 @@
 
     async function handleDrop(e) {
        e.preventDefault();
-      console.error("ENTERED handleDrop");     
+      logger.erroror("ENTERED handleDrop");     
      
       const targetElement = e.currentTarget;
 
@@ -328,8 +328,8 @@
         groupNumber: targetElement.getAttribute("data-group"),
         position: targetElement.getAttribute("data-position")
       };
-      console.log("p1", p1);
-        console.log("p2", p2);     
+      logger.info("p1", p1);
+        logger.info("p2", p2);     
       // Safety breakout if dragging/dropping over text placeholders with no user payload
       if (!p1.memberId) return;;
  
@@ -352,7 +352,7 @@
           alert("Failed to swap players: " + result.error);
         }
       } catch (err) {
-        console.error("Error sending swap payload:", err);
+        logger.erroror("Error sending swap payload:", err);
       }
 
     }
@@ -406,7 +406,7 @@
           alert("Failed to move player off grid: " + result.error);
         }
       } catch (err) {
-        console.error("Error clearing grid slot coordinate:", err);
+        logger.erroror("Error clearing grid slot coordinate:", err);
       }
     }
   </script>

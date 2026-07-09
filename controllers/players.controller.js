@@ -8,7 +8,7 @@ export async function getPlayers(req, res) {
     const rows = await playersService.getAllPlayers();
     res.render("players", { players: rows });
   } catch (err) {
-    console.error("Database Error:", err.message);
+    logger.erroror("Database Error:", err.message);
     res.status(500).render("error", { message: "Unable to retrieve players." });
   }
 }
@@ -21,7 +21,7 @@ export async function getPlayersInactive(req, res) {
     const rows = await playersService.getAllPlayers();
     res.render("inactive", { players: rows });
   } catch (err) {
-    console.error("Database Error:", err.message);
+    logger.erroror("Database Error:", err.message);
     res.status(500).render("error", { message: "Unable to retrieve players." });
   }
 }
@@ -47,10 +47,10 @@ export async function createPlayer(req, res) {
 
   try {
     const lastID = await playersService.createNewPlayer(req.body);
-    console.log(`Player created with ID ${lastID}`);
+    logger.info(`Player created with ID ${lastID}`);
     res.redirect("/players");
   } catch (err) {
-    console.error("Insert Error:", err.message);
+    logger.erroror("Insert Error:", err.message);
     res.status(500).render("error", { message: "Unable to create player." });
   }
 }
@@ -71,7 +71,7 @@ export async function showEditPlayerForm(req, res) {
     // Renders modify-player.ejs and passes the player data
     res.render("modify-player", { player: player });
   } catch (err) {
-    console.error("Fetch Player Error:", err.message);
+    logger.erroror("Fetch Player Error:", err.message);
     res.status(500).render("error", {
       message: "Unable to retrieve player records for updating.",
     });
@@ -94,10 +94,10 @@ export async function updatePlayer(req, res) {
 
   try {
     await playersService.updatePlayerById(playerId, req.body);
-    console.log(`Player with ID ${playerId} updated successfully.`);
+    logger.info(`Player with ID ${playerId} updated successfully.`);
     res.redirect("/players");
   } catch (err) {
-    console.error("Update Error:", err.message);
+    logger.erroror("Update Error:", err.message);
     res
       .status(500)
       .render("error", { message: "Unable to update player information." });

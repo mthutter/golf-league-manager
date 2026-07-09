@@ -8,12 +8,12 @@ export const renderEmailForm = async (req, res) => {
     const members = await all(
       "SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'",
     );
-    console.log(members);
+    logger.info(members);
 
     // Pass the members array into EJS
     res.render("email", { members: members });
   } catch (error) {
-    console.error("Failed to load members for email form:", error);
+    logger.erroror("Failed to load members for email form:", error);
     res.render("email", { members: [], error: "Could not load member list." });
   }
 };
@@ -46,7 +46,7 @@ export const sendBulkEmail = async (req, res) => {
       message: `Successfully broadcasted to ${result.count} member(s)!`,
     });
   } catch (error) {
-    console.error("Controller broadcasting failed:", error);
+    logger.erroror("Controller broadcasting failed:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

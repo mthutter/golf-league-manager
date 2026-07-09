@@ -42,7 +42,7 @@ export function handleLogin(req, res) {
 export function handleLogout(req, res) {
   req.session.destroy((err) => {
     if (err) {
-      console.error("Session destruction failure:", err);
+      logger.erroror("Session destruction failure:", err);
     }
     res.clearCookie("connect.sid");
     res.redirect("/");

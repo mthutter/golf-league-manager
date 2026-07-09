@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 // Verify connection on startup
 transporter
   .verify()
-  .then(() => console.log("📧 Titan SMTP server is ready"))
-  .catch((err) => console.error("❌ SMTP Verification failed:", err));
+  .then(() => logger.info("📧 Titan SMTP server is ready"))
+  .catch((err) => logger.erroror("❌ SMTP Verification failed:", err));
 
 export default transporter;

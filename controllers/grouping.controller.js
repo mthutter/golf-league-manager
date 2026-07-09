@@ -43,7 +43,7 @@ export const showTeeTimes = async (req, res) => {
       weekId,
     });
   } catch (err) {
-    console.error("Error in showTeeTimes controller:", err);
+    logger.erroror("Error in showTeeTimes controller:", err);
     res.status(500).send("Unable to load tee times.");
   }
 };
@@ -65,7 +65,7 @@ export const generateGroupings = async (req, res) => {
     // Redirect back to the view page for this specific week
     res.redirect(`/tee-times?week=${weekId}`);
   } catch (err) {
-    console.error("Error in generateGroupings controller:", err);
+    logger.erroror("Error in generateGroupings controller:", err);
     res.status(500).send("Unable to generate groupings.");
   }
 };
@@ -112,7 +112,7 @@ export const swapPlayers = async (req, res) => {
       message: "Positions swapped successfully!",
     });
   } catch (err) {
-    console.error("Error in swapPlayers controller:", err);
+    logger.erroror("Error in swapPlayers controller:", err);
     return res.status(500).json({ success: false, error: err.message });
   }
 };

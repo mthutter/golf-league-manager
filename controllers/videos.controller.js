@@ -6,15 +6,10 @@ export async function videosByYear(req, res) {
 
     const videos = await getVideos(year);
 
-    res.render("videos", {
-      year,
-      videos,
-    });
+    res.render("videos", { year, videos });
   } catch (err) {
-    console.error(err);
+    logger.erroror(err);
 
-    res.status(500).render("error", {
-      message: "Unable to load videos.",
-    });
+    res.status(500).render("error", { message: "Unable to load videos." });
   }
 }

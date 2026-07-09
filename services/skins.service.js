@@ -99,7 +99,7 @@ export const calculateSkins = async (weekId) => {
       });
     } else {
       // 3+ players tied! Money stays in carryoverAccumulator and advances to the next hole
-      console.log(`Hole ${h} tied by ${winnerCount} players. Value of ${baseValuePerHole.toFixed(2)} carries over.`);
+      logger.info(`Hole ${h} tied by ${winnerCount} players. Value of ${baseValuePerHole.toFixed(2)} carries over.`);
     }
   }
 
