@@ -124,18 +124,14 @@ app.use("/admin", adminRoutes);
 app.use("/skins", skinsRouter);
 app.use("/email", emailRoutes);
 
-/* =========================================
-   404 HANDLER
-========================================= */
-
-app.use((req, res) => {
-  res.status(404).render("404");
+/* ========================================= 404 HANDLER ========================================= */
+app.use((req, res, next) => {
+  const err = new Error("The requested page or asset could not be found.");
+  err.status = 404;
+  next(err); // Forwards straight to your errorHandler middleware
 });
 
-/* =========================================
-   ERROR HANDLER
-========================================= */
-
+/* ========================================= ERROR HANDLER ========================================= */
 app.use(errorHandler);
 
 export default app;
