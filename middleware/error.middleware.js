@@ -1,6 +1,9 @@
 import logger from "../utilities/logger.js"; // Adjust path if needed
 
 const errorHandler = (err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
   const statusCode = err.status || err.statusCode || 500;
 
   // 1. Log structured JSON error details
