@@ -220,6 +220,7 @@ async function getStandingsThroughWeek(weekNumber) {
       SELECT
         m.id,
         m.name_last || ', ' || m.name_first AS player_name,
+        m.standings_exempt,
         COUNT(s.score_id) AS weeks_played,
         TOTAL(s.stableford_total) AS stableford_points,
         TOTAL(s.ctp_points) AS ctp_points,
@@ -240,10 +241,19 @@ async function getStandingsThroughWeek(weekNumber) {
       GROUP BY m.id
     )
     SELECT
-      RANK() OVER (ORDER BY avg_points DESC) AS rank,
+      CASE
+    WHEN standings_exempt = 1 THEN NULL
+    ELSE RANK() OVER (
+        PARTITION BY standings_exempt
+        ORDER BY avg_points DESC
+    )
+END AS rank,
       *
     FROM raw_standings
-    ORDER BY rank ASC, total_points DESC
+   ORDER BY
+    standings_exempt ASC,
+    rank ASC,
+    total_points DESC
   `;
 
   return await dbAll(sql, [weekNumber]);

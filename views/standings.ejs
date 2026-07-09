@@ -65,7 +65,11 @@
                   %>
                   <!-- Leave blank for subsequent tied players -->
                   <% } else { %>
-                  <%= player.rank %>
+                  <% if (player.standings_exempt) { %>
+  *
+<% } else { %>
+  <%= player.rank %>
+<% } %>
                   <% } %>
                 </td>
                 <td class="movement-cell">
