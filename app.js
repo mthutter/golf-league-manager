@@ -1,34 +1,7 @@
-// ====== 1. OPENTELEMETRY INITIALIZATION (MUST REMAIN AT THE ABSOLUTE TOP) ======
-import { NodeSDK } from "@opentelemetry/sdk-node";
-import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
-// Added SimpleLogRecordProcessor and ConsoleLogRecordExporter for local visibility
-import { BatchLogRecordProcessor, SimpleLogRecordProcessor, ConsoleLogRecordExporter } from "@opentelemetry/sdk-logs";
-import { resourceFromAttributes } from "@opentelemetry/resources";
+// ====== 1. ENVIRONMENT & OTEL MANAGEMENT (MUST REMAIN LINE 1 & 2) ======
+import "./config/env.js"; // CRITICAL: Hydrates process.env before anything else compiles!
+import "./utilities/otel.js"; // Line 2: Mounts the OpenTelemetry SDK configuration
 
-const sdk = new NodeSDK({
-  resource: resourceFromAttributes({
-    "service.name": "my-node-service",
-  }),
-  // We wrap both processors in an array so it logs locally AND sends to PostHog
-  logRecordProcessors: [
-    // Destination A: PostHog (Batched for production performance)
-    new BatchLogRecordProcessor(
-      new OTLPLogExporter({
-        url: "https://us.i.posthog.com",
-        headers: {
-          Authorization: "Bearer phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t",
-        },
-      }),
-    ),
-    // Destination B: Your local terminal screen (Instant, no batching delays)
-    new SimpleLogRecordProcessor(new ConsoleLogRecordExporter()),
-  ],
-});
-
-// Start the SDK immediately
-sdk.start();
-
-// ====== 2. REGULAR APPLICATION IMPORTS ======
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -38,7 +11,11 @@ import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import SQLiteStoreFactory from "connect-sqlite3";
 
-// ROUTES
+// OPENTELEMETRY CONTEXT HELPERS
+import { sdk, appLogger } from "./utilities/otel.js";
+import logger from "./utilities/logger.js";
+
+// ====== 2. BUSINESS ROUTES (NOW SAFE FROM UNDEFINED ENV CRASHES) ======
 import publicRoutes from "./routes/public.routes.js";
 import playerRoutes from "./routes/player.routes.js";
 import imageRoutes from "./routes/image.routes.js";
@@ -55,28 +32,16 @@ import groupingRoutes from "./routes/grouping.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
 import authMiddleware from "./middleware/auth.middleware.js";
 
-// ... Rest of your app.js code remains exactly the same
 const app = express();
-
 const SQLiteStore = SQLiteStoreFactory(session);
 
 /* =========================================
-   BASIC APP SETTINGS
+   BASIC APP SETTINGS & SECURITY
 ========================================= */
-
 app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
-
-/* =========================================
-   SECURITY
-========================================= */
-
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-  }),
-);
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store");
@@ -88,52 +53,30 @@ app.use((req, res, next) => {
   next();
 });
 
-/*==========================================
-   Environment
-========================================= */
-
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : process.env.NODE_ENV === "local"
-        ? "Bottoms Up Golf (LOCAL)"
-        : "UNKNOWN";
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (LOCAL)";
 
 /* =========================================
-   PARSERS / STATIC
+   PARSERS / STATIC / SESSION
 ========================================= */
-
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(fileUpload());
 
-/* =========================================
-   SESSION / FLASH
-========================================= */
-
 app.use(
   session({
     name: "SessionCookie",
-    secret: process.env.EXPRESS_SESSION_SECRET,
-    store: new SQLiteStore({
-      db: "sessions.db",
-      dir: "./",
-    }),
+    secret: process.env.EXPRESS_SESSION_SECRET || "golf_secret",
+    store: new SQLiteStore({ db: "sessions.db", dir: "./" }),
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      maxAge: 86400000,
-    },
+    cookie: { maxAge: 86400000 },
     genid: () => uuid(),
   }),
 );
 
 app.use((req, res, next) => {
-  // Binds session data straight to EJS global context templates
   res.locals.isAdmin = req.session.isAdmin || false;
   res.locals.isUser = req.session.isUser || false;
   next();
@@ -142,9 +85,30 @@ app.use((req, res, next) => {
 app.use(flash());
 
 /* =========================================
-   ROUTES
+   AUTOMATED REQUEST LOGGER MIDDLEWARE
 ========================================= */
+app.use((req, res, next) => {
+  const distinctId = req.session?.id || req.sessionID || "anonymous_server_user";
+  const isStaticAsset = req.path.includes(".") || req.path.startsWith("/images") || req.path.startsWith("/videos");
 
+  if (!isStaticAsset) {
+    appLogger.emit({
+      severityText: "INFO",
+      body: `HTTP ${req.method} ${req.path}`,
+      attributes: {
+        "http.method": req.method,
+        "http.target": req.path,
+        "http.host": req.get("host"),
+        posthogDistinctId: distinctId,
+      },
+    });
+  }
+  next();
+});
+
+/* =========================================
+   ROUTES REGISTER
+========================================= */
 app.use("/", publicRoutes);
 app.use("/", groupingRoutes);
 app.use("/blog", blogRoutes);
@@ -156,14 +120,66 @@ app.use("/admin", adminRoutes);
 app.use("/skins", skinsRouter);
 app.use("/email", emailRoutes);
 
-/* ========================================= 404 HANDLER ========================================= */
+/* ========================================= ERROR CODES ========================================= */
 app.use((req, res, next) => {
   const err = new Error("The requested page or asset could not be found.");
   err.status = 404;
-  next(err); // Forwards straight to your errorHandler middleware
+  next(err);
 });
 
-/* ========================================= ERROR HANDLER ========================================= */
 app.use(errorHandler);
+
+/* =========================================================================================
+   PORT BINDING & CRASH HOOKS (KEEPS APPLICATION RUNNING CONTINUOUSLY ON MAPPED PORTS)
+========================================================================================= */
+const PORT = process.env.PORT || 8080;
+
+const server = app.listen(PORT, () => {
+  logger.info(`Bottoms Up Golf application started on port ${PORT}`);
+
+  appLogger.emit({
+    severityText: "INFO",
+    body: "Telemetry system connection verified.",
+    attributes: {
+      environment: process.env.NODE_ENV || "local",
+      posthogDistinctId: "server_boot_agent",
+    },
+  });
+});
+
+// Capture unexpected errors and flush before shutting down
+process.on("uncaughtException", async (err) => {
+  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
+    return;
+  }
+  appLogger.emit({
+    severityText: "FATAL",
+    body: `CRITICAL Uncaught Exception: ${err.message}`,
+    attributes: { "error.stack": err.stack, posthogDistinctId: "server_crash_agent" },
+  });
+  await sdk.shutdown();
+  process.exit(1);
+});
+
+process.on("unhandledRejection", async (reason) => {
+  const err = reason instanceof Error ? reason : new Error(String(reason));
+  appLogger.emit({
+    severityText: "ERROR",
+    body: `WARNING Unhandled Rejection: ${err.message}`,
+    attributes: { "error.stack": err.stack, posthogDistinctId: "server_crash_agent" },
+  });
+  await sdk.shutdown();
+});
+
+const gracefulShutdown = async (signal) => {
+  logger.info(`${signal} received. Flushing telemetry queue...`);
+  await sdk.shutdown();
+  server.close(() => {
+    process.exit(0);
+  });
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 export default app;

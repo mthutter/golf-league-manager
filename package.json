@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js | pino-pretty",
+    "start": "nodemon app.js | pino-pretty",
     "format": "prettier --log-level warn --write \"{<file-path>}/**/*.{ejs,jsx,js}\"",
     "test": "node --test test/unit/test.*.js"
   },
