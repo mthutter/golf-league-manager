@@ -1,3 +1,34 @@
+// ====== 1. OPENTELEMETRY INITIALIZATION (MUST REMAIN AT THE ABSOLUTE TOP) ======
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
+// Added SimpleLogRecordProcessor and ConsoleLogRecordExporter for local visibility
+import { BatchLogRecordProcessor, SimpleLogRecordProcessor, ConsoleLogRecordExporter } from "@opentelemetry/sdk-logs";
+import { resourceFromAttributes } from "@opentelemetry/resources";
+
+const sdk = new NodeSDK({
+  resource: resourceFromAttributes({
+    "service.name": "my-node-service",
+  }),
+  // We wrap both processors in an array so it logs locally AND sends to PostHog
+  logRecordProcessors: [
+    // Destination A: PostHog (Batched for production performance)
+    new BatchLogRecordProcessor(
+      new OTLPLogExporter({
+        url: "https://us.i.posthog.com",
+        headers: {
+          Authorization: "Bearer phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t",
+        },
+      }),
+    ),
+    // Destination B: Your local terminal screen (Instant, no batching delays)
+    new SimpleLogRecordProcessor(new ConsoleLogRecordExporter()),
+  ],
+});
+
+// Start the SDK immediately
+sdk.start();
+
+// ====== 2. REGULAR APPLICATION IMPORTS ======
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -24,6 +55,7 @@ import groupingRoutes from "./routes/grouping.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
 import authMiddleware from "./middleware/auth.middleware.js";
 
+// ... Rest of your app.js code remains exactly the same
 const app = express();
 
 const SQLiteStore = SQLiteStoreFactory(session);

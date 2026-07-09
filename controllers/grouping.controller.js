@@ -1,113 +1,146 @@
-import { 
-  getGroupingsForWeek, 
-  generateRandomGroupings, 
-  swapPlayerPositions, 
-} from "../services/grouping.service.js"; 
-import { 
-  getAllWeeks, 
-  getWeek, 
-  getUpcomingWeek, 
-  formatDateTime, 
-} from "../services/weeks.service.js"; 
-import logger from "../utilities/logger.js"; // Added the missing logger import
-import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrapper utility
+import {
+  getGroupingsForWeek,
+  generateRandomGroupings,
+  swapPlayerPositions,
+} from "../services/grouping.service.js";
+import {
+  getAllWeeks,
+  getWeek,
+  getUpcomingWeek,
+  formatDateTime,
+} from "../services/weeks.service.js";
+import logger from "../utilities/logger.js";
+import { catchAsync } from "../utilities/asyncHandler.js";
+import posthog from "../utilities/posthog.js";
 
-/** 
- * GET /tee-times?week=1 
- * Renders the tee times page for a specific week. 
- */ 
+/**
+ * GET /tee-times?week=1
+ * Renders the tee times page for a specific week.
+ */
 export const showTeeTimes = catchAsync(async (req, res, next) => {
-  let weekId = Number(req.query.week); 
-  
-  if (!weekId) { 
-    const upcomingWeek = await getUpcomingWeek(); 
-    weekId = upcomingWeek.week_number; 
-  } 
+  let weekId = Number(req.query.week);
 
-  logger.info({ weekId, sessionId: req.session?.id }, "Fetching league pairings and tee times");
+  if (!weekId) {
+    const upcomingWeek = await getUpcomingWeek();
+    weekId = upcomingWeek.week_number;
+  }
 
-  // Extended to match your complete 22-week league season calendar 
-  const weeks = await getAllWeeks(); 
-  const currentWeek = await getWeek(weekId); 
+  logger.info(
+    { weekId, sessionId: req.session?.id },
+    "Fetching league pairings and tee times",
+  );
 
-  // Destructure the groupings array and outPlayers array from the service 
-  const { groupings, outPlayers, subPlayers, lastUpdated } = await getGroupingsForWeek(weekId); 
-  const formattedLastUpdated = formatDateTime(lastUpdated); 
+  // Extended to match your complete 22-week league season calendar
+  const weeks = await getAllWeeks();
+  const currentWeek = await getWeek(weekId);
 
-  return res.render("tee-times", { 
-    groupings, 
-    outPlayers, 
-    subPlayers, 
-    lastUpdated: formattedLastUpdated, 
-    currentWeek, 
-    weeks, 
-    weekId, 
+  // Destructure the groupings array and outPlayers array from the service
+  const { groupings, outPlayers, subPlayers, lastUpdated } =
+    await getGroupingsForWeek(weekId);
+  const formattedLastUpdated = formatDateTime(lastUpdated);
+
+  return res.render("tee-times", {
+    groupings,
+    outPlayers,
+    subPlayers,
+    lastUpdated: formattedLastUpdated,
+    currentWeek,
+    weeks,
+    weekId,
   });
 });
 
-/** 
- * POST /tee-times/generate/:weekId 
- * Generates random groups for the week and redirects back to the viewer. 
- */ 
+/**
+ * POST /tee-times/generate/:weekId
+ * Generates random groups for the week and redirects back to the viewer.
+ */
 export const generateGroupings = catchAsync(async (req, res, next) => {
-  const weekId = Number(req.params.weekId); 
-  
-  if (isNaN(weekId)) { 
-    logger.warn({ rawParam: req.params.weekId }, "Rejected grouping generation: Invalid week ID input");
-    return res.status(400).send("Invalid week ID provided."); 
-  } 
+  const weekId = Number(req.params.weekId);
+
+  if (isNaN(weekId)) {
+    logger.warn(
+      { rawParam: req.params.weekId },
+      "Rejected grouping generation: Invalid week ID input",
+    );
+    return res.status(400).send("Invalid week ID provided.");
+  }
 
   logger.info({ weekId }, "Triggering automatic grouping generation engine");
-  await generateRandomGroupings(weekId); 
+  await generateRandomGroupings(weekId);
 
-  // Redirect back to the view page for this specific week 
-  return res.redirect(`/tee-times?week=${weekId}`); 
+  posthog.capture({
+    distinctId: req.session?.id || "anonymous",
+    event: "groupings_generated",
+    properties: { week_id: weekId },
+  });
+
+  // Redirect back to the view page for this specific week
+  return res.redirect(`/tee-times?week=${weekId}`);
 });
 
-/** 
- * PUT /groupings/swap 
- * Handles shifting player positions via Drag & Drop interface payloads. 
- */ 
+/**
+ * PUT /groupings/swap
+ * Handles shifting player positions via Drag & Drop interface payloads.
+ */
 export const swapPlayers = catchAsync(async (req, res, next) => {
-  // 1. Enforce admin backend security session rules 
-  if (!req.session || !req.session.isAdmin) { 
-    logger.warn({ ip: req.ip }, "Unauthorized attempt to access player swap administration endpoint");
-    return res.status(403).json({ 
-      success: false, 
-      error: "Admin authentication required.", 
-    }); 
-  } 
+  // 1. Enforce admin backend security session rules
+  if (!req.session || !req.session.isAdmin) {
+    logger.warn(
+      { ip: req.ip },
+      "Unauthorized attempt to access player swap administration endpoint",
+    );
+    return res.status(403).json({
+      success: false,
+      error: "Admin authentication required.",
+    });
+  }
 
-  const { weekId, player1, player2 } = req.body; 
-  
-  if (!weekId || !player1 || !player2) { 
-    logger.warn({ hasWeekId: !!weekId, hasP1: !!player1, hasP2: !!player2 }, "Player position swap validation rejected: Missing payload fields");
-    return res.status(400).json({ 
-      success: false, 
-      error: "Missing required swap parameters.", 
-    }); 
-  } 
+  const { weekId, player1, player2 } = req.body;
 
-  // 2. Parse incoming payload properties safely into numbers 
-  const targetWeek = Number(weekId); 
-  const p1 = { 
-    memberId: Number(player1.memberId), 
-    groupNumber: player1.groupNumber ? Number(player1.groupNumber) : null, 
-    position: player1.position ? Number(player1.position) : null, 
-  }; 
-  const p2 = { 
-    memberId: Number(player2.memberId), 
-    groupNumber: player2.groupNumber ? Number(player2.groupNumber) : null, 
-    position: player2.position ? Number(player2.position) : null, 
-  }; 
+  if (!weekId || !player1 || !player2) {
+    logger.warn(
+      { hasWeekId: !!weekId, hasP1: !!player1, hasP2: !!player2 },
+      "Player position swap validation rejected: Missing payload fields",
+    );
+    return res.status(400).json({
+      success: false,
+      error: "Missing required swap parameters.",
+    });
+  }
 
-  logger.info({ weekId: targetWeek, p1Id: p1.memberId, p2Id: p2.memberId }, "Executing database player position swap transaction");
+  // 2. Parse incoming payload properties safely into numbers
+  const targetWeek = Number(weekId);
+  const p1 = {
+    memberId: Number(player1.memberId),
+    groupNumber: player1.groupNumber ? Number(player1.groupNumber) : null,
+    position: player1.position ? Number(player1.position) : null,
+  };
+  const p2 = {
+    memberId: Number(player2.memberId),
+    groupNumber: player2.groupNumber ? Number(player2.groupNumber) : null,
+    position: player2.position ? Number(player2.position) : null,
+  };
 
-  // 3. Execute the transactional SQLite update query block 
-  await swapPlayerPositions(targetWeek, p1, p2); 
+  logger.info(
+    { weekId: targetWeek, p1Id: p1.memberId, p2Id: p2.memberId },
+    "Executing database player position swap transaction",
+  );
 
-  return res.json({ 
-    success: true, 
-    message: "Positions swapped successfully!", 
-  }); 
+  // 3. Execute the transactional SQLite update query block
+  await swapPlayerPositions(targetWeek, p1, p2);
+
+  posthog.capture({
+    distinctId: req.session?.id || "anonymous",
+    event: "players_swapped",
+    properties: {
+      week_id: targetWeek,
+      player1_id: p1.memberId,
+      player2_id: p2.memberId,
+    },
+  });
+
+  return res.json({
+    success: true,
+    message: "Positions swapped successfully!",
+  });
 });

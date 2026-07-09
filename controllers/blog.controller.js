@@ -1,16 +1,16 @@
-// blog.controller.js
 import * as blogService from "../services/blog.service.js";
 import logger from "../utilities/logger.js";
 import { catchAsync } from "../utilities/asyncHandler.js";
+import posthog from "../utilities/posthog.js";
 
 /**
  * GET /blog
  */
 export const renderIndex = catchAsync(async (req, res, next) => {
   const search = req.query.search?.trim();
-  
+
   logger.info({ search }, "Fetching blog index listings");
-  
+
   const rawPosts = search
     ? await blogService.searchPosts(search)
     : await blogService.getAllPosts();
@@ -40,7 +40,7 @@ export const renderIndex = catchAsync(async (req, res, next) => {
       }),
     };
   });
-  
+
   return res.render("blog", { view: "index", posts: formattedPosts, search });
 });
 
@@ -91,16 +91,24 @@ export const renderNewForm = (req, res) => {
  * POST /blog
  */
 export const createPost = catchAsync(async (req, res, next) => {
-  const { title, content, image_url } = req.body; 
-  
+  const { title, content, image_url } = req.body;
+
   if (!title || !content) {
-    logger.warn({ titleHasValue: !!title, contentHasValue: !!content }, "Validation failure: Blog post missing fields");
+    logger.warn(
+      { titleHasValue: !!title, contentHasValue: !!content },
+      "Validation failure: Blog post missing fields",
+    );
     return res.status(400).send("Title and content are required.");
   }
 
   try {
-    await blogService.createNewPost(title, content, image_url); 
+    await blogService.createNewPost(title, content, image_url);
     logger.info({ title }, "New blog post created successfully");
+    posthog.capture({
+      distinctId: req.session?.id || "anonymous",
+      event: "blog_post_created",
+      properties: { has_image: !!image_url },
+    });
     return res.redirect("/blog");
   } catch (error) {
     // Intercept expected constraint validations safely
@@ -119,7 +127,7 @@ export const createPost = catchAsync(async (req, res, next) => {
 export const deletePost = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   await blogService.deletePostById(id);
-  
+
   logger.info({ postId: id }, "Blog post removed cleanly");
   return res.redirect("/blog");
 });
