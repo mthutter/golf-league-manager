@@ -217,8 +217,8 @@ export const processSkinsForWeek = async (weekId) => {
 export const runHandicapEngine = async () => {
   console.log(`[HANDICAP ENGINE] Recalculating player handicaps...`);
 
-  await writeCurrentHandicaps();
-  console.log("[HANDICAP ENGINE] Current handicaps have been archived.");
+  //await writeCurrentHandicaps();
+  //console.log("[HANDICAP ENGINE] Current handicaps have been archived.");
 
   await calculateHandicaps();
   console.log("[HANDICAP ENGINE] Current handicaps have been computed.");

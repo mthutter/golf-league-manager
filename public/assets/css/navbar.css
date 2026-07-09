@@ -9,11 +9,16 @@
 }
 
 .navbar-brand {
-  font-weight: bold;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: bolder;
+  letter-spacing: 0.4px;
+  color: rgb(168, 168, 13);
 }
 
 .navbar .nav-link {
   text-align: center;
+  border-radius: 999px;
+  transition: 0.2s ease;
 }
 
 .navbar .nav-link:hover {
@@ -26,15 +31,16 @@
 }
 
 .nav-logo {
-  height: 42px;
+  height: 46px;
   border-radius: 50%;
 }
 
 /* ======================== NAVBAR DROPDOWN ======================== */
 .navbar .dropdown-menu {
-  background-color: rgba(144, 238, 144, 0.95);
+  background: rgba(47, 138, 47, 0.98);
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
+  overflow: hidden;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   padding: 6px 0;
   transition: all 0.2s ease;
@@ -45,7 +51,8 @@
 }
 
 .navbar .dropdown-item {
-  color: #1e4d1e;
+  color: white;
+  font-weight: 600;
   padding: 8px 12px;
   border-radius: 6px;
   transition: background-color 0.2s ease;
@@ -54,8 +61,8 @@
 
 .navbar .dropdown-item:hover,
 .navbar .dropdown-item:focus {
-  background-color: rgb(89, 195, 62);
-  color: #1e4d1e;
+  background-color: rgb(255, 255, 255, 0.12);
+  color: white;
 }
 
 /* ======================== RESPONSIVE BREAKPOINTS ======================== */
@@ -93,4 +100,8 @@
   .nav-logo {
     height: 32px;
   }
+}
+
+.dropdown-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
