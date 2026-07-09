@@ -1,72 +1,90 @@
-import * as scoresService from "../services/scores.service.js";
-import * as weeksService from "../services/weeks.service.js";
+import * as scoresService from "../services/scores.service.js"; 
+import * as weeksService from "../services/weeks.service.js"; 
+import logger from "../utilities/logger.js"; // Added the missing logger import
+import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrapper utility
 
-export const getNewScoresForm = async (req, res) => {
+/**
+ * GET /scores/new
+ */
+export const getNewScoresForm = catchAsync(async (req, res, next) => {
+  logger.info({ sessionId: req.session?.id }, "Loading metadata configuration parameters for the weekly score entry form");
+  
+  const { members, holes } = await scoresService.getFormData(); 
+  
+  return res.render("weekly-scores-form", { members, holes }); 
+});
+
+/**
+ * POST /scores/save
+ */
+export const saveScore = catchAsync(async (req, res, next) => {
+  const { memberId, weekId } = req.body;
+  
+  logger.info({ memberId, weekId }, "Processing new league score entry record submission");
+
   try {
-    const { members, holes } = await scoresService.getFormData();
-    res.render("weekly-scores-form", { members, holes });
+    await scoresService.createScoreRecord(req.body); 
+    logger.info({ memberId, weekId }, "Player performance metrics saved successfully");
+    return res.redirect("/scores/new"); 
   } catch (err) {
-    logger.erroror("Error loading score form layout:", err);
-    res.status(500).send("Database error");
+    // Safely isolate and intercept expected duplicate entry constraints 
+    if (err.message.includes("UNIQUE")) { 
+      logger.warn({ memberId, weekId }, "Score card entry rejected: Unique database index conflict");
+      return res.status(400).send("Scores already entered for this player/week."); 
+    } 
+    // Forward unexpected errors (like disk lock or network timeout) to centralized handler
+    throw err;
   }
-};
+});
 
-export const saveScore = async (req, res) => {
-  try {
-    await scoresService.createScoreRecord(req.body);
-    res.redirect("/scores/new");
-  } catch (err) {
-    logger.erroror("Error saving score payload:", err);
-    if (err.message.includes("UNIQUE")) {
-      return res
-        .status(400)
-        .send("Scores already entered for this player/week.");
-    }
-    res.status(500).send("Database error");
-  }
-};
+/**
+ * GET /scores/standings
+ */
+export const getStandings = catchAsync(async (req, res, next) => {
+  logger.info("Computing global season point totals and league handicaps for standings table");
+  
+  const data = await scoresService.getSeasonStandings(); 
+  
+  return res.render("standings", data); 
+});
 
-export const getStandings = async (req, res) => {
-  try {
-    const data = await scoresService.getSeasonStandings();
-    res.render("standings", data);
-  } catch (err) {
-    logger.erroror("Error rendering season standings:", err);
-    res.status(500).send("Database Error");
-  }
-};
+/**
+ * GET /scores/weekly/:weekId
+ */
+export const getWeeklyScores = catchAsync(async (req, res, next) => {
+  const weekId = req.params.weekId; 
+  
+  logger.info({ weekId }, "Aggregating individual stroke scores and points for week breakdown");
 
-export const getWeeklyScores = async (req, res) => {
-  try {
-    const weekId = req.params.weekId;
-    const results = await scoresService.getWeeklyBreakdown(weekId);
-    const weekDate = await weeksService.getWeek(weekId);
+  const results = await scoresService.getWeeklyBreakdown(weekId); 
+  const weekDate = await weeksService.getWeek(weekId); 
 
-    res.render("weekly", { weekId, results, weekDate });
-  } catch (err) {
-    logger.erroror("Error gathering weekly scores:", err);
-    res.status(500).send("Database Error");
-  }
-};
+  return res.render("weekly", { weekId, results, weekDate }); 
+});
 
-export const getMemberProfile = async (req, res) => {
-  try {
-    const memberId = parseInt(req.params.id, 10);
-    const profileData = await scoresService.getMemberProfileData(memberId);
+/**
+ * GET /scores/player/:id
+ */
+export const getMemberProfile = catchAsync(async (req, res, next) => {
+  const memberId = parseInt(req.params.id, 10); 
+  
+  logger.info({ memberId }, "Assembling historical player scorecard profiles");
 
-    if (!profileData) {
-      return res.status(404).send("Player Not Found");
-    }
+  const profileData = await scoresService.getMemberProfileData(memberId); 
+  
+  if (!profileData) { 
+    logger.warn({ memberId }, "Target member identification record does not exist");
+    res.status(404);
+    return res.render("404"); // Fall back to your custom 404 template safely
+  } 
 
-    res.render("profile", profileData);
-  } catch (err) {
-    logger.erroror("Error populating member profile:", err);
-    res.status(500).send("Database Error");
-  }
-};
+  return res.render("profile", profileData); 
+});
 
-// Legacy alias from your original imports
-export const getScoresLegacy = async (req, res) => {
-  // If you had a pre-existing getScores exported controller function, redirect or call it here
-  res.redirect("/scores/standings");
-};
+/**
+ * Legacy redirect wrapper handler
+ */
+export const getScoresLegacy = catchAsync(async (req, res, next) => {
+  logger.info("Rerouting legacy leaderboard endpoint request to standard standings layout");
+  return res.redirect("/scores/standings"); 
+});

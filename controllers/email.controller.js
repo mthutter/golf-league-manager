@@ -1,52 +1,57 @@
-import { all } from "../config/db.js";
-import { fetchAndSendEmails } from "../services/email.service.js";
+import { all } from "../config/db.js"; 
+import { fetchAndSendEmails } from "../services/email.service.js"; 
+import logger from "../utilities/logger.js"; // Added the missing logger import
+import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrapper utility
 
-// Renders the email.ejs form view
-export const renderEmailForm = async (req, res) => {
-  try {
-    // 🚨 FIX: Removed [ ] brackets. SQLite's db.all returns the array directly.
-    const members = await all(
-      "SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'",
-    );
-    logger.info(members);
+/**
+ * GET /email
+ * Renders the email.ejs form view
+ */
+export const renderEmailForm = catchAsync(async (req, res, next) => {
+  // SQLite's db.all returns the array directly.
+  const members = await all(
+    "SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'",
+  ); 
+  
+  // Safe structured JSON logging for Render streams
+  logger.info({ memberCount: members.length }, "Loaded active member directory for email mailing form"); 
+  
+  // Pass the members array into EJS
+  return res.render("email", { members: members }); 
+});
 
-    // Pass the members array into EJS
-    res.render("email", { members: members });
-  } catch (error) {
-    logger.erroror("Failed to load members for email form:", error);
-    res.render("email", { members: [], error: "Could not load member list." });
+/**
+ * POST /email/send
+ * Handles form data submission
+ */
+export const sendBulkEmail = catchAsync(async (req, res, next) => {
+  // Explicitly pull recipients from the incoming req.body payload
+  const { subject, message, recipients } = req.body; 
+
+  if (!subject || !message) {
+    logger.warn({ subjectHasValue: !!subject, messageHasValue: !!message }, "Email broadcast rejected: Missing subject or body context");
+    return res.status(400).json({ 
+      success: false, 
+      error: "Both subject and message are required.", 
+    }); 
   }
-};
 
-// Handles form data submission
-export const sendBulkEmail = async (req, res) => {
-  try {
-    // 💡 FIXED: Explicitly pull recipients from the incoming req.body payload
-    const { subject, message, recipients } = req.body;
+  // Ensure recipients is passed down as a reliable array structure
+  let selectedEmails = []; 
+  if (recipients) { 
+    selectedEmails = Array.isArray(recipients) ? recipients : [recipients]; 
+  } 
 
-    if (!subject || !message) {
-      return res.status(400).json({
-        success: false,
-        error: "Both subject and message are required.",
-      });
-    }
+  logger.info({ subject, totalRecipients: selectedEmails.length }, "Initiating bulk email transmission sequence");
 
-    // Ensure recipients is passed down as a reliable array structure
-    let selectedEmails = [];
-    if (recipients) {
-      selectedEmails = Array.isArray(recipients) ? recipients : [recipients];
-    }
+  // Pass the selected emails array down into your service layer
+  const result = await fetchAndSendEmails(subject, message, selectedEmails); 
 
-    // Pass the selected emails array down into your service layer
-    const result = await fetchAndSendEmails(subject, message, selectedEmails);
+  logger.info({ dispatchedCount: result.count }, "Bulk email broadcast delivered successfully");
 
-    // Sends the accurate dynamic count back to your alert box interface
-    res.status(200).json({
-      success: true,
-      message: `Successfully broadcasted to ${result.count} member(s)!`,
-    });
-  } catch (error) {
-    logger.erroror("Controller broadcasting failed:", error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
+  // Sends the accurate dynamic count back to your alert box interface
+  return res.status(200).json({ 
+    success: true, 
+    message: `Successfully broadcasted to ${result.count} member(s)!`, 
+  }); 
+});

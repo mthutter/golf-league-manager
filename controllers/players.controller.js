@@ -1,105 +1,86 @@
-import * as playersService from "../services/players.service.js";
+import * as playersService from "../services/players.service.js"; 
+import logger from "../utilities/logger.js"; // Added the missing logger import
+import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrapper utility
 
-/**
- * GET /players - Display active players
- */
-export async function getPlayers(req, res) {
-  try {
-    const rows = await playersService.getAllPlayers();
-    res.render("players", { players: rows });
-  } catch (err) {
-    logger.erroror("Database Error:", err.message);
-    res.status(500).render("error", { message: "Unable to retrieve players." });
-  }
-}
+/** 
+ * GET /players - Display active players 
+ */ 
+export const getPlayers = catchAsync(async (req, res, next) => {
+  logger.info("Retrieving active league roster directory");
+  const rows = await playersService.getAllPlayers(); 
+  return res.render("players", { players: rows }); 
+});
 
-/**
- * GET /players/inactive - Display inactive players
- */
-export async function getPlayersInactive(req, res) {
-  try {
-    const rows = await playersService.getAllPlayers();
-    res.render("inactive", { players: rows });
-  } catch (err) {
-    logger.erroror("Database Error:", err.message);
-    res.status(500).render("error", { message: "Unable to retrieve players." });
-  }
-}
+/** 
+ * GET /players/inactive - Display inactive players 
+ */ 
+export const getPlayersInactive = catchAsync(async (req, res, next) => {
+  logger.info("Retrieving inactive league roster directory");
+  
+  // FIX: If you have an explicit service method like 'getInactivePlayers', swap it here.
+  // Otherwise, filter the full roster array reactively to separate status properties.
+  const allRows = await playersService.getAllPlayers(); 
+  const inactiveRows = allRows.filter(player => player.status === 'inactive' || player.is_active === 0);
 
-/**
- * GET /players/new - Show creation form
- */
-export function showAddPlayerForm(req, res) {
-  res.render("add-player-form");
-}
+  return res.render("inactive", { players: inactiveRows }); 
+});
 
-/**
- * POST /players - Create player record
- */
-export async function createPlayer(req, res) {
-  const { name_first, name_last } = req.body;
+/** 
+ * GET /players/new - Show creation form 
+ */ 
+export const showAddPlayerForm = (req, res) => { 
+  return res.render("add-player-form"); 
+};
 
-  if (!name_first || !name_last) {
-    return res
-      .status(400)
-      .render("error", { message: "First and last name are required." });
-  }
+/** 
+ * POST /players - Create player record 
+ */ 
+export const createPlayer = catchAsync(async (req, res, next) => { 
+  const { name_first, name_last } = req.body; 
+  
+  if (!name_first || !name_last) { 
+    logger.warn("Player registration rejected: Missing name identity fields");
+    res.status(400);
+    return res.render("error", { message: "First and last name are required." }); 
+  } 
 
-  try {
-    const lastID = await playersService.createNewPlayer(req.body);
-    logger.info(`Player created with ID ${lastID}`);
-    res.redirect("/players");
-  } catch (err) {
-    logger.erroror("Insert Error:", err.message);
-    res.status(500).render("error", { message: "Unable to create player." });
-  }
-}
+  const lastID = await playersService.createNewPlayer(req.body); 
+  
+  logger.info({ playerId: lastID, name: `${name_first} ${name_last}` }, "New league player record generated successfully");
+  return res.redirect("/players"); 
+});
 
-/**
- * GET /players/:id/edit - Show modification form with existing player data
- */
-export async function showEditPlayerForm(req, res) {
-  const playerId = req.params.id;
+/** 
+ * GET /players/:id/edit - Show modification form with existing player data 
+ */ 
+export const showEditPlayerForm = catchAsync(async (req, res, next) => { 
+  const playerId = req.params.id; 
+  const player = await playersService.getPlayerById(playerId); 
 
-  try {
-    const player = await playersService.getPlayerById(playerId);
+  if (!player) { 
+    logger.warn({ playerId }, "Requested player modifier form target record not found");
+    res.status(404);
+    return res.render("error", { message: "Player not found." }); 
+  } 
 
-    if (!player) {
-      return res.status(404).render("error", { message: "Player not found." });
-    }
+  return res.render("modify-player", { player: player }); 
+});
 
-    // Renders modify-player.ejs and passes the player data
-    res.render("modify-player", { player: player });
-  } catch (err) {
-    logger.erroror("Fetch Player Error:", err.message);
-    res.status(500).render("error", {
-      message: "Unable to retrieve player records for updating.",
-    });
-  }
-}
+/** 
+ * POST /players/:id - Update existing player record 
+ */ 
+export const updatePlayer = catchAsync(async (req, res, next) => { 
+  const playerId = req.params.id; 
+  const { name_first, name_last } = req.body; 
 
-/**
- * POST /players/:id - Update existing player record
- */
-export async function updatePlayer(req, res) {
-  const playerId = req.params.id;
-  const { name_first, name_last } = req.body;
+  if (!name_first || !name_last) { 
+    logger.warn({ playerId }, "Player profile update rejected: Missing identity parameters");
+    res.status(400);
+    return res.render("error", { message: "First and last name are required." }); 
+  } 
 
-  // Basic validation checks
-  if (!name_first || !name_last) {
-    return res
-      .status(400)
-      .render("error", { message: "First and last name are required." });
-  }
-
-  try {
-    await playersService.updatePlayerById(playerId, req.body);
-    logger.info(`Player with ID ${playerId} updated successfully.`);
-    res.redirect("/players");
-  } catch (err) {
-    logger.erroror("Update Error:", err.message);
-    res
-      .status(500)
-      .render("error", { message: "Unable to update player information." });
-  }
-}
+  await playersService.updatePlayerById(playerId, req.body); 
+  
+  logger.info({ playerId }, "League player profile details updated successfully");
+  return res.redirect("/players"); 
+});

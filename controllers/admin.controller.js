@@ -1,64 +1,60 @@
-import * as adminService from "../services/admin.service.js";
-import * as skinsService from "../services/skins.service.js";
+import * as adminService from "../services/admin.service.js"; 
+import * as skinsService from "../services/skins.service.js"; 
+import logger from "../utilities/logger.js"; 
+import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrapper utility
 
-/**
- * Handles GET /admin
- */
-export const getDashboard = async (req, res) => {
-  try {
-    const handicapSuccess = req.session?.handicapSuccess ? true : false;
-    if (req.session) req.session.handicapSuccess = null;
-
-    res.render("admin-utilities", {
-      title: "Admin Utilities",
-      selectedWeek: undefined,
-      results: undefined,
-      showHandicapPopup: handicapSuccess,
-    });
-  } catch (err) {
-    logger.erroror("Dashboard render error:", err);
-    res.status(500).send("Error loading admin control panel.");
+/** 
+ * Handles GET /admin 
+ */ 
+export const getDashboard = catchAsync(async (req, res, next) => {
+  const handicapSuccess = req.session?.handicapSuccess ? true : false; 
+  
+  if (req.session) {
+    req.session.handicapSuccess = null; 
   }
-};
 
-/**
- * Handles POST /admin/skins/calculate
- */
-export const calculateSkinsMetrics = async (req, res) => {
-  try {
-    const weekId = Number(req.body.weekId);
+  logger.info({ sessionId: req.session?.id }, "Admin dashboard accessed");
 
-    // Call service to do the heavy calculations and database queries
-    await skinsService.calculateAndSaveSkins(weekId);
+  return res.render("admin-utilities", { 
+    title: "Admin Utilities", 
+    selectedWeek: undefined, 
+    results: undefined, 
+    showHandicapPopup: handicapSuccess, 
+  });
+});
 
-    const results = await adminService.processSkinsForWeek(weekId);
+/** 
+ * Handles POST /admin/skins/calculate 
+ */ 
+export const calculateSkinsMetrics = catchAsync(async (req, res, next) => {
+  const weekId = Number(req.body.weekId); 
+  
+  logger.info({ weekId }, "Starting skins metric calculations");
 
-    res.render("admin-utilities", {
-      title: "Admin Utilities",
-      selectedWeek: weekId,
-      showHandicapPopup: false,
-      results: results,
-    });
-  } catch (err) {
-    logger.erroror("Skins calculation breakdown:", err);
-    res.status(500).send("Error running skins calculation framework.");
-  }
-};
+  // Call service to do the heavy calculations and database queries 
+  await skinsService.calculateAndSaveSkins(weekId); 
+  const results = await adminService.processSkinsForWeek(weekId); 
 
-/**
- * Handles POST /admin/handicaps/calculate
- */
-export const calculateHandicaps = async (req, res) => {
-  try {
-    // Call service to run engine logic
-    await adminService.runHandicapEngine();
+  return res.render("admin-utilities", { 
+    title: "Admin Utilities", 
+    selectedWeek: weekId, 
+    showHandicapPopup: false, 
+    results: results, 
+  });
+});
 
-    if (req.session) {
-      req.session.handicapSuccess = true;
-    }
-    res.redirect("/admin");
-  } catch (err) {
-    logger.erroror("Handicap engine breakdown:", err);
-    res.status(500).send("Error recalculating league handicaps.");
-  }
-};
+/** 
+ * Handles POST /admin/handicaps/calculate 
+ */ 
+export const calculateHandicaps = catchAsync(async (req, res, next) => {
+  logger.info("Triggering handicap calculation engine");
+
+  // Call service to run engine logic 
+  await adminService.runHandicapEngine(); 
+  
+  if (req.session) { 
+    req.session.handicapSuccess = true; 
+  } 
+
+  return res.redirect("/admin");
+});
