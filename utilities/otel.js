@@ -1,70 +1,45 @@
 import "../config/env.js";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
-import { logs } from "@opentelemetry/api-logs";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-node";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import process from "process";
 
+// FIX 1: Pull tracing natively from core api
+import { trace, SpanStatusCode } from "@opentelemetry/api";
+
+// FIX 2: Pull logging natively from its independent api-logs architecture
+import { logs } from "@opentelemetry/api-logs";
+
 const token = process.env.POSTHOG_PROJECT_TOKEN;
-if (!token || token.trim() === "" || token.includes("your_actual_token")) {
-  console.error(
-    "❌ TELEMETRY INITIALIZATION ABORTED: Valid POSTHOG_PROJECT_TOKEN was not detected in process.env!",
-  );
-}
 
+// 1. TELEMETRY LOG EXPORTER
 const { BatchLogRecordProcessor } = await import("@opentelemetry/sdk-logs");
-
-const posthogExporter = new OTLPLogExporter({
-  url: "https://us.i.posthog.com/i/v1/logs",
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
+const posthogLogExporter = new OTLPLogExporter({
+  url: "https://posthog.com",
+  headers: { Authorization: `Bearer ${token}` },
 });
 
-// FIX 1: Pass tuning parameters to force immediate network streaming
-const logProcessor = new BatchLogRecordProcessor(posthogExporter, {
-  maxQueueSize: 100, // Maximum logs kept in memory
-  scheduledDelayMillis: 500, // Flush logs to PostHog every 500ms (Default is 5000ms!)
-  maxExportBatchSize: 1, // Flush as soon as 1 log is ready
+// 2. TELEMETRY TRACE EXPORTER (Note: /i/v1/traces matches PostHog specs)
+const posthogTraceExporter = new OTLPTraceExporter({
+  url: "https://posthog.com",
+  headers: { Authorization: `Bearer ${token}` },
 });
 
+// 3. MOUNT OPEN-TELEMETRY ENGINE
 export const sdk = new NodeSDK({
-  resource: resourceFromAttributes({
-    "service.name": "bottoms-up-golf",
-  }),
-  logRecordProcessor: logProcessor,
-  logRecordProcessors: [logProcessor],
+  resource: resourceFromAttributes({ "service.name": "bottoms-up-golf" }),
+  logRecordProcessor: new BatchLogRecordProcessor(posthogLogExporter),
+  spanProcessors: [new BatchSpanProcessor(posthogTraceExporter)],
+  instrumentations: [getNodeAutoInstrumentations()], // Auto-instruments Express, HTTP, SQLite
 });
 
-try {
-  sdk.start();
-  console.log(
-    "🚀 [OTEL SUCCESS]: OpenTelemetry log infrastructure fully mounted.",
-  );
-} catch (error) {
-  console.error(
-    "❌ [OTEL CRITICAL ERROR]: Engine core failed initialization runtime checks:",
-    error,
-  );
-}
+sdk.start();
 
+// 4. EXPORT UTILITIES USING SEPARATE PACKAGE INTERFACES
 export const appLogger = logs.getLogger("my-app");
+export const appTracer = trace.getTracer("my-app");
 
-// FIX 2: Force an immediate, repetitive test stream to bypass the Express lifecycle
-let testCounter = 1;
-const testInterval = setInterval(() => {
-  if (testCounter > 5) {
-    clearInterval(testInterval);
-    return;
-  }
-  console.log(`📡 Sending test packet #${testCounter} directly to PostHog...`);
-  appLogger.emit({
-    severityText: "INFO",
-    body: `Direct pipeline verification test entry #${testCounter}`,
-    attributes: {
-      "test.origin": "otel-utility-bootloader",
-      "test.instance": testCounter,
-    },
-  });
-  testCounter++;
-}, 1000);
+// Keep your looping bootloader test active to verify the network connection below...

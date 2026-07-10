@@ -10,6 +10,4 @@ export const flushPostHog = async () => {
   await posthogClient.flushAsync();
 };
 
-console.log(process.env.POSTHOG_PROJECT_TOKEN);
-
 export default posthogClient;
