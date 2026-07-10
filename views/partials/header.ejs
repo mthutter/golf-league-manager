@@ -88,11 +88,11 @@
 
   // 1. Dynamically determine the ingestion host to handle localhost vs production proxy
   var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  var targetHost = isLocal ? "https://us.i.posthog.com" : "https://bottoms-up-cos.org";
+  var targetHost = isLocal ? "https://us.i.posthog.com" : "https://t.bottoms-up-cos.org";
 
   // 2. Safely initialize PostHog
   posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
-    api_host: targetHost,
+    api_host: "https://t.bottoms-up-cos.org",
     ui_host: "https://us.i.posthog.com",
     persistence: "cookie",
     enable_recording_console_log: true,

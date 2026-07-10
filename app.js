@@ -56,7 +56,7 @@ app.use((req, res, next) => {
 // CORS
 app.use(
   cors({
-    origin: ["http://localhost:8080", "https://bottoms-up-cos.org"],
+    origin: ["http://localhost:8080", "https://t.bottoms-up-cos.org"],
     credentials: true,
   }),
 );
