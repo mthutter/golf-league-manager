@@ -1,7 +1,7 @@
 import { PostHog } from "posthog-node";
 
 const posthogClient = new PostHog(process.env.POSTHOG_PROJECT_TOKEN, {
-  host: process.env.POSTHOG_HOST || "https://us.posthog.com", // Updated default host
+  host: process.env.POSTHOG_HOST || "https://us.i.posthog.com", // Updated default host
   enableExceptionAutocapture: true,
 });
 
