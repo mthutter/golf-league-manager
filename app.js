@@ -53,6 +53,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  if (req.url.includes(".well-known/appspecific")) {
+    // End the request instantly with a quiet 404 without printing a big stack trace
+    return res.status(404).end();
+  }
+  next();
+});
+
 // CORS
 app.use(
   cors({

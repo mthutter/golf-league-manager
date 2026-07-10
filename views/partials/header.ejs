@@ -61,7 +61,6 @@
   }
 </script>
 
-<!-- Place inside the <head> of your EJS template -->
 <script>
   !(function (t, e) {
     var o, n, p, r;
@@ -76,23 +75,29 @@
               t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
             }));
         }
+        // Determine host domain based on local vs production environment
+        var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        var proxyHost = isLocal ? "https://us.i.posthog.com" : "https://bottoms-up-cos.org";
+
+        // If local, download directly from the asset CDN; otherwise use the CNAME proxy domain
+        var assetHost = isLocal ? "https://us-assets.i.posthog.com" : "https://bottoms-up-cos.org";
+
         (((p = t.createElement("script")).type = "text/javascript"),
           (p.crossOrigin = "anonymous"),
           (p.async = !0),
-          (p.src = s.api_host.replace(/\/+$/, "") + "/static/array.js"),
+          (p.src = assetHost + "/static/array.js"),
           (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r),
           e._i.push([i, s, a]),
           (e.__SV = 1e3));
       }));
   })(document, window.posthog || []);
 
-  // 1. Dynamically determine the ingestion host to handle localhost vs production proxy
+  // Apply the environment conditions to the client configuration pipeline
   var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  var targetHost = isLocal ? "https://us.i.posthog.com" : "https://t.bottoms-up-cos.org";
+  var finalHost = isLocal ? "https://us.i.posthog.com" : "https://bottoms-up-cos.org";
 
-  // 2. Safely initialize PostHog
   posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
-    api_host: "https://t.bottoms-up-cos.org",
+    api_host: finalHost,
     ui_host: "https://us.i.posthog.com",
     persistence: "cookie",
     enable_recording_console_log: true,
@@ -100,11 +105,11 @@
       recordHeaders: true,
       recordBody: true,
     },
-    // ADD THIS LINE FOR LOCAL DEBUGGING ONLY
-    disable_compression: true,
+    // Set to false when deploying to production to optimize bandwidth compression
+    disable_compression: isLocal ? true : false,
     loaded: function (ph) {
-      // Optional: Confirm it loaded successfully in your console
-      console.log("PostHog successfully loaded via:", targetHost);
+      if (isLocal) ph.debug();
+      console.log("🚀 POSTHOG AUTOMATION ACTIVE VIA:", finalHost);
     },
   });
 </script>
