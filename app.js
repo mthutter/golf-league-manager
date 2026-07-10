@@ -1,7 +1,6 @@
 // ====== 1. ENVIRONMENT & OTEL MANAGEMENT (MUST REMAIN LINE 1 & 2) ======
 import "./config/env.js"; // CRITICAL: Hydrates process.env before anything else compiles!
 import "./utilities/otel.js"; // Line 2: Mounts the OpenTelemetry SDK configuration
-
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -11,9 +10,6 @@ import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import SQLiteStoreFactory from "connect-sqlite3";
 import cors from "cors";
-
-// REVERSE PROXY FOR OTEL LOG/TRACE DATA
-import httpProxy from "http-proxy";
 
 // OPENTELEMETRY CONTEXT HELPERS
 import { sdk, appLogger } from "./utilities/otel.js";
@@ -39,29 +35,24 @@ import authMiddleware from "./middleware/auth.middleware.js";
 const app = express();
 const SQLiteStore = SQLiteStoreFactory(session);
 
-const proxy = httpProxy.createProxyServer();
-const posthogHost = "us.i.posthog.com";
-
 // BLOCK WORDPRESS COMMON EXPLOITS
 const blockedPaths = ["/xmlrpc.php", "/wp-admin", "/.env"];
-
 app.use((req, res, next) => {
   if (blockedPaths.some((path) => req.url.includes(path))) {
-    // Return a quick 403 Forbidden or 404 without verbose logging
     return res.status(404).send("Not Found");
   }
   next();
 });
 
+// SILENCE CHROME DEVTOOLS WORKSPACE DISCOVERY ALERTS
 app.use((req, res, next) => {
   if (req.url.includes(".well-known/appspecific")) {
-    // End the request instantly with a quiet 404 without printing a big stack trace
     return res.status(404).end();
   }
   next();
 });
 
-// CORS
+// CORS: Enforces secure multi-environment transport
 app.use(
   cors({
     origin: ["http://localhost:8080", "https://t.bottoms-up-cos.org"],
@@ -69,9 +60,7 @@ app.use(
   }),
 );
 
-/* =========================================
-   BASIC APP SETTINGS & SECURITY
-========================================= */
+/* ========================================= BASIC APP SETTINGS & SECURITY ========================================= */
 app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
@@ -87,41 +76,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// HTTP PROXY
-app.use("/ingest", (req, res) => {
-  proxy.web(
-    req,
-    res,
-    {
-      target: `https://${posthogHost}`,
-      changeOrigin: true,
-      secure: true,
-    },
-    (err) => {
-      console.error("Proxy error:", err);
-      res.status(502).send("Proxy error");
-    },
-  );
-});
-
-// Route 1: Forward static JS file requests to PostHog's Asset CDN
-app.use("/static/array.js", (req, res) => {
-  const assetUrl = "https://posthog.com";
-  req.pipe(request(assetUrl)).pipe(res);
-});
-
-// Route 2: Forward all standard event, log, and trace data to the API Ingestion domain
-app.use("/ingest", (req, res) => {
-  const apiUrl = "https://us.i.posthog.com" + req.url;
-  req.pipe(request(apiUrl)).pipe(res);
-});
-// END HTTP PROXY
+// NOTE: PostHog Proxy routes have been completely removed.
+// Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
 app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (LOCAL)";
 
-/* =========================================
-   PARSERS / STATIC / SESSION
-========================================= */
+/* ========================================= PARSERS / STATIC / SESSION ========================================= */
 app.use(express.static("public"));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
@@ -145,12 +105,9 @@ app.use((req, res, next) => {
   res.locals.isUser = req.session.isUser || false;
   next();
 });
-
 app.use(flash());
 
-/* =========================================
-   AUTOMATED REQUEST LOGGER MIDDLEWARE
-========================================= */
+/* ========================================= AUTOMATED REQUEST LOGGER MIDDLEWARE ========================================= */
 app.use((req, res, next) => {
   const distinctId = req.session?.id || req.sessionID || "anonymous_server_user";
   const isStaticAsset = req.path.includes(".") || req.path.startsWith("/images") || req.path.startsWith("/videos");
@@ -170,9 +127,7 @@ app.use((req, res, next) => {
   next();
 });
 
-/* =========================================
-   ROUTES REGISTER
-========================================= */
+/* ========================================= ROUTES REGISTER ========================================= */
 app.use("/", publicRoutes);
 app.use("/", groupingRoutes);
 app.use("/blog", blogRoutes);
@@ -190,17 +145,14 @@ app.use((req, res, next) => {
   err.status = 404;
   next(err);
 });
-
 app.use(errorHandler);
 
-/* =========================================================================================
-   PORT BINDING & CRASH HOOKS (KEEPS APPLICATION RUNNING CONTINUOUSLY ON MAPPED PORTS)
+/* ========================================================================================= 
+   PORT BINDING & CRASH HOOKS
 ========================================================================================= */
 const PORT = process.env.PORT || 8080;
-
 const server = app.listen(PORT, () => {
   logger.info(`Bottoms Up Golf application started on port ${PORT}`);
-
   appLogger.emit({
     severityText: "INFO",
     body: "Telemetry system connection verified.",
@@ -211,7 +163,6 @@ const server = app.listen(PORT, () => {
   });
 });
 
-// Capture unexpected errors and flush before shutting down
 process.on("uncaughtException", async (err) => {
   if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
