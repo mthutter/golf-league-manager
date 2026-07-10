@@ -46,11 +46,13 @@
 
     // Determine host configuration dynamically based on the current machine
     var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
+    // FIXED: Local requests go straight to PostHog ingestion; prod uses your proxy CNAME
     var finalHost = isLocal ? "https://us.i.posthog.com" : "https://t.bottoms-up-cos.org";
 
     window.posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
-      api_host: "https://t.bottoms-up-cos.org",
-      ui_host: "https://us.posthog.com",
+      api_host: finalHost, // FIXED: Now uses the dynamic finalHost variable
+      ui_host: "https://us.posthog.com", // CORRECT: Pointed to the main web app
       persistence: "cookie",
       enable_recording_console_log: true,
       session_recording: {
@@ -58,7 +60,7 @@
         recordBody: true,
       },
       // Turn off payload compression locally so you can read data in your Network tab
-      disable_compression: isLocal ? true : false,
+      disable_compression: isLocal,
       loaded: function (ph) {
         if (isLocal) ph.debug();
         console.log("🚀 POSTHOG PIPELINE ONLINE VIA:", finalHost);
