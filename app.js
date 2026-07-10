@@ -41,6 +41,17 @@ const SQLiteStore = SQLiteStoreFactory(session);
 const proxy = httpProxy.createProxyServer();
 const posthogHost = "us.i.posthog.com";
 
+// BLOCK WORDPRESS COMMON EXPLOITS
+const blockedPaths = ["/xmlrpc.php", "/wp-admin", "/.env"];
+
+app.use((req, res, next) => {
+  if (blockedPaths.some((path) => req.url.includes(path))) {
+    // Return a quick 403 Forbidden or 404 without verbose logging
+    return res.status(404).send("Not Found");
+  }
+  next();
+});
+
 /* =========================================
    BASIC APP SETTINGS & SECURITY
 ========================================= */
