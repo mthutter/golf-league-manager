@@ -10,6 +10,7 @@ import session from "express-session";
 import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import SQLiteStoreFactory from "connect-sqlite3";
+import cors from "cors";
 
 // REVERSE PROXY FOR OTEL LOG/TRACE DATA
 import httpProxy from "http-proxy";
@@ -52,6 +53,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// CORS
+app.use(
+  cors({
+    origin: ["http://localhost:8080", "https://bottoms-up-cos.org"],
+    credentials: true,
+  }),
+);
+
 /* =========================================
    BASIC APP SETTINGS & SECURITY
 ========================================= */
@@ -86,6 +95,19 @@ app.use("/ingest", (req, res) => {
     },
   );
 });
+
+// Route 1: Forward static JS file requests to PostHog's Asset CDN
+app.use("/static/array.js", (req, res) => {
+  const assetUrl = "https://posthog.com";
+  req.pipe(request(assetUrl)).pipe(res);
+});
+
+// Route 2: Forward all standard event, log, and trace data to the API Ingestion domain
+app.use("/ingest", (req, res) => {
+  const apiUrl = "https://us.i.posthog.com" + req.url;
+  req.pipe(request(apiUrl)).pipe(res);
+});
+// END HTTP PROXY
 
 app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (LOCAL)";
 
