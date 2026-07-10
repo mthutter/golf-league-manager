@@ -75,11 +75,11 @@
 
     // Determine host configuration dynamically based on the current machine
     var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    var finalHost = isLocal ? "https://posthog.com" : "https://t.bottoms-up-cos.org";
+    var finalHost = isLocal ? "https://us.i.posthog.com" : "https://t.bottoms-up-cos.org";
 
     window.posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
       api_host: finalHost,
-      ui_host: "https://posthog.com",
+      ui_host: "https://us.i.posthog.com",
       persistence: "cookie",
       enable_recording_console_log: true,
       session_recording: {
