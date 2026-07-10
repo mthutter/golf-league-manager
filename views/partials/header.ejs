@@ -70,42 +70,38 @@
       (e.init = function (i, s, a) {
         function g(t, e) {
           var o = e.split(".");
-          (2 == o.length && ((t = t[o[0]]), (e = o[1])),
+          (2 == o.length && ((t = t[o]), (e = o)),
             (t[e] = function () {
               t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
             }));
         }
-        // Determine host domain based on local vs production environment
         var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-        var proxyHost = isLocal ? "https://us.i.posthog.com" : "https://bottoms-up-cos.org";
 
-        // If local, download directly from the asset CDN; otherwise use the CNAME proxy domain
-        var assetHost = isLocal ? "https://us-assets.i.posthog.com" : "https://bottoms-up-cos.org";
+        // FIX: Production assets must be requested via your specialized 't.' CNAME proxy subdomain!
+        var assetHost = isLocal ? "https://posthog.com" : "https://t.bottoms-up-cos.org";
 
         (((p = t.createElement("script")).type = "text/javascript"),
           (p.crossOrigin = "anonymous"),
           (p.async = !0),
           (p.src = assetHost + "/static/array.js"),
-          (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r),
+          (r = t.getElementsByTagName("script")).parentNode.insertBefore(p, r),
           e._i.push([i, s, a]),
           (e.__SV = 1e3));
       }));
   })(document, window.posthog || []);
 
-  // Apply the environment conditions to the client configuration pipeline
   var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  var finalHost = isLocal ? "https://us.i.posthog.com" : "https://bottoms-up-cos.org";
+  var finalHost = isLocal ? "https://posthog.com" : "https://t.bottoms-up-cos.org";
 
   posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
     api_host: finalHost,
-    ui_host: "https://us.i.posthog.com",
+    ui_host: "https://posthog.com",
     persistence: "cookie",
     enable_recording_console_log: true,
     session_recording: {
       recordHeaders: true,
       recordBody: true,
     },
-    // Set to false when deploying to production to optimize bandwidth compression
     disable_compression: isLocal ? true : false,
     loaded: function (ph) {
       if (isLocal) ph.debug();
