@@ -18,13 +18,13 @@ const token = process.env.POSTHOG_PROJECT_TOKEN;
 // 1. TELEMETRY LOG EXPORTER
 const { BatchLogRecordProcessor } = await import("@opentelemetry/sdk-logs");
 const posthogLogExporter = new OTLPLogExporter({
-  url: "https://posthog.com",
+  url: "https://us.i.posthog.com",
   headers: { Authorization: `Bearer ${token}` },
 });
 
 // 2. TELEMETRY TRACE EXPORTER (Note: /i/v1/traces matches PostHog specs)
 const posthogTraceExporter = new OTLPTraceExporter({
-  url: "https://posthog.com",
+  url: "https://us.i.posthog.com",
   headers: { Authorization: `Bearer ${token}` },
 });
 
