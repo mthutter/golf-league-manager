@@ -63,26 +63,41 @@
 
 <!-- Place inside the <head> of your EJS template -->
 <script>
-  window.posthog = window.posthog || [];
-  window.posthog.init = function (token, config) {
-    window.posthog._token = token;
-    window.posthog._config = config;
+  !(function (t, e) {
+    var o, n, p, r;
+    e.__SV ||
+      ((window.posthog = e),
+      (e._i = []),
+      (e.init = function (i, s, a) {
+        function g(t, e) {
+          var o = e.split(".");
+          (2 == o.length && ((t = t[o[0]]), (e = o[1])),
+            (t[e] = function () {
+              t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
+            }));
+        }
+        (((p = t.createElement("script")).type = "text/javascript"),
+          (p.crossOrigin = "anonymous"),
+          (p.async = !0),
+          (p.src = s.api_host.replace(/\/+$/, "") + "/static/array.js"),
+          (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r),
+          e._i.push([i, s, a]),
+          (e.__SV = 1e3));
+      }));
+  })(document, window.posthog || []);
 
-    // Inject the main PostHog script bundle dynamically through your proxy path
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.crossOrigin = "anonymous";
-    script.async = true;
-    script.src = config.api_host + "/static/array.js"; // Fetches array.js via your /ingest reverse proxy
+  // 1. Dynamically determine the ingestion host to handle localhost vs production proxy
+  var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  var targetHost = isLocal ? "https://us.i.posthog.com" : "https://bottoms-up-cos.org";
 
-    var firstScript = document.getElementsByTagName("script")[0];
-    firstScript.parentNode.insertBefore(script, firstScript);
-  };
-
-  // Initialize PostHog via your Node reverse proxy route
+  // 2. Safely initialize PostHog
   posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
-    api_host: "https://bottoms-up-cos.org",
+    api_host: targetHost,
     ui_host: "https://us.i.posthog.com",
     persistence: "cookie",
+    loaded: function (ph) {
+      // Optional: Confirm it loaded successfully in your console
+      console.log("PostHog successfully loaded via:", targetHost);
+    },
   });
 </script>
