@@ -43,6 +43,7 @@
     "express-fileupload": "^1.5.1",
     "express-session": "^1.18.0",
     "helmet": "^8.2.0",
+    "http-proxy": "^1.18.1",
     "imagemin": "^7.0.1",
     "jquery": "^3.7.1",
     "jsdom": "^25.0.0",

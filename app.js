@@ -11,6 +11,9 @@ import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import SQLiteStoreFactory from "connect-sqlite3";
 
+// REVERSE PROXY FOR OTEL LOG/TRACE DATA
+import httpProxy from "http-proxy";
+
 // OPENTELEMETRY CONTEXT HELPERS
 import { sdk, appLogger } from "./utilities/otel.js";
 import logger from "./utilities/logger.js";
@@ -35,6 +38,9 @@ import authMiddleware from "./middleware/auth.middleware.js";
 const app = express();
 const SQLiteStore = SQLiteStoreFactory(session);
 
+const proxy = httpProxy.createProxyServer();
+const posthogHost = "us.i.posthog.com";
+
 /* =========================================
    BASIC APP SETTINGS & SECURITY
 ========================================= */
@@ -51,6 +57,23 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.setHeader("Permission-Policy", "fullscreen=('*')");
   next();
+});
+
+// HTTP PROXY
+app.use("/ingest", (req, res) => {
+  proxy.web(
+    req,
+    res,
+    {
+      target: `https://${posthogHost}`,
+      changeOrigin: true,
+      secure: true,
+    },
+    (err) => {
+      console.error("Proxy error:", err);
+      res.status(502).send("Proxy error");
+    },
+  );
 });
 
 app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (LOCAL)";
