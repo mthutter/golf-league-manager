@@ -95,6 +95,13 @@
     api_host: targetHost,
     ui_host: "https://us.i.posthog.com",
     persistence: "cookie",
+    enable_recording_console_log: true,
+    session_recording: {
+      recordHeaders: true,
+      recordBody: true,
+    },
+    // ADD THIS LINE FOR LOCAL DEBUGGING ONLY
+    disable_compression: true,
     loaded: function (ph) {
       // Optional: Confirm it loaded successfully in your console
       console.log("PostHog successfully loaded via:", targetHost);
