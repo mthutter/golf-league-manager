@@ -61,51 +61,37 @@
   }
 </script>
 
+<!-- 1. Let the browser handle script delivery cleanly and synchronously via your production CNAME -->
+<script type="text/javascript" crossorigin="anonymous" src="https://t.bottoms-up-cos.org/static/array.js"></script>
+
+<!-- 2. Execute initialization instantly with zero DOM manipulation overhead -->
 <script>
-  !(function (t, e) {
-    var o, n, p, r;
-    e.__SV ||
-      ((window.posthog = e),
-      (e._i = []),
-      (e.init = function (i, s, a) {
-        function g(t, e) {
-          var o = e.split(".");
-          (2 == o.length && ((t = t[o]), (e = o)),
-            (t[e] = function () {
-              t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
-            }));
-        }
-        var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  (function () {
+    // Safety check to ensure the file above parsed correctly
+    if (!window.posthog || !window.posthog.init) {
+      console.warn("⚠️ PostHog library not fully loaded in memory yet.");
+      return;
+    }
 
-        // FIX: Production assets must be requested via your specialized 't.' CNAME proxy subdomain!
-        var assetHost = isLocal ? "https://posthog.com" : "https://t.bottoms-up-cos.org";
+    // Determine host configuration dynamically based on the current machine
+    var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    var finalHost = isLocal ? "https://posthog.com" : "https://t.bottoms-up-cos.org";
 
-        (((p = t.createElement("script")).type = "text/javascript"),
-          (p.crossOrigin = "anonymous"),
-          (p.async = !0),
-          (p.src = assetHost + "/static/array.js"),
-          (r = t.getElementsByTagName("script")).parentNode.insertBefore(p, r),
-          e._i.push([i, s, a]),
-          (e.__SV = 1e3));
-      }));
-  })(document, window.posthog || []);
-
-  var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  var finalHost = isLocal ? "https://posthog.com" : "https://t.bottoms-up-cos.org";
-
-  posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
-    api_host: finalHost,
-    ui_host: "https://posthog.com",
-    persistence: "cookie",
-    enable_recording_console_log: true,
-    session_recording: {
-      recordHeaders: true,
-      recordBody: true,
-    },
-    disable_compression: isLocal ? true : false,
-    loaded: function (ph) {
-      if (isLocal) ph.debug();
-      console.log("🚀 POSTHOG AUTOMATION ACTIVE VIA:", finalHost);
-    },
-  });
+    window.posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
+      api_host: finalHost,
+      ui_host: "https://posthog.com",
+      persistence: "cookie",
+      enable_recording_console_log: true,
+      session_recording: {
+        recordHeaders: true,
+        recordBody: true,
+      },
+      // Turn off payload compression locally so you can read data in your Network tab
+      disable_compression: isLocal ? true : false,
+      loaded: function (ph) {
+        if (isLocal) ph.debug();
+        console.log("🚀 POSTHOG PIPELINE ONLINE VIA:", finalHost);
+      },
+    });
+  })();
 </script>
