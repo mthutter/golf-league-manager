@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js | pino-pretty",
+    "start": "nodemon app.js",
     "format": "prettier --log-level warn --write \"{<file-path>}/**/*.{ejs,jsx,js}\"",
     "test": "node --test test/unit/test.*.js"
   },
@@ -64,6 +64,7 @@
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1",
     "ssl": "^1.0.0",
+    "strip-json-comments": "^3.1.1",
     "uuid": ">=11.1.1",
     "yarn": "^1.22.22"
   },
