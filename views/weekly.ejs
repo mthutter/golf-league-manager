@@ -35,19 +35,22 @@
       .results-custom-table th {
         background-color: #1b4332 !important;
         color: white !important;
-        padding: 14px;
-        font-weight: 600;
+        padding: clamp(6px, 1vw, 14px);
+        font-weight: 700;
+        font-size: clamp(0.55rem, 0.9vw, 0.8rem);
         letter-spacing: 0.5px;
         border: 1px solid rgba(255, 255, 255, 0.15);
         cursor: pointer;
         user-select: none;
         position: relative;
+        white-space: nowrap;
       }
       .results-custom-table td {
         vertical-align: middle;
         padding: 12px;
         border: 1px solid rgba(27, 67, 50, 0.1);
       }
+      /* Unified font class applied to all body cells */
       .players {
         font-size: clamp(0.65rem, 1vw, 0.85rem);
       }
@@ -111,7 +114,6 @@
     <!-- Weekly Performance Dashboard Layout -->
     <div class="container my-4">
       <div class="card shadow-sm results-table-card">
-        <!-- Card Header to match Standings/Skins UI -->
         <div
           class="card-header text-white py-3"
           style="background-color: #1b4332"
@@ -123,7 +125,6 @@
           >
         </div>
 
-        <!-- Added table-responsive container to trigger your horizontal scrolling safely -->
         <div class="table-responsive">
           <table
             id="sortableTable"
@@ -153,13 +154,13 @@
                     <%= player.player_name %>
                   </a>
                 </td>
-                <td><%= player.gross_total %></td>
-                <td><%= player.net_total %></td>
-                <td><%= player.stableford_total %></td>
-                <td><%= player.ctp_points %></td>
-                <td><%= player.birdie_points %></td>
-                <td class="fw-bold text-success pe-3">
-                  <%= player.total_points %>
+                <td class="players"><%= player.gross_total %></td>
+                <td class="players"><%= player.net_total %></td>
+                <td class="players"><%= player.stableford_total %></td>
+                <td class="players"><%= player.ctp_points %></td>
+                <td class="players"><%= player.birdie_points %></td>
+                <td class="fw-bold text-success pe-3 players">
+                  <strong><%= player.total_points %></strong>
                 </td>
               </tr>
               <% }) %>
