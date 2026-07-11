@@ -110,14 +110,15 @@
 }
 
 .out-title {
-  margin: 0 0 15px 0;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 800;
+  margin: 0 0 15px;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 6px;
+  text-align: center;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .badge-container {
