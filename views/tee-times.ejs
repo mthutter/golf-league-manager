@@ -212,7 +212,7 @@
         <h3 class="out-title" style="justify-content: flex-start; color: var(--primary-green); pointer-events: none;">
           <span>🏌️‍♂️</span> Available for Week <%= weekId %>
         </h3>
-        <div class="badge-container" style="justify-content: flex-start; pointer-events: none;">
+        <div class="badge-container" style="pointer-events: none;">
           <% if (locals.subPlayers && subPlayers.length > 0) { %>
           <% subPlayers.forEach(function(player) { %>
           <span class="player-badge <%= locals.isAdmin ? 'draggable-badge' : '' %>"

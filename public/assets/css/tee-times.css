@@ -122,10 +122,16 @@
 
 .badge-container {
   display: flex;
-  gap: 12px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
 }
 
+.player-badge {
+  width: 140px; /* adjust as needed */
+  text-align: center;
+  box-sizing: border-box;
+}
 .player-badge {
   background-color: #fff5f5;
   color: #c53030;
@@ -280,5 +286,10 @@
 @media (max-width: 480px) {
   .roster-grid {
     grid-template-columns: 1fr;
+  }
+
+  .out-title {
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
   }
 }
