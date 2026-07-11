@@ -25,16 +25,27 @@
   color: var(--accent-gold);
   text-shadow: none;
 }
-
-.navbar .nav-link {
-  text-align: center;
-  border-radius: 999px;
-  transition: 0.2s ease;
+/* Target the standard Bootstrap navbar menu navigation links */
+.navbar-nav .nav-link {
+  border: 1.5px solid #d4af37 !important; /* Subtle golf-gold border */
+  border-radius: 8px; /* Smooth rounded edges matching cards */
+  padding: 6px 12px !important; /* Balanced spacing inside the border box */
+  margin: 0 4px; /* Spacing between individual menu buttons */
+  transition: all 0.2s ease-in-out; /* Soft transition for interaction styles */
+  color: #1b4332 !important; /* Keeps text high-contrast dark green */
+  font-weight: 600;
 }
 
-.navbar .nav-link:hover {
-  background-color: rgba(89, 195, 62, 0.7);
-  border-radius: 5px;
+/* Hover state interaction to make the options reactive */
+.navbar-nav .nav-link:hover {
+  background-color: rgba(
+    212,
+    175,
+    55,
+    0.15
+  ) !important; /* Gentle transparent gold glow */
+  color: #18aa24 !important; /* Transitions text to your hover green */
+  transform: translateY(-1px); /* Micro-lift behavior matching buttons */
 }
 
 .navbar-collapse {
