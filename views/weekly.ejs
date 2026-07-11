@@ -2,141 +2,95 @@
 <html lang="en">
   <head>
     <%- include('./partials/header'); %>
+    <style>
+      /* ===== Layout & Typography Colors from skins.ejs ===== */
+      .player-link {
+        color: #1b4332;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      .player-link:hover {
+        color: #18aa24;
+        text-decoration: underline;
+      }
+      .gallery-header {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+      .gallery-header h1 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .gallery-header p {
+        opacity: 0.9;
+        margin-bottom: 1rem;
+      }
+
+      /* ===== Table & Card Framework Architecture ===== */
+      .results-table-card {
+        border: 1.5px solid rgba(27, 67, 50, 0.15);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .results-custom-table th {
+        background-color: #1b4332 !important;
+        color: white !important;
+        padding: 14px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+      .results-custom-table td {
+        vertical-align: middle;
+        padding: 12px;
+        border: 1px solid rgba(27, 67, 50, 0.1);
+      }
+      .players {
+        font-size: clamp(0.65rem, 1vw, 0.85rem);
+      }
+
+      /* ===== Sort Indicators ===== */
+      th.sort-asc::after {
+        content: " ▲";
+        position: absolute;
+        right: 8px;
+      }
+      th.sort-desc::after {
+        content: " ▼";
+        position: absolute;
+        right: 8px;
+      }
+
+      /* ===== Navigation Layout ===== */
+      .button-link {
+        display: inline-block;
+        text-decoration: none;
+      }
+      .week-nav {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .week-nav .btn {
+        min-width: 85px;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        transition: all 0.2s ease;
+      }
+      .week-nav .btn:hover {
+        transform: translateY(-1px);
+      }
+    </style>
   </head>
-  <style>
-    html {
-      overflow-y: auto;
-      overflow-x: auto;
-    }
-
-    :root {
-      --league-dark: #1b4332;
-      --league-green: #18aa24;
-      --league-light: #53da80;
-      --gridline: rgba(255, 255, 255, 0.15);
-    }
-
-    .player-link {
-      color: var(--league-dark);
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .player-link:hover {
-      color: var(--league-green);
-      text-decoration: underline;
-    }
-
-    .button-link {
-      display: inline-block;
-      text-decoration: none;
-    }
-
-    /* ===== Header ===== */
-
-    .gallery-header {
-      text-align: center;
-    }
-
-    .gallery-header h1 {
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .gallery-header p {
-      opacity: 0.9;
-      margin-bottom: 1rem;
-    }
-
-    /* ===== Results Card ===== */
-
-    .results-card {
-      border: 2px solid var(--gridline);
-      border-radius: 18px;
-      overflow: hidden;
-    }
-
-    /* ===== Table ===== */
-
-    .results-table {
-      margin-bottom: 0;
-    }
-
-    .results-table th {
-      background-color: var(--league-green);
-      color: white;
-      padding: 14px;
-      text-align: center;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      border: 1.5px solid var(--gridline);
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-    }
-
-    .results-table td {
-      background-color: var(--league-light);
-      text-align: center;
-      vertical-align: middle;
-      padding: 12px;
-      border: 2px solid var(--gridline);
-    }
-
-    .results-table tbody tr:hover {
-      background-color: #f8f9fa;
-    }
-
-    .results-table td:nth-child(2) {
-      text-align: left;
-    }
-
-    th.sort-asc::after {
-      content: " ▲";
-      position: absolute;
-      right: 8px;
-    }
-
-    th.sort-desc::after {
-      content: " ▼";
-      position: absolute;
-      right: 8px;
-    }
-    .results-table th {
-      background-color: #18aa24 !important;
-      color: white !important;
-    }
-
-    .results-table td {
-      background-color: #53da80 !important;
-    }
-
-    .results-table th,
-    .results-table td {
-      border: 1.5px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .week-nav {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .week-nav .btn {
-      min-width: 85px;
-      font-weight: 600;
-      border-radius: 50px;
-      border: none;
-      transition: all 0.2s ease;
-    }
-
-    .week-nav .btn:hover {
-      transform: translateY(-1px);
-    }
-  </style>
   <body>
     <%- include('./partials/navbar'); %>
+
+    <!-- Header Banner -->
     <div class="container">
       <div class="gallery-header">
         <h1>
@@ -146,20 +100,39 @@
         </h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
       </div>
+
       <div class="week-nav mb-4">
-        <a href="/scores/standings" class="button-link btn btn-light">
+        <a href="/scores/standings" class="button-link btn btn-light btn-sm">
           ← Back to Standings
         </a>
       </div>
     </div>
-    <div class="container">
-      <div class="card results-card shadow-lg mb-5">
-        <div class="card-body p-0">
-          <table id="sortableTable" class="table results-table table-hover">
+
+    <!-- Weekly Performance Dashboard Layout -->
+    <div class="container my-4">
+      <div class="card shadow-sm results-table-card">
+        <!-- Card Header to match Standings/Skins UI -->
+        <div
+          class="card-header text-white py-3"
+          style="background-color: #1b4332"
+        >
+          <h5 class="card-title mb-0 fw-bold">Performance Analytics</h5>
+          <small class="text-white-50"
+            >Click on headers to dynamically sort field data by scoring
+            metrics.</small
+          >
+        </div>
+
+        <!-- Added table-responsive container to trigger your horizontal scrolling safely -->
+        <div class="table-responsive">
+          <table
+            id="sortableTable"
+            class="table table-bordered align-middle text-center mb-0 results-custom-table table-hover"
+          >
             <thead>
               <tr>
-                <th>Rank</th>
-                <th>Player</th>
+                <th style="width: 70px">Rank</th>
+                <th class="text-start">Player</th>
                 <th>Gross</th>
                 <th>Net</th>
                 <th>Points</th>
@@ -168,19 +141,25 @@
                 <th>Total Points</th>
               </tr>
             </thead>
-
             <tbody>
               <% results.forEach((player, idx) => { %>
               <tr>
-                <td><%= idx + 1 %></td>
-                <td><%= player.player_name %></td>
+                <td class="fw-bold bg-light players"><%= idx + 1 %></td>
+                <td class="text-start fw-semibold players">
+                  <a
+                    href="/scores/members/<%= player.member_id || player.id %>"
+                    class="player-link"
+                  >
+                    <%= player.player_name %>
+                  </a>
+                </td>
                 <td><%= player.gross_total %></td>
                 <td><%= player.net_total %></td>
                 <td><%= player.stableford_total %></td>
                 <td><%= player.ctp_points %></td>
                 <td><%= player.birdie_points %></td>
-                <td>
-                  <strong><%= player.total_points %></strong>
+                <td class="fw-bold text-success pe-3">
+                  <%= player.total_points %>
                 </td>
               </tr>
               <% }) %>
