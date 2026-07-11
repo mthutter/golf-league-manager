@@ -87,13 +87,16 @@
       .trend-up {
         color: #18aa24;
         font-weight: bold;
+        font-size: inherit;
       }
       .trend-down {
         color: #dc3545;
         font-weight: bold;
+        font-size: inherit;
       }
       .trend-same {
         color: #6c757d;
+        font-size: inherit;
       }
 
       /* ===== Podium Highlights ===== */
@@ -144,7 +147,6 @@
     <!-- Standings Table Dashboard Layout -->
     <div class="container my-4">
       <div class="card shadow-sm standings-table-card">
-        <!-- Sleek Header to block out table styling -->
         <div
           class="card-header text-white py-3"
           style="background-color: #1b4332"
@@ -165,6 +167,7 @@
               <tr>
                 <th>Pos</th>
                 <th></th>
+                <th>Avg Pts</th>
                 <th class="text-start">Player</th>
                 <th>HCP</th>
                 <th>Rounds</th>
@@ -173,7 +176,6 @@
                 <th>Total Pts</th>
                 <th>Gross Avg</th>
                 <th>Net Avg</th>
-                <th>Avg Pts</th>
               </tr>
             </thead>
             <tbody>
@@ -191,7 +193,7 @@
                   <% } %>
                   <% } %>
                 </td>
-                <td>
+                <td class="players">
                   <% if (player.movement === "up") { %>
                   <span class="trend-up">▲<%= player.delta %></span>
                   <% } else if (player.movement === "down") { %>
@@ -199,6 +201,11 @@
                   <% } else { %>
                   <span class="trend-same">—</span>
                   <% } %>
+                </td>
+                <td
+                  class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>"
+                >
+                  <%= Number(player.avg_points).toFixed(2) %>
                 </td>
                 <td class="text-start fw-semibold players">
                   <a
@@ -208,19 +215,18 @@
                     <%= player.player_name %>
                   </a>
                 </td>
-                <td style="color: #1b4332" class="fw-bold bg-light">
+                <td style="color: #1b4332" class="fw-bold bg-light players">
                   <%= player.current_handicap %>
                 </td>
-                <td><%= player.weeks_played %></td>
-                <td><%= player.birdie_points %></td>
-                <td><%= player.ctp_points %></td>
-                <td class="fw-bold"><%= player.total_points %></td>
-                <td><%= Number(player.avg_gross).toFixed(2) %></td>
-                <td><%= Number(player.avg_net).toFixed(2) %></td>
-                <td
-                  class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>"
-                >
-                  <%= Number(player.avg_points).toFixed(2) %>
+                <td class="players"><%= player.weeks_played %></td>
+                <td class="players"><%= player.birdie_points %></td>
+                <td class="players"><%= player.ctp_points %></td>
+                <td class="fw-bold players"><%= player.total_points %></td>
+                <td class="players">
+                  <%= Number(player.avg_gross).toFixed(2) %>
+                </td>
+                <td class="players">
+                  <%= Number(player.avg_net).toFixed(2) %>
                 </td>
               </tr>
               <% }) %>
