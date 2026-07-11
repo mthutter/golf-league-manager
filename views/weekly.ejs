@@ -31,11 +31,15 @@
         border: 1.5px solid rgba(27, 67, 50, 0.15);
         border-radius: 18px;
         overflow: hidden;
+        /* Forces the card component to shrink tightly around the table width */
+        width: max-content !important;
+        max-width: 100%;
+        margin: 0 auto; /* Centers the whole card container layout */
       }
       .results-custom-table th {
         background-color: #1b4332 !important;
         color: white !important;
-        padding: clamp(6px, 1vw, 14px);
+        padding: 10px 14px;
         font-weight: 700;
         font-size: clamp(0.55rem, 0.9vw, 0.8rem);
         letter-spacing: 0.5px;
@@ -47,10 +51,9 @@
       }
       .results-custom-table td {
         vertical-align: middle;
-        padding: 12px;
+        padding: 10px 14px;
         border: 1px solid rgba(27, 67, 50, 0.1);
       }
-      /* Unified font class applied to all body cells */
       .players {
         font-size: clamp(0.65rem, 1vw, 0.85rem);
       }
@@ -87,6 +90,18 @@
       }
       .week-nav .btn:hover {
         transform: translateY(-1px);
+      }
+
+      /* ===== CRITICAL COMPACT COLUMN FIX ===== */
+      .compact-pixel-table {
+        /* Tells table to hug content tightly instead of stretching 100% wide */
+        width: max-content !important;
+        max-width: 100%;
+        margin: 0 auto; /* Centers the clean compact table inside the card */
+        table-layout: auto !important;
+      }
+      .nowrap-cell {
+        white-space: nowrap !important;
       }
     </style>
   </head>
@@ -125,28 +140,32 @@
           >
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive" style="text-align: center">
+          <!-- Swapped class to compact-pixel-table -->
           <table
             id="sortableTable"
-            class="table table-bordered align-middle text-center mb-0 results-custom-table table-hover"
+            class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover"
           >
             <thead>
               <tr>
-                <th style="width: 70px">Rank</th>
-                <th class="text-start">Player</th>
-                <th>Gross</th>
-                <th>Net</th>
-                <th>Points</th>
-                <th>CTP Points</th>
-                <th>Birdie Points</th>
-                <th>Total Points</th>
+                <!-- Explicitly declare small column constraints -->
+                <th style="width: 60px">Rank</th>
+                <th class="text-start" style="width: 160px; min-width: 140px">
+                  Player
+                </th>
+                <th style="width: 110px">Total Points</th>
+                <th style="width: 75px">Gross</th>
+                <th style="width: 75px">Net</th>
+                <th style="width: 80px">Points</th>
+                <th style="width: 100px">CTP Points</th>
+                <th style="width: 110px">Birdie Points</th>
               </tr>
             </thead>
             <tbody>
               <% results.forEach((player, idx) => { %>
               <tr>
                 <td class="fw-bold bg-light players"><%= idx + 1 %></td>
-                <td class="text-start fw-semibold players">
+                <td class="text-start fw-semibold players nowrap-cell">
                   <a
                     href="/scores/members/<%= player.member_id || player.id %>"
                     class="player-link"
@@ -154,14 +173,16 @@
                     <%= player.player_name %>
                   </a>
                 </td>
-                <td class="players"><%= player.gross_total %></td>
-                <td class="players"><%= player.net_total %></td>
-                <td class="players"><%= player.stableford_total %></td>
-                <td class="players"><%= player.ctp_points %></td>
-                <td class="players"><%= player.birdie_points %></td>
-                <td class="fw-bold text-success pe-3 players">
+                <td class="fw-bold text-success pe-3 players nowrap-cell">
                   <strong><%= player.total_points %></strong>
                 </td>
+                <td class="players nowrap-cell"><%= player.gross_total %></td>
+                <td class="players nowrap-cell"><%= player.net_total %></td>
+                <td class="players nowrap-cell">
+                  <%= player.stableford_total %>
+                </td>
+                <td class="players nowrap-cell"><%= player.ctp_points %></td>
+                <td class="players nowrap-cell"><%= player.birdie_points %></td>
               </tr>
               <% }) %>
             </tbody>
