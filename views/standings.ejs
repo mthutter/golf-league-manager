@@ -2,9 +2,116 @@
 <html lang="en">
   <head>
     <%- include('./partials/header') %>
-    <link href="/assets/css/standings.css" rel="stylesheet" />
-  </head>
+    <style>
+      /* ===== Layout & Typography Colors from skins.ejs ===== */
+      .player-link {
+        color: #1b4332;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      .player-link:hover {
+        color: #18aa24;
+        text-decoration: underline;
+      }
+      .gallery-header {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+      .gallery-header h1 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .gallery-header p {
+        opacity: 0.9;
+        margin-bottom: 1rem;
+      }
 
+      /* ===== Table & Card Framework Architecture ===== */
+      .standings-table-card {
+        border: 1.5px solid rgba(27, 67, 50, 0.15);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .standings-custom-table th {
+        background-color: #1b4332 !important;
+        color: white !important;
+        padding: 14px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .standings-custom-table td {
+        vertical-align: middle;
+        padding: 8px 12px;
+        border: 1px solid rgba(27, 67, 50, 0.1);
+      }
+      .players {
+        font-size: clamp(0.65rem, 1vw, 0.85rem);
+      }
+
+      /* ===== Week Navigation Pill Layout ===== */
+      .button-link {
+        display: inline-block;
+        text-decoration: none;
+      }
+      .week-results-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .week-results-label {
+        font-weight: 700;
+        color: #1b4332;
+      }
+      .week-nav {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .week-nav .btn {
+        min-width: 85px;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        transition: all 0.2s ease;
+      }
+      .week-nav .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      /* ===== Trend Movement Badges ===== */
+      .trend-up {
+        color: #18aa24;
+        font-weight: bold;
+      }
+      .trend-down {
+        color: #dc3545;
+        font-weight: bold;
+      }
+      .trend-same {
+        color: #6c757d;
+      }
+
+      /* ===== Podium Highlights ===== */
+      .gold-cell {
+        background-color: #fff3cd !important;
+        color: #664d03 !important;
+        font-weight: 700;
+      }
+      .silver-cell {
+        background-color: #f8f9fa !important;
+        font-weight: 700;
+      }
+      .bronze-cell {
+        background-color: #f0e6d2 !important;
+        font-weight: 700;
+      }
+    </style>
+  </head>
   <body>
     <%- include('./partials/navbar') %>
 
@@ -17,36 +124,48 @@
           currentWeek.displayDate %>) • Bottoms Up Golf League
         </p>
       </div>
+
       <div class="week-results-container">
         <span class="week-results-label">Weekly Results:</span>
         <div class="week-nav">
-          <% weeks .filter(week => week.week_number <=
-          currentWeek.week_number).forEach(week => { %>
-
+          <% weeks .filter(week => week.week_number <= currentWeek.week_number)
+          .forEach(week => { %>
           <a
             href="/scores/weekly/<%= week.week_number %>"
             class="button-link btn btn-light btn-sm"
           >
-            Week
-            <%= week.week_number %>
+            Week <%= week.week_number %>
           </a>
-
           <% }) %>
         </div>
       </div>
-      <br />
     </div>
 
-    <!-- Standings -->
-    <div class="container">
-      <div class="card standings-card shadow-lg mb-5">
-        <div class="card-body p-0">
-          <table id="sortableTable" class="table standings-table table-hover">
+    <!-- Standings Table Dashboard Layout -->
+    <div class="container my-4">
+      <div class="card shadow-sm standings-table-card">
+        <!-- Sleek Header to block out table styling -->
+        <div
+          class="card-header text-white py-3"
+          style="background-color: #1b4332"
+        >
+          <h5 class="card-title mb-0 fw-bold">Official Leaderboard</h5>
+          <small class="text-white-50"
+            >Overall point accumulations, average strokes, and performance
+            analytics.</small
+          >
+        </div>
+
+        <div class="table-responsive">
+          <table
+            id="sortableTable"
+            class="table table-bordered align-middle text-center mb-0 standings-custom-table"
+          >
             <thead>
               <tr>
                 <th>Pos</th>
-                <th class="movement-header"></th>
-                <th>Player</th>
+                <th></th>
+                <th class="text-start">Player</th>
                 <th>HCP</th>
                 <th>Rounds</th>
                 <th>Birdies</th>
@@ -60,19 +179,19 @@
             <tbody>
               <% standings.forEach((player, idx) => { %>
               <tr>
-                <td class="position-cell">
+                <td class="fw-bold bg-light players">
                   <% if (idx > 0 && player.rank === standings[idx - 1].rank) {
                   %>
                   <!-- Leave blank for subsequent tied players -->
                   <% } else { %>
                   <% if (player.standings_exempt) { %>
-  *
-<% } else { %>
-  <%= player.rank %>
-<% } %>
+                  *
+                  <% } else { %>
+                  <%= player.rank %>
+                  <% } %>
                   <% } %>
                 </td>
-                <td class="movement-cell">
+                <td>
                   <% if (player.movement === "up") { %>
                   <span class="trend-up">▲<%= player.delta %></span>
                   <% } else if (player.movement === "down") { %>
@@ -81,36 +200,25 @@
                   <span class="trend-same">—</span>
                   <% } %>
                 </td>
-                <td>
-                  <strong
-                    ><a
-                      href="/scores/members/<%= player.id %>"
-                      class="player-link"
-                      ><%= player.player_name %></a
-                    ></strong
+                <td class="text-start fw-semibold players">
+                  <a
+                    href="/scores/members/<%= player.id %>"
+                    class="player-link"
                   >
+                    <%= player.player_name %>
+                  </a>
                 </td>
-                <td style="color: #2a35c2">
-                  <strong><%= player.current_handicap %></strong>
+                <td style="color: #1b4332" class="fw-bold bg-light">
+                  <%= player.current_handicap %>
                 </td>
-                <td>
-                  <%= player.weeks_played %>
-                </td>
-                <td>
-                  <%= player.birdie_points %>
-                </td>
-                <td>
-                  <%= player.ctp_points %>
-                </td>
-                <td><%= player.total_points %></td>
-                <td>
-                  <%= Number(player.avg_gross).toFixed(2) %>
-                </td>
-                <td>
-                  <%= Number(player.avg_net).toFixed(2) %>
-                </td>
+                <td><%= player.weeks_played %></td>
+                <td><%= player.birdie_points %></td>
+                <td><%= player.ctp_points %></td>
+                <td class="fw-bold"><%= player.total_points %></td>
+                <td><%= Number(player.avg_gross).toFixed(2) %></td>
+                <td><%= Number(player.avg_net).toFixed(2) %></td>
                 <td
-                  class="points-average <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>"
+                  class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>"
                 >
                   <%= Number(player.avg_points).toFixed(2) %>
                 </td>
