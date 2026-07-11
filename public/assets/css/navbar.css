@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap");
 /* ======================== NAVBAR MAIN ======================== */
 .navbar {
   margin-top: 0px;
@@ -9,10 +10,20 @@
 }
 
 .navbar-brand {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: bolder;
-  letter-spacing: 0.4px;
-  color: rgb(168, 168, 13);
+  font-family: "Merriweather", serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgb(194, 178, 30);
+  text-shadow:
+    -1px -1px 0 rgba(18, 51, 41, 0.7),
+    1px -1px 0 rgba(18, 51, 41, 0.7),
+    -1px 1px 0 rgba(18, 51, 41, 0.7),
+    1px 1px 0 rgba(18, 51, 41, 0.7);
+}
+
+.navbar-brand:hover {
+  color: var(--accent-gold);
+  text-shadow: none;
 }
 
 .navbar .nav-link {
