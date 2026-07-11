@@ -107,16 +107,16 @@
 
       /* ===== Podium Highlights ===== */
       .gold-cell {
-        background-color: #fff3cd !important;
+        background-color: gold !important;
         color: #664d03 !important;
         font-weight: 700;
       }
       .silver-cell {
-        background-color: #f8f9fa !important;
+        background-color: silver !important;
         font-weight: 700;
       }
       .bronze-cell {
-        background-color: #f0e6d2 !important;
+        background-color: rgb(205, 127, 50) !important;
         font-weight: 700;
       }
     </style>
@@ -143,8 +143,7 @@
             href="/scores/weekly/<%= week.week_number %>"
             class="button-link btn btn-light btn-sm"
           >
-            Week
-            <%= week.week_number %>
+            Week <%= week.week_number %>
           </a>
           <% }) %>
         </div>
@@ -173,9 +172,10 @@
             <thead>
               <tr>
                 <th>Pos</th>
+                <th class="text-start">Player</th>
+                <!-- Moved here -->
                 <th></th>
                 <th>Avg Pts</th>
-                <th class="text-start">Player</th>
                 <th>HCP</th>
                 <th>Rounds</th>
                 <th>Birdies</th>
@@ -200,6 +200,16 @@
                   <% } %>
                   <% } %>
                 </td>
+                <!-- Player details column -->
+                <td class="text-start fw-semibold players">
+                  <a
+                    href="/scores/members/<%= player.id %>"
+                    class="player-link"
+                  >
+                    <%= player.player_name %>
+                  </a>
+                </td>
+                <!-- Trend movement column -->
                 <td class="players">
                   <% if (player.movement === "up") { %>
                   <span class="trend-up">▲<%= player.delta %></span>
@@ -209,18 +219,11 @@
                   <span class="trend-same">—</span>
                   <% } %>
                 </td>
+                <!-- Average Points column -->
                 <td
                   class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>"
                 >
                   <%= Number(player.avg_points).toFixed(2) %>
-                </td>
-                <td class="text-start fw-semibold players">
-                  <a
-                    href="/scores/members/<%= player.id %>"
-                    class="player-link"
-                  >
-                    <%= player.player_name %>
-                  </a>
                 </td>
                 <td style="color: #1b4332" class="fw-bold bg-light players">
                   <%= player.current_handicap %>
