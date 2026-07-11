@@ -333,3 +333,57 @@
     line-height: 1.2;
   }
 }
+
+/* ======================== TEE SHEET - SMALL PHONE FIX ======================== */
+
+@media (max-width: 480px) {
+  .main-wrapper {
+    padding: 20px 8px;
+  }
+
+  .tee-card {
+    padding: 8px;
+    margin: 12px auto;
+  }
+
+  .tee-card-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .tee-sheet-title {
+    font-size: 1.2rem;
+  }
+
+  .update-chip {
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tee-table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .tee-table th,
+  .tee-table td {
+    padding: 6px 2px;
+    font-size: 0.82rem;
+  }
+
+  .tee-table td span {
+    display: block;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .tee-note {
+    font-size: 1rem;
+  }
+}

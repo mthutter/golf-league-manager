@@ -41,7 +41,6 @@
     padding-top: 0 !important;
   }
 }
-
 </style>
 
 <body>
@@ -102,8 +101,7 @@
       <div class="tee-card-header">
         <h2 class="tee-sheet-title">
           Week <%= currentWeek.week_number %>
-          (<%= currentWeek.displayDate %>)
-          Tee Times
+          (<%= currentWeek.displayDate %>)         
         </h2>
         <div class="update-chip">
           <span class="update-label">Updated</span>
@@ -183,7 +181,7 @@
     <!-- Side-by-Side Roster Management Area (Enhanced for Drop Targets) -->
     <% if (groupings && groupings.length > 0) { %>
     <div
-      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-top: 35px;">
+      class="roster-grid">
 
       <!-- Column 1: Out For Week (Regulars Container Target) -->
      <!-- <div class="out-section"

@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js",
+    "dev": "cross-env NODE_ENV=development node app.js",
+    "start": "cross-env NODE_ENV=production node app.js",
     "format": "prettier --log-level warn --write \"{<file-path>}/**/*.{ejs,jsx,js}\"",
     "test": "node --test test/unit/test.*.js"
   },
@@ -36,6 +37,7 @@
     "cookie-parser": "^1.4.6",
     "corepack": "^0.29.4",
     "cors": "^2.8.6",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "ejs-lint": "^2.0.1",
