@@ -71,7 +71,17 @@
       api_host: finalHost, // FIXED: Now uses the dynamic finalHost variable
       ui_host: "https://us.posthog.com", // CORRECT: Pointed to the main web app
       persistence: "cookie",
-      session_recording: {},
+      session_recording: {
+        maskAllInputs: true,
+        maskTextSelector: ".ph-mask",
+      },
+      capture_exceptions: {
+        capture_unhandled_errors: true,
+        capture_unhandled_rejections: true,
+        capture_console_errors: true,
+      },
+      capture_pageview: "history_change",
+      capture_pageLeave: true,
       // Turn off payload compression locally so you can read data in your Network tab
       disable_compression: isLocal,
       loaded: function (ph) {
