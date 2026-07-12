@@ -119,6 +119,13 @@
         background-color: rgb(205, 127, 50) !important;
         font-weight: 700;
       }
+
+      /* Ensure footer looks seamless and inherits structural styling */
+      .standings-custom-table tfoot td {
+        border: 1px solid rgba(27, 67, 50, 0.1);
+        vertical-align: middle;
+        padding: 8px 12px;
+      }
     </style>
   </head>
   <body>
@@ -133,7 +140,6 @@
           currentWeek.displayDate %>) • Bottoms Up Golf League
         </p>
       </div>
-
       <div class="week-results-container">
         <span class="week-results-label">Weekly Results:</span>
         <div class="week-nav">
@@ -163,7 +169,6 @@
             analytics.</small
           >
         </div>
-
         <div class="table-responsive">
           <table
             id="sortableTable"
@@ -173,7 +178,6 @@
               <tr>
                 <th>Pos</th>
                 <th class="text-start">Player</th>
-                <!-- Moved here -->
                 <th></th>
                 <th>Avg Pts</th>
                 <th>HCP</th>
@@ -186,11 +190,16 @@
               </tr>
             </thead>
             <tbody>
-              <% standings.forEach((player, idx) => { %>
+              <% 
+              var regularPlayers = standings.filter(function(p) { return Number(p.id) !== 8; });
+              var leavingPlayers = standings.filter(function(p) { return Number(p.id) === 8; });
+              
+              regularPlayers.forEach(function(player, idx) { 
+            %>
               <tr>
                 <td class="fw-bold bg-light players">
-                  <% if (idx > 0 && player.rank === standings[idx - 1].rank) {
-                  %>
+                  <% if (idx > 0 && player.rank === regularPlayers[idx -
+                  1].rank) { %>
                   <!-- Leave blank for subsequent tied players -->
                   <% } else { %>
                   <% if (player.standings_exempt) { %>
@@ -200,6 +209,7 @@
                   <% } %>
                   <% } %>
                 </td>
+
                 <!-- Player details column -->
                 <td class="text-start fw-semibold players">
                   <a
@@ -209,6 +219,7 @@
                     <%= player.player_name %>
                   </a>
                 </td>
+
                 <!-- Trend movement column -->
                 <td class="players">
                   <% if (player.movement === "up") { %>
@@ -219,12 +230,14 @@
                   <span class="trend-same">—</span>
                   <% } %>
                 </td>
+
                 <!-- Average Points column -->
                 <td
                   class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>"
                 >
                   <%= Number(player.avg_points).toFixed(2) %>
                 </td>
+
                 <td style="color: #1b4332" class="fw-bold bg-light players">
                   <%= player.current_handicap %>
                 </td>
@@ -241,6 +254,48 @@
               </tr>
               <% }) %>
             </tbody>
+
+            <% if (leavingPlayers.length > 0) { var player = leavingPlayers[0];
+            %>
+            <tfoot>
+              <tr>
+                <td class="fw-bold bg-light players">*</td>
+                <td class="text-start fw-semibold players">
+                  <a
+                    href="/scores/members/<%= player.id %>"
+                    class="player-link"
+                  >
+                    <%= player.player_name %>
+                  </a>
+                </td>
+                <td class="players">
+                  <% if (player.movement === "up") { %>
+                  <span class="trend-up">▲<%= player.delta %></span>
+                  <% } else if (player.movement === "down") { %>
+                  <span class="trend-down">▼<%= player.delta %></span>
+                  <% } else { %>
+                  <span class="trend-same">—</span>
+                  <% } %>
+                </td>
+                <td class="players">
+                  <%= Number(player.avg_points).toFixed(2) %>
+                </td>
+                <td style="color: #1b4332" class="fw-bold bg-light players">
+                  <%= player.current_handicap %>
+                </td>
+                <td class="players"><%= player.weeks_played %></td>
+                <td class="players"><%= player.birdie_points %></td>
+                <td class="players"><%= player.ctp_points %></td>
+                <td class="fw-bold players"><%= player.total_points %></td>
+                <td class="players">
+                  <%= Number(player.avg_gross).toFixed(2) %>
+                </td>
+                <td class="players">
+                  <%= Number(player.avg_net).toFixed(2) %>
+                </td>
+              </tr>
+            </tfoot>
+            <% } %>
           </table>
         </div>
       </div>
