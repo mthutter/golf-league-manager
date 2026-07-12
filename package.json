@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development node app.js",
-    "start": "cross-env NODE_ENV=production node app.js",
+    "dev": "cross-env NODE_ENV=development nodemon app.js",
+    "start": "cross-env NODE_ENV=production nodemon app.js",
     "format": "prettier --log-level warn --write \"{<file-path>}/**/*.{ejs,jsx,js}\"",
     "test": "node --test test/unit/test.*.js"
   },
