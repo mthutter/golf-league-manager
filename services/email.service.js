@@ -1,6 +1,7 @@
 import { all } from "../config/db.js";
 import nodemailer from "nodemailer";
 import "../config/env.js";
+import logger from "../utilities/logger.js";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.titan.email",
@@ -18,15 +19,23 @@ const transporter = nodemailer.createTransport({
  * @param {string} rawBodyContent - The main text message body from your form
  * @param {Array} [recipients]
  */
-export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = []) => {
+export const fetchAndSendEmails = async (
+  subject,
+  rawBodyContent,
+  recipients = [],
+) => {
   try {
     let emailList = [];
     if (recipients && recipients.length > 0) {
       emailList = recipients;
-      logger.info(`Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`);
+      logger.info(
+        `Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`,
+      );
     } else {
       logger.info("Global Broadcast Mode Activated. Fetching entire league...");
-      const members = await all("SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'");
+      const members = await all(
+        "SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'",
+      );
       if (!members || members.length === 0) {
         return { success: true, count: 0, messageId: null };
       }
@@ -34,7 +43,10 @@ export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = [
     }
 
     // 💡 THE FIX: Convert form carriage returns (\n) into HTML line breaks (<br />)
-    const formattedBodyContent = rawBodyContent.replace(/(?:\r\n|\r|\n)/g, "<br />");
+    const formattedBodyContent = rawBodyContent.replace(
+      /(?:\r\n|\r|\n)/g,
+      "<br />",
+    );
 
     // 💡 REMINDER: Update this to your real production domain
     const domain = "https://bottoms-up-cos.org";
