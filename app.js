@@ -44,9 +44,14 @@ const limiter = rateLimit({
 });
 
 // BLOCK WORDPRESS COMMON EXPLOITS
-const blockedPaths = ["/xmlrpc.php", "/wp-admin", "/.env"];
+const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", ".env"];
+
 app.use((req, res, next) => {
-  if (blockedPaths.some((path) => req.url.includes(path))) {
+  // Normalize URL to lowercase to catch mixed-case evasion attempts (e.g., /WlWmAnIfEsT.xml)
+  const lowerUrl = req.url.toLowerCase();
+
+  if (blockedPaths.some((path) => lowerUrl.includes(path))) {
+    // Return instantly without invoking your OpenTelemetry logger or 404 Error handler
     return res.status(404).send("Not Found");
   }
   next();
