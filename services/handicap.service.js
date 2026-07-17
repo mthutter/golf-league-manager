@@ -1,5 +1,6 @@
 import db, { all, run } from "../config/db.js";
 import { getCurrentWeekPlayed } from "./weeks.service.js";
+import logger from "../utilities/logger.js";
 
 export async function writeCurrentHandicaps() {
   // 1. Keep await ONLY for your week service if it returns a promise
