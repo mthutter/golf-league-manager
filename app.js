@@ -3,6 +3,7 @@ import "./config/env.js"; // CRITICAL: Hydrates process.env before anything else
 import "./utilities/otel.js"; // Line 2: Mounts the OpenTelemetry SDK configuration
 import express from "express";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import session from "express-session";
@@ -34,6 +35,13 @@ import authMiddleware from "./middleware/auth.middleware.js";
 
 const app = express();
 const SQLiteStore = SQLiteStoreFactory(session);
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: "Too many requests from this IP, please try again later.",
+});
 
 // BLOCK WORDPRESS COMMON EXPLOITS
 const blockedPaths = ["/xmlrpc.php", "/wp-admin", "/.env"];
@@ -65,6 +73,7 @@ app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
+app.use(limiter);
 
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store");
@@ -155,6 +164,7 @@ app.use((req, res, next) => {
   err.status = 404;
   next(err);
 });
+
 app.use(errorHandler);
 
 /* ========================================================================================= 

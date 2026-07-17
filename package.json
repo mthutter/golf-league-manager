@@ -45,6 +45,7 @@
     "express": "^5.2.1",
     "express-basic-auth": "^1.2.1",
     "express-fileupload": "^1.5.1",
+    "express-rate-limit": "^8.6.0",
     "express-session": "^1.18.0",
     "helmet": "^8.2.0",
     "http-proxy": "^1.18.1",

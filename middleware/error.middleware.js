@@ -6,16 +6,20 @@ const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
+
   const statusCode = err.status || err.statusCode || 500;
 
-  // 1. Capture exception in PostHog
-  posthog.captureException(err, req.session?.id || "anonymous", {
-    method: req.method,
-    url: req.url,
-    status_code: statusCode,
-  });
+  // 1. Only capture exceptions in PostHog if it is NOT a 404 error
+  // This completely stops automated 404 scans from polluting your dashboards
+  if (statusCode !== 404) {
+    posthog.captureException(err, req.session?.id || "anonymous", {
+      method: req.method,
+      url: req.url,
+      status_code: statusCode,
+    });
+  }
 
-  // 2. Log structured JSON error details
+  // 2. Log structured JSON error details (Kept active for local/internal debugging)
   logger.error(
     {
       err: {
@@ -27,13 +31,13 @@ const errorHandler = (err, req, res, next) => {
         method: req.method,
         url: req.url,
         ip: req.ip,
-        userId: req.session?.userId || "anonymous", // Helpful for tracking user errors
+        userId: req.session?.userId || "anonymous",
       },
     },
     `Application Error: ${err.message}`,
   );
 
-  // 2. Render your error page or send JSON response
+  // 3. Render your error page or send JSON response
   res.status(statusCode);
 
   // Checks if client expects HTML (like EJS views) or JSON (like API calls)
