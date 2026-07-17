@@ -4,6 +4,7 @@ import {
   writeCurrentHandicaps,
 } from "./handicap.service.js";
 import { get, all, run } from "../config/db.js"; // Added 'all' for complete lookup support
+import logger from "../utilities/logger.js";
 
 /**
  * Fetches skins calculations and maps player IDs to DB names
