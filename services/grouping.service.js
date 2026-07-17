@@ -1,5 +1,6 @@
 // Import your database helper functions and the raw connection instance
 import dbInstance, { get, all, run } from "../config/db.js";
+import logger from "../utilities/logger.js";
 
 /*
 |--------------------------------------------------------------------------
