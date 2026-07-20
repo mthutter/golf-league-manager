@@ -39,52 +39,36 @@
   }
 </script>
 
-<!-- 1. Let the browser handle script delivery cleanly and synchronously via your production CNAME -->
-<script
-  type="text/javascript"
-  crossorigin="anonymous"
-  defer
-  src="https://t.bottoms-up-cos.org/static/array.js"
-  crossorigin="anonymous"
-></script>
-
-<!-- 2. Execute initialization instantly with zero DOM manipulation overhead -->
+<!-- Combined PostHog Loading & Initialization -->
 <script>
-  (function () {
-    // Safety check to ensure the file above parsed correctly
-    if (!window.posthog || !window.posthog.init) {
-      console.warn("⚠️ PostHog library not fully loaded in memory yet.");
-      return;
-    }
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(r=t.createElement("script")).type="text/javascript",r.async=!0,r.src=s.api_host+"/static/array.js",(p=t.getElementsByTagName("script")[0]).parentNode.insertBefore(r,p),e.lnk=r,e._i.push([i,s,a]),e.__SV=1)}(document,window.posthog||[]);
 
-    // Determine host configuration dynamically based on the current machine
-    var isLocal =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
+(function () {
+  // Determine host configuration dynamically based on the current machine
+  var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  var finalHost = isLocal ? "https://us.posthog.com" : "https://t.bottoms-up-cos.org";
 
-    // FIXED: Local requests go straight to PostHog ingestion; prod uses your proxy CNAME
-    var finalHost = isLocal
-      ? "https://us.posthog.com"
-      : "https://t.bottoms-up-cos.org";
-
-    window.posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
-      api_host: finalHost, // FIXED: Now uses the dynamic finalHost variable
-      ui_host: "https://us.posthog.com", // CORRECT: Pointed to the main web app
-      persistence: "cookie",
-      session_recording: {},
-      capture_exceptions: {
-        capture_unhandled_errors: true,
-        capture_unhandled_rejections: true,
-        capture_console_errors: true,
-      },     
-      // Turn off payload compression locally so you can read data in your Network tab
-      disable_compression: isLocal,
-      loaded: function (ph) {
-        if (isLocal) {
-          ph.debug();
-          console.log("🚀 POSTHOG:", finalHost);
-        }
-      },
-    });
-  })();
+  window.posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
+    api_host: finalHost,
+    ui_host: "https://us.posthog.com",
+    persistence: "cookie",
+    session_recording: {},
+    capture_pageview: true, // Explicitly force default pageview mapping
+    capture_pageleave: true, // Explicitly force default pageleave mapping
+    capture_exceptions: {
+      capture_unhandled_errors: true,
+      capture_unhandled_rejections: true,
+      capture_console_errors: true,
+    },
+    // Turn off payload compression locally so you can read data in your Network tab
+    disable_compression: isLocal,
+    loaded: function (ph) {
+      if (isLocal) {
+        ph.debug();
+        console.log("🚀 POSTHOG ACTIVE:", finalHost);
+      }
+    },
+  });
+})();
 </script>
+
