@@ -249,6 +249,16 @@
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
 }
 
+.tees-blue {
+  color: blue;
+  font-weight: 700;
+}
+
+.tees-gold {
+  color: gold;
+  font-weight: 700;
+}
+
 .tee-sheet-title {
   flex: 1;
   margin: 0;
