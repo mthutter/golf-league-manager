@@ -96,8 +96,7 @@
 }
 
 .vacant-slot {
-  color: var(--text-muted);
-  font-style: italic;
+  color: var(--light-gray);
   font-weight: 400;
 }
 
