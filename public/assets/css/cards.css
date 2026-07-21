@@ -1,8 +1,18 @@
-/*.card-league
-.card-header
-.card-title
-.card-body
-.stat-row
-.stat-value
-.stat-positive
-.stat-negative
+.card-league {
+}
+.card-header {
+}
+.card-title {
+  align-items: center;
+  text-align: center;
+}
+.card-body {
+}
+.stat-row {
+}
+.stat-value {
+}
+.stat-positive {
+}
+.stat-negative {
+}
