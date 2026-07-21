@@ -93,19 +93,14 @@ app.use((req, res, next) => {
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ========================================= PARSERS / STATIC / SESSION ========================================= */
 app.use(express.static("public"));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
-app.use(fileUpload());
+//app.use(fileUpload());
 
 app.use(
   session({
@@ -129,12 +124,8 @@ app.use(flash());
 
 /* ========================================= AUTOMATED REQUEST LOGGER MIDDLEWARE ========================================= */
 app.use((req, res, next) => {
-  const distinctId =
-    req.session?.id || req.sessionID || "anonymous_server_user";
-  const isStaticAsset =
-    req.path.includes(".") ||
-    req.path.startsWith("/images") ||
-    req.path.startsWith("/videos");
+  const distinctId = req.session?.id || req.sessionID || "anonymous_server_user";
+  const isStaticAsset = req.path.includes(".") || req.path.startsWith("/images") || req.path.startsWith("/videos");
 
   if (!isStaticAsset) {
     appLogger.emit({
@@ -189,10 +180,7 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (
-    err.code === "ERR_HTTP_HEADERS_SENT" ||
-    err.message.includes("headers after they are sent")
-  ) {
+  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
   }
   appLogger.emit({
