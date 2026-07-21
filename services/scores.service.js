@@ -35,7 +35,7 @@ export const getFormData = async () => {
   FROM members
   ORDER BY name_last, name_first
 `;
-  const holesSql = `SELECT * FROM holes WHERE hole_number <= 9 ORDER BY hole_number`;
+  const holesSql = `SELECT * FROM holes WHERE hole_number >= 10 ORDER BY hole_number`;
 
   const [members, holes] = await Promise.all([
     dbAll(memberSql),
