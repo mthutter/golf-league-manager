@@ -89,10 +89,7 @@ export async function calculateHandicaps(coursePar = 36) {
   for (const player of players) {
     const rounds = await all(
       `
-      SELECT
-        gross1 + gross2 + gross3 +
-        gross4 + gross5 + gross6 +
-        gross7 + gross8 + gross9 AS total_score
+      SELECT gross_total AS total_score
       FROM scores
       WHERE member_id = ?
       `,
@@ -113,8 +110,12 @@ export async function calculateHandicaps(coursePar = 36) {
 
     const total = rounds.reduce((sum, r) => sum + r.total_score, 0);
 
+    console.log("Total: ", total);
+
     const average = total / rounds.length;
     const handicap = Math.round(average - coursePar);
+    console.log("Average: ", average);
+    console.log("Handicap: ", handicap);
 
     logger.info(
       `${player.name_last}: avg=${average.toFixed(2)} hcp=${handicap} rnds=${rounds.length}`,

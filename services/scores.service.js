@@ -52,7 +52,7 @@ export const createScoreRecord = async (body) => {
   const sql = `
     INSERT INTO scores (
       week_id, member_id, handicap_used, ctp_points, birdie_points, 
-      gross1, gross2, gross3, gross4, gross5, gross6, gross7, gross8, gross9, 
+      gross10, gross11, gross12, gross13, gross14, gross15, gross16, gross17, gross18, 
       gross_total, net_total, stableford_total, skins_entered
     ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `;
@@ -62,15 +62,15 @@ export const createScoreRecord = async (body) => {
     body.handicap,
     body.ctp_points,
     body.birdie_points,
-    body.gross1,
-    body.gross2,
-    body.gross3,
-    body.gross4,
-    body.gross5,
-    body.gross6,
-    body.gross7,
-    body.gross8,
-    body.gross9,
+    body.gross10,
+    body.gross11,
+    body.gross12,
+    body.gross13,
+    body.gross14,
+    body.gross15,
+    body.gross16,
+    body.gross17,
+    body.gross18,
     body.gross_total,
     body.net_total,
     body.stableford_total,
