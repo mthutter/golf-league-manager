@@ -106,7 +106,7 @@ app.use(
   session({
     name: "SessionCookie",
     secret: process.env.EXPRESS_SESSION_SECRET || "golf_secret",
-    store: new SQLiteStore({ db: "sessions.db", dir: "./" }),
+    store: new SQLiteStore({ db: "sessions.db", dir: process.env.EXPRESS_SESSION_DB_PATH }),
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 86400000 },
