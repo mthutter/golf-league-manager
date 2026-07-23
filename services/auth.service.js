@@ -1,33 +1,129 @@
+import bcrypt from "bcrypt";
+import { get, all, run } from "../config/db.js";
+import logger from "../utilities/logger.js";
+
 /**
- * Assesses whether credentials align with environment targets for Admin access
+ * Authenticate a member by email/password.
+ * Returns a sanitized user object or null.
  */
-export function verifyAdminCredentials(username, password) {
-  const adminUser = process.env.ADMIN_USER;
-  const adminPass = process.env.ADMIN_PASS;
+export async function authenticate(email, password) {
+  try {
+    email = email?.trim().toLowerCase();
 
-  if (!adminUser || !adminPass) {
-    console.warn(
-      "WARNING: ADMIN_USER or ADMIN_PASS environment variables are missing!",
+    const member = await get(
+      `
+      SELECT
+        id,
+        name_first,
+        name_last,
+        e_mail,
+        password_hash,
+        is_active
+      FROM members
+      WHERE lower(e_mail) = ?
+      `,
+      [email],
     );
-    return false;
-  }
 
-  return username === adminUser && password === adminPass;
+    if (!member) {
+      logger.warn(`Failed login: unknown email (${email})`);
+      return null;
+    }
+
+    if (!member.is_active) {
+      logger.warn(`Failed login: inactive account (${email})`);
+      return null;
+    }
+
+    if (!member.password_hash) {
+      logger.warn(`Failed login: no password set (${email})`);
+      return null;
+    }
+
+    const valid = await bcrypt.compare(password, member.password_hash);
+
+    if (!valid) {
+      logger.warn(`Failed login: invalid password (${email})`);
+      return null;
+    }
+
+    const roles = await getRoles(member.id);
+
+    await run(
+      `
+      UPDATE members
+      SET last_login = CURRENT_TIMESTAMP
+      WHERE id = ?
+      `,
+      [member.id],
+    );
+
+    logger.info(`Successful login: ${email}`);
+
+    return buildUser(member, roles);
+  } catch (err) {
+    logger.error(`Authentication error: ${err.message}`);
+    throw err;
+  }
 }
 
 /**
- * Assesses whether credentials align with environment targets for standard League Members
+ * Used by Passport deserializeUser()
  */
-export function verifyUserCredentials(username, password) {
-  const leagueUser = process.env.LEAGUE_USER;
-  const leaguePass = process.env.LEAGUE_PASS;
-
-  if (!leagueUser || !leaguePass) {
-    console.warn(
-      "WARNING: LEAGUE_USER or LEAGUE_PASS environment variables are missing! Falling back to false.",
+export async function findMemberById(id) {
+  try {
+    const member = await get(
+      `
+      SELECT
+        id,
+        name_first,
+        name_last,
+        e_mail,
+        is_active
+      FROM members
+      WHERE id = ?
+      `,
+      [id],
     );
-    return false;
-  }
 
-  return username === leagueUser && password === leaguePass;
+    if (!member || !member.is_active) {
+      return null;
+    }
+
+    const roles = await getRoles(member.id);
+
+    return buildUser(member, roles);
+  } catch (err) {
+    logger.error(`findMemberById(): ${err.message}`);
+    throw err;
+  }
+}
+
+/**
+ * Private helper
+ */
+async function getRoles(memberId) {
+  const rows = await all(
+    `
+    SELECT role
+    FROM member_roles
+    WHERE member_id = ?
+    `,
+    [memberId],
+  );
+
+  return rows.map((r) => r.role);
+}
+
+/**
+ * Private helper
+ */
+function buildUser(member, roles) {
+  return {
+    id: member.id,
+    firstName: member.name_first,
+    lastName: member.name_last,
+    email: member.e_mail,
+    roles,
+  };
 }

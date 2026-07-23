@@ -1,0 +1,64 @@
+import express from "express";
+import bcrypt from "bcrypt";
+
+import { authenticate } from "../services/auth.service.js";
+import { get, run } from "../config/db.js";
+
+const router = express.Router();
+
+router.get("/auth-test", async (req, res, next) => {
+  try {
+    const user = await authenticate("mthutter@me.com", "!Peter021");
+
+    res.json(user ?? { success: false });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/bootstrap-admin", async (req, res, next) => {
+  try {
+    const email = "mthutter@me.com".trim().toLowerCase();
+    const password = "!Peter021";
+
+    const member = await get(
+      `
+      SELECT id, e_mail
+      FROM members
+      WHERE e_mail = ?
+      `,
+      [email],
+    );
+
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        message: "Member not found.",
+      });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await run(
+      `
+      UPDATE members
+      SET
+        password_hash = ?,
+        is_active = 1,
+        email_verified = 1
+      WHERE id = ?
+      `,
+      [passwordHash, member.id],
+    );
+
+    res.json({
+      success: true,
+      message: "Account initialized successfully.",
+      memberId: member.id,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+export default router;
