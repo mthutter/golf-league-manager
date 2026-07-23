@@ -25,6 +25,7 @@ import blogRoutes from "./routes/blog.routes.js";
 import emailRoutes from "./routes/email.routes.js";
 import groupingRoutes from "./routes/grouping.routes.js";
 import devRoutes from "./routes/dev.routes.js";
+import activationRoutes from "./routes/activation.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -151,6 +152,7 @@ app.use("/scores", scoreRoutes);
 app.use("/admin", adminRoutes);
 app.use("/skins", skinsRouter);
 app.use("/email", emailRoutes);
+app.use("/activate", activationRoutes);
 
 /* ====== ERROR CODES ======= */
 app.use((req, res, next) => {

@@ -38,4 +38,15 @@ export function get(sql, params = []) {
   });
 }
 
+export function beginTransaction() {
+  return run("BEGIN TRANSACTION");
+}
+
+export function commit() {
+  return run("COMMIT");
+}
+
+export function rollback() {
+  return run("ROLLBACK");
+}
 export default db;

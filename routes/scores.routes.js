@@ -1,14 +1,14 @@
 import express from "express";
-import authMiddleware from "../middleware/auth.middleware.js";
+import { requireAdmin } from "../middleware/auth.middleware.js";
 import * as scoresController from "../controllers/scores.controller.js";
 
 const router = express.Router();
 
 // 1. GET /scores/new - Form to add weekly scores
-router.get("/new", authMiddleware, scoresController.getNewScoresForm);
+router.get("/new", requireAdmin, scoresController.getNewScoresForm);
 
 // 2. POST /scores/save - Save a score record
-router.post("/save", authMiddleware, scoresController.saveScore);
+router.post("/save", requireAdmin, scoresController.saveScore);
 
 // 3. GET /scores/standings - Season standings leaderboard
 router.get("/standings", scoresController.getStandings);
@@ -20,6 +20,6 @@ router.get("/weekly/:weekId", scoresController.getWeeklyScores);
 router.get("/members/:id", scoresController.getMemberProfile);
 
 // 6. GET /scores/ - Fallback/legacy handler
-router.get("/", authMiddleware, scoresController.getScoresLegacy);
+router.get("/", requireAdmin, scoresController.getScoresLegacy);
 
 export default router;

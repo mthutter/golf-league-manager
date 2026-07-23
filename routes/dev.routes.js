@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 import { authenticate } from "../services/auth.service.js";
 import { get, run } from "../config/db.js";
+import { createActivationToken } from "../services/activation.service.js";
 
 const router = express.Router();
 
@@ -66,6 +67,14 @@ router.get("/whoami", (req, res) => {
     authenticated: req.isAuthenticated(),
     sessionID: req.sessionID,
     user: req.user,
+  });
+});
+
+router.get("/activation-test/:id", async (req, res) => {
+  const token = await createActivationToken(req.params.id);
+
+  res.json({
+    token,
   });
 });
 
