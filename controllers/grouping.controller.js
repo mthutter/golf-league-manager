@@ -26,7 +26,7 @@ export const showTeeTimes = catchAsync(async (req, res, next) => {
   }
 
   logger.info(
-    { weekId, sessionId: req.session?.id },
+    { weekId, sessionId: req.sessionId },
     "Fetching league pairings and tee times",
   );
 
@@ -69,7 +69,7 @@ export const generateGroupings = catchAsync(async (req, res, next) => {
   await generateRandomGroupings(weekId);
 
   posthog.capture({
-    distinctId: req.session?.id || "anonymous",
+    distinctId: req.user?.id || req.sessionID,
     event: "groupings_generated",
     properties: { week_id: weekId },
   });
@@ -83,18 +83,6 @@ export const generateGroupings = catchAsync(async (req, res, next) => {
  * Handles shifting player positions via Drag & Drop interface payloads.
  */
 export const swapPlayers = catchAsync(async (req, res, next) => {
-  // 1. Enforce admin backend security session rules
-  if (!req.session || !req.session.isAdmin) {
-    logger.warn(
-      { ip: req.ip },
-      "Unauthorized attempt to access player swap administration endpoint",
-    );
-    return res.status(403).json({
-      success: false,
-      error: "Admin authentication required.",
-    });
-  }
-
   const { weekId, player1, player2 } = req.body;
 
   if (!weekId || !player1 || !player2) {

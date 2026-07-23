@@ -17,7 +17,6 @@ import publicRoutes from "./routes/public.routes.js";
 import playerRoutes from "./routes/player.routes.js";
 import imageRoutes from "./routes/image.routes.js";
 import videoRoutes from "./routes/video.routes.js";
-import authRoutes from "./routes/auth.routes.js";
 import scoreRoutes from "./routes/scores.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import skinsRouter from "./routes/skins.routes.js";
@@ -130,8 +129,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-  res.locals.isAdmin = req.session.isAdmin || false;
-  res.locals.isUser = req.session.isUser || false;
+  const user = req.user;
+
+  res.locals.user = user;
+  res.locals.isAuthenticated = req.isAuthenticated();
+  res.locals.isAdmin = user?.roles?.includes("Admin") ?? false;
+  res.locals.isMember = user?.roles?.includes("Member") ?? false;
   next();
 });
 

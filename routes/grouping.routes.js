@@ -1,9 +1,11 @@
 import express from "express";
-import { 
-    showTeeTimes, 
-    generateGroupings, 
-    swapPlayers 
+import {
+  showTeeTimes,
+  generateGroupings,
+  swapPlayers,
 } from "../controllers/grouping.controller.js";
+
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -17,15 +19,20 @@ router.get("/tee-times", showTeeTimes);
 /**
  * @route   POST /groupings/generate/:weekId
  * @desc    Trigger the generation algorithm and redirect to the viewer
- * @access  Public (or Admin)
+ * @access  Admin
  */
-router.post("/groupings/generate/:weekId", generateGroupings);
+router.post(
+  "/groupings/generate/:weekId",
+  requireAuth,
+  requireAdmin,
+  generateGroupings,
+);
 
 /**
  * @route   PUT /groupings/swap
  * @desc    Manually swap two players' slots on the grid or out list
- * @access  Private/Admin
+ * @access  Admin
  */
-router.put("/groupings/swap", swapPlayers); // 🛠️ FIX: Removed generateGroupings middleware interceptor
+router.put("/groupings/swap", requireAuth, requireAdmin, swapPlayers);
 
 export default router;

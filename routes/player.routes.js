@@ -9,52 +9,31 @@ import {
   showEditPlayerForm,
   updatePlayer,
 } from "../controllers/players.controller.js";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-/**
- * 🔓 Level 1 Check: Requires any valid league authentication (Player or Admin)
- */
-function requireLogin(req, res, next) {
-  if (req.session && req.session.isUser) {
-    return next(); // Valid member, let them see the content
-  }
-  res.redirect("/login");
-}
-
-/**
- * 🔒 Level 2 Check: Restricts route explicitly to Administrators
- */
-function requireAdmin(req, res, next) {
-  if (req.session && req.session.isAdmin) {
-    return next(); // Valid admin, let them manage assets
-  }
-  res
-    .status(403)
-    .send("Access Denied: This action requires Administrator privileges.");
-}
-
 /* ========================================= PLAYER LIST ========================================= */
 // 🔓 Open to any authenticated player or admin
-router.get("/", requireLogin, getPlayers);
+router.get("/", requireAuth, getPlayers);
 
 // 🔒 Restricted to Admin view lists only
-router.get("/inactive", requireLogin, requireAdmin, getPlayersInactive);
+router.get("/inactive", requireAuth, requireAdmin, getPlayersInactive);
 
 /* ========================================= ADD PLAYER FORM ========================================= */
 // 🔒 Admin-only action
-router.get("/new", requireLogin, requireAdmin, showAddPlayerForm);
+router.get("/new", requireAuth, requireAdmin, showAddPlayerForm);
 
 /* ========================================= CREATE PLAYER ========================================= */
 // 🔒 Admin-only action
-router.post("/", requireLogin, requireAdmin, createPlayer);
+router.post("/", requireAuth, requireAdmin, createPlayer);
 
 /* ========================================= EDIT PLAYER FORM ========================================= */
 // 🔒 Admin-only action
-router.get("/:id/edit", requireLogin, requireAdmin, showEditPlayerForm);
+router.get("/:id/edit", requireAuth, requireAdmin, showEditPlayerForm);
 
 /* ========================================= UPDATE PLAYER ========================================= */
 // 🔒 Admin-only action
-router.post("/:id", requireLogin, requireAdmin, updatePlayer);
+router.post("/:id", requireAuth, requireAdmin, updatePlayer);
 
 export default router;

@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import { run } from "../config/db.js";
 import logger from "../utilities/logger.js";
-import { get } from "../config/db.js";
+import { run, get, beginTransaction, commit, rollback } from "../config/db.js";
+import bcrypt from "bcrypt";
 
 const TOKEN_LIFETIME_HOURS = 48;
 
@@ -10,8 +10,7 @@ export async function createActivationToken(memberId) {
   await run(
     `
     DELETE FROM activation_tokens
-    WHERE member_id = ?
-      AND used_at IS NULL
+    WHERE member_id = ?  
     `,
     [memberId],
   );
@@ -48,16 +47,16 @@ export async function validateActivationToken(token) {
   const record = await get(
     `
     SELECT
-      at.id,
-      at.member_id,
+      at.id AS activationTokenId,
+      at.member_id AS memberId,
       at.token,
       at.expires_at,
       at.used_at,
       at.created_at,
-      m.name_first,
-      m.name_last,
-      m.e_mail,
-      m.is_active
+      m.name_first AS firstName,
+      m.name_last AS lastName,
+      m.e_mail AS email,
+      m.is_active AS isActive
     FROM activation_tokens at
     JOIN members m
       ON m.id = at.member_id
@@ -67,6 +66,11 @@ export async function validateActivationToken(token) {
   );
 
   if (!record) {
+    logger.warn({
+      msg: "Activation token not found",
+      token,
+    });
+
     return {
       valid: false,
       reason: "invalid",
@@ -115,7 +119,7 @@ export async function activateMember(token, password) {
                 activated_at = CURRENT_TIMESTAMP
             WHERE id = ?
             `,
-      [passwordHash, validation.member.id],
+      [passwordHash, validation.member.memberId],
     );
 
     await run(
@@ -131,7 +135,7 @@ export async function activateMember(token, password) {
 
     logger.info({
       msg: "Member activated",
-      memberId: validation.member.id,
+      memberId: validation.member.memberId,
     });
 
     return {

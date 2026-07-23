@@ -127,17 +127,14 @@
 
   <body>
     <%- include('./partials/navbar'); %>
-
-    <noscript>
-      <iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-W9Q82T2S"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      ></iframe>
-    </noscript>
-
     <!-- MAIN -->
+<pre>
+Authenticated: <%= isAuthenticated %>
+Admin: <%= isAdmin %>
+Member: <%= isMember %>
+User: <%= user?.email || "anonymous" %>
+</pre>
+
     <div class="main-wrapper">
       <!-- HERO LOGO -->
 

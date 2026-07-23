@@ -60,6 +60,7 @@
           </ul>
         </li>
 
+         <% if (isAuthenticated) { %>
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
@@ -92,18 +93,21 @@
             </li>
           </ul>
         </li>
+        <% } %>
         <li class="nav-item">
           <a class="nav-link px-3" href="/course">Course</a>
         </li>
+         <% if (isAuthenticated) { %>
         <li class="nav-item">
           <a class="nav-link px-3" href="/blog">Blog Page</a>
         </li>
+        <% } %>
       </ul>
 
       <!-- RIGHT SIDE (Dynamic Auth & Portal Options) -->
       <ul class="navbar-nav ms-auto">
         <!-- ⛳ Player Portal Dropdown (Visible ONLY to standard players, hidden from Admin) -->
-        <% if (locals.isUser && !locals.isAdmin) { %>
+        <% if (isMember) { %>
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
@@ -123,7 +127,7 @@
         <% } %>
 
         <!-- 🛠️ Admin Panel Dropdown (Visible ONLY to Admins) -->
-        <% if (locals.isAdmin) { %>
+        <% if (isAdmin) { %>
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
@@ -160,7 +164,7 @@
         <% } %>
 
         <!-- Authentication CTA Link -->
-        <% if (locals.isUser) { %>
+        <% if (isAuthenticated) { %>
         <li class="nav-item">
           <a class="nav-link px-3" href="/logout">Sign Out</a>
         </li>
