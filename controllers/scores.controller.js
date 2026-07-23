@@ -65,11 +65,12 @@ export const getStandings = catchAsync(async (req, res, next) => {
     "Computing global season point totals and league handicaps for standings table",
   );
 
-  const data = await scoresService.getSeasonStandings();
+  const selectedWeek = Number(req.query.week) || null;
+
+  const data = await scoresService.getSeasonStandings(selectedWeek);
 
   return res.render("standings", data);
 });
-
 /**
  * GET /scores/weekly/:weekId
  */
@@ -118,3 +119,23 @@ export const getScoresLegacy = catchAsync(async (req, res, next) => {
   );
   return res.redirect("/scores/standings");
 });
+
+export const getRoundDetails = async (req, res, next) => {
+  try {
+    const scoreId = Number(req.params.scoreId);
+
+    const round = await scoresService.getRoundDetails(scoreId);
+
+    if (!round) {
+      req.flash("error", "Round not found.");
+      return res.redirect("/players");
+    }
+
+    res.render("round-details", {
+      title: "Scorecard",
+      round,
+    });
+  } catch (err) {
+    next(err);
+  }
+};

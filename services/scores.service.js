@@ -5,6 +5,7 @@ import {
   getPreviousWeekPlayed,
   getWeek,
 } from "./weeks.service.js";
+import { buildHoleScores } from "./golf.service.js";
 
 // --- Promise Helpers for SQLite Callbacks ---
 const dbAll = (sql, params = []) =>
@@ -82,12 +83,21 @@ export const createScoreRecord = async (body) => {
 /**
  * Fetches season standings and maps localized dates
  */
-export const getSeasonStandings = async () => {
+export const getSeasonStandings = async (selectedWeekNumber = null) => {
   const weeks = await getAllWeeks();
   const latestWeekPlayed = await getCurrentWeekPlayed();
-  const currentWeekNumber = latestWeekPlayed.week_number;
+  const latestWeek = await getWeek(latestWeekPlayed.week_number);
+  if (latestWeek?.date) {
+    latestWeek.displayDate = new Date(
+      latestWeek.date + "T12:00:00",
+    ).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+    });
+  }
+  const currentWeekNumber = selectedWeekNumber || latestWeekPlayed.week_number;
   const previousWeekPlayed = await getPreviousWeekPlayed(currentWeekNumber);
-  const currentWeek = await getWeek(latestWeekPlayed.week_number);
+  const currentWeek = await getWeek(currentWeekNumber);
 
   if (currentWeek && currentWeek.date) {
     currentWeek.displayDate = new Date(
@@ -141,7 +151,15 @@ export const getSeasonStandings = async () => {
     .sort((a, b) => b.delta - a.delta)
     .slice(0, 3);
 
-  return { standings, weeks, currentWeek, biggestUp, biggestDown };
+  return {
+    standings,
+    weeks,
+    currentWeek,
+    selectedWeek: currentWeekNumber,
+    latestWeek,
+    biggestUp,
+    biggestDown,
+  };
 };
 
 /**
@@ -258,3 +276,74 @@ END AS rank,
 
   return await dbAll(sql, [weekNumber]);
 }
+
+export const getRoundDetails = async (scoreId) => {
+  const roundSql = `
+    SELECT
+      s.*,
+      m.name_first,
+      m.name_last,
+      m.sex,
+      w.week_number,
+      w.date
+    FROM scores s
+    JOIN members m
+      ON m.id = s.member_id
+    JOIN weeks2026 w
+      ON w.week_number = s.week_id
+    WHERE s.score_id = ?
+  `;
+
+  const round = await dbGet(roundSql, [scoreId]);
+
+  if (!round) return null;
+
+  // Format display date
+  round.displayDate = new Date(round.date + "T12:00:00").toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      day: "numeric",
+    },
+  );
+
+  const holeData = await dbAll(`
+    SELECT *
+    FROM holes
+    ORDER BY hole_number
+  `);
+
+  const startHole = round.week_number <= 11 ? 1 : 10;
+
+  const holes = buildHoleScores(round, holeData, startHole);
+
+  return {
+    player: {
+      id: round.member_id,
+      firstName: round.name_first,
+      lastName: round.name_last,
+      sex: round.sex,
+    },
+
+    week: {
+      number: round.week_number,
+      displayDate: round.displayDate,
+    },
+
+    handicapUsed: round.handicap_used,
+
+    skinsEntered: Boolean(round.skins_entered),
+
+    holes,
+
+    totals: {
+      gross: round.gross_total,
+      net: round.net_total,
+      stableford: round.stableford_total,
+      birdies: round.birdie_points,
+      ctp: round.ctp_points,
+      leaguePoints:
+        round.stableford_total + round.birdie_points + round.ctp_points,
+    },
+  };
+};

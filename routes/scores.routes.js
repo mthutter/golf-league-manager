@@ -22,4 +22,7 @@ router.get("/members/:id", scoresController.getMemberProfile);
 // 6. GET /scores/ - Fallback/legacy handler
 router.get("/", requireAdmin, scoresController.getScoresLegacy);
 
+// 7. GET /scores/round/:scoreId - Individual hole-to-hole scoring per week
+router.get("/round/:scoreId", requireAuth, scoresController.getRoundDetails);
+
 export default router;

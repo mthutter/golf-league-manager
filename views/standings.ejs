@@ -64,13 +64,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
-        margin-top: 0.5rem;
+        gap: .75rem;
+        margin-top: 0.75rem;
         flex-wrap: wrap;
       }
       .week-results-label {
         font-weight: 700;
         color: #1b4332;
+        margin-bottom: 0;
       }
       .week-nav {
         display: flex;
@@ -136,23 +137,43 @@
       <div class="gallery-header">
         <h1>2026 Season Standings</h1>
         <p>
-          Through Week <%= currentWeek.week_number %> (<%=
-          currentWeek.displayDate %>) • Bottoms Up Golf League
+          Through Week <%= latestWeek.week_number %> (<%=
+          latestWeek.displayDate %>) • Bottoms Up Golf League
         </p>
       </div>
-      <div class="week-results-container">
-        <span class="week-results-label">Weekly Results:</span>
-        <div class="week-nav">
-          <% weeks .filter(week => week.week_number <= currentWeek.week_number)
-          .forEach(week => { %>
-          <a
-            href="/scores/weekly/<%= week.week_number %>"
-            class="button-link btn btn-light btn-sm"
-          >
-            Week <%= week.week_number %>
-          </a>
-          <% }) %>
-        </div>
+<div class="week-results-container">
+  <label for="weekSelect" class="week-results-label">
+    Jump to Weekly Results:
+  </label>
+
+  <div class="d-inline-flex align-items-center gap-2">
+    <select
+      id="weekSelect"
+      class="form-select"
+      style="width: 240px;"
+    >
+      <% weeks
+        .filter(week => week.week_number <= currentWeek.week_number)
+        .forEach(week => { %>
+
+        <option
+          value="<%= week.week_number %>"
+          <%= week.week_number === currentWeek.week_number ? "selected" : "" %>>
+          Week <%= week.week_number %> (<%= week.displayDate %>)
+        </option>
+
+      <% }) %>
+    </select>
+
+    <button
+      type="button"
+      class="btn btn-success text-nowrap"
+      onclick="window.location.href='/scores/weekly/' + document.getElementById('weekSelect').value;">
+      View Results
+    </button>
+  </div>
+</div>
+       
       </div>
     </div>
 

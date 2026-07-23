@@ -2,14 +2,19 @@ import { all, run } from "../config/db.js"; // Ensure your DB client includes pr
 import { SKINS_BUY_IN } from "../config/league.js";
 import { getAllWeeks, getCurrentWeek } from "../services/weeks.service.js";
 import logger from "../utilities/logger.js";
+import { buildHoleScores } from "../services/golf.service.js";
 
 export const calculateSkins = async (weekId) => {
   if (!weekId) throw new Error("A valid week ID is required.");
 
   // Fetch hole difficulties
   const holeData = await all(
-    `SELECT hole_number, handicap_men, handicap_women FROM holes WHERE hole_number BETWEEN 1 AND 9`,
+    `SELECT *
+    FROM holes
+    WHERE hole_number BETWEEN 1 AND 9`,
   );
+
+  const courseMap = new Map(holeData.map((hole) => [hole.hole_number, hole]));
 
   const courseHandicaps = {};
   holeData.forEach((h) => {
@@ -30,35 +35,25 @@ export const calculateSkins = async (weekId) => {
 
   // Map net scores for each hole
   rawCards.forEach((player) => {
-    const raw9HoleHandicap = player.handicap_used || 0;
-    const emulated18Handicap = raw9HoleHandicap * 2;
-    const pId = player.member_id;
+    const holes = buildHoleScores(player, holeData, 1);
 
-    for (let h = 1; h <= 9; h++) {
-      const gross = player[`gross${h}`] || 0;
-      if (gross <= 0) continue;
-
-      const playerSex = (player.sex || "M").toUpperCase();
-      const holeDifficultyIndex =
-        playerSex === "F"
-          ? courseHandicaps[h]?.women || 18
-          : courseHandicaps[h]?.men || 18;
-
-      let strokesAllowed = Math.floor(emulated18Handicap / 18);
-      if (emulated18Handicap % 18 >= holeDifficultyIndex) {
-        strokesAllowed += 1;
-      }
-
-      const net = gross - strokesAllowed;
+    holes.forEach((hole) => {
+      const h = hole.holeNumber;
 
       if (!holeScores[h]) {
-        holeScores[h] = { minNet: net, winners: [pId] };
-      } else if (net < holeScores[h].minNet) {
-        holeScores[h] = { minNet: net, winners: [pId] };
-      } else if (net === holeScores[h].minNet) {
-        holeScores[h].winners.push(pId);
+        holeScores[h] = {
+          minNet: hole.net,
+          winners: [player.member_id],
+        };
+      } else if (hole.net < holeScores[h].minNet) {
+        holeScores[h] = {
+          minNet: hole.net,
+          winners: [player.member_id],
+        };
+      } else if (hole.net === holeScores[h].minNet) {
+        holeScores[h].winners.push(player.member_id);
       }
-    }
+    });
   });
 
   const totalPot = rawCards.length * SKINS_BUY_IN;

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/header'); %>
+    <link rel="stylesheet" href="/assets/css/round-details.css">
+</head>
+
+<body>
+
+<%- include('./partials/navbar'); %>
+
+<div class="container py-4">
+
+    <div class="text-center mb-4">
+
+        <h2>
+            <%= round.player.displayName || `${round.player.firstName} ${round.player.lastName}` %>
+        </h2>
+
+        <h5 class="text-muted">
+            Week <%= round.week.number %>
+            (<%= round.week.displayDate %>)
+        </h5>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <table class="table table-bordered text-center align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Hole</th>
+
+                        <% round.holes.forEach(hole => { %>
+
+                            <th><%= hole.holeNumber %></th>
+
+                        <% }) %>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <th>Par</th>
+
+                        <% round.holes.forEach(hole => { %>
+
+                            <td><%= hole.par %></td>
+
+                        <% }) %>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>Gross</th>
+
+                        <% round.holes.forEach(hole => { %>
+
+                            <td><%= hole.gross %></td>
+
+                        <% }) %>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>Net</th>
+
+                        <% round.holes.forEach(hole => { %>
+
+                            <td><%= hole.net %></td>
+
+                        <% }) %>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-lg-6 offset-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    Round Summary
+
+                </div>
+
+                <table class="table mb-0">
+
+                    <tr>
+                        <th>Gross Score</th>
+                        <td><%= round.totals.gross %></td>
+                    </tr>
+
+                    <tr>
+                        <th>Net Score</th>
+                        <td><%= round.totals.net %></td>
+                    </tr>
+
+                    <tr>
+                        <th>Stableford</th>
+                        <td><%= round.totals.stableford %></td>
+                    </tr>
+
+                    <tr>
+                        <th>Birdie Bonus</th>
+                        <td><%= round.totals.birdies %></td>
+                    </tr>
+
+                    <tr>
+                        <th>CTP</th>
+                        <td><%= round.totals.ctp %></td>
+                    </tr>
+
+                    <tr>
+                        <th>League Points</th>
+                        <td><%= round.totals.leaguePoints %></td>
+                    </tr>
+
+                    <tr>
+                        <th>Handicap Used</th>
+                        <td><%= round.handicapUsed %></td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<%- include('./partials/footer'); %>
+
+</body>
+
+</html>

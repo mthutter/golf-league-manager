@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <%- include('partials/header'); %>
+    <%- include('./partials/header'); %>
     <style>
       /* ===== Layout & Typography Colors from skins.ejs ===== */
       .player-link {
@@ -92,7 +92,7 @@
     </style>
   </head>
   <body>
-    <%- include('partials/navbar'); %>
+    <%- include('./partials/navbar'); %>
 
     <!-- Header Banner -->
     <div class="container">
@@ -147,9 +147,25 @@
               <% } else { %>
               <% scores.forEach(row => { %>
               <tr>
-                <td class="fw-bold bg-light players nowrap-cell">
-                  Week <%= row.week_number %>
-                </td>
+               <td class="fw-bold bg-light players nowrap-cell">
+
+<% if (row.score_id) { %>
+
+    <a
+        href="/scores/round/<%= row.score_id %>"
+        class="player-link">
+
+        Week <%= row.week_number %>
+
+    </a>
+
+<% } else { %>
+
+    Week <%= row.week_number %>
+
+<% } %>
+
+</td>
                 <td class="players nowrap-cell"><%= row.gross_total %></td>
                 <td class="players nowrap-cell"><%= row.net_total %></td>
                 <td class="players nowrap-cell"><%= row.stableford_total %></td>
@@ -167,7 +183,7 @@
       </div>
     </div>
 
-    <%- include('partials/scripts'); %>
-    <%- include('partials/footer'); %>
+    <%- include('./partials/scripts'); %>
+    <%- include('./partials/footer'); %>
   </body>
 </html>
