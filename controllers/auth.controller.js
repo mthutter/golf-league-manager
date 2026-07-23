@@ -1,4 +1,4 @@
-import * as authService from "../services/auth.service.js";
+import passport from "passport";
 import logger from "../utilities/logger.js";
 import { catchAsync } from "../utilities/asyncHandler.js";
 import posthog from "../utilities/posthog.js";
@@ -13,84 +13,87 @@ export const showLoginForm = (req, res) => {
 /**
  * POST /login - Process user authorization (Supports Admin & League Member)
  */
-export const handleLogin = catchAsync(async (req, res, next) => {
-  const { username, password } = req.body;
+export const handleLogin = (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
 
-  // 1. Check for Admin Credentials
-  const isAdminValid = authService.verifyAdminCredentials(username, password);
-  if (isAdminValid) {
-    req.session.isAdmin = true;
-    req.session.isUser = true; // Admins also count as general users
+    if (!user) {
+      logger.warn({ email: req.body.email }, "Failed login attempt detected");
 
-    logger.info(
-      { username, isAdmin: true },
-      "Admin successfully authenticated",
-    );
-    posthog.identify({
-      distinctId: req.session.id,
-      properties: { role: "admin" },
+      posthog.capture({
+        distinctId: req.session.id,
+        event: "login_failed",
+      });
+
+      return res.render("login", {
+        error: info?.message ?? "Invalid email or password",
+      });
+    }
+
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      logger.info(
+        {
+          userId: user.id,
+          email: user.email,
+          roles: user.roles,
+        },
+        "User successfully authenticated",
+      );
+
+      posthog.identify({
+        distinctId: String(user.id),
+        properties: {
+          email: user.email,
+          roles: user.roles,
+        },
+      });
+
+      posthog.capture({
+        distinctId: String(user.id),
+        event: "user_logged_in",
+        properties: {
+          roles: user.roles,
+        },
+      });
+
+      return res.redirect("/");
     });
-    posthog.capture({
-      distinctId: req.session.id,
-      event: "user_logged_in",
-      properties: { role: "admin" },
-    });
-    return res.redirect("/");
-  }
-
-  // 2. Check for Non-Admin Member Credentials
-  const isUserValid = authService.verifyUserCredentials
-    ? authService.verifyUserCredentials(username, password)
-    : false;
-
-  if (isUserValid) {
-    req.session.isAdmin = false;
-    req.session.isUser = true; // Flag identifying them as a standard authenticated league member
-
-    logger.info(
-      { username, isAdmin: false },
-      "League member successfully authenticated",
-    );
-    posthog.identify({
-      distinctId: req.session.id,
-      properties: { role: "member" },
-    });
-    posthog.capture({
-      distinctId: req.session.id,
-      event: "user_logged_in",
-      properties: { role: "member" },
-    });
-    return res.redirect("/");
-  }
-
-  // 3. Fallback if both checks fail
-  logger.warn({ username }, "Failed login attempt detected");
-  posthog.capture({ distinctId: req.session.id, event: "login_failed" });
-  return res.render("login", { error: "Invalid username or password" });
-});
+  })(req, res, next);
+};
 
 /**
  * GET /logout - Destroy current session context
  */
 export const handleLogout = (req, res, next) => {
-  const username = req.session?.username || "unknown";
-  const sessionId = req.session?.id || "anonymous";
+  const sessionId = req.session?.id;
 
-  req.session.destroy((err) => {
+  req.logout((err) => {
     if (err) {
-      // Handled cleanly via Pino JSON formatting strings
-      logger.error(
-        { err },
-        "Session destruction lifecycle failure during logout operation",
-      );
-      return next(err); // Forwards session system exceptions safely to centralized middleware
+      return next(err);
     }
 
-    logger.info({ username }, "User logged out successfully");
-    posthog.capture({ distinctId: sessionId, event: "user_logged_out" });
+    req.session.destroy((err) => {
+      if (err) {
+        logger.error(
+          { err },
+          "Session destruction lifecycle failure during logout operation",
+        );
+        return next(err);
+      }
 
-    // FIX: Match your custom cookie name "SessionCookie" defined in app.js
-    res.clearCookie("SessionCookie");
-    return res.redirect("/");
+      posthog.capture({
+        distinctId: sessionId,
+        event: "user_logged_out",
+      });
+
+      res.clearCookie("SessionCookie");
+      return res.redirect("/");
+    });
   });
 };

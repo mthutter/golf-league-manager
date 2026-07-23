@@ -61,4 +61,12 @@ router.get("/bootstrap-admin", async (req, res, next) => {
   }
 });
 
+router.get("/whoami", (req, res) => {
+  res.json({
+    authenticated: req.isAuthenticated(),
+    sessionID: req.sessionID,
+    user: req.user,
+  });
+});
+
 export default router;

@@ -44,10 +44,6 @@ const limiter = rateLimit({
 // BLOCK WORDPRESS COMMON EXPLOITS
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", ".env"];
 
-if (process.env.NODE_ENV !== "production") {
-  app.use("/dev", devRoutes);
-}
-
 app.use((req, res, next) => {
   // Normalize URL to lowercase to catch mixed-case evasion attempts (e.g., /WlWmAnIfEsT.xml)
   const lowerUrl = req.url.toLowerCase();
@@ -139,6 +135,10 @@ app.use((req, res, next) => {
 });
 
 app.use(flash());
+
+if (process.env.NODE_ENV !== "production") {
+  app.use("/dev", devRoutes);
+}
 
 /* ====== ROUTES REGISTER ======= */
 app.use("/", publicRoutes);
