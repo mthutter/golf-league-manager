@@ -1,6 +1,5 @@
 import logger from "../utilities/logger.js";
 import posthog from "../utilities/posthog.js";
-import { appLogger } from "../utilities/otel.js";
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {

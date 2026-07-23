@@ -1,19 +1,14 @@
 // ====== 1. ENVIRONMENT & OTEL MANAGEMENT (MUST REMAIN LINE 1 & 2) ======
 import "./config/env.js"; // CRITICAL: Hydrates process.env before anything else compiles!
-import "./utilities/otel.js"; // Line 2: Mounts the OpenTelemetry SDK configuration
 import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import session from "express-session";
-import fileUpload from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import SQLiteStoreFactory from "connect-sqlite3";
 import cors from "cors";
-
-// OPENTELEMETRY CONTEXT HELPERS
-import { sdk, appLogger } from "./utilities/otel.js";
 import logger from "./utilities/logger.js";
 
 // ====== 2. BUSINESS ROUTES (NOW SAFE FROM UNDEFINED ENV CRASHES) ======
@@ -31,7 +26,6 @@ import groupingRoutes from "./routes/grouping.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
-import authMiddleware from "./middleware/auth.middleware.js";
 
 const app = express();
 const SQLiteStore = SQLiteStoreFactory(session);
@@ -93,7 +87,12 @@ app.use((req, res, next) => {
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
-app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle =
+  process.env.NODE_ENV === "production"
+    ? "Bottoms Up Golf"
+    : process.env.NODE_ENV === "development"
+      ? "Bottoms Up Golf (DEV)"
+      : "Bottoms Up Golf (UNK)";
 
 /* ========================================= PARSERS / STATIC / SESSION ========================================= */
 app.use(express.static("public"));
@@ -106,7 +105,10 @@ app.use(
   session({
     name: "SessionCookie",
     secret: process.env.EXPRESS_SESSION_SECRET || "golf_secret",
-    store: new SQLiteStore({ db: "sessions.db", dir: process.env.EXPRESS_SESSION_DB_PATH }),
+    store: new SQLiteStore({
+      db: "sessions.db",
+      dir: process.env.EXPRESS_SESSION_DB_PATH,
+    }),
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 86400000 },
@@ -121,26 +123,6 @@ app.use((req, res, next) => {
 });
 
 app.use(flash());
-
-/* ========================================= AUTOMATED REQUEST LOGGER MIDDLEWARE ========================================= */
-app.use((req, res, next) => {
-  const distinctId = req.session?.id || req.sessionID || "anonymous_server_user";
-  const isStaticAsset = req.path.includes(".") || req.path.startsWith("/images") || req.path.startsWith("/videos");
-
-  if (!isStaticAsset) {
-    appLogger.emit({
-      severityText: "INFO",
-      body: `HTTP ${req.method} ${req.path}`,
-      attributes: {
-        "http.method": req.method,
-        "http.target": req.path,
-        "http.host": req.get("host"),
-        posthogDistinctId: distinctId,
-      },
-    });
-  }
-  next();
-});
 
 /* ========================================= ROUTES REGISTER ========================================= */
 app.use("/", publicRoutes);
@@ -169,48 +151,28 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 8080;
 const server = app.listen(PORT, () => {
   logger.info(`Bottoms Up Golf application started on port ${PORT}`);
-  appLogger.emit({
-    severityText: "INFO",
-    body: "Telemetry system connection verified.",
-    attributes: {
-      environment: process.env.NODE_ENV || "local",
-      posthogDistinctId: "server_boot_agent",
-    },
-  });
 });
 
 process.on("uncaughtException", async (err) => {
-  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
+  if (
+    err.code === "ERR_HTTP_HEADERS_SENT" ||
+    err.message.includes("headers after they are sent")
+  ) {
     return;
   }
-  appLogger.emit({
-    severityText: "FATAL",
-    body: `CRITICAL Uncaught Exception: ${err.message}`,
-    attributes: {
-      "error.stack": err.stack,
-      posthogDistinctId: "server_crash_agent",
-    },
-  });
-  await sdk.shutdown();
+  logger.error(err);
   process.exit(1);
 });
 
 process.on("unhandledRejection", async (reason) => {
   const err = reason instanceof Error ? reason : new Error(String(reason));
-  appLogger.emit({
-    severityText: "ERROR",
-    body: `WARNING Unhandled Rejection: ${err.message}`,
-    attributes: {
-      "error.stack": err.stack,
-      posthogDistinctId: "server_crash_agent",
-    },
-  });
-  await sdk.shutdown();
+
+  logger.error(err);
 });
 
 const gracefulShutdown = async (signal) => {
   logger.info(`${signal} received. Flushing telemetry queue...`);
-  await sdk.shutdown();
+
   server.close(() => {
     process.exit(0);
   });
