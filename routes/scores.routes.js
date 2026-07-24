@@ -23,6 +23,6 @@ router.get("/members/:id", scoresController.getMemberProfile);
 router.get("/", requireAdmin, scoresController.getScoresLegacy);
 
 // 7. GET /scores/round/:scoreId - Individual hole-to-hole scoring per week
-router.get("/round/:scoreId", requireAuth, scoresController.getRoundDetails);
+router.get("/round/:scoreId", scoresController.getRoundDetails);
 
 export default router;
