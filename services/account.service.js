@@ -1,8 +1,7 @@
+import "../config/env.js";
 import crypto from "crypto";
-
 import db from "../config/db.js";
 import logger from "../utilities/logger.js";
-
 import * as rolesService from "./roles.service.js";
 import { sendActivationEmail } from "./email.service.js";
 import { ROLES } from "./roles.service.js";
@@ -87,7 +86,7 @@ export async function initializeAccount(
   await saveActivationToken(memberId, token);
 
   if (sendEmail && email) {
-    const activationUrl = `${process.env.BASE_URL}/activate/${token}`;
+    const activationUrl = `${process.env.APP_URL}/activate/${token}`;
 
     await sendActivationEmail({
       member: {
@@ -137,7 +136,7 @@ export async function resendActivationEmail(memberId) {
 
   await saveActivationToken(memberId, token);
 
-  const activationUrl = `${process.env.BASE_URL}/activate/${token}`;
+  const activationUrl = `${process.env.APP_URL}/activate/${token}`;
 
   await sendActivationEmail({
     member,

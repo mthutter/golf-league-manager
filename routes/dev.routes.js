@@ -1,6 +1,5 @@
 import express from "express";
 import bcrypt from "bcrypt";
-
 import { authenticate } from "../services/auth.service.js";
 import { get, run } from "../config/db.js";
 import { createActivationToken } from "../services/activation.service.js";
