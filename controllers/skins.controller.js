@@ -44,7 +44,11 @@ export const calculateSkinsApi = catchAsync(async (req, res, next) => {
 export const getSkinsReport = catchAsync(async (req, res, next) => {
   logger.info("Assembling global skins payout dashboard summary data");
 
-  const weeks = await skinsService.getWeeksSummary();
+  const weeks = await weeksService.getAllWeeks();
+  if (!req.query.weekId && weeks.length > 0) {
+    return res.redirect(`/skins?weekId=${weeks[0].week_number}`);
+  }
+
   const selectedWeekId = req.query.weekId
     ? Number(req.query.weekId)
     : weeks[0]?.week_id || null;
