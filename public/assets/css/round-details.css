@@ -205,3 +205,24 @@
 .round-btn i {
   margin-right: 0.35rem;
 }
+
+@media (max-width: 600px) {
+  .scorecard .hole-col {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+  }
+
+  .scorecard {
+    font-size: 0.72rem;
+  }
+
+  .scorecard-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scorecard th,
+  .scorecard td {
+    padding: 0.2rem;
+  }
+}
