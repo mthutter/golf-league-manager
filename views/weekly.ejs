@@ -133,7 +133,7 @@
           class="card-header text-white py-3"
           style="background-color: #1b4332"
         >
-          <h5 class="card-title mb-0 fw-bold">Scoring</h5>         
+          <h5 class="card-title mb-0 fw-bold">Scoring</h5>
         </div>
 
         <div class="table-responsive" style="text-align: center">
@@ -161,11 +161,7 @@
               <% results.forEach((player, idx) => { %>
               <tr>
                 <td class="fw-bold bg-light players"><%= idx + 1 %></td>
-                <td class="text-start fw-semibold players nowrap-cell">
-                  <a
-                    href="/scores/members/<%= player.member_id || player.id %>"
-                    class="player-link"
-                  >
+                <td class="text-start fw-semibold players nowrap-cell">                
                     <%= player.player_name %>
                   </a>
                 </td>
