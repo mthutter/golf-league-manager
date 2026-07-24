@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import { authenticate } from "../services/auth.service.js";
 import { get, run } from "../config/db.js";
 import { createActivationToken } from "../services/activation.service.js";
+import * as accountService from "../services/account.service.js";
+import { ROLES } from "../services/roles.service.js";
 
 const router = express.Router();
 
@@ -12,51 +14,6 @@ router.get("/auth-test", async (req, res, next) => {
     const user = await authenticate("mthutter@me.com", "!Peter021");
 
     res.json(user ?? { success: false });
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get("/bootstrap-admin", async (req, res, next) => {
-  try {
-    const email = "mthutter@me.com".trim().toLowerCase();
-    const password = "!Peter021";
-
-    const member = await get(
-      `
-      SELECT id, e_mail
-      FROM members
-      WHERE e_mail = ?
-      `,
-      [email],
-    );
-
-    if (!member) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found.",
-      });
-    }
-
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    await run(
-      `
-      UPDATE members
-      SET
-        password_hash = ?,
-        is_active = 1,
-        email_verified = 1
-      WHERE id = ?
-      `,
-      [passwordHash, member.id],
-    );
-
-    res.json({
-      success: true,
-      message: "Account initialized successfully.",
-      memberId: member.id,
-    });
   } catch (err) {
     next(err);
   }
@@ -76,6 +33,44 @@ router.get("/activation-test/:id", async (req, res) => {
   res.json({
     token,
   });
+});
+
+router.get("/provision/:id", async (req, res, next) => {
+  try {
+    const member = await get(
+      `
+      SELECT
+        id,
+        name_first,
+        e_mail
+      FROM members
+      WHERE id = ?
+      `,
+      [req.params.id],
+    );
+
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        message: "Member not found.",
+      });
+    }
+
+    const result = await accountService.initializeAccount(member.id, {
+      roles: [ROLES.MEMBER, ROLES.ADMIN],
+      sendActivationEmail: true,
+      email: member.e_mail,
+      firstName: member.name_first,
+    });
+
+    res.json({
+      success: true,
+      memberId: member.id,
+      result,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;

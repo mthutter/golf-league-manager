@@ -33,15 +33,19 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <!-- LEFT SIDE (Shared Public Links) -->
-      <ul class="navbar-nav">
+      <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link px-3" href="/rules">Info/Rules</a>
         </li>
         <li class="nav-item">
           <a class="nav-link px-3" href="/tee-times">Tee Times</a>
         </li>
+         <li class="nav-item">
+          <a class="nav-link px-3" href="/course">Course</a>
+        </li>
 
         <!-- 🏆 New Results Dropdown Menu -->
+            <% if (isAuthenticated) { %>
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
@@ -60,7 +64,7 @@
           </ul>
         </li>
 
-         <% if (isAuthenticated) { %>
+      
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
@@ -93,39 +97,14 @@
             </li>
           </ul>
         </li>
-        <% } %>
-        <li class="nav-item">
-          <a class="nav-link px-3" href="/course">Course</a>
-        </li>
-         <% if (isAuthenticated) { %>
-        <li class="nav-item">
+           <li class="nav-item">
+              <a class="nav-link px-3" href="/players">Member Contacts</a>
+            </li>
+             <li class="nav-item">
           <a class="nav-link px-3" href="/blog">Blog Page</a>
         </li>
-        <% } %>
-      </ul>
-
-      <!-- RIGHT SIDE (Dynamic Auth & Portal Options) -->
-      <ul class="navbar-nav ms-auto">
-        <!-- ⛳ Player Portal Dropdown (Visible ONLY to standard players, hidden from Admin) -->
-        <% if (isMember) { %>
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle px-3"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-          >
-            Player Portal
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/blog">Blog Posts</a></li>
-            <li>
-              <a class="dropdown-item" href="/players">List League Members</a>
-            </li>
-          </ul>
-        </li>
-        <% } %>
-
+        <% } %>     
+        
         <!-- 🛠️ Admin Panel Dropdown (Visible ONLY to Admins) -->
         <% if (isAdmin) { %>
         <li class="nav-item dropdown">
@@ -163,16 +142,27 @@
         </li>
         <% } %>
 
-        <!-- Authentication CTA Link -->
-        <% if (isAuthenticated) { %>
-        <li class="nav-item">
-          <a class="nav-link px-3" href="/logout">Sign Out</a>
-        </li>
-        <% } else { %>
-        <li class="nav-item">
-          <a class="nav-link px-3" href="/login">Sign In</a>
-        </li>
-        <% } %>
+      </ul>
+
+<ul class="navbar-nav ms-auto">
+
+  <% if (isAuthenticated) { %>
+
+    <li class="nav-item">
+      <a class="nav-link px-3" href="/logout">Sign Out</a>
+    </li>
+
+  <% } else { %>
+
+    <li class="nav-item">
+      <a class="nav-link px-3" href="/login">Sign In</a>
+    </li>
+
+  <% } %>
+
+</ul>
+
+
       </ul>
     </div>
   </div>

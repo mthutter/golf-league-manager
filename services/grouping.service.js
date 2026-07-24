@@ -347,7 +347,7 @@ export const swapPlayerPositions = async (weekId, p1, p2) => {
     await updateGroupingTimestamp(weekId);
     return true;
   } catch (err) {
-    logger.erroror("Database execution error during swap:", err.message);
+    logger.error("Database execution error during swap:", err.message);
     throw new Error(`Failed to execute swap: ${err.message}`);
   }
 };

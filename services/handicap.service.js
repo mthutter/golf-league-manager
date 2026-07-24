@@ -15,7 +15,7 @@ export async function writeCurrentHandicaps() {
   // 2. Pure native sqlite3 callback chain
   db.all(`SELECT id, current_handicap FROM members`, [], (err, rows) => {
     if (err) {
-      logger.erroror("Error reading members:", err.message);
+      logger.error("Error reading members:", err.message);
       return;
     }
 
@@ -44,7 +44,7 @@ export async function writeCurrentHandicaps() {
         [row.id, currentWeek, "2026", row.current_handicap],
         function (insertErr) {
           if (insertErr) {
-            logger.erroror(
+            logger.error(
               `Error inserting row for ID ${row.id}:`,
               insertErr.message,
             );
@@ -70,7 +70,7 @@ export async function writeCurrentHandicaps() {
 function closeDatabase() {
   db.close((closeErr) => {
     if (closeErr) {
-      logger.erroror("Error closing database:", closeErr.message);
+      logger.error("Error closing database:", closeErr.message);
     } else {
       logger.info("Database connection closed cleanly.");
     }

@@ -1,120 +1,151 @@
 import db from "../config/db.js";
 
-// --- Promise Helpers for SQLite Callbacks ---
+// -----------------------------------------------------------------------------
+// Promise Helpers
+// -----------------------------------------------------------------------------
+
 const dbAll = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.all(sql, params, (e, r) => (e ? rej(e) : res(r))),
+  new Promise((resolve, reject) =>
+    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows))),
+  );
+
+const dbGet = (sql, params = []) =>
+  new Promise((resolve, reject) =>
+    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row))),
   );
 
 const dbRun = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.run(sql, params, function (e) {
-      e ? rej(e) : res(this.lastID);
+  new Promise((resolve, reject) =>
+    db.run(sql, params, function (err) {
+      if (err) return reject(err);
+
+      resolve({
+        lastID: this.lastID,
+        changes: this.changes,
+      });
     }),
   );
 
-// Helper to fetch a single row
-const dbGet = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.get(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
+// -----------------------------------------------------------------------------
+// Queries
+// -----------------------------------------------------------------------------
 
-/**
- * Fetches all member profiles ordered alphabetically
- */
 export async function getAllPlayers() {
   const sql = `
-    SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex
+    SELECT
+      id,
+      name_last,
+      name_first,
+      phone,
+      handicap,
+      e_mail,
+      year_joined,
+      status,
+      type,
+      sex
     FROM members
-    ORDER BY name_last, name_first ASC
+    ORDER BY name_last, name_first
   `;
+
   return dbAll(sql);
 }
 
-/**
- * Fetches a single member record by its primary key ID
- */
 export async function getPlayerById(id) {
   const sql = `
-    SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex
+    SELECT
+      id,
+      name_last,
+      name_first,
+      phone,
+      handicap,
+      e_mail,
+      year_joined,
+      status,
+      type,
+      sex
     FROM members
     WHERE id = ?
   `;
+
   return dbGet(sql, [id]);
 }
 
-/**
- * Inserts a new member record into the database
- */
-export async function createNewPlayer(playerData) {
-  const {
-    name_last,
-    name_first,
-    phone,
-    handicap,
-    password,
-    e_mail,
-    year_joined,
-    status,
-    type,
-    sex,
-  } = playerData;
+// -----------------------------------------------------------------------------
+// Create Player
+// -----------------------------------------------------------------------------
 
-  // Fixed: Added 'sex' column to the column list to match the 10 values being inserted
+export async function createNewPlayer({
+  name_last,
+  name_first,
+  phone,
+  handicap = null,
+  e_mail,
+  year_joined,
+  status,
+  type,
+  sex,
+}) {
   const sql = `
     INSERT INTO members (
-      name_last, name_first, phone, handicap, password, 
-      e_mail, year_joined, status, type, sex
+      name_last,
+      name_first,
+      phone,
+      handicap,
+      e_mail,
+      year_joined,
+      status,
+      type,
+      sex,
+      password_hash,
+      is_active,
+      activated_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (
+      ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      NULL,
+      0,
+      NULL
+    )
   `;
 
-  const values = [
+  const result = await dbRun(sql, [
     name_last,
     name_first,
     phone,
     handicap,
-    password,
     e_mail,
     year_joined,
     status,
     type,
     sex,
-  ];
+  ]);
 
-  return dbRun(sql, values); // Returns the newly created player's lastID
+  return result.lastID;
 }
 
-/**
- * Updates an existing member record in the database
- */
-export async function updatePlayerById(id, playerData) {
-  const {
-    name_last,
-    name_first,
-    phone,
-    e_mail,
-    year_joined,
-    status,
-    type,
-    sex,
-  } = playerData;
+// -----------------------------------------------------------------------------
+// Update Player
+// -----------------------------------------------------------------------------
 
+export async function updatePlayerById(
+  id,
+  { name_last, name_first, phone, e_mail, year_joined, status, type, sex },
+) {
   const sql = `
-    UPDATE members 
-    SET 
-      name_last = ?, 
-      name_first = ?, 
-      phone = ?, 
-      e_mail = ?, 
-      year_joined = ?, 
-      status = ?, 
-      type = ?, 
-      sex = ?
-    WHERE id = ?
+    UPDATE members
+       SET
+         name_last   = ?,
+         name_first  = ?,
+         phone       = ?,
+         e_mail      = ?,
+         year_joined = ?,
+         status      = ?,
+         type        = ?,
+         sex         = ?
+     WHERE id = ?
   `;
 
-  const values = [
+  return dbRun(sql, [
     name_last,
     name_first,
     phone,
@@ -124,7 +155,5 @@ export async function updatePlayerById(id, playerData) {
     type,
     sex,
     id,
-  ];
-
-  return dbRun(sql, values);
+  ]);
 }

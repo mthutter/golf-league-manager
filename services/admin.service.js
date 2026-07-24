@@ -39,7 +39,7 @@ export const processSkinsForWeek = async (weekId) => {
           name_last = member.name_last;
         }
       } catch (sqlError) {
-        logger.erroror(
+        logger.error(
           `SQLite look up failed for player ID ${playerId}:`,
           sqlError,
         );

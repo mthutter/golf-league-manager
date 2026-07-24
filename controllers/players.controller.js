@@ -2,6 +2,8 @@ import * as playersService from "../services/players.service.js";
 import logger from "../utilities/logger.js";
 import { catchAsync } from "../utilities/asyncHandler.js";
 import posthog from "../utilities/posthog.js";
+import * as accountService from "../services/account.service.js";
+import { ROLES } from "../services/roles.service.js";
 
 /**
  * GET /players - Display active players
@@ -49,17 +51,41 @@ export const createPlayer = catchAsync(async (req, res, next) => {
     });
   }
 
+  const roles = Array.isArray(req.body.roles)
+    ? req.body.roles
+    : req.body.roles
+      ? [req.body.roles]
+      : [ROLES.MEMBER];
+
   const lastID = await playersService.createNewPlayer(req.body);
 
+  await accountService.initializeAccount(lastID, {
+    roles,
+    sendActivationEmail: req.body.sendActivationEmail === "on",
+    email: req.body.e_mail,
+    firstName: req.body.name_first,
+  });
+
   logger.info(
-    { playerId: lastID, name: `${name_first} ${name_last}` },
-    "New league player record generated successfully",
+    {
+      playerId: lastID,
+      name: `${name_first} ${name_last}`,
+      roles,
+      activationEmail: req.body.sendActivationEmail === "on",
+    },
+    "New league player account created",
   );
+
   posthog.capture({
     distinctId: req.session?.id || "anonymous",
     event: "player_created",
-    properties: { player_id: lastID },
+    properties: {
+      player_id: lastID,
+      roles,
+      activation_email: req.body.sendActivationEmail === "on",
+    },
   });
+
   return res.redirect("/players");
 });
 

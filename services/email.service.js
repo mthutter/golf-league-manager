@@ -1,23 +1,193 @@
 import { all } from "../config/db.js";
-import nodemailer from "nodemailer";
 import "../config/env.js";
 import logger from "../utilities/logger.js";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.titan.email",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+import { EMAIL, transporter } from "../config/email.js";
 
 /**
- * Wraps form input inside an HTML email layout and dispatches it to members
- * @param {string} subject - The subject line from your form
- * @param {string} rawBodyContent - The main text message body from your form
- * @param {Array} [recipients]
+ * Builds the standard Bottoms Up branded email layout.
+ */
+const buildLeagueEmail = (bodyHtml) => `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin:0;
+  padding:0;
+  background:#f4f6f8;
+  font-family:"Segoe UI",Arial,sans-serif;
+}
+
+table {
+  border-spacing:0;
+  border-collapse:collapse;
+  width:100%;
+}
+
+.wrapper {
+  width:100%;
+  padding:30px 0;
+  background:#f4f6f8;
+}
+
+.main-table {
+  max-width:600px;
+  margin:0 auto;
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid #dce5dc;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.header {
+  background:linear-gradient(135deg,#2f8a2f,#1b4332);
+  text-align:center;
+  padding:30px 20px;
+}
+
+.header img {
+  width:90px;
+  height:auto;
+  margin-bottom:12px;
+}
+
+.header h1 {
+  margin:0;
+  color:#fff;
+  font-size:28px;
+}
+
+.header p {
+  margin:8px 0 0;
+  color:rgba(255,255,255,.9);
+}
+
+.divider {
+  height:4px;
+  background:#2f8a2f;
+}
+
+.body-content {
+  padding:40px 30px;
+  color:#333;
+  font-size:16px;
+  line-height:1.7;
+}
+
+.body-content h2,
+.body-content h3 {
+  color:#1b4332;
+}
+
+.button {
+  display:inline-block;
+  background:#2f8a2f;
+  color:#fff !important;
+  padding:14px 28px;
+  text-decoration:none;
+  border-radius:6px;
+  font-weight:bold;
+}
+
+.footer {
+  background:#f7faf7;
+  border-top:1px solid #e5ece5;
+  text-align:center;
+  padding:20px;
+  font-size:12px;
+  color:#777;
+}
+
+.footer a {
+  color:#2f8a2f;
+}
+
+@media (max-width:600px){
+  .body-content{
+    padding:25px 20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<center class="wrapper">
+
+<table class="main-table">
+
+<tr>
+<td class="header">
+
+<img
+ src="${EMAIL.LOGO}"
+ alt="Bottoms Up Golf League">
+
+<h1>Bottoms Up Golf League</h1>
+
+<p>Colorado Springs • 2026 Season</p>
+
+</td>
+</tr>
+
+<tr>
+<td class="divider"></td>
+</tr>
+
+<tr>
+<td class="body-content">
+
+${bodyHtml}
+
+</td>
+</tr>
+
+<tr>
+<td class="footer">
+
+<p><strong>Bottoms Up Golf League © 2026</strong></p>
+
+<p>
+<a href="${EMAIL.HOME_URL}">
+Visit League Home Page →
+</a>
+</p>
+
+<p style="font-size:11px;">
+You are receiving this email because you are a league member.
+</p>
+
+</td>
+</tr>
+
+</table>
+
+</center>
+
+</body>
+</html>
+`;
+
+/**
+ * Generic email sender used by all email functions.
+ */
+const sendEmail = async ({ to, bcc, subject, bodyHtml }) => {
+  return transporter.sendMail({
+    from: `"Bottoms Up Golf League" <${process.env.SMTP_USER}>`,
+    to,
+    bcc,
+    subject,
+    html: buildLeagueEmail(bodyHtml),
+  });
+};
+
+/**
+ * Existing league broadcast email.
+ * (Backwards compatible.)
  */
 export const fetchAndSendEmails = async (
   subject,
@@ -26,104 +196,41 @@ export const fetchAndSendEmails = async (
 ) => {
   try {
     let emailList = [];
-    if (recipients && recipients.length > 0) {
+
+    if (recipients.length > 0) {
       emailList = recipients;
+
       logger.info(
         `Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`,
       );
     } else {
-      logger.info("Global Broadcast Mode Activated. Fetching entire league...");
-      const members = await all(
-        "SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'",
-      );
-      if (!members || members.length === 0) {
-        return { success: true, count: 0, messageId: null };
-      }
+      logger.info("Global Broadcast Mode Activated.");
+
+      const members = await all(`
+        SELECT e_mail
+        FROM members
+        WHERE e_mail IS NOT NULL
+          AND e_mail <> ''
+          AND e_mail <> 'tbd@tbd.com'
+      `);
+
       emailList = members.map((m) => m.e_mail);
     }
 
-    // 💡 THE FIX: Convert form carriage returns (\n) into HTML line breaks (<br />)
-    const formattedBodyContent = rawBodyContent.replace(
-      /(?:\r\n|\r|\n)/g,
-      "<br />",
-    );
+    if (emailList.length === 0) {
+      return {
+        success: true,
+        count: 0,
+      };
+    }
 
-    // 💡 REMINDER: Update this to your real production domain
-    const domain = "https://bottoms-up-cos.org";
+    const bodyHtml = rawBodyContent.replace(/(?:\r\n|\r|\n)/g, "<br>");
 
-    const formattedHtmlTemplate = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <style>
- body { margin: 0; padding: 0; background-color: #f4f6f8; font-family: "Segoe UI", Arial, sans-serif; }
- table { border-spacing: 0; border-collapse: collapse; width: 100%; }
- .wrapper { width: 100%; background-color: #f4f6f8; padding: 30px 0; }
- .main-table { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #dce5dc; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); }
- .header { background: linear-gradient(135deg, #2f8a2f, #1b4332); padding: 30px 15px; text-align: center; }
- .header-logo img { width: 120px; height: auto; margin-bottom: 10px; }
- .header h1 { color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px; }
- .header p { color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 14px; }
- .body-content { padding: 40px 30px; color: #333; font-size: 16px; line-height: 1.7; }
- .body-content h2, .body-content h3 { color: #1b4332; }
- .divider { height: 4px; background-color: #2f8a2f; }
- .footer { background-color: #f7faf7; border-top: 1px solid #e5ece5; padding: 20px; text-align: center; font-size: 12px; color: #777; }
- .footer a { color: #2f8a2f; text-decoration: none; }
- @media screen and (max-width: 600px) {
- .body-content { padding: 25px 20px !important; }
- .header h1 { font-size: 24px; }
- }
- </style>
-</head>
-<body>
- <center class="wrapper">
- <table class="main-table">
- <tr>
- <td class="header">
- <div class="header-logo"><img src="https://bottoms-up.b-cdn.net/bottoms-up-logo.png" alt="Bottoms Up Golf League" height="30px" width="30px"></div>
- <h1>Bottoms Up Golf League</h1>
- <p>Colorado Springs • 2026 Season</p>
- </td>
- </tr>
- <tr>
- <td class="divider"></td>
- </tr>
- <tr>
- <td class="body-content">
- <!-- 💡 INSERT THE FORMATTED CONTENT HERE -->
- ${formattedBodyContent}
- </td>
- </tr>
- <tr>
- <td class="footer">
-  <p style="margin:0 0 8px 0;">
-    <strong>Bottoms Up Golf League © 2026</strong>
-  </p>
-  <!-- 💡 ADDED: Clickable Home Page Link -->
-  <p style="margin:0 0 12px 0;">
-    <a href="https://bottoms-up-cos.org" target="_blank" style="color: #2f8a2f; text-decoration: underline; fw-bold: 600;">
-      Visit League Home Page →
-    </a>
-  </p>
-  <p style="margin:0; color: #777; font-size: 11px;">
-    You are receiving this email because you are a league member.
-  </p>
-</td>
- </tr>
- </table>
- </center>
- </body>
-</html>
-`;
-
-    const info = await transporter.sendMail({
-      from: `"Bottoms Up Golf League" <${process.env.SMTP_USER}>`,
+    const info = await sendEmail({
       to: process.env.SMTP_USER,
       bcc: emailList,
-      subject: subject,
-      html: formattedHtmlTemplate,
+      subject,
+      bodyHtml,
     });
 
     return {
@@ -132,7 +239,68 @@ export const fetchAndSendEmails = async (
       messageId: info.messageId,
     };
   } catch (error) {
-    logger.erroror("Email service execution failed:", error);
+    logger.error("Email service execution failed", error);
     throw error;
   }
+};
+
+/**
+ * Sends an activation email to a new member.
+ */
+export const sendActivationEmail = async ({ member, activationUrl }) => {
+  const bodyHtml = `
+<h2>Welcome to Bottoms Up Golf League!</h2>
+
+<p>
+Hi ${member.name_first},
+</p>
+
+<p>
+Your member account has been created.
+To activate your account and choose your password,
+click the button below.
+</p>
+
+<p style="text-align:center;margin:35px 0;">
+
+<a
+ class="button"
+ href="${activationUrl}">
+
+Activate My Account
+
+</a>
+
+</p>
+
+<p>
+If the button doesn't work, copy and paste this link into your browser:
+</p>
+
+<p>
+
+<a href="${activationUrl}">
+${activationUrl}
+</a>
+
+</p>
+
+<p>
+This activation link expires in 24 hours.
+</p>
+
+<p>
+We look forward to seeing you on the course!
+</p>
+`;
+
+  const info = await sendEmail({
+    to: member.e_mail,
+    subject: "Activate Your Bottoms Up Golf League Account",
+    bodyHtml,
+  });
+
+  logger.info(`Activation email sent to ${member.e_mail}`);
+
+  return info;
 };
