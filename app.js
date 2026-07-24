@@ -35,7 +35,7 @@ logger.info(`Starting Bottoms Up Golf (${process.env.NODE_ENV})`);
 const SQLiteStore = SQLiteStoreFactory(session);
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 100 requests per window
+  max: 200, // Limit each IP to 200 requests per window
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: "Too many requests from this IP, please try again later.",
@@ -91,19 +91,13 @@ app.use((req, res, next) => {
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(express.static("public"));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
-//app.use(fileUpload());
 
 app.use(
   session({
@@ -140,11 +134,12 @@ app.use((req, res, next) => {
 
 app.use(flash());
 
+/* ====== ROUTES REGISTER ======= */
+/* ====== DEV ROUTES ====== */
 if (process.env.NODE_ENV !== "production") {
   app.use("/dev", devRoutes);
 }
-
-/* ====== ROUTES REGISTER ======= */
+/* ====== PRODUCTION ROUTES ====== */
 app.use("/", publicRoutes);
 app.use("/", groupingRoutes);
 app.use("/blog", blogRoutes);
@@ -173,10 +168,7 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (
-    err.code === "ERR_HTTP_HEADERS_SENT" ||
-    err.message.includes("headers after they are sent")
-  ) {
+  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
   }
   logger.error(err);
