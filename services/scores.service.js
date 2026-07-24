@@ -317,16 +317,30 @@ export const getRoundDetails = async (scoreId) => {
 
   const holes = buildHoleScores(round, holeData, startHole);
 
+  const totals = {
+    par: holes.reduce((sum, hole) => sum + hole.par, 0),
+    gross: round.gross_total,
+    net: round.net_total,
+    points: holes.reduce((sum, hole) => sum + hole.points, 0),
+    stableford: round.stableford_total,
+    birdies: round.birdie_points,
+    ctp: round.ctp_points,
+    leaguePoints:
+      round.stableford_total + round.birdie_points + round.ctp_points,
+  };
+
   return {
     player: {
       id: round.member_id,
       firstName: round.name_first,
       lastName: round.name_last,
+      displayName: `${round.name_first} ${round.name_last}`,
       sex: round.sex,
     },
 
     week: {
       number: round.week_number,
+      date: round.date,
       displayDate: round.displayDate,
     },
 
@@ -336,14 +350,6 @@ export const getRoundDetails = async (scoreId) => {
 
     holes,
 
-    totals: {
-      gross: round.gross_total,
-      net: round.net_total,
-      stableford: round.stableford_total,
-      birdies: round.birdie_points,
-      ctp: round.ctp_points,
-      leaguePoints:
-        round.stableford_total + round.birdie_points + round.ctp_points,
-    },
+    totals,
   };
 };

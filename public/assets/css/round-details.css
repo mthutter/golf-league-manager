@@ -1,17 +1,214 @@
-.table th,
-.table td {
+/* ==========================================
+   ROUND INFORMATION
+   ========================================== */
+
+.info-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  color: #777;
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+/* ==========================================
+   SCORECARD
+   ========================================== */
+
+.scorecard {
+  table-layout: fixed;
+  font-size: 0.82rem;
+  margin-bottom: 0;
+}
+
+.scorecard th,
+.scorecard td {
+  padding: 0.28rem 0.18rem;
+  width: 44px;
+  min-width: 44px;
   text-align: center;
   vertical-align: middle;
 }
+
+.scorecard thead th {
+  background: var(--green-main);
+  color: #fff;
+  font-weight: 600;
+}
+
+.scorecard tbody th {
+  width: 72px;
+  min-width: 72px;
+  background: #f7f7f7;
+  text-align: left;
+  font-weight: 600;
+}
+
+.scorecard th:last-child,
+.scorecard td:last-child {
+  width: 56px;
+  min-width: 56px;
+  font-weight: 700;
+  background: #f3f5f6;
+  border-left: 2px solid var(--green-main);
+}
+
+/* ==========================================
+   SCORE COLORS
+   ========================================== */
+
+.eagle {
+  background: #ffd54f;
+  color: #000;
+  font-weight: 700;
+}
+
+.birdie {
+  background: #c8e6c9;
+  color: #1b5e20;
+  font-weight: 700;
+}
+
+.par {
+  background: #fff;
+}
+
+.bogey {
+  background: #ffe0b2;
+}
+
+.double-plus {
+  background: #ffcdd2;
+}
+
+/* ==========================================
+   ROUND SUMMARY
+   ========================================== */
+
+.summary-card {
+  max-width: 420px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.summary-card .card-header {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.summary-card table {
+  margin-bottom: 0;
+  font-size: 0.84rem;
+}
+
+.summary-card th,
+.summary-card td {
+  padding: 0.3rem 0.75rem !important;
+  vertical-align: middle;
+}
+
+.summary-card th {
+  width: 55%;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.summary-card td {
+  width: 45%;
+  text-align: right;
+  font-weight: 600;
+}
+
+.summary-card .table-success {
+  font-size: 0.9rem;
+}
+
+.summary-card .card-header {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+}
+/* ==========================================
+   CARDS
+   ========================================== */
 
 .card {
   border-radius: 12px;
 }
 
-.card-header {
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 768px) {
+  .scorecard {
+    font-size: 0.72rem;
+  }
+
+  .scorecard th,
+  .scorecard td {
+    width: 36px;
+    min-width: 36px;
+    padding: 0.2rem;
+  }
+
+  .scorecard tbody th {
+    width: 60px;
+    min-width: 60px;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+  }
+}
+
+.scorecard td:last-child {
+  background: rgba(47, 138, 47, 0.14) !important;
+  font-weight: 700;
+  color: var(--green-dark) !important;
+  border-left: 3px solid var(--green-main) !important;
+}
+
+.score-total-header {
+  background: var(--green-main) !important;
+  color: #fff !important;
+  border-left: 3px solid #1f5f1f !important;
+}
+
+.score-total {
+  background: #e8f5e9 !important;
+  color: var(--green-dark) !important;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border-left: 3px solid var(--green-main) !important;
+  text-align: center !important;
+}
+.score-label {
+  font-weight: 700;
+}
+
+.gross-row th {
+  background: #eef6ee;
+}
+
+.gross-row td {
   font-weight: 600;
 }
 
-.table th:first-child {
-  width: 90px;
+.round-btn {
+  min-width: 180px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+}
+
+.round-btn i {
+  margin-right: 0.35rem;
 }

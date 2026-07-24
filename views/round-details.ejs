@@ -10,32 +10,83 @@
 
 <%- include('./partials/navbar'); %>
 
+<%
+const scoreRows = [
+    { label: "Yards", field: "yardage" },
+    { label: "Par", field: "par" },
+    { label: "Hole Handicap", field: "handicap" },
+    { label: "Gross Score", field: "gross" },
+    { label: "Strokes", field: "strokes" },
+    { label: "Net Score", field: "net" },
+    { label: "Points", field: "points" }
+];
+
+const totalsMap = {
+    par: round.totals.par,
+    gross: round.totals.gross,
+    net: round.totals.net,
+    points: round.totals.points
+};
+%>
+
 <div class="container py-4">
 
-    <div class="text-center mb-4">
+    <!-- Round Information -->
 
-        <h2>
-            <%= round.player.displayName || `${round.player.firstName} ${round.player.lastName}` %>
-        </h2>
+    <div class="card shadow-sm mb-4">
 
-        <h5 class="text-muted">
-            Week <%= round.week.number %>
-            (<%= round.week.displayDate %>)
-        </h5>
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+                    <div class="info-label">Player</div>
+                    <div class="info-value">
+                        <%= round.player.displayName %>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-label">Week</div>
+                    <div class="info-value">
+                        Week <%= round.week.number %><br>
+                        <small>(<%= round.week.displayDate %>)</small>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-label">Handicap</div>
+                    <div class="info-value">
+                        <%= round.handicapUsed %>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-label">Skins</div>
+                    <div class="info-value">
+                        <%= round.skinsEntered ? "Yes" : "No" %>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
+
+    <!-- Scorecard -->
 
     <div class="card shadow-sm">
 
         <div class="card-body">
 
-            <table class="table table-bordered text-center align-middle">
+            <table class="table table-bordered text-center align-middle scorecard">
 
                 <thead>
 
                     <tr>
 
-                        <th>Hole</th>
+                        <th></th>
 
                         <% round.holes.forEach(hole => { %>
 
@@ -43,47 +94,45 @@
 
                         <% }) %>
 
+                      <th class="score-total-header">Total</th>
+
                     </tr>
 
                 </thead>
 
                 <tbody>
 
-                    <tr>
+               <% scoreRows.forEach(row => { %>
 
-                        <th>Par</th>
+    <tr class="<%= row.field === 'gross' ? 'gross-row' : '' %>">
 
-                        <% round.holes.forEach(hole => { %>
+        <th class="score-label"><%= row.label %></th>
 
-                            <td><%= hole.par %></td>
+        <% round.holes.forEach(hole => { %>
 
-                        <% }) %>
+                            <% if (row.field === "gross") { %>
 
-                    </tr>
+                                <td class="<%= hole.result %>">
+                                    <%= hole.gross || "" %>
+                                </td>
 
-                    <tr>
+                            <% } else { %>
 
-                        <th>Gross</th>
+                                <td>
+                                    <%= hole[row.field] ?? "" %>
+                                </td>
 
-                        <% round.holes.forEach(hole => { %>
-
-                            <td><%= hole.gross %></td>
-
-                        <% }) %>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>Net</th>
-
-                        <% round.holes.forEach(hole => { %>
-
-                            <td><%= hole.net %></td>
+                            <% } %>
 
                         <% }) %>
 
+                       <th class="score-total">
+    <%= totalsMap[row.field] ?? "" %>
+</th>
+
                     </tr>
+
+                <% }) %>
 
                 </tbody>
 
@@ -93,11 +142,13 @@
 
     </div>
 
+    <!-- Summary -->
+
     <div class="row mt-4">
 
         <div class="col-lg-6 offset-lg-3">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm summary-card">
 
                 <div class="card-header">
 
@@ -105,7 +156,7 @@
 
                 </div>
 
-                <table class="table mb-0">
+                <table class="table table-sm mb-0">
 
                     <tr>
                         <th>Gross Score</th>
@@ -118,7 +169,7 @@
                     </tr>
 
                     <tr>
-                        <th>Stableford</th>
+                        <th>Stableford Points</th>
                         <td><%= round.totals.stableford %></td>
                     </tr>
 
@@ -128,18 +179,13 @@
                     </tr>
 
                     <tr>
-                        <th>CTP</th>
+                        <th>CTP Points</th>
                         <td><%= round.totals.ctp %></td>
                     </tr>
 
-                    <tr>
+                    <tr class="table-success fw-bold">
                         <th>League Points</th>
                         <td><%= round.totals.leaguePoints %></td>
-                    </tr>
-
-                    <tr>
-                        <th>Handicap Used</th>
-                        <td><%= round.handicapUsed %></td>
                     </tr>
 
                 </table>
@@ -147,6 +193,32 @@
             </div>
 
         </div>
+
+    </div>
+
+    <!-- Buttons -->
+
+    <div class="d-flex justify-content-between mt-4">
+
+        <a
+            href="/scores/members/<%= round.player.id %>"
+            class="btn btn-success round-btn">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Player
+
+        </a>
+
+        <button
+            class="btn btn-success round-btn"
+            onclick="window.print()">
+
+            <i class="bi bi-printer"></i>
+
+            Print Scorecard
+
+        </button>
 
     </div>
 

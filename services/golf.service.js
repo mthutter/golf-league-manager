@@ -54,10 +54,19 @@ export function stablefordPoints(net, par) {
  * @returns {Array}
  */
 
+/**
+ * Builds a complete scorecard for either the front or back nine.
+ *
+ * @param {Object} player - Score record joined with member data
+ * @param {Array} course - Course hole data
+ * @param {number} startHole - 1 or 10
+ * @returns {Array}
+ */
 export function buildHoleScores(player, course, startHole) {
   const holes = [];
   const sex = (player.sex || "M").toUpperCase();
-  const courseMap = new Map(course.map((h) => [h.hole_number, h]));
+
+  const courseMap = new Map(course.map((hole) => [hole.hole_number, hole]));
 
   for (let holeNumber = startHole; holeNumber < startHole + 9; holeNumber++) {
     const courseHole = courseMap.get(holeNumber);
@@ -70,51 +79,53 @@ export function buildHoleScores(player, course, startHole) {
       sex === "F" ? courseHole.handicap_women : courseHole.handicap_men;
 
     const score = calculateHoleScore(gross, player.handicap_used, holeHandicap);
-  }
-  const par = sex === "F" ? courseHole.par_women : courseHole.par_men;
 
-  const yardage =
-    sex === "F" ? courseHole.yardage_women : courseHole.yardage_men;
+    const par = sex === "F" ? courseHole.par_women : courseHole.par_men;
 
-  const points = score.gross > 0 ? stablefordPoints(score.net, par) : 0;
+    const yardage =
+      sex === "F" ? courseHole.yardage_women : courseHole.yardage_men;
 
-  const delta = score.gross - par;
-  let result = "";
+    const points = score.gross > 0 ? stablefordPoints(score.net, par) : 0;
 
-  if (score.gross > 0) {
-    switch (true) {
-      case delta <= -2:
-        result = "eagle";
-        break;
+    const delta = score.gross - par;
 
-      case delta === -1:
-        result = "birdie";
-        break;
+    let result = "";
 
-      case delta === 0:
-        result = "par";
-        break;
+    if (score.gross > 0) {
+      switch (true) {
+        case delta <= -2:
+          result = "eagle";
+          break;
 
-      case delta === 1:
-        result = "bogey";
-        break;
+        case delta === -1:
+          result = "birdie";
+          break;
 
-      default:
-        result = "double-plus";
+        case delta === 0:
+          result = "par";
+          break;
+
+        case delta === 1:
+          result = "bogey";
+          break;
+
+        default:
+          result = "double-plus";
+      }
     }
-  }
 
-  holes.push({
-    holeNumber,
-    par,
-    handicap: holeHandicap,
-    yardage,
-    gross: score.gross,
-    strokes: score.strokes,
-    net: score.net,
-    points,
-    result,
-  });
+    holes.push({
+      holeNumber,
+      yardage,
+      par,
+      handicap: holeHandicap,
+      gross: score.gross,
+      strokes: score.strokes,
+      net: score.net,
+      points,
+      result,
+    });
+  }
 
   return holes;
 }
