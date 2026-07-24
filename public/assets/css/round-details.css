@@ -225,4 +225,9 @@
   .scorecard td {
     padding: 0.2rem;
   }
+
+  .round-btn {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.6rem;
+  }
 }
