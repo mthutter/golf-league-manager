@@ -102,7 +102,7 @@ app.use(cookieParser());
 app.use(
   session({
     name: "SessionCookie",
-    secret: process.env.EXPRESS_SESSION_SECRET || "golf_secret",
+    secret: process.env.EXPRESS_SESSION_SECRET,
     store: new SQLiteStore({
       db: "sessions.db",
       dir: process.env.EXPRESS_SESSION_DB_PATH,
