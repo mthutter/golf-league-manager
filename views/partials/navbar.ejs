@@ -104,7 +104,12 @@
         <% } %>     
         
         <!-- 🛠️ Admin Panel Dropdown (Visible ONLY to Admins) -->
-        <% if (isAdmin) { %>
+       
+
+      </ul>
+
+<ul class="navbar-nav ms-auto">
+ <% if (isAdmin) { %>
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
@@ -139,11 +144,6 @@
           </ul>
         </li>
         <% } %>
-
-      </ul>
-
-<ul class="navbar-nav ms-auto">
-
   <% if (isAuthenticated) { %>
 
     <li class="nav-item">
