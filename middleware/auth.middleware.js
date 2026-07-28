@@ -51,7 +51,7 @@ export function requireRole(role) {
   };
 }
 
-export const requireAdministrator = requireRole(ROLES.ADMIN);
+export const requireAdmin = requireRole(ROLES.ADMIN);
 export const requireMember = requireRole(ROLES.MEMBER);
 export const requireCommissioner = requireRole(ROLES.COMMISSIONER);
 export const requireTreasurer = requireRole(ROLES.TREASURER);
