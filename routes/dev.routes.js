@@ -26,6 +26,7 @@ router.get("/whoami", (req, res) => {
   });
 });
 
+// Manually activiate a provisioned user account via member_id
 router.get("/activation-test/:id", async (req, res) => {
   const token = await createActivationToken(req.params.id);
 
@@ -34,6 +35,7 @@ router.get("/activation-test/:id", async (req, res) => {
   });
 });
 
+// Manually provision user account via member_id
 router.get("/provision/:id", async (req, res, next) => {
   try {
     const member = await get(
