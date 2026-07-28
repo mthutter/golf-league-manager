@@ -43,6 +43,14 @@ export async function activateAccount(req, res, next) {
       });
     }
 
+    if (!password || password.trim().length < 10) {
+      return res.render("activate-account", {
+        token,
+        member: validation.member,
+        error: "Password must be at least 10 characters.",
+      });
+    }
+
     const result = await activateMember(token, password);
 
     if (!result.success) {

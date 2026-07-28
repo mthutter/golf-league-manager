@@ -84,6 +84,13 @@ export async function validateActivationToken(token) {
     };
   }
 
+  if (record.isActive) {
+    return {
+      valid: false,
+      reason: "already-active",
+    };
+  }
+
   if (new Date(record.expires_at) < new Date()) {
     return {
       valid: false,
@@ -127,6 +134,7 @@ export async function activateMember(token, password) {
             UPDATE activation_tokens
             SET used_at = CURRENT_TIMESTAMP
             WHERE token = ?
+            AND used_at IS NULL
             `,
       [token],
     );

@@ -6,7 +6,7 @@ import logger from "../utilities/logger.js";
 // -----------------------------------------------------------------------------
 export const ROLES = Object.freeze({
   MEMBER: "Member",
-  ADMIN: "Administrator",
+  ADMIN: "Admin",
   COMMISSIONER: "Commissioner",
   TREASURER: "Treasurer",
 });
@@ -47,7 +47,7 @@ export async function getRolesForMember(memberId) {
 }
 
 export async function assignDefaultRole(memberId) {
-  return replaceRoles(memberId, ["Member"]);
+  return replaceRoles(memberId, [ROLES.MEMBER]);
 }
 
 export async function replaceRoles(memberId, roles = []) {
@@ -84,5 +84,5 @@ export async function replaceRoles(memberId, roles = []) {
 }
 
 export async function getAllRoles() {
-  return ["Member", "Administrator", "Commissioner", "Treasurer"];
+  return Object.values(ROLES);
 }

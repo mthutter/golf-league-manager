@@ -125,5 +125,6 @@ function buildUser(member, roles) {
     lastName: member.name_last,
     email: member.e_mail,
     roles,
+    isActive: !!member.is_active,
   };
 }

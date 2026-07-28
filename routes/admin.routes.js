@@ -4,6 +4,7 @@ import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
+//Protect every /admin route
 router.use(requireAuth);
 router.use(requireAdmin);
 

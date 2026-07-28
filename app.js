@@ -11,6 +11,7 @@ import SQLiteStoreFactory from "connect-sqlite3";
 import cors from "cors";
 import logger from "./utilities/logger.js";
 import passport from "./config/passport.js";
+import { ROLES } from "./services/roles.service.js";
 
 // ====== 2. ROUTES ======
 import publicRoutes from "./routes/public.routes.js";
@@ -91,7 +92,12 @@ app.use((req, res, next) => {
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
-app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle =
+  process.env.NODE_ENV === "production"
+    ? "Bottoms Up Golf"
+    : process.env.NODE_ENV === "development"
+      ? "Bottoms Up Golf (DEV)"
+      : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(express.static("public"));
@@ -121,18 +127,21 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 app.use((req, res, next) => {
   const user = req.user;
 
   res.locals.user = user;
   res.locals.isAuthenticated = req.isAuthenticated();
-  res.locals.isAdmin = user?.roles?.includes("Admin") ?? false;
-  res.locals.isMember = user?.roles?.includes("Member") ?? false;
+  res.locals.isAdmin = user?.roles?.includes(ROLES.ADMIN) ?? false;
+  res.locals.isMember = user?.roles?.includes(ROLES.MEMBER) ?? false;
+
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+
   next();
 });
-
-app.use(flash());
 
 /* ====== ROUTES REGISTER ======= */
 /* ====== DEV ROUTES ====== */
@@ -168,7 +177,10 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
+  if (
+    err.code === "ERR_HTTP_HEADERS_SENT" ||
+    err.message.includes("headers after they are sent")
+  ) {
     return;
   }
   logger.error(err);

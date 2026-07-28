@@ -1,4 +1,5 @@
 import logger from "../utilities/logger.js";
+import { ROLES } from "../services/roles.service.js";
 
 /**
  * Require a logged-in user.
@@ -50,8 +51,7 @@ export function requireRole(role) {
   };
 }
 
-/**
- * Convenience middleware.
- */
-export const requireAdmin = requireRole("Admin");
-export const requireMember = requireRole("Member");
+export const requireAdministrator = requireRole(ROLES.ADMIN);
+export const requireMember = requireRole(ROLES.MEMBER);
+export const requireCommissioner = requireRole(ROLES.COMMISSIONER);
+export const requireTreasurer = requireRole(ROLES.TREASURER);
