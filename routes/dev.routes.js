@@ -74,4 +74,30 @@ router.get("/provision/:id", async (req, res, next) => {
   }
 });
 
+router.get("/cleanse-test-user", async (req, res, next) => {
+  try {
+    const query = `
+      UPDATE members 
+      SET password_hash = NULL, 
+          last_login = NULL, 
+          email_verified = 0, 
+          is_active = 0, 
+          activated_at = NULL 
+      WHERE id = 20
+    `;
+
+    // Uses your native async 'run' wrapper from ../config/db.js
+    const result = await run(query);
+
+    // sqlite3 run() wrapper returns an object containing the changes property
+    if (result && result.changes === 0) {
+      return res.status(404).json({ success: false, error: "Test user not found" });
+    }
+
+    return res.status(200).json({ success: true, message: "Test user values cleared successfully" });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;
