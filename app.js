@@ -92,12 +92,7 @@ app.use((req, res, next) => {
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(express.static("public"));
@@ -145,7 +140,7 @@ app.use((req, res, next) => {
 
 /* ====== ROUTES REGISTER ======= */
 /* ====== DEV ROUTES ====== */
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV == "production") {
   app.use("/dev", devRoutes);
 }
 /* ====== PRODUCTION ROUTES ====== */
@@ -177,10 +172,7 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (
-    err.code === "ERR_HTTP_HEADERS_SENT" ||
-    err.message.includes("headers after they are sent")
-  ) {
+  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
   }
   logger.error(err);
