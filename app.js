@@ -143,9 +143,10 @@ app.use((req, res, next) => {
 
 /* ====== ROUTES REGISTER ======= */
 /* ====== DEV ROUTES ====== */
-if (process.env.NODE_ENV == "production") {
+if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "development") {
   app.use("/dev", devRoutes);
 }
+
 /* ====== PRODUCTION ROUTES ====== */
 app.use("/", publicRoutes);
 app.use("/", groupingRoutes);

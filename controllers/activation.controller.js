@@ -1,12 +1,6 @@
-import {
-  validateActivationToken,
-  activateMember,
-} from "../services/activation.service.js";
+import { validateActivationToken, activateMember } from "../services/activation.service.js";
 
-import {
-  findMemberByEmail,
-  resendActivationEmail,
-} from "../services/account.service.js";
+import { findMemberByEmail, resendActivationEmail } from "../services/account.service.js";
 
 import logger from "../utilities/logger.js";
 
@@ -41,7 +35,6 @@ export async function showActivationPage(req, res, next) {
 export async function activateAccount(req, res, next) {
   try {
     const { token, password, confirmPassword } = req.body;
-
     const validation = await validateActivationToken(token);
 
     if (!validation.valid) {
@@ -49,8 +42,6 @@ export async function activateAccount(req, res, next) {
         reason: validation.reason,
       });
     }
-
-    // Now validation.member is available everywhere below...
 
     if (password !== confirmPassword) {
       return res.render("activate-account", {
@@ -68,11 +59,24 @@ export async function activateAccount(req, res, next) {
       });
     }
 
+    // 1. Run the database activation service
     const result = await activateMember(token, password);
 
-    // ...
+    // 2. Handle unexpected service-level validation failures
+    if (!result.success) {
+      return res.status(400).render("activation-invalid", {
+        reason: result.reason || "invalid",
+      });
+    }
+
+    // 3. ✅ FIX: Send a response to the browser to stop the spinning loader
+    // Option A: Render a success page
+    return res.render("activation-success", { member: result.member });
+
+    // Option B (Alternative): If your UI uses AJAX/Fetch, return JSON instead:
+    // return res.status(200).json({ success: true });
   } catch (err) {
-    next(err);
+    next(err); // Forwards unexpected crashes to your global error handler
   }
 }
 
