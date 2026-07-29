@@ -22,6 +22,10 @@ export async function showActivationPage(req, res, next) {
 
     const result = await validateActivationToken(token);
 
+    console.log(result);
+    console.log(result.valid);
+    console.log(token);
+
     if (!result.valid) {
       return res.status(400).render("activation-invalid", {
         reason: result.reason,
