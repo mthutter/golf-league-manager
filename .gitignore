@@ -20,6 +20,7 @@ golf-league-db-production.db
 sessions.db
 sanitize*.sql
 .env
+cache/
 
 # Runtime data
 pids
