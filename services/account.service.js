@@ -31,6 +31,21 @@ const dbGet = (sql, params = []) =>
 // Private Helpers
 // -----------------------------------------------------------------------------
 
+export async function findMemberByEmail(email) {
+  return await dbGet(
+    `
+    SELECT
+      id,
+      name_first,
+      e_mail,
+      is_active
+    FROM members
+    WHERE lower(e_mail) = lower(?)
+    `,
+    [email],
+  );
+}
+
 function generateActivationToken() {
   return crypto.randomBytes(32).toString("hex");
 }
@@ -86,7 +101,7 @@ export async function initializeAccount(
   await saveActivationToken(memberId, token);
 
   if (sendEmail && email) {
-    const activationUrl = `${process.env.APP_URL}/activate/${token}`;
+    const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
 
     await sendActivationEmail({
       member: {

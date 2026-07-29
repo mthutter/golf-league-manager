@@ -14,7 +14,13 @@
         <div class="league-title">Bottoms Up Golf League</div>
         <div class="league-subtitle">Member Sign In</div>
 
-        <% if (typeof error !== "undefined") { %>
+<% if (success && success.length > 0) { %>
+    <div class="alert alert-success">
+        <%= success[0] %>
+    </div>
+<% } %>
+
+        <% if (error && error.length > 0) { %>
         <div class="alert alert-danger"><%= error %></div>
         <% } %>
 
@@ -51,7 +57,7 @@
 
           <div class="text-center">
             <div class="mb-2">
-              <a href="/activate-account">
+              <a href="/activate/request">
                 First time here? Activate your account
               </a>
             </div>
