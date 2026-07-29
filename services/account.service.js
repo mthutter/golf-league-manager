@@ -151,7 +151,7 @@ export async function resendActivationEmail(memberId) {
 
   await saveActivationToken(memberId, token);
 
-  const activationUrl = `${process.env.APP_URL}/activate/?token=${token}`;
+  const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
 
   await sendActivationEmail({
     member,
