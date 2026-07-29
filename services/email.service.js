@@ -189,20 +189,14 @@ const sendEmail = async ({ to, bcc, subject, bodyHtml }) => {
  * Existing league broadcast email.
  * (Backwards compatible.)
  */
-export const fetchAndSendEmails = async (
-  subject,
-  rawBodyContent,
-  recipients = [],
-) => {
+export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = []) => {
   try {
     let emailList = [];
 
     if (recipients.length > 0) {
       emailList = recipients;
 
-      logger.info(
-        `Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`,
-      );
+      logger.info(`Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`);
     } else {
       logger.info("Global Broadcast Mode Activated.");
 
@@ -286,7 +280,7 @@ ${activationUrl}
 </p>
 
 <p>
-This activation link expires in 24 hours.
+This activation link expires in 48 hours.
 </p>
 
 <p>
