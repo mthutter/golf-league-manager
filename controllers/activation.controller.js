@@ -103,14 +103,12 @@ export async function handleActivationRequest(req, res, next) {
       return res.render("activation-requested");
     }
 
-    if (member.is_active && member.id != 20) {
-      req.flash(
-        "info",
-        "Your account is already active. Please log in or reset your password if needed.",
-      );
-      return res.redirect("/login");
+    if (member.is_active) {
+      return {
+        success: false,
+        reason: "already-active",
+      };
     }
-
     await resendActivationEmail(member.id);
 
     return res.render("activation-requested");
