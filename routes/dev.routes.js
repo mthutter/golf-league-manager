@@ -74,27 +74,37 @@ router.get("/provision/:id", async (req, res, next) => {
   }
 });
 
-router.get("/cleanse-test-user", async (req, res, next) => {
+// Cleanse a dynamic test user account via ID
+// Cleanse a dynamic test user account and delete their activation tokens via ID
+router.get("/cleanse-test-user/:id", async (req, res, next) => {
   try {
-    const query = `
+    const memberId = req.params.id;
+
+    // 1. Delete associated tokens first
+    const deleteTokensQuery = `DELETE FROM activation_tokens WHERE member_id = ?`;
+    await run(deleteTokensQuery, [memberId]);
+
+    // 2. Clear values in the members table
+    const updateMemberQuery = `
       UPDATE members 
       SET password_hash = NULL, 
           last_login = NULL, 
           email_verified = 0, 
           is_active = 0, 
           activated_at = NULL 
-      WHERE id = 20
+      WHERE id = ?
     `;
+    const result = await run(updateMemberQuery, [memberId]);
 
-    // Uses your native async 'run' wrapper from ../config/db.js
-    const result = await run(query);
-
-    // sqlite3 run() wrapper returns an object containing the changes property
+    // Checks if the user row actually existed to accept updates
     if (result && result.changes === 0) {
       return res.status(404).json({ success: false, error: "Test user not found" });
     }
 
-    return res.status(200).json({ success: true, message: "Test user values cleared successfully" });
+    return res.status(200).json({
+      success: true,
+      message: `Test user ${memberId} values cleared and activation tokens deleted successfully.`,
+    });
   } catch (error) {
     next(error);
   }
