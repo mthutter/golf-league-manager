@@ -43,7 +43,7 @@ const limiter = rateLimit({
 });
 
 app.get("/favicon.ico", (req, res) => {
-  res.sendFile(path.join(process.cwd(), "public", "icons", "icons8-golf-lineal-color-32.png"));
+  res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
 });
 // BLOCK WORDPRESS COMMON EXPLOITS
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", ".env"];
