@@ -11,7 +11,7 @@ export const calculateSkins = async (weekId) => {
   const holeData = await all(
     `SELECT *
     FROM holes
-    WHERE hole_number BETWEEN 1 AND 9`,
+    WHERE hole_number BETWEEN 10 AND 18`,
   );
 
   const courseMap = new Map(holeData.map((hole) => [hole.hole_number, hole]));
@@ -143,7 +143,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
       handicap_men,
       handicap_women
     FROM holes
-    WHERE hole_number BETWEEN 1 AND 9
+    WHERE hole_number BETWEEN 10 AND 18
     ORDER BY hole_number
   `);
 
@@ -167,7 +167,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
       handicap_men,
       handicap_women
     FROM holes
-    WHERE hole_number BETWEEN 1 AND 9
+    WHERE hole_number BETWEEN 10 AND 18
   `);
 
   holeData.forEach((h) => {
