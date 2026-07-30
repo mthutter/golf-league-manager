@@ -229,13 +229,19 @@
                       Player
                     </th>
                     <th rowspan="3" style="width: 70px">HCP</th>
-
+                    <% if (week.week_number > 9 ) { %>
                     <% for (let h = 10; h <= 18; h++) { %>
                     <th>
                       Hole
                       <%= h %>
                     </th>
-                    <% } %>
+                    <% }} else { %>
+                      <% for (let h = 1; h <= 9; h++) { %>
+                        <th>
+                      Hole
+                      <%= h %>
+                    </th>
+                    <% } } %>
                     <th rowspan="3" style="width: 60px">Skins</th>
                     <th rowspan="3" style="width: 100px">Payout ($)</th>
                   </tr>
