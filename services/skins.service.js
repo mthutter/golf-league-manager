@@ -149,15 +149,18 @@ export const buildSkinsReport = async (selectedWeekId) => {
   const currentWeek = await getCurrentWeek();
   const { startHole, endHole } = getWeekHoleRange(selectedWeekId);
 
-  const holeInfo = await all(`
+  const holeInfo = await all(
+    `
     SELECT
       hole_number,
       handicap_men,
       handicap_women
     FROM holes
-    WHERE hole_number BETWEEN startHole AND endHole
-    ORDER BY hole_number
-  `);
+    WHERE hole_number BETWEEN ? AND ?
+        ORDER BY hole_number
+  `,
+    [startHole, endHole],
+  );
 
   if (!selectedWeekId) {
     return {
@@ -173,14 +176,17 @@ export const buildSkinsReport = async (selectedWeekId) => {
     };
   }
 
-  const holeData = await all(`
+  const holeData = await all(
+    `
     SELECT
       hole_number,
       handicap_men,
       handicap_women
     FROM holes
-    WHERE hole_number BETWEEN startHole AND endHole
-  `);
+    WHERE hole_number BETWEEN ? AND ?
+    `,
+    [startHole, endHole],
+  );
 
   holeData.forEach((h) => {
     courseHandicaps[h.hole_number] = {
