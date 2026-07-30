@@ -1,5 +1,7 @@
 // ====== 1. ENVIRONMENT (MUST REMAIN LINE 1) ======
 import "./config/env.js"; // CRITICAL: Hydrates process.env before anything else compiles!
+import sqlite3 from "sqlite3";
+import path from "path";
 import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -43,7 +45,9 @@ const limiter = rateLimit({
 });
 
 app.get("/favicon.ico", (req, res) => {
-  res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
+  res.sendFile(
+    path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"),
+  );
 });
 // BLOCK WORDPRESS COMMON EXPLOITS
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", ".env"];
@@ -95,7 +99,12 @@ app.use((req, res, next) => {
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
-app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle =
+  process.env.NODE_ENV === "production"
+    ? "Bottoms Up Golf"
+    : process.env.NODE_ENV === "development"
+      ? "Bottoms Up Golf (DEV)"
+      : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(express.static("public"));
@@ -103,12 +112,16 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
+const sessionDb = new sqlite3.Database(
+  path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"),
+);
+
 app.use(
   session({
     name: "SessionCookie",
     secret: process.env.EXPRESS_SESSION_SECRET,
     store: new SQLiteStore({
-      db: "sessions.db",
+      db: sessionDb,
       dir: process.env.EXPRESS_SESSION_DB_PATH,
     }),
     resave: false,
@@ -143,7 +156,10 @@ app.use((req, res, next) => {
 
 /* ====== ROUTES REGISTER ======= */
 /* ====== DEV ROUTES ====== */
-if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "development") {
+if (
+  process.env.NODE_ENV == "production" ||
+  process.env.NODE_ENV == "development"
+) {
   app.use("/dev", devRoutes);
 }
 
@@ -176,7 +192,10 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
+  if (
+    err.code === "ERR_HTTP_HEADERS_SENT" ||
+    err.message.includes("headers after they are sent")
+  ) {
     return;
   }
   logger.error(err);
