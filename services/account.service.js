@@ -68,10 +68,12 @@ async function saveActivationToken(memberId, token) {
         (
             member_id,
             token,
+            purpose,
             expires_at
         )
         VALUES
         (
+            ?,
             ?,
             ?,
             datetime('now', '+2 days')

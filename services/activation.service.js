@@ -5,45 +5,53 @@ import bcrypt from "bcrypt";
 
 const TOKEN_LIFETIME_HOURS = 48;
 
-export async function createActivationToken(memberId) {
-  // Invalidate any previous unused tokens
+export const TOKEN_PURPOSE = {
+  ACTIVATION: "activation",
+  PASSWORD_RESET: "password_reset",
+};
+
+export async function createToken(
+  memberId,
+  purpose = TOKEN_PURPOSE.ACTIVATION,
+) {
+  // Invalidate any previous unused tokens of the same purpose
   await run(
     `
-    DELETE FROM activation_tokens
-    WHERE member_id = ?  
+    UPDATE activation_tokens
+    SET used_at = CURRENT_TIMESTAMP
+    WHERE member_id = ?
+      AND purpose = ?
+      AND used_at IS NULL
     `,
-    [memberId],
+    [memberId, purpose],
   );
 
+  // Generate new token
   const token = crypto.randomBytes(32).toString("hex");
 
+  // Calculate expiration
+  const expiresAt = new Date(
+    Date.now() + TOKEN_LIFETIME_HOURS * 60 * 60 * 1000,
+  ).toISOString();
+
+  // Insert new token
   await run(
     `
-    INSERT INTO activation_tokens
-    (
+    INSERT INTO activation_tokens (
       member_id,
       token,
+      purpose,
       expires_at
     )
-    VALUES
-    (
-      ?,
-      ?,
-      DATETIME('now', ?)
-    )
+    VALUES (?, ?, ?, ?)
     `,
-    [memberId, token, `+${TOKEN_LIFETIME_HOURS} hours`],
+    [memberId, token, purpose, expiresAt],
   );
-
-  logger.info({
-    msg: "Activation token created",
-    memberId,
-  });
 
   return token;
 }
 
-export async function validateActivationToken(token) {
+export async function validateToken(token, purpose = TOKEN_PURPOSE.ACTIVATION) {
   const record = await get(
     `
     SELECT
@@ -61,13 +69,14 @@ export async function validateActivationToken(token) {
     JOIN members m
       ON m.id = at.member_id
     WHERE at.token = ?
+    AND at.purpose = ?
     `,
-    [token],
+    [token, purpose],
   );
 
   if (!record) {
     logger.warn({
-      msg: "Activation token not found",
+      msg: "Token not found",
       token,
     });
 
@@ -84,7 +93,7 @@ export async function validateActivationToken(token) {
     };
   }
 
-  if (record.isActive) {
+  if (purpose === TOKEN_PURPOSE.ACTIVATION && record.isActive) {
     return {
       valid: false,
       reason: "already-active",
@@ -102,6 +111,14 @@ export async function validateActivationToken(token) {
     valid: true,
     member: record,
   };
+}
+
+export async function createActivationToken(memberId) {
+  return createToken(memberId, TOKEN_PURPOSE.ACTIVATION);
+}
+
+export async function validateActivationToken(token) {
+  return validateToken(token, TOKEN_PURPOSE.ACTIVATION);
 }
 
 export async function activateMember(token, password) {
@@ -142,14 +159,20 @@ export async function activateMember(token, password) {
     // 6. Commit changes smoothly
     await commit();
 
-    logger.info({ msg: "Member activated", memberId: validation.member.memberId });
+    logger.info({
+      msg: "Member activated",
+      memberId: validation.member.memberId,
+    });
     return { success: true, member: validation.member };
   } catch (err) {
     // 7. Safe rollback on any query or hashing failures
     try {
       await rollback();
     } catch (rollbackErr) {
-      logger.error({ msg: "Transaction rollback failed", error: rollbackErr.message });
+      logger.error({
+        msg: "Transaction rollback failed",
+        error: rollbackErr.message,
+      });
     }
     throw err; // Ensure the controller catches this to send an HTTP 500
   }
