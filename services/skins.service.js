@@ -312,7 +312,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
       let playerWonThisSequence = false;
 
       if (carryStatus === 1) {
-        for (let nextHole = h + 1; nextHole <= 9; nextHole++) {
+        for (let nextHole = h + 1; nextHole <= 18; nextHole++) {
           const holeHasWinner = holeDetails.some(
             (d) => Number(d.hole_number) === nextHole,
           );
