@@ -63,7 +63,7 @@ export const calculateSkins = async (weekId) => {
   let carryoverAccumulator = 0;
 
   // Chronological evaluation from Hole 1 to Hole 9 to manage progressive pots
-  for (let h = 1; h <= 9; h++) {
+  for (let h = 10; h <= 18; h++) {
     const data = holeScores[h];
     carryoverAccumulator += baseValuePerHole;
 
@@ -239,7 +239,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
   let carriedPursePool = 0;
   let currentFeederHoles = [];
 
-  for (let hNum = 1; hNum <= 9; hNum++) {
+  for (let hNum = 10; hNum <= 18; hNum++) {
     const winnersForThisHole = holeDetails.filter(
       (d) => Number(d.hole_number) === hNum,
     ).length;
@@ -280,7 +280,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
 
     const holesArray = [];
 
-    for (let h = 1; h <= 9; h++) {
+    for (let h = 10; h <= 18; h++) {
       const gross = player[`gross${h}`] || 0;
 
       const playerSex = (player.sex || "M").toUpperCase();

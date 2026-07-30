@@ -63,7 +63,7 @@ export const processSkinsForWeek = async (weekId) => {
   let carriedPursePool = 0;
   const holePayouts = {};
   // First Pass: Walk sequentially from Hole 1 to Hole 9 to calculate carryover purses
-  for (let hNum = 1; hNum <= 9; hNum++) {
+  for (let hNum = 10; hNum <= 18; hNum++) {
     // Count how many players claimed this specific hole across our field datasets
     let winnersForThisHole = 0;
 
