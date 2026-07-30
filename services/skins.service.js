@@ -1,6 +1,10 @@
 import { all, run } from "../config/db.js"; // Ensure your DB client includes promise or callback bindings
 import { SKINS_BUY_IN } from "../config/league.js";
-import { getAllWeeks, getCurrentWeek } from "../services/weeks.service.js";
+import {
+  getAllWeeks,
+  getCurrentWeek,
+  getWeekHoleRange,
+} from "../services/weeks.service.js";
 import logger from "../utilities/logger.js";
 import { buildHoleScores } from "../services/golf.service.js";
 
@@ -8,10 +12,17 @@ export const calculateSkins = async (weekId) => {
   if (!weekId) throw new Error("A valid week ID is required.");
 
   // Fetch hole difficulties
+
+  const { startHole, endHole } = getWeekHoleRange(weekId);
+
   const holeData = await all(
-    `SELECT *
-    FROM holes
-    WHERE hole_number BETWEEN 10 AND 18`,
+    `
+  SELECT *
+  FROM holes
+  WHERE hole_number BETWEEN ? AND ?
+  ORDER BY hole_number
+  `,
+    [startHole, endHole],
   );
 
   const courseMap = new Map(holeData.map((hole) => [hole.hole_number, hole]));
@@ -35,7 +46,7 @@ export const calculateSkins = async (weekId) => {
 
   // Map net scores for each hole
   rawCards.forEach((player) => {
-    const holes = buildHoleScores(player, holeData, 10);
+    const holes = buildHoleScores(player, holeData, startHole);
 
     holes.forEach((hole) => {
       const h = hole.holeNumber;
@@ -63,7 +74,7 @@ export const calculateSkins = async (weekId) => {
   let carryoverAccumulator = 0;
 
   // Chronological evaluation from Hole 1 to Hole 9 to manage progressive pots
-  for (let h = 10; h <= 18; h++) {
+  for (let h = startHole; h <= endHole; h++) {
     const data = holeScores[h];
     carryoverAccumulator += baseValuePerHole;
 
@@ -136,6 +147,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
 
   const week = await getAllWeeks();
   const currentWeek = await getCurrentWeek();
+  const { startHole, endHole } = getWeekHoleRange(selectedWeekId);
 
   const holeInfo = await all(`
     SELECT
@@ -143,7 +155,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
       handicap_men,
       handicap_women
     FROM holes
-    WHERE hole_number BETWEEN 10 AND 18
+    WHERE hole_number BETWEEN startHole AND endHole
     ORDER BY hole_number
   `);
 
@@ -167,7 +179,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
       handicap_men,
       handicap_women
     FROM holes
-    WHERE hole_number BETWEEN 10 AND 18
+    WHERE hole_number BETWEEN startHole AND endHole
   `);
 
   holeData.forEach((h) => {
@@ -239,7 +251,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
   let carriedPursePool = 0;
   let currentFeederHoles = [];
 
-  for (let hNum = 10; hNum <= 18; hNum++) {
+  for (let hNum = startHole; hNum <= endHole; hNum++) {
     const winnersForThisHole = holeDetails.filter(
       (d) => Number(d.hole_number) === hNum,
     ).length;
@@ -280,7 +292,7 @@ export const buildSkinsReport = async (selectedWeekId) => {
 
     const holesArray = [];
 
-    for (let h = 10; h <= 18; h++) {
+    for (let h = startHole; h <= endHole; h++) {
       const gross = player[`gross${h}`] || 0;
 
       const playerSex = (player.sex || "M").toUpperCase();

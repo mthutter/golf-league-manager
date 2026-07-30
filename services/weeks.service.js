@@ -108,3 +108,19 @@ export async function getUpcomingWeek() {
     LIMIT 1
   `);
 }
+
+/**
+ * Returns the course hole range played for a league week.
+ *
+ * @param {number} weekId
+ * @returns {{startHole:number,endHole:number}}
+ */
+export function getWeekHoleRange(weekId) {
+  if (!weekId) {
+    throw new Error("A valid week ID is required.");
+  }
+
+  return weekId <= 11
+    ? { startHole: 1, endHole: 9 }
+    : { startHole: 10, endHole: 18 };
+}
