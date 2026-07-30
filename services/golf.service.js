@@ -62,6 +62,7 @@ export function stablefordPoints(net, par) {
  * @param {number} startHole - 1 or 10
  * @returns {Array}
  */
+
 export function buildHoleScores(player, course, startHole) {
   const holes = [];
   const sex = (player.sex || "M").toUpperCase();

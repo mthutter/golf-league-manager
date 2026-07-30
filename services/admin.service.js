@@ -5,6 +5,7 @@ import {
 } from "./handicap.service.js";
 import { get, all, run } from "../config/db.js"; // Added 'all' for complete lookup support
 import logger from "../utilities/logger.js";
+import { getWeekHoleRange } from "../services/weeks.service.js";
 
 /**
  * Fetches skins calculations and maps player IDs to DB names
@@ -62,8 +63,10 @@ export const processSkinsForWeek = async (weekId) => {
   const baseValuePerHole = totalPot / 9;
   let carriedPursePool = 0;
   const holePayouts = {};
+
+  const { startHole, endHole } = getWeekHoleRange(weekId);
   // First Pass: Walk sequentially from Hole 1 to Hole 9 to calculate carryover purses
-  for (let hNum = 10; hNum <= 18; hNum++) {
+  for (let hNum = startHole; hNum <= endHole; hNum++) {
     // Count how many players claimed this specific hole across our field datasets
     let winnersForThisHole = 0;
 

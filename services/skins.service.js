@@ -325,12 +325,13 @@ export const buildSkinsReport = async (selectedWeekId) => {
         );
       });
 
-      const carryStatus = holeCarryoverStatus[h] || 0;
+      const carryStatus =
+        holeCarryoverStatus[h] !== undefined ? holeCarryoverStatus[h] : 0;
 
       let playerWonThisSequence = false;
 
       if (carryStatus === 1) {
-        for (let nextHole = h + 1; nextHole <= 18; nextHole++) {
+        for (let nextHole = h + 1; nextHole <= endHole; nextHole++) {
           const holeHasWinner = holeDetails.some(
             (d) => Number(d.hole_number) === nextHole,
           );
