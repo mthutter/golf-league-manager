@@ -35,7 +35,7 @@ export const calculateSkins = async (weekId) => {
 
   // Map net scores for each hole
   rawCards.forEach((player) => {
-    const holes = buildHoleScores(player, holeData, 1);
+    const holes = buildHoleScores(player, holeData, 10);
 
     holes.forEach((hole) => {
       const h = hole.holeNumber;
