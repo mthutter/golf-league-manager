@@ -29,6 +29,8 @@ import groupingRoutes from "./routes/grouping.routes.js";
 import devRoutes from "./routes/dev.routes.js";
 import activationRoutes from "./routes/activation.routes.js";
 
+import * as activationController from "./controllers/activation.controller.js";
+
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
 
@@ -175,6 +177,12 @@ app.use("/admin", adminRoutes);
 app.use("/skins", skinsRouter);
 app.use("/email", emailRoutes);
 app.use("/activate", activationRoutes);
+
+app.get("/forgot-password", activationController.showForgotPasswordPage);
+app.post("/forgot-password", activationController.handleForgotPassword);
+
+app.get("/reset-password", activationController.showResetPasswordPage);
+app.post("/reset-password", activationController.handleResetPassword);
 
 /* ====== ERROR CODES ======= */
 app.use((req, res, next) => {

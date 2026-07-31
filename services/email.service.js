@@ -189,14 +189,20 @@ const sendEmail = async ({ to, bcc, subject, bodyHtml }) => {
  * Existing league broadcast email.
  * (Backwards compatible.)
  */
-export const fetchAndSendEmails = async (subject, rawBodyContent, recipients = []) => {
+export const fetchAndSendEmails = async (
+  subject,
+  rawBodyContent,
+  recipients = [],
+) => {
   try {
     let emailList = [];
 
     if (recipients.length > 0) {
       emailList = recipients;
 
-      logger.info(`Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`);
+      logger.info(
+        `Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`,
+      );
     } else {
       logger.info("Global Broadcast Mode Activated.");
 
@@ -295,6 +301,67 @@ We look forward to seeing you on the course!
   });
 
   logger.info(`Activation email sent to ${member.e_mail}`);
+
+  return info;
+};
+
+export const sendPasswordResetEmail = async ({ member, resetUrl }) => {
+  const bodyHtml = `
+<h2>Password Reset Request</h2>
+
+<p>
+Hi ${member.name_first},
+</p>
+
+<p>
+We received a request to reset the password for your Bottoms Up Golf account.
+</p>
+
+<p>
+Click the button below to choose a new password.
+</p>
+
+<p style="text-align:center;margin:35px 0;">
+
+<a
+ class="button"
+ href="${resetUrl}">
+
+Reset Password
+
+</a> </p>
+<p>
+If the button doesn't work, copy and paste this link into your browser:
+</p>
+
+<p>
+
+<a href="${resetUrl}">
+${resetUrl}
+</a>
+
+</p>
+
+
+</p>
+
+<p>
+This link expires in one hour.
+</p>
+
+<p>
+If you didn't request this password reset, you can safely ignore this email.
+Your existing password will remain unchanged.
+</p>
+`;
+
+  const info = await sendEmail({
+    to: member.e_mail,
+    subject: "Bottoms Up Golf - Password Reset",
+    bodyHtml,
+  });
+
+  logger.info(`Password reset email sent to ${member.e_mail}`);
 
   return info;
 };

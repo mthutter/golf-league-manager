@@ -3,7 +3,10 @@ import logger from "../utilities/logger.js";
 import { run, get, beginTransaction, commit, rollback } from "../config/db.js";
 import bcrypt from "bcrypt";
 
-const TOKEN_LIFETIME_HOURS = 48;
+export const TOKEN_LIFETIME = {
+  ACTIVATION: 48,
+  PASSWORD_RESET: 1,
+};
 
 export const TOKEN_PURPOSE = {
   ACTIVATION: "activation",
@@ -14,6 +17,10 @@ export async function createToken(
   memberId,
   purpose = TOKEN_PURPOSE.ACTIVATION,
 ) {
+  const lifetimeHours =
+    purpose === TOKEN_PURPOSE.PASSWORD_RESET
+      ? TOKEN_LIFETIME.PASSWORD_RESET
+      : TOKEN_LIFETIME.ACTIVATION;
   // Invalidate any previous unused tokens of the same purpose
   await run(
     `
@@ -31,7 +38,7 @@ export async function createToken(
 
   // Calculate expiration
   const expiresAt = new Date(
-    Date.now() + TOKEN_LIFETIME_HOURS * 60 * 60 * 1000,
+    Date.now() + lifetimeHours * 60 * 60 * 1000,
   ).toISOString();
 
   // Insert new token
@@ -76,7 +83,7 @@ export async function validateToken(token, purpose = TOKEN_PURPOSE.ACTIVATION) {
 
   if (!record) {
     logger.warn({
-      msg: "oken not found",
+      msg: "Token not found",
       token,
     });
 
@@ -97,6 +104,13 @@ export async function validateToken(token, purpose = TOKEN_PURPOSE.ACTIVATION) {
     return {
       valid: false,
       reason: "already-active",
+    };
+  }
+
+  if (purpose === TOKEN_PURPOSE.PASSWORD_RESET && !record.isActive) {
+    return {
+      valid: false,
+      reason: "inactive",
     };
   }
 

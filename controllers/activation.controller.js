@@ -1,7 +1,17 @@
-import { validateActivationToken, activateMember } from "../services/activation.service.js";
+import {
+  validateActivationToken,
+  activateMember,
+} from "../services/activation.service.js";
 
-import { findMemberByEmail, resendActivationEmail } from "../services/account.service.js";
+import {
+  findMemberByEmail,
+  resendActivationEmail,
+} from "../services/account.service.js";
 
+import { findMemberByEmail } from "../services/account.service.js";
+import { createToken, TOKEN_PURPOSE } from "../services/activation.service.js";
+import { sendPasswordResetEmail } from "../services/email.service.js";
+import { requestPasswordReset } from "../services/account.service.js";
 import logger from "../utilities/logger.js";
 
 export async function showActivationPage(req, res, next) {
@@ -119,4 +129,33 @@ export async function handleActivationRequest(req, res, next) {
   } catch (err) {
     next(err);
   }
+}
+
+export function showForgotPasswordPage(req, res) {
+  res.render("auth/forgot-password");
+}
+
+export async function handleForgotPassword(req, res) {
+  try {
+    await requestPasswordReset(req.body.email);
+  } catch (err) {
+    logger.error(err);
+  }
+
+  req.flash(
+    "success",
+    "If an account exists for that email address, a password reset link has been sent.",
+  );
+
+  res.redirect("/login");
+}
+
+export function showResetPasswordPage(req, res) {
+  res.render("auth/reset-password", {
+    token: req.query.token,
+  });
+}
+
+export async function handleResetPassword(req, res) {
+  res.send("Reset password - coming soon");
 }

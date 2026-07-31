@@ -1,26 +1,21 @@
 import "../config/env.js";
-import { createActivationToken } from "./activation.service.js";
+import {
+  createActivationToken,
+  createToken,
+  TOKEN_PURPOSE,
+} from "./activation.service.js";
 import db from "../config/db.js";
 import logger from "../utilities/logger.js";
 import * as rolesService from "./roles.service.js";
-import { sendActivationEmail } from "./email.service.js";
+import {
+  sendActivationEmail,
+  sendPasswordResetEmail,
+} from "./email.service.js";
 import { ROLES } from "./roles.service.js";
 
 // -----------------------------------------------------------------------------
 // Promise Helpers
 // -----------------------------------------------------------------------------
-
-const dbRun = (sql, params = []) =>
-  new Promise((resolve, reject) =>
-    db.run(sql, params, function (err) {
-      if (err) return reject(err);
-
-      resolve({
-        lastID: this.lastID,
-        changes: this.changes,
-      });
-    }),
-  );
 
 const dbGet = (sql, params = []) =>
   new Promise((resolve, reject) =>
@@ -116,4 +111,26 @@ export async function resendActivationEmail(memberId) {
     memberId,
     token,
   };
+}
+
+export async function requestPasswordReset(email) {
+  email = email.trim();
+  const member = await findMemberByEmail(email);
+
+  // Don't reveal whether the account exists or is active.
+  if (!member || !member.is_active) {
+    logger.info(`Password reset requested for unknown/inactive account.`);
+    return;
+  }
+
+  const token = await createToken(member.id, TOKEN_PURPOSE.PASSWORD_RESET);
+
+  const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
+
+  await sendPasswordResetEmail({
+    member,
+    resetUrl,
+  });
+
+  logger.info(`Password reset email sent for member ${member.id}`);
 }
