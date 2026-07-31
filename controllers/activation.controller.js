@@ -8,7 +8,6 @@ import {
   resendActivationEmail,
 } from "../services/account.service.js";
 
-import { findMemberByEmail } from "../services/account.service.js";
 import { createToken, TOKEN_PURPOSE } from "../services/activation.service.js";
 import { sendPasswordResetEmail } from "../services/email.service.js";
 import { requestPasswordReset } from "../services/account.service.js";
