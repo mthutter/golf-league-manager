@@ -10,40 +10,30 @@
 <%- include('./partials/navbar'); %>
 
 <div class="auth-wrapper">
-
     <div class="auth-card">
-
-        <div class="logo-icon">⛳</div>
-
+        <div class="logo-icon"><img height="90px" width="90px" src="https://bottoms-up.b-cdn.net/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
         <div class="league-title">
             Bottoms Up Golf League
         </div>
-
         <div class="league-subtitle">
-            Request Activation E-Mail
+            Request Account Activation E-Mail
         </div>
-
         <p class="auth-text">
-            If you're already a league member,
+            If you're a league member,
             enter the email address associated
-            with your membership and we'll send
+            with your contact profile and we'll send
             you an activation link.
         </p>
-
         <% if (error) { %>
             <div class="alert alert-danger">
                 <%= error %>
             </div>
         <% } %>
-
         <form method="POST" action="/activate/request">
-
-            <div class="mb-4">
-
+            <div class="mb-4 mt-4">
                 <label class="form-label fw-semibold">
                     Email Address
                 </label>
-
                 <input
                     type="email"
                     class="form-control"
@@ -51,32 +41,21 @@
                     autocomplete="email"
                     required
                 >
-
             </div>
-
             <button
                 class="btn btn-success w-100 btn-auth"
                 type="submit">
-
                 Send Activation Email
-
             </button>
-
         </form>
 
         <div class="text-center mt-4">
-
             <a href="/login"
                class="text-decoration-none">
-
                 ← Return to Login
-
             </a>
-
         </div>
-
     </div>
-
 </div>
 
 <%- include('./partials/footer'); %>
