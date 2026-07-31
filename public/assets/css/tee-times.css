@@ -15,15 +15,21 @@
 
 /* Dashboard Controls Grid */
 .dashboard-controls {
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* 🎯 Forces items to stack vertically instead of side-by-side */
+  align-items: center; /* 🎯 Centers all stacked child items horizontally */
+  justify-content: center; /* 🎯 Centers them vertically inside the card container */
+  gap: 20px; /* Adds uniform spacing between each control item */
+  text-align: center;
   background: white;
-  padding: 15px 25px;
+  padding: 25px; /* Increased padding for a more balanced stacked layout */
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   margin-bottom: 30px;
   border: 1px solid var(--border-gray);
+  width: 90%;
+  max-width: 600px;
 }
 
 .control-group {
