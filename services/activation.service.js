@@ -76,7 +76,7 @@ export async function validateToken(token, purpose = TOKEN_PURPOSE.ACTIVATION) {
 
   if (!record) {
     logger.warn({
-      msg: "Token not found",
+      msg: "oken not found",
       token,
     });
 

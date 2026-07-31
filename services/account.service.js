@@ -1,5 +1,5 @@
 import "../config/env.js";
-import crypto from "crypto";
+import { createActivationToken } from "./activation.service.js";
 import db from "../config/db.js";
 import logger from "../utilities/logger.js";
 import * as rolesService from "./roles.service.js";
@@ -46,43 +46,6 @@ export async function findMemberByEmail(email) {
   );
 }
 
-function generateActivationToken() {
-  return crypto.randomBytes(32).toString("hex");
-}
-
-async function saveActivationToken(memberId, token) {
-  // Remove any previous unused activation tokens
-  await dbRun(
-    `
-        DELETE
-          FROM activation_tokens
-         WHERE member_id = ?
-         AND used_at IS NULL;
-        `,
-    [memberId],
-  );
-
-  await dbRun(
-    `
-        INSERT INTO activation_tokens
-        (
-            member_id,
-            token,
-            purpose,
-            expires_at
-        )
-        VALUES
-        (
-            ?,
-            ?,
-            ?,
-            datetime('now', '+2 days')
-        )
-        `,
-    [memberId, token, purpose],
-  );
-}
-
 // -----------------------------------------------------------------------------
 // Public API
 // -----------------------------------------------------------------------------
@@ -98,9 +61,7 @@ export async function initializeAccount(
 ) {
   await rolesService.replaceRoles(memberId, roles);
 
-  const token = generateActivationToken();
-
-  await saveActivationToken(memberId, token);
+  const token = await createActivationToken(memberId);
 
   if (sendEmail && email) {
     const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
@@ -140,18 +101,7 @@ export async function resendActivationEmail(memberId) {
     throw new Error("Member not found.");
   }
 
-  const token = generateActivationToken();
-
-  await dbRun(
-    `
-    DELETE
-    FROM activation_tokens
-    WHERE member_id = ?
-    `,
-    [memberId],
-  );
-
-  await saveActivationToken(memberId, token);
+  const token = await createActivationToken(memberId);
 
   const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
 
@@ -161,4 +111,9 @@ export async function resendActivationEmail(memberId) {
   });
 
   logger.info(`Resent activation email for member ${memberId}`);
+
+  return {
+    memberId,
+    token,
+  };
 }
