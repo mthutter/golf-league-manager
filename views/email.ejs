@@ -25,7 +25,7 @@
 
         <!-- MAIN FORM WINDOW -->
         <div class="col-12">
-          <form id="broadcastForm">
+          <form id="custom-form broadcastForm">
             <div class="row g-4">
               <!-- TOP SECTION: Message Text Area Container -->
               <div class="col-12">
@@ -126,9 +126,7 @@
         </div>
       </div>
     </div>
-
-    <%- include('partials/scripts'); %>
-
+      <%- include('partials/scripts'); %>
     <script>
       const selectedEmails = [];
       const cards = document.querySelectorAll(".email-selectable-card");
@@ -230,6 +228,13 @@
             btnSpinner.classList.add("d-none");
           }
         });
+        window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("custom-form").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
     </script>
+  
   </body>
 </html>
