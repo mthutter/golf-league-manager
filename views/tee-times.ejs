@@ -7,41 +7,6 @@
   <link rel="stylesheet" href="/assets/css/scorecard.css" />
   <link rel="stylesheet" href="/assets/css/tee-times.css" />
 </head>
-<style>
-  /* Dashboard Controls Layout Fix */
-.dashboard-controls {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-end; /* Aligns inputs, checkbox, and button cleanly along the bottom */
-  justify-content: flex-start;
-  gap: 24px; /* Even spacing between all 3 modules */
-  padding: 20px;
-  margin-bottom: 30px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-}
-
-/* Force individual control item wrapper sizing overrides */
-.dashboard-controls .control-group {
-  margin: 0 !important; 
-  display: flex;
-  flex-direction: column;
-}
-
-/* Responsive adjustments for phones/tablets */
-@media (max-width: 768px) {
-  .dashboard-controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-  .dashboard-controls .control-group {
-    padding-top: 0 !important;
-  }
-}
-</style>
 
 <body>
   <%- include('./partials/navbar'); %>
