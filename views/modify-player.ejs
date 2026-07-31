@@ -179,7 +179,7 @@
     <!-- FORM CARD -->
     <div class="player-form-card">
       <!-- Using query string override for method-override if you use PUT -->
-      <form action="/players/<%= player.id %>?_method=PUT" method="POST">
+      <form id="custom-form" action="/players/<%= player.id %>?_method=PUT" method="POST">
 
         <!-- PLAYER INFO -->
         <div class="form-section">

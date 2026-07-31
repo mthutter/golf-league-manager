@@ -26,7 +26,7 @@
         <div class="alert alert-danger"><%= error %></div>
         <% } %>
 
-        <form method="POST" action="/activate">
+        <form id="custom-form" method="POST" action="/activate">
           <input type="hidden" name="token" value="<%= token %>" />
 
           <div class="mb-3">
