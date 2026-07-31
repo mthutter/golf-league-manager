@@ -216,7 +216,7 @@ export async function resetPassword(token, password) {
     await run(
       `
       UPDATE members 
-      SET password_hash = ?,  
+      SET password_hash = ?
       WHERE id = ?
       `,
       [passwordHash, validation.member.memberId],
