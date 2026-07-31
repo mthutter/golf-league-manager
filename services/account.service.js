@@ -1,4 +1,7 @@
 import "../config/env.js";
+import bcrypt from "bcrypt";
+import { validateToken, markTokenUsed } from "./activation.service.js";
+import { run } from "../config/db.js";
 import {
   createActivationToken,
   createToken,
@@ -133,4 +136,27 @@ export async function requestPasswordReset(email) {
   });
 
   logger.info(`Password reset email sent for member ${member.id}`);
+}
+
+export async function resetPassword(token, newPassword) {
+  const result = await validateToken(token, TOKEN_PURPOSE.PASSWORD_RESET);
+
+  if (!result.valid) {
+    throw new Error(result.reason);
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+
+  await run(
+    `
+    UPDATE members
+    SET password_hash = ?
+    WHERE id = ?
+    `,
+    [passwordHash, result.member.memberId],
+  );
+
+  await markTokenUsed(result.member.activationTokenId);
+
+  logger.info(`Password reset completed for member ${result.member.memberId}`);
 }

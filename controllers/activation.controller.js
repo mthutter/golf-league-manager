@@ -1,6 +1,7 @@
 import {
   validateActivationToken,
   activateMember,
+  resetPassword,
 } from "../services/activation.service.js";
 
 import {
@@ -156,5 +157,60 @@ export function showResetPasswordPage(req, res) {
 }
 
 export async function handleResetPassword(req, res) {
-  res.send("Reset password - coming soon");
+  const { token, password, confirmPassword } = req.body;
+
+  if (!password || !confirmPassword) {
+    req.flash("error", "Please enter and confirm your new password.");
+    return res.redirect(`/reset-password?token=${token}`);
+  }
+
+  if (password !== confirmPassword) {
+    req.flash("error", "Passwords do not match.");
+    return res.redirect(`/reset-password?token=${token}`);
+  }
+
+  try {
+    const result = await resetPassword(token, password);
+
+    if (!result.success) {
+      let message = "This password reset link is no longer valid.";
+
+      switch (result.reason) {
+        case "expired":
+          message = "This password reset link has expired.";
+          break;
+
+        case "used":
+          message = "This password reset link has already been used.";
+          break;
+
+        case "invalid":
+          message = "Invalid password reset link.";
+          break;
+
+        case "inactive":
+          message = "This account has not been activated.";
+          break;
+      }
+
+      req.flash("error", message);
+      return res.redirect("/login");
+    }
+
+    req.flash(
+      "success",
+      "Your password has been updated. Please sign in with your new password.",
+    );
+
+    res.redirect("/login");
+  } catch (err) {
+    logger.error(err);
+
+    req.flash(
+      "error",
+      "An unexpected error occurred while resetting your password.",
+    );
+
+    res.redirect("/login");
+  }
 }
