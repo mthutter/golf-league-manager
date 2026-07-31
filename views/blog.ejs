@@ -198,7 +198,7 @@
               >Read Full Post</a
             >
             <% if (isAdmin) { %>
-            <form id="custom-form"
+            <form 
               action="/blog/<%= post.id %>/delete"
               method="POST"
               onsubmit="

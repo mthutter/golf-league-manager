@@ -8,7 +8,7 @@
   <body>
     <%- include ('./partials/navbar'); %>
     <br />
-    <div class="auth-wrapper">
+    <div id="custom-form" class="auth-wrapper">
       <div class="auth-card">
       <div class="logo-icon"><img height="90px" width="90px" src="https://bottoms-up.b-cdn.net/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
         <div class="league-title">Bottoms Up Golf League</div>
@@ -22,7 +22,7 @@
         <div class="alert alert-danger"><%= error %></div>
         <% } %>
 
-        <form id="custom-form" method="POST" action="/login">
+        <form  method="POST" action="/login">
           <div class="mb-3">
             <label class="form-label fw-semibold">E-Mail Address</label>
 

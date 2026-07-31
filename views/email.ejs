@@ -128,6 +128,14 @@
     </div>
       <%- include('partials/scripts'); %>
     <script>
+window.addEventListener("DOMContentLoaded", () => {
+          document.getElementById("custom-form").scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+  });
+
+
       const selectedEmails = [];
       const cards = document.querySelectorAll(".email-selectable-card");
       const badge = document.getElementById("selectionBadge");
@@ -227,13 +235,7 @@
             btnText.textContent = "Send Broadcast";
             btnSpinner.classList.add("d-none");
           }
-        });
-        window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("custom-form").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  });
+        });         
     </script>
   
   </body>
