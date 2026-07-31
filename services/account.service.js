@@ -79,7 +79,7 @@ async function saveActivationToken(memberId, token) {
             datetime('now', '+2 days')
         )
         `,
-    [memberId, token],
+    [memberId, token, purpose],
   );
 }
 
