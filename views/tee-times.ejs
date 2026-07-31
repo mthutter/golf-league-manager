@@ -120,36 +120,32 @@
                  const player = currentGroup && currentGroup.players
                  ? currentGroup.players.find(p => p.position === (posIdx + 1)) : null;
               %>
-              <td
-  class="<%= locals.isAdmin ? 'draggable-cell' : '' %>"
-
-  <% if (locals.isAdmin) { %>
-    ondragover="handleDragOver(event)"
-    ondragenter="handleDragEnter(event)"
-    ondragleave="handleDragLeave(event)"
-    ondrop="handleDrop(event)"
-  <% } %>
-
-  <% if (locals.isAdmin && player) { %>
-    draggable="true"
-    ondragstart="handleDragStart(event)"
-  <% } %>
-
-  data-member-id="<%= player ? player.memberId : '' %>"
-  data-group="<%= groupIdx + 1 %>"
-  data-position="<%= posIdx + 1 %>"
+           <td class="<%= locals.isAdmin ? 'draggable-cell' : '' %>"
+    <% if (locals.isAdmin) { %>
+      ondragover="handleDragOver(event)" 
+      ondragenter="handleDragEnter(event)" 
+      ondragleave="handleDragLeave(event)" 
+      ondrop="handleDrop(event)"
+    <% } %>
+    <% if (locals.isAdmin && player && player.memberId > 0) { %> 
+      draggable="true" 
+      ondragstart="handleDragStart(event)" 
+    <% } %>
+    data-member-id="<%= (player && player.memberId > 0) ? player.memberId : '' %>"
+    data-group="<%= groupIdx + 1 %>"
+    data-position="<%= posIdx + 1 %>"
 >
-                <% if (player) { %>
-                <span style="color:rgb(50, 224, 50);font-weight:500;pointer-events:none;">
-                  <%= player.name %>
-                </span>
-                <% } else { %>
+  <% if (player && player.memberId > 0) { %>
+    <span style="color:rgb(50, 224, 50);font-weight:500;pointer-events:none;">
+      <%= player.name %>
+    </span>
+  <% } else { %>
+    <span class="vacant-slot" style="color: white; pointer-events:none;">
+      OPEN
+    </span>
+  <% } %>
+</td>
 
-                <span class="vacant-slot" style="pointer-events:none;">
-                  OPEN
-                </span>
-                <% } %>
-              </td>
               <% } %>
             </tr>
             <% } %>
