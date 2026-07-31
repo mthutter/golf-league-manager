@@ -268,7 +268,7 @@
   font-weight: 700;
 }
 
-.tee-sheet-title {
+.tee-sheet-title h2 {
   flex: 1;
   margin: 0;
   text-align: center;

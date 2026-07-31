@@ -4,8 +4,9 @@
 <head>
   <!-- Include global head metadata -->
   <%- include('./partials/header'); -%>
+    <link rel="stylesheet" href="/assets/css/tee-times.css" />
   <link rel="stylesheet" href="/assets/css/scorecard.css" />
-  <link rel="stylesheet" href="/assets/css/tee-times.css" />
+
 </head>
 
 <body>
@@ -55,9 +56,9 @@
 
       <!-- Card Header -->
       <div class="tee-card-header">
-        <div><h2 class="tee-sheet-title">
-          Week <%= currentWeek.week_number %>
-          (<%= currentWeek.displayDate %>)         
+        <div><h2 style="color: rgb(125, 209, 147);" class="tee-sheet-title">
+          <strong>Week <%= currentWeek.week_number %>
+          (<%= currentWeek.displayDate %>)         </strong>
         </h2>
         </div>
         <div class="update-chip">
