@@ -113,7 +113,7 @@
   border: 1px solid var(--border-gray);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   width: 90%; /* Scales down smoothly on mobile screens */
-  max-width: 600px; /* Sets the maximum size limit on desktop screens */
+  max-width: 700px; /* Sets the maximum size limit on desktop screens */
   margin: 0 auto;
 }
 
