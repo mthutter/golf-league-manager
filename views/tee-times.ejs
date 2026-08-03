@@ -4,7 +4,7 @@
 <head>
   <!-- Include global head metadata -->
   <%- include('./partials/header'); -%>
-    <link rel="stylesheet" href="/assets/css/tee-times.css" />
+  <link rel="stylesheet" href="/assets/css/tee-times.css" />
   <link rel="stylesheet" href="/assets/css/scorecard.css" />
 
 </head>
@@ -133,27 +133,7 @@
       class="roster-grid">
 
       <!-- Column 1: Out For Week (Regulars Container Target) -->
-     <!-- <div class="out-section"
-        <%- locals.isAdmin ? `ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handlePoolDrop(event)"` : '' %>
-        style="text-align: left; padding: 20px; transition: background-color 0.2s;">
-        <h3 class="out-title" style="justify-content: flex-start; color: #e53e3e; pointer-events: none;">
-          <span>🚫</span> Out for Week <%= weekId %>
-        </h3>
-        <div class="badge-container" style="justify-content: flex-start; pointer-events: none;">
-          <% if (outPlayers && outPlayers.length > 0) { %>
-          <% outPlayers.forEach(function(player) { %>
-          <span class="player-badge <%= locals.isAdmin ? 'draggable-badge' : '' %>"
-            <%- locals.isAdmin ? `draggable="true" ondragstart="handleDragStart(event)"` : '' %>
-            data-member-id="<%= player.id %>" data-group="" data-position="" style="pointer-events: auto;">
-            <%= player.name %>
-          </span>
-          <% }); %>
-          <% } else { %>
-          <span class="nobody-out">None</span>
-          <% } %>
-        </div>
-      </div>
-    -->
+ 
       <!-- Column 2: Available Substitutes Bench Container Target -->
       <div class="out-section  mb-4"
         <%- locals.isAdmin ? `ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handlePoolDrop(event)"` : '' %>
