@@ -42,6 +42,8 @@ export const handleLogin = (req, res, next) => {
           userId: user.id,
           email: user.email,
           roles: user.roles,
+          last_name: user.name_last,
+          first_name: user.name_first,
         },
         "User successfully authenticated",
       );
@@ -51,6 +53,8 @@ export const handleLogin = (req, res, next) => {
         properties: {
           email: user.email,
           roles: user.roles,
+          last_name: user.name_last,
+          first_name: user.name_first,
         },
       });
 
@@ -80,10 +84,7 @@ export const handleLogout = (req, res, next) => {
 
     req.session.destroy((err) => {
       if (err) {
-        logger.error(
-          { err },
-          "Session destruction lifecycle failure during logout operation",
-        );
+        logger.error({ err }, "Session destruction lifecycle failure during logout operation");
         return next(err);
       }
 
