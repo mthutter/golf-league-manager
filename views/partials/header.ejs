@@ -104,5 +104,11 @@
         }
       },
     });
+    if (typeof loggedInUser !== "undefined") {
+      window.posthog.identify(
+        loggedInUser.id, // Distinct ID (must match the ID used in posthog-node)
+        { username: loggedInUser.username, email: loggedInUser.email }, // User properties
+      );
+    }
   })();
 </script>
