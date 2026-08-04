@@ -37,12 +37,7 @@
         <li class="nav-item">
           <a class="nav-link px-3" href="/rules">Info/Rules</a>
         </li>
-         <li class="nav-item">
-              <a class="nav-link px-3" href="/players">Member Contacts</a>
-            </li>
-        <li class="nav-item">
-          <a class="nav-link px-3" href="/tee-times">Tee Times</a>
-        </li>
+       
          <li class="nav-item">
           <a class="nav-link px-3" href="/course">Course</a>
         </li>
@@ -63,7 +58,21 @@
             <li><a class="dropdown-item" href="/skins">Skins</a></li>
           </ul>
         </li>
-        <li class="nav-item dropdown">
+       
+
+        <!-- 🏆 New Results Dropdown Menu -->
+            <% if (isAuthenticated) { %>          
+           
+             <li class="nav-item">
+              <a class="nav-link px-3" href="/blog">Blog Page</a>
+            </li>
+            <li class="nav-item">
+          <a class="nav-link px-3" href="/tee-times">Tee Times</a>
+        </li>
+          <li class="nav-item">
+              <a class="nav-link px-3" href="/players">Member Contacts</a>
+            </li>   
+             <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
             href="#"
@@ -94,14 +103,7 @@
               <a class="dropdown-item" href="/videos/2026">📹 2026 Videos</a>
             </li>
           </ul>
-        </li>
-
-        <!-- 🏆 New Results Dropdown Menu -->
-            <% if (isAuthenticated) { %>          
-           
-             <li class="nav-item">
-              <a class="nav-link px-3" href="/blog">Blog Page</a>
-            </li>
+        </li>     
         <% } %>     
         
         <!-- 🛠️ Admin Panel Dropdown (Visible ONLY to Admins) -->
