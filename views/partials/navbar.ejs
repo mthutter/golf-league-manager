@@ -61,15 +61,15 @@
        
 
         <!-- 🏆 New Results Dropdown Menu -->
-            <% if (isAuthenticated) { %>          
+            <% if (isMember || isAdmin) { %>          
            
              <li class="nav-item">
               <a class="nav-link px-3" href="/blog">Blog Page</a>
             </li>
             <li class="nav-item">
-          <a class="nav-link px-3" href="/tee-times">Tee Times</a>
-        </li>
-          <li class="nav-item">
+              <a class="nav-link px-3" href="/tee-times">Tee Times</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link px-3" href="/players">Member Contacts</a>
             </li>   
              <li class="nav-item dropdown">

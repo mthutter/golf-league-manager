@@ -1,17 +1,13 @@
 // blog.routes.js
 import express from "express";
 import * as blogController from "../controllers/blog.controller.js"; // Adjust path to your controller
-import {
-  requireAuth,
-  requireAdmin,
-  requireMember,
-} from "../middleware/auth.middleware.js";
+import { requireAuth, requireAdmin, requireMember } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 /* ========================================= READ BLOG (Players & Admins) ========================================= */
 
-router.get("/", blogController.renderIndex);
+router.get("/", requireAuth, blogController.renderIndex);
 
 /* ========================================= WRITE BLOG (Admin ONLY) ========================================= */
 

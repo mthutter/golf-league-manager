@@ -1,8 +1,9 @@
 import express from "express";
 import { imagesByYear } from "../controllers/images.controller.js";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/:year", imagesByYear);
+router.get("/:year", requireAuth, imagesByYear);
 
 export default router;

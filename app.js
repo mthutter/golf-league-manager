@@ -47,9 +47,7 @@ const limiter = rateLimit({
 });
 
 app.get("/favicon.ico", (req, res) => {
-  res.sendFile(
-    path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"),
-  );
+  res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
 });
 // BLOCK WORDPRESS COMMON EXPLOITS
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", ".env"];
@@ -101,12 +99,7 @@ app.use((req, res, next) => {
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(express.static("public"));
@@ -114,9 +107,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-const sessionDb = new sqlite3.Database(
-  path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"),
-);
+const sessionDb = new sqlite3.Database(path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"));
 
 app.use(
   session({
@@ -153,15 +144,15 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
 
+  console.log("Req/User", req.user);
+  console.log("Res/Locals", res.locals);
+
   next();
 });
 
 /* ====== ROUTES REGISTER ======= */
 /* ====== DEV ROUTES ====== */
-if (
-  process.env.NODE_ENV == "production" ||
-  process.env.NODE_ENV == "development"
-) {
+if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "development") {
   app.use("/dev", devRoutes);
 }
 
@@ -200,10 +191,7 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (
-    err.code === "ERR_HTTP_HEADERS_SENT" ||
-    err.message.includes("headers after they are sent")
-  ) {
+  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
   }
   logger.error(err);
