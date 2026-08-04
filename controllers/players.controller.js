@@ -23,9 +23,7 @@ export const getPlayersInactive = catchAsync(async (req, res, next) => {
   // FIX: If you have an explicit service method like 'getInactivePlayers', swap it here.
   // Otherwise, filter the full roster array reactively to separate status properties.
   const allRows = await playersService.getAllPlayers();
-  const inactiveRows = allRows.filter(
-    (player) => player.status === "inactive" || player.is_active === 0,
-  );
+  const inactiveRows = allRows.filter((player) => player.status === "inactive" || player.is_active === 0);
 
   return res.render("inactive", { players: inactiveRows });
 });
@@ -51,11 +49,7 @@ export const createPlayer = catchAsync(async (req, res, next) => {
     });
   }
 
-  const roles = Array.isArray(req.body.roles)
-    ? req.body.roles
-    : req.body.roles
-      ? [req.body.roles]
-      : [ROLES.MEMBER];
+  const roles = Array.isArray(req.body.roles) ? req.body.roles : req.body.roles ? [req.body.roles] : [ROLES.MEMBER];
 
   const lastID = await playersService.createNewPlayer(req.body);
 
@@ -97,17 +91,21 @@ export const showEditPlayerForm = catchAsync(async (req, res, next) => {
   const player = await playersService.getPlayerById(playerId);
 
   if (!player) {
-    logger.warn(
-      { playerId },
-      "Requested player modifier form target record not found",
-    );
+    logger.warn({ playerId }, "Requested player modifier form target record not found");
     res.status(404);
     return res.render("error", { message: "Player not found." });
   }
 
+  // FIX: Explicitly fetch the database role strings array and bind it to the object
+  // For id: 12, this will assign player.roles = ['Admin', 'Member']
+  player.roles = await playersService.getPlayerRoles(playerId);
+
   return res.render("modify-player", { player: player });
 });
 
+/**
+ * POST /players/:id - Update existing player record
+ */
 /**
  * POST /players/:id - Update existing player record
  */
@@ -116,26 +114,29 @@ export const updatePlayer = catchAsync(async (req, res, next) => {
   const { name_first, name_last } = req.body;
 
   if (!name_first || !name_last) {
-    logger.warn(
-      { playerId },
-      "Player profile update rejected: Missing identity parameters",
-    );
+    logger.warn({ playerId }, "Player profile update rejected: Missing identity parameters");
     res.status(400);
-    return res.render("error", {
-      message: "First and last name are required.",
-    });
+    return res.render("error", { message: "First and last name are required." });
   }
 
+  // 1. EXTRACT ROLES: Capture the checkbox states safely into an array
+  const roles = Array.isArray(req.body.roles) ? req.body.roles : req.body.roles ? [req.body.roles] : []; // If empty, defaults to an empty array so all roles get removed
+
+  // 2. UPDATE BASE DETAILS: Keeps your current logic updating the 'members' table
   await playersService.updatePlayerById(playerId, req.body);
 
-  logger.info(
-    { playerId },
-    "League player profile details updated successfully",
-  );
+  // 3. SYNC ROLES IN SQLITE: Wipes out old rows for this player and re-inserts current checkbox values
+  if (playersService.syncPlayerRoles) {
+    await playersService.syncPlayerRoles(playerId, roles);
+  }
+
+  logger.info({ playerId, roles }, "League player profile details and roles updated successfully");
+
   posthog.capture({
     distinctId: req.session?.id || "anonymous",
     event: "player_updated",
-    properties: { player_id: playerId },
+    properties: { player_id: playerId, roles },
   });
+
   return res.redirect("/players");
 });

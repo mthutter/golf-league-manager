@@ -270,6 +270,22 @@
           </div>
         </div>
 
+<!-- ROLES ASSIGNMENT -->
+<div class="form-section">
+  <h3>Assigned Roles <span style="color: red">*</span></h3>
+  <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
+    <div>
+      <input type="checkbox" name="roles" value="Member" id="roleMember"
+        <%= (player.roles && player.roles.includes('Member')) ? 'checked' : '' %> />
+      <label for="roleMember" style="font-weight: 500; margin-left: 0.25rem; cursor: pointer;">Member</label>
+    </div>
+    <div>
+      <input type="checkbox" name="roles" value="Admin" id="roleAdmin"
+        <%= (player.roles && player.roles.includes('Admin')) ? 'checked' : '' %> />
+      <label for="roleAdmin" style="font-weight: 500; margin-left: 0.25rem; cursor: pointer;">Admin</label>
+    </div>
+  </div>
+</div>
         <!-- SUBMIT -->
         <div class="text-center mt-4">
           <button type="submit" class="btn btn-submit-player">
