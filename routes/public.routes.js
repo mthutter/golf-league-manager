@@ -1,13 +1,14 @@
 import express from "express";
 import * as publicController from "../controllers/public.controller.js";
 import * as authController from "../controllers/auth.controller.js";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 // Static Pages & Analytics Layouts
 router.get("/", publicController.index);
-router.get("/course", publicController.course);
-router.get("/rules", publicController.rules);
+router.get("/course", requireAuth, publicController.course);
+router.get("/rules", requireAuth, publicController.rules);
 
 // Session Authentication Actions
 router.get("/login", authController.showLoginForm);

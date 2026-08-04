@@ -11,18 +11,18 @@ router.get("/new", requireAdmin, scoresController.getNewScoresForm);
 router.post("/save", requireAdmin, scoresController.saveScore);
 
 // 3. GET /scores/standings - Season standings leaderboard
-router.get("/standings", scoresController.getStandings);
+router.get("/standings", requireAuth, scoresController.getStandings);
 
 // 4. GET /scores/weekly/:weekId - Weekly score summaries
-router.get("/weekly/:weekId", scoresController.getWeeklyScores);
+router.get("/weekly/:weekId", requireAuth, scoresController.getWeeklyScores);
 
 // 5. GET /scores/members/:id - Individual member score history
-router.get("/members/:id", scoresController.getMemberProfile);
+router.get("/members/:id", requireAuth, scoresController.getMemberProfile);
 
 // 6. GET /scores/ - Fallback/legacy handler
 router.get("/", requireAdmin, scoresController.getScoresLegacy);
 
 // 7. GET /scores/round/:scoreId - Individual hole-to-hole scoring per week
-router.get("/round/:scoreId", scoresController.getRoundDetails);
+router.get("/round/:scoreId", requireAuth, scoresController.getRoundDetails);
 
 export default router;
