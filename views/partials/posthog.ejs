@@ -1,4 +1,4 @@
-<% if (isAuthenticated && user) { %>
+<% if (isAuthenticated) { %>
 <script>
   // Extract EJS data into valid JS variables first to satisfy the formatter
   const rawRoles = <%- JSON.stringify(user.roles) %>;
