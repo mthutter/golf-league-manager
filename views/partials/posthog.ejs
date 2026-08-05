@@ -1,0 +1,34 @@
+<% if (isAuthenticated && user) { %>
+<script>
+  // Extract EJS data into valid JS variables first to satisfy the formatter
+  const rawRoles = <%- JSON.stringify(user.roles) %>;
+  const userId = "<%= user.id %>";
+  const userFirstName = "<%= user.firstName %>";
+  const userLastName = "<%= user.lastName %>";
+  const userEmail = "<%= user.email %>";
+
+  // Build client-side strings
+  const memberName = `${userLastName}, ${userFirstName}`;
+
+  console.log("memberName =", memberName);
+
+  // PostHog Tracking
+  posthog.identify(userId);
+
+  posthog.setPersonProperties({
+    member_name: memberName,
+    first_name: userFirstName,
+    last_name: userLastName,
+    email: userEmail,
+    roles: rawRoles
+  });
+
+  posthog.register({
+    member_id: userId,
+    member_name: memberName,
+    member_roles: rawRoles
+  });
+
+  console.log("Stored member_name:", posthog.get_property("member_name"));
+</script>
+<% } %>

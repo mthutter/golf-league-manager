@@ -19,6 +19,13 @@ export const handleLogin = (req, res, next) => {
       return next(err);
     }
 
+    logger.info(
+      {
+        user,
+      },
+      "Authenticated user",
+    );
+
     if (!user) {
       logger.warn({ email: req.body.email }, "Failed login attempt detected");
 
@@ -42,26 +49,18 @@ export const handleLogin = (req, res, next) => {
           userId: user.id,
           email: user.email,
           roles: user.roles,
-          last_name: user.name_last,
-          first_name: user.name_first,
+          last_name: user.lastName,
+          first_name: user.firstName,
         },
         "User successfully authenticated",
       );
-
-      posthog.identify({
-        distinctId: String(user.id),
-        properties: {
-          email: user.email,
-          roles: user.roles,
-          last_name: user.name_last,
-          first_name: user.name_first,
-        },
-      });
 
       posthog.capture({
         distinctId: String(user.id),
         event: "user_logged_in",
         properties: {
+          member_id: user.id,
+          member_name: `${user.lastName}, ${user.firstName}`,
           roles: user.roles,
         },
       });
@@ -75,7 +74,7 @@ export const handleLogin = (req, res, next) => {
  * GET /logout - Destroy current session context
  */
 export const handleLogout = (req, res, next) => {
-  const sessionId = req.session?.id;
+  const userId = req.user?.id;
 
   req.logout((err) => {
     if (err) {
@@ -84,12 +83,15 @@ export const handleLogout = (req, res, next) => {
 
     req.session.destroy((err) => {
       if (err) {
-        logger.error({ err }, "Session destruction lifecycle failure during logout operation");
+        logger.error(
+          { err },
+          "Session destruction lifecycle failure during logout operation",
+        );
         return next(err);
       }
 
       posthog.capture({
-        distinctId: sessionId,
+        distinctId: String(userId),
         event: "user_logged_out",
       });
 

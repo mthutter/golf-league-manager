@@ -229,12 +229,14 @@
 
                 <!-- Player details column -->
                 <td class="text-start fw-semibold players">
+                  <% if (player.status != 'inactive') { %>
                   <a
                     href="/scores/members/<%= player.id %>"
                     class="player-link"
                   >
                     <%= player.player_name %>
                   </a>
+                  <% } %>
                 </td>
 
                 <!-- Trend movement column -->
