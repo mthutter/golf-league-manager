@@ -8,7 +8,7 @@
   <body>
     <%- include('./partials/navbar'); %>
 
-    <div class="main-wrapper">
+    <div id="custom-form" class="main-wrapper">
       <!-- PAGE HEADER -->
       <div class="gallery-header">
         <h1>Cherokee Ridge Scorecard</h1>
@@ -32,10 +32,7 @@
       <div class="scorecard-card">
         <div class="scorecard-section-header">
           <h3>Front Nine</h3>
-          <p>
-            <span style="color: white">White</span> /
-            <span style="color: red">Red</span> Tees
-          </p>
+          <p><span style="color: white">White</span> / <span style="color: red">Red</span> Tees</p>
         </div>
 
         <div class="table-wrapper">
@@ -145,10 +142,7 @@
       <div class="scorecard-card">
         <div class="scorecard-section-header">
           <h3>Back Nine</h3>
-          <p>
-            <span style="color: #1e6fb6">Blue</span> /
-            <span style="color: gold">Gold</span> Tees
-          </p>
+          <p><span style="color: #1e6fb6">Blue</span> / <span style="color: gold">Gold</span> Tees</p>
         </div>
 
         <div class="table-wrapper">
@@ -255,7 +249,6 @@
       </div>
     </div>
 
-    <%- include('./partials/footer'); %>
-    <%- include('./partials/scripts'); %>
+    <%- include('./partials/footer'); %> <%- include('./partials/scripts'); %>
   </body>
 </html>
