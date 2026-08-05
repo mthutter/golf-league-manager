@@ -1,8 +1,7 @@
 // services/weeks.js
 
 import { all, get } from "../config/db.js";
-
-const LEAGUE_TIME_ZONE = "America/Denver";
+import { LEAGUE_TIME_ZONE } from "../config/league.js";
 
 export async function getAllWeeks() {
   const weeks = await all(`
