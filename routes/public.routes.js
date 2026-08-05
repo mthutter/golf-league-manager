@@ -8,7 +8,7 @@ const router = express.Router();
 // Static Pages & Analytics Layouts
 router.get("/", publicController.index);
 router.get("/course", requireAuth, publicController.course);
-router.get("/rules", requireAuth, publicController.rules);
+router.get("/rules", publicController.rules);
 
 // Session Authentication Actions
 router.get("/login", authController.showLoginForm);

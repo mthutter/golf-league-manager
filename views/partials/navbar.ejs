@@ -34,19 +34,23 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <!-- LEFT SIDE (Shared Public Links) -->
       <ul class="navbar-nav me-auto">
+             
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/rules">Info/Rules</a>
+        </li>
          <li class="nav-item">
               <a class="nav-link px-3" href="/tee-times">Tee Times</a>
-            </li>
-            <li class="nav-item dropdown">
-          <a
+          </li>
+          <li class="nav-item dropdown">
+           <a
             class="nav-link dropdown-toggle px-3"
             href="#"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
-          >
+           >
             Results
-          </a>
+           </a>
           <ul class="dropdown-menu">
             <li>
               <a class="dropdown-item" href="/scores/standings">Standings</a>
@@ -56,10 +60,7 @@
         </li>
          <!-- 🏆 New Results Dropdown Menu -->
             <% if (isMember || isAdmin) { %>          
-           
-        <li class="nav-item">
-          <a class="nav-link px-3" href="/rules">Info/Rules</a>
-        </li>
+      
        
          <li class="nav-item">
           <a class="nav-link px-3" href="/course">Course</a>
