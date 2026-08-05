@@ -37,17 +37,7 @@
          <li class="nav-item">
               <a class="nav-link px-3" href="/tee-times">Tee Times</a>
             </li>
-         <!-- 🏆 New Results Dropdown Menu -->
-            <% if (isMember || isAdmin) { %>          
-           
-        <li class="nav-item">
-          <a class="nav-link px-3" href="/rules">Info/Rules</a>
-        </li>
-       
-         <li class="nav-item">
-          <a class="nav-link px-3" href="/course">Course</a>
-        </li>
-         <li class="nav-item dropdown">
+            <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
             href="#"
@@ -64,6 +54,17 @@
             <li><a class="dropdown-item" href="/skins">Skins</a></li>
           </ul>
         </li>
+         <!-- 🏆 New Results Dropdown Menu -->
+            <% if (isMember || isAdmin) { %>          
+           
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/rules">Info/Rules</a>
+        </li>
+       
+         <li class="nav-item">
+          <a class="nav-link px-3" href="/course">Course</a>
+        </li>
+         
        
 
        
@@ -74,7 +75,7 @@
             <li class="nav-item">
               <a class="nav-link px-3" href="/players">Member Contacts</a>
             </li>   
-             <li class="nav-item dropdown">
+        <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle px-3"
             href="#"
