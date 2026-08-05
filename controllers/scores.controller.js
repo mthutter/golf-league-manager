@@ -52,7 +52,7 @@ export const getStandings = catchAsync(async (req, res, next) => {
   const selectedWeek = Number(req.query.week) || null;
 
   const data = await scoresService.getSeasonStandings(selectedWeek);
-  console.log(data);
+
   return res.render("standings", data);
 });
 /**

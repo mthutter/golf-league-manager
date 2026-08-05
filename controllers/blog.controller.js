@@ -11,9 +11,7 @@ export const renderIndex = catchAsync(async (req, res, next) => {
 
   logger.info({ search }, "Fetching blog index listings");
 
-  const rawPosts = search
-    ? await blogService.searchPosts(search)
-    : await blogService.getAllPosts();
+  const rawPosts = search ? await blogService.searchPosts(search) : await blogService.getAllPosts();
 
   // Clean up timestamps here before rendering the template
   const formattedPosts = rawPosts.map((post) => {
@@ -22,9 +20,7 @@ export const renderIndex = catchAsync(async (req, res, next) => {
     try {
       galleryCount = JSON.parse(post.gallery_urls || "[]").length;
     } catch {
-      galleryCount = post.gallery_urls
-        ? post.gallery_urls.split("\n").filter(Boolean).length
-        : 0;
+      galleryCount = post.gallery_urls ? post.gallery_urls.split("\n").filter(Boolean).length : 0;
     }
 
     return {
@@ -61,9 +57,7 @@ export const renderPost = catchAsync(async (req, res, next) => {
   try {
     post.galleryUrls = JSON.parse(post.gallery_urls || "[]");
   } catch {
-    post.galleryUrls = post.gallery_urls
-      ? post.gallery_urls.split("\n").filter(Boolean)
-      : [];
+    post.galleryUrls = post.gallery_urls ? post.gallery_urls.split("\n").filter(Boolean) : [];
   }
 
   // Clean up the single post date string
@@ -94,10 +88,7 @@ export const createPost = catchAsync(async (req, res, next) => {
   const { title, content, image_url } = req.body;
 
   if (!title || !content) {
-    logger.warn(
-      { titleHasValue: !!title, contentHasValue: !!content },
-      "Validation failure: Blog post missing fields",
-    );
+    logger.warn({ titleHasValue: !!title, contentHasValue: !!content }, "Validation failure: Blog post missing fields");
     return res.status(400).send("Title and content are required.");
   }
 
@@ -105,7 +96,7 @@ export const createPost = catchAsync(async (req, res, next) => {
     await blogService.createNewPost(title, content, image_url);
     logger.info({ title }, "New blog post created successfully");
     posthog.capture({
-      distinctId: req.session?.id || "anonymous",
+      distinctId: req.session?.id,
       event: "blog_post_created",
       properties: { has_image: !!image_url },
     });
