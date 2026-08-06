@@ -175,7 +175,7 @@ const bannedIPs = new Set(bannedIPInput.flatMap((item) => item.split(",")).map((
 
 // FIX: Variable name matches the middleware loop below perfectly
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
-const blockedExtensions = [".php", ".asp", ".aspx"];
+const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
 app.use((req, res, next) => {
   const forwardedFor = req.headers["x-forwarded-for"];
