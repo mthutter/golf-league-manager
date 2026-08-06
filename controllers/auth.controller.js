@@ -18,22 +18,20 @@ export const handleLogin = (req, res, next) => {
     if (err) {
       return next(err);
     }
-
-    logger.info(
-      {
-        user,
-      },
-      "Authenticated user",
-    );
+    
+    logger.info({ user }, "Authenticated user");
 
     if (!user) {
       logger.warn({ email: req.body.email }, "Failed login attempt detected");
-
+      
+      // Ensure we have a valid identifier fallback for an anonymous session
+      const anonymousId = req.sessionID || req.session?.id || "anonymous_backend_session";
+      
       posthog.capture({
-        distinctId: req.session.id,
+        distinctId: String(anonymousId),
         event: "login_failed",
       });
-
+      
       return res.render("login", {
         error: info?.message ?? "Invalid email or password",
       });
@@ -43,7 +41,7 @@ export const handleLogin = (req, res, next) => {
       if (err) {
         return next(err);
       }
-
+      
       logger.info(
         {
           userId: user.id,
@@ -73,29 +71,28 @@ export const handleLogin = (req, res, next) => {
 /**
  * GET /logout - Destroy current session context
  */
-/**
- * GET /logout - Destroy current session context
- */
 export const handleLogout = (req, res, next) => {
-  const userId = req.user?.id;
+  // 1. Capture the ID safely before running asynchronous destruction triggers
+  const userId = req.user?.id ? String(req.user.id) : null;
 
   req.logout((err) => {
     if (err) {
       return next(err);
     }
+    
     req.session.destroy((err) => {
       if (err) {
         logger.error({ err }, "Session destruction lifecycle failure during logout operation");
         return next(err);
       }
 
-      // Capture the logout event
-      posthog.capture({
-        distinctId: String(userId),
-        event: "user_logged_out",
-      });
-
-      // posthog.reset(); // REMOVED: This function does not exist on the Node.js backend SDK
+      // 2. Only send the event if we confirmed a valid user was logged in
+      if (userId) {
+        posthog.capture({
+          distinctId: userId,
+          event: "user_logged_out",
+        });
+      }
 
       res.clearCookie("SessionCookie");
       return res.redirect("/");
