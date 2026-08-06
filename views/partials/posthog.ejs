@@ -1,4 +1,4 @@
-<% if (isAuthenticated) { %>
+<% if (isAuthenticated) { %> 
 <script>
   // Extract EJS data into valid JS variables first to satisfy the formatter
   const rawRoles = <%- JSON.stringify(user.roles) %>;
@@ -9,12 +9,10 @@
 
   // Build client-side strings
   const memberName = `${userLastName}, ${userFirstName}`;
-
   console.log("memberName =", memberName);
 
   // PostHog Tracking
   posthog.identify(userId);
-
   posthog.setPersonProperties({
     member_name: memberName,
     first_name: userFirstName,
@@ -22,13 +20,21 @@
     email: userEmail,
     roles: rawRoles
   });
-
+  
   posthog.register({
     member_id: userId,
     member_name: memberName,
     member_roles: rawRoles
   });
-
   console.log("Stored member_name:", posthog.get_property("member_name"));
+</script>
+<% } else { %>
+<script>
+  // If the user lands here unauthenticated, instantly purge old cookie remnants
+  if (typeof posthog !== 'undefined') {
+    // Passing true triggers a hard reset, creating a fresh anonymous ID immediately
+    posthog.reset(true);
+    console.log("PostHog session successfully reset for anonymous guest.");
+  }
 </script>
 <% } %>
