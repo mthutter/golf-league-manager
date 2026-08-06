@@ -170,7 +170,7 @@
   <%- include('partials/navbar'); %>
 
   <!-- HERO -->
-  <div id="custom-form" class="main-wrapper">
+  <div class="main-wrapper">
     <div class="gallery-header">
       <h1>Modify Player</h1>
       <p>Bottoms Up Golf League</p>
@@ -179,7 +179,7 @@
     <!-- FORM CARD -->
     <div class="player-form-card">
       <!-- Using query string override for method-override if you use PUT -->
-      <form id="custom-form" action="/players/<%= player.id %>?_method=PUT" method="POST">
+      <form action="/players/<%= player.id %>?_method=PUT" method="POST">
 
         <!-- PLAYER INFO -->
         <div class="form-section">
