@@ -164,8 +164,6 @@ app.post("/reset-password", activationController.handleResetPassword);
    SECURITY & ERROR HANDLING MIDDLEWARE
 ========================================================= */
 
-import { PostHog } from "posthog-node"; // Use const { PostHog } = require('posthog-node') for CommonJS
-
 // 1. Initialize PostHog (Grab your API key & Host from PostHog settings)
 const posthog = new PostHog(
   "YOUR_PROJECT_API_KEY",
