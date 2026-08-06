@@ -167,7 +167,7 @@ app.post("/reset-password", activationController.handleResetPassword);
 // 1. Define your blocked IPs
 const bannedIPInput = [
   "172.71.151.229",
-  "162.159.102.123, 104.22.31.24, 104.23.166.45", // Added the new attacking IPs from your latest log!
+  "162.159.102.123, 104.22.31.24, 104.23.166.45, 208.184.114.102", // Added the new attacking IPs from your latest log!
 ];
 
 // Clean and flatten the IP set
