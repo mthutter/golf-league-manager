@@ -163,30 +163,38 @@ app.post("/reset-password", activationController.handleResetPassword);
    SECURITY & ERROR HANDLING MIDDLEWARE
 ========================================================= */
 
-// 1. Define Malicious Targets
+// 1. Define your banned individual IPs using a Set for optimal speed
+const bannedIPs = new Set([
+  "172.71.151.229", // The attacker IP from your logs
+  "123.45.67.89", // Add any other specific IPs here
+]);
+
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
 const blockedExtensions = [".php", ".asp", ".aspx"];
 
-// 2. The Silent Security Shield (Place BEFORE your global 404 handler)
 app.use((req, res, next) => {
-  const lowerPath = req.path.toLowerCase();
+  // 2. Extract the real client IP from Render's proxy header
+  const forwardedFor = req.headers["x-forwarded-for"];
 
+  // Extract the first IP if it's a comma-separated list, or fallback to remoteAddress
+  const visitorIP = forwardedFor ? forwardedFor.split(",")[0].trim() : req.socket.remoteAddress;
+
+  // 3. Native check: Does the Set contain the visitor's IP?
+  if (visitorIP && bannedIPs.has(visitorIP)) {
+    // 403 Forbidden instantly cuts off the bad actor
+    return res.status(403).send("Access Denied");
+  }
+
+  // 4. Run your existing malicious file path/extension filters
+  const lowerPath = req.path.toLowerCase();
   const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
   const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
 
   if (matchesPath || matchesExtension) {
-    // Silently terminate the scan with a clean 404 (No heavy server logs generated)
     return res.status(404).send("Not Found");
   }
 
   next();
-});
-
-// 3. Standard Human 404 Handler (Runs only if traffic passes the security shield)
-app.use((req, res, next) => {
-  const err = new Error("The requested page or asset could not be found.");
-  err.status = 404;
-  next(err);
 });
 
 app.use(errorHandler);
