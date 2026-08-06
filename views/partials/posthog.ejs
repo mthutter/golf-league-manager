@@ -1,5 +1,12 @@
 <% if (isAuthenticated) { %> 
 <script>
+  // 1. Clear any URL parameters to prevent refresh bugs
+  if (window.history.replaceState) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('logged_out');
+    window.history.replaceState({path: url.href}, '', url.href);
+  }
+
   // Extract EJS data into valid JS variables first to satisfy the formatter
   const rawRoles = <%- JSON.stringify(user.roles) %>;
   const userId = "<%= user.id %>";
@@ -30,11 +37,21 @@
 </script>
 <% } else { %>
 <script>
-  // If the user lands here unauthenticated, instantly purge old cookie remnants
+  // 2. STRICT CHECK: ONLY reset if explicitly redirected from the logout route
   if (typeof posthog !== 'undefined') {
-    // Passing true triggers a hard reset, creating a fresh anonymous ID immediately
-    posthog.reset(true);
-    console.log("PostHog session successfully reset for anonymous guest.");
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('logged_out') === 'true') {
+      posthog.reset(true); 
+      console.log("PostHog profile memory cleared successfully.");
+      
+      // Clean up URL immediately so refreshing doesn't loop the reset trigger
+      if (window.history.replaceState) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('logged_out');
+        window.history.replaceState({path: url.href}, '', url.href);
+      }
+    }
   }
 </script>
 <% } %>
