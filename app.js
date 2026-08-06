@@ -74,6 +74,45 @@ app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(limiter);
 
+/* ====== SECURITY WALL: IP & MALICIOUS PATH BLOCKING ====== */
+const bannedIPInput = ["172.71.151.229", "162.159.102.123, 104.22.31.24, 104.23.166.45, 208.184.114.102"];
+
+const bannedIPs = new Set(bannedIPInput.flatMap((item) => item.split(",")).map((ip) => ip.trim()));
+const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
+const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
+
+app.use((req, res, next) => {
+  // FIX: Express's req.ip natively respects 'trust proxy 1' and safely parses x-forwarded-for
+  const visitorIP = req.ip;
+  const lowerPath = req.path.toLowerCase();
+
+  const matchesIP = visitorIP && bannedIPs.has(visitorIP);
+  const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
+  const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
+
+  if (matchesIP || matchesPath || matchesExtension) {
+    let blockReason = "Malicious File/Path Scan";
+    if (matchesIP) blockReason = "Banned IP Address";
+
+    posthogClient.capture({
+      distinctId: visitorIP || "unknown_bot",
+      event: "bot_attack_blocked",
+      properties: {
+        $ip: visitorIP,
+        requested_path: req.path,
+        block_reason: blockReason,
+        user_agent: req.headers["user-agent"],
+      },
+    });
+
+    const statusCode = matchesIP ? 403 : 404;
+    const msg = matchesIP ? "Access Denied" : "Not Found";
+    return res.status(statusCode).send(msg);
+  }
+  next();
+});
+/* ========================================================= */
+
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store");
   next();
@@ -159,59 +198,6 @@ app.post("/forgot-password", activationController.handleForgotPassword);
 
 app.get("/reset-password", activationController.showResetPasswordPage);
 app.post("/reset-password", activationController.handleResetPassword);
-
-/* =========================================================
-   SECURITY & ERROR HANDLING MIDDLEWARE
-========================================================= */
-
-// 1. Define your blocked IPs
-const bannedIPInput = [
-  "172.71.151.229",
-  "162.159.102.123, 104.22.31.24, 104.23.166.45, 208.184.114.102", // Added the new attacking IPs from your latest log!
-];
-
-// Clean and flatten the IP set
-const bannedIPs = new Set(bannedIPInput.flatMap((item) => item.split(",")).map((ip) => ip.trim()));
-
-// FIX: Variable name matches the middleware loop below perfectly
-const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
-const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
-
-app.use((req, res, next) => {
-  const forwardedFor = req.headers["x-forwarded-for"];
-  const visitorIP = forwardedFor ? forwardedFor.split(",")[0].trim() : req.socket.remoteAddress;
-
-  const lowerPath = req.path.toLowerCase();
-
-  const matchesIP = visitorIP && bannedIPs.has(visitorIP);
-
-  // FIX: Both lines now point correctly to 'blockedPaths'
-  const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
-  const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
-
-  if (matchesIP || matchesPath || matchesExtension) {
-    let blockReason = "Malicious File/Path Scan";
-    if (matchesIP) blockReason = "Banned IP Address";
-
-    // Track silently via your PostHog utility
-    posthogClient.capture({
-      distinctId: visitorIP || "unknown_bot",
-      event: "bot_attack_blocked",
-      properties: {
-        $ip: visitorIP,
-        requested_path: req.path,
-        block_reason: blockReason,
-        user_agent: req.headers["user-agent"],
-      },
-    });
-
-    const statusCode = matchesIP ? 403 : 404;
-    const msg = matchesIP ? "Access Denied" : "Not Found";
-    return res.status(statusCode).send(msg);
-  }
-
-  next();
-});
 
 app.use(errorHandler);
 
