@@ -49,19 +49,6 @@ const limiter = rateLimit({
 app.get("/favicon.ico", (req, res) => {
   res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
 });
-// BLOCK WORDPRESS COMMON EXPLOITS
-const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", ".env"];
-
-app.use((req, res, next) => {
-  // Normalize URL to lowercase to catch mixed-case evasion attempts (e.g., /WlWmAnIfEsT.xml)
-  const lowerUrl = req.url.toLowerCase();
-
-  if (blockedPaths.some((path) => lowerUrl.includes(path))) {
-    // Return instantly without invoking normal middleware
-    return res.status(404).send("Not Found");
-  }
-  next();
-});
 
 // SILENCE CHROME DEVTOOLS WORKSPACE DISCOVERY ALERTS
 app.use((req, res, next) => {
@@ -172,7 +159,30 @@ app.post("/forgot-password", activationController.handleForgotPassword);
 app.get("/reset-password", activationController.showResetPasswordPage);
 app.post("/reset-password", activationController.handleResetPassword);
 
-/* ====== ERROR CODES ======= */
+/* =========================================================
+   SECURITY & ERROR HANDLING MIDDLEWARE
+========================================================= */
+
+// 1. Define Malicious Targets
+const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
+const blockedExtensions = [".php", ".asp", ".aspx"];
+
+// 2. The Silent Security Shield (Place BEFORE your global 404 handler)
+app.use((req, res, next) => {
+  const lowerPath = req.path.toLowerCase();
+
+  const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
+  const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
+
+  if (matchesPath || matchesExtension) {
+    // Silently terminate the scan with a clean 404 (No heavy server logs generated)
+    return res.status(404).send("Not Found");
+  }
+
+  next();
+});
+
+// 3. Standard Human 404 Handler (Runs only if traffic passes the security shield)
 app.use((req, res, next) => {
   const err = new Error("The requested page or asset could not be found.");
   err.status = 404;
