@@ -73,6 +73,9 @@ export const handleLogin = (req, res, next) => {
 /**
  * GET /logout - Destroy current session context
  */
+/**
+ * GET /logout - Destroy current session context
+ */
 export const handleLogout = (req, res, next) => {
   const userId = req.user?.id;
 
@@ -80,19 +83,19 @@ export const handleLogout = (req, res, next) => {
     if (err) {
       return next(err);
     }
-
     req.session.destroy((err) => {
       if (err) {
         logger.error({ err }, "Session destruction lifecycle failure during logout operation");
         return next(err);
       }
 
+      // Capture the logout event
       posthog.capture({
         distinctId: String(userId),
         event: "user_logged_out",
       });
 
-      posthog.reset();
+      // posthog.reset(); // REMOVED: This function does not exist on the Node.js backend SDK
 
       res.clearCookie("SessionCookie");
       return res.redirect("/");
