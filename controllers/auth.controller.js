@@ -61,7 +61,6 @@ export const handleLogin = (req, res, next) => {
         properties: {
           member_id: user.id,
           member_name: `${user.lastName}, ${user.firstName}`,
-          //member_name: `${user.lastName}, ${user.firstName}`,
           roles: user.roles,
         },
       });

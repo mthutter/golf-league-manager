@@ -14,6 +14,7 @@ import cors from "cors";
 import logger from "./utilities/logger.js";
 import passport from "./config/passport.js";
 import { ROLES } from "./services/roles.service.js";
+import { PostHog } from "posthog-node";
 
 // ====== 2. ROUTES ======
 import publicRoutes from "./routes/public.routes.js";
@@ -163,35 +164,50 @@ app.post("/reset-password", activationController.handleResetPassword);
    SECURITY & ERROR HANDLING MIDDLEWARE
 ========================================================= */
 
-// 1. Define your banned individual IPs using a Set for optimal speed
-const bannedIPs = new Set([
-  "172.71.151.229", // The attacker IP from your logs
-  "123.45.67.89", // Add any other specific IPs here
-]);
+import { PostHog } from "posthog-node"; // Use const { PostHog } = require('posthog-node') for CommonJS
+
+// 1. Initialize PostHog (Grab your API key & Host from PostHog settings)
+const posthog = new PostHog(
+  "YOUR_PROJECT_API_KEY",
+  { host: "https://us.i.posthog.com" }, // Change to https://eu.i.posthog.com if using the EU cloud
+);
+
+const bannedIPs = new Set(["172.71.151.229"]);
 
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
 const blockedExtensions = [".php", ".asp", ".aspx"];
 
 app.use((req, res, next) => {
-  // 2. Extract the real client IP from Render's proxy header
   const forwardedFor = req.headers["x-forwarded-for"];
-
-  // Extract the first IP if it's a comma-separated list, or fallback to remoteAddress
   const visitorIP = forwardedFor ? forwardedFor.split(",")[0].trim() : req.socket.remoteAddress;
 
-  // 3. Native check: Does the Set contain the visitor's IP?
-  if (visitorIP && bannedIPs.has(visitorIP)) {
-    // 403 Forbidden instantly cuts off the bad actor
-    return res.status(403).send("Access Denied");
-  }
-
-  // 4. Run your existing malicious file path/extension filters
   const lowerPath = req.path.toLowerCase();
+  const matchesIP = visitorIP && bannedIPs.has(visitorIP);
   const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
   const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
 
-  if (matchesPath || matchesExtension) {
-    return res.status(404).send("Not Found");
+  // 2. If it's a security hit, log to PostHog before responding
+  if (matchesIP || matchesPath || matchesExtension) {
+    // Determine the reason for the block
+    let blockReason = "Malicious File/Path Scan";
+    if (matchesIP) blockReason = "Banned IP Address";
+
+    // Send custom server-side event to PostHog
+    posthog.capture({
+      distinctId: visitorIP || "unknown_bot", // Use IP as the tracking ID
+      event: "bot_attack_blocked",
+      properties: {
+        $ip: visitorIP, // Passes the raw IP to PostHog
+        requested_path: req.path, // Track exactly what URL they tried to hit
+        block_reason: blockReason, // Segments why they were dropped
+        user_agent: req.headers["user-agent"], // See what browser string they are faking
+      },
+    });
+
+    // Send the response and terminate the loop
+    const statusCode = matchesIP ? 403 : 404;
+    const msg = matchesIP ? "Access Denied" : "Not Found";
+    return res.status(statusCode).send(msg);
   }
 
   next();
