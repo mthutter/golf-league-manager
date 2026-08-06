@@ -92,6 +92,8 @@ export const handleLogout = (req, res, next) => {
         event: "user_logged_out",
       });
 
+      posthog.reset();
+
       res.clearCookie("SessionCookie");
       return res.redirect("/");
     });
