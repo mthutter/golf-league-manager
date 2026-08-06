@@ -60,7 +60,7 @@ export const handleLogin = (req, res, next) => {
         event: "user_logged_in",
         properties: {
           member_id: user.id,
-          member_name: `${user.lastName}`,
+          member_name: `${user.lastName}, ${user.firstName}`,
           //member_name: `${user.lastName}, ${user.firstName}`,
           roles: user.roles,
         },
