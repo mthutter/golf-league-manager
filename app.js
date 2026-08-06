@@ -164,33 +164,36 @@ app.post("/reset-password", activationController.handleResetPassword);
    SECURITY & ERROR HANDLING MIDDLEWARE
 ========================================================= */
 
-// 1. Import your existing PostHog client helper
+// 1. Define your blocked IPs
+const bannedIPInput = [
+  "172.71.151.229",
+  "162.159.102.123, 104.22.31.24", // Added the new attacking IPs from your latest log!
+];
 
-// 2. Define your single IPs or comma-separated lists here
-const bannedIPInput = ["172.71.151.229", "123.45.67.89, 98.76.54.32, 11.22.33.44"];
-
-// 3. Flatten, clean, and deduplicate into a fast Set lookup
+// Clean and flatten the IP set
 const bannedIPs = new Set(bannedIPInput.flatMap((item) => item.split(",")).map((ip) => ip.trim()));
 
+// FIX: Variable name matches the middleware loop below perfectly
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
 const blockedExtensions = [".php", ".asp", ".aspx"];
 
 app.use((req, res, next) => {
-  // Extract real client IP from Render's headers
   const forwardedFor = req.headers["x-forwarded-for"];
   const visitorIP = forwardedFor ? forwardedFor.split(",")[0].trim() : req.socket.remoteAddress;
 
   const lowerPath = req.path.toLowerCase();
 
   const matchesIP = visitorIP && bannedIPs.has(visitorIP);
-  const matchesPath = blockedPatterns.some((pattern) => lowerPath.includes(pattern));
+
+  // FIX: Both lines now point correctly to 'blockedPaths'
+  const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
   const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
 
   if (matchesIP || matchesPath || matchesExtension) {
     let blockReason = "Malicious File/Path Scan";
     if (matchesIP) blockReason = "Banned IP Address";
 
-    // 4. Use your existing posthogClient helper to capture the event
+    // Track silently via your PostHog utility
     posthogClient.capture({
       distinctId: visitorIP || "unknown_bot",
       event: "bot_attack_blocked",
