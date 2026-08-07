@@ -26,7 +26,10 @@ const totalsMap = {
     points: round.totals.points
 };
 %>
-
+<div id="custom form" class="gallery-header">
+        <h1><%= round.player.displayName %> - Week <%= round.week.number %> Scorecard</h1>
+        <p>Bottoms Up Golf League • 2026 Season</p>
+      </div>
     <div class="container py-4">
       <!-- Round Information -->
 
@@ -184,5 +187,6 @@ const totalsMap = {
     </div>
 
     <%- include('./partials/footer'); %>
+     <%- include('./partials/scripts'); %>
   </body>
 </html>
