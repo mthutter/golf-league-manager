@@ -7,12 +7,20 @@ import posthog from "../utilities/posthog.js";
 /**
  * GET /scores/new
  */
+/**
+ * GET /scores/new
+ */
 export const getNewScoresForm = catchAsync(async (req, res, next) => {
   logger.info({ sessionId: req.session?.id }, "Loading metadata configuration parameters for the weekly score entry form");
 
+  // 1. Fetch raw data from the scores service
   const { members, holes } = await scoresService.getFormData();
 
-  return res.render("weekly-scores-form", { members, holes });
+  // 2. Filter the members list to remove inactive players (status = 'NO')
+  const activeMembers = Array.isArray(members) ? members.filter((member) => member.status !== "No") : [];
+
+  // 3. Render the form with only active league members
+  return res.render("weekly-scores-form", { members: activeMembers, holes });
 });
 
 /**

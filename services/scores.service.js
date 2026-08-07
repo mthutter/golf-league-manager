@@ -214,7 +214,7 @@ async function getStandingsThroughWeek(weekNumber) {
   const sql = `
     WITH raw_standings AS (
       SELECT
-        m.id,
+        m.id, m.status,
         m.name_last || ', ' || m.name_first AS player_name,
         m.standings_exempt,
         COUNT(s.score_id) AS weeks_played,
