@@ -74,11 +74,17 @@ app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(limiter);
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes window
+  max: 100, // Limit each IP to 100 requests per window
+  message: "Too many requests from this IP, please try again later.",
+});
+
 /* ====== SECURITY WALL: IP & MALICIOUS PATH BLOCKING ====== */
 const bannedIPInput = ["172.71.151.229, 172.70.248.180, 172.71.151.230, 172.71.151.210,	172.71.151.221"];
 
 const bannedIPs = new Set(bannedIPInput.flatMap((item) => item.split(",")).map((ip) => ip.trim()));
-const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".env"];
+const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
 app.use((req, res, next) => {
