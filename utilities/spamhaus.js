@@ -6,7 +6,7 @@ function reverseIp(ip) {
   return ip.split(".").reverse().join(".");
 }
 
-async function spamhausCheck(req, res, next) {
+export async function spamhausCheck(req, res, next) {
   // Express now safely populates req.ip thanks to app.set('trust proxy', 1)
   const clientIp = req.ip;
   const cleanIp = clientIp.replace(/^::ffff:/, "");
