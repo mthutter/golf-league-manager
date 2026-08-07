@@ -37,17 +37,16 @@
 </script>
 <% } else { %>
 <script>
-  // 2. STRICT CHECK: ONLY reset if explicitly redirected from the logout route
+  // Runs every single time an unauthenticated user loads the page
   if (typeof posthog !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    if (urlParams.get('logged_out') === 'true') {
-      posthog.reset(true); 
-      console.log("PostHog profile memory cleared successfully.");
-      
-      // Clean up URL immediately so refreshing doesn't loop the reset trigger
-      if (window.history.replaceState) {
-        const url = new URL(window.location.href);
+    // 1. Wipe all local caching, cookies, and identity data
+    posthog.reset(); 
+    console.log("PostHog profile memory cleared successfully.");
+
+    // 2. Clean up URL parameters if they exist
+    if (window.history.replaceState) {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('logged_out')) {
         url.searchParams.delete('logged_out');
         window.history.replaceState({path: url.href}, '', url.href);
       }
