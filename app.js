@@ -39,6 +39,7 @@ const app = express();
 logger.info(`Starting Bottoms Up Golf (${process.env.NODE_ENV})`);
 
 const SQLiteStore = SQLiteStoreFactory(session);
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200, // Limit each IP to 200 requests per window
@@ -46,6 +47,8 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: "Too many requests from this IP, please try again later.",
 });
+
+app.use(limiter);
 
 app.get("/favicon.ico", (req, res) => {
   res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
@@ -72,14 +75,6 @@ app.disable("x-powered-by");
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes window
-  max: 100, // Limit each IP to 100 requests per window
-  message: "Too many requests from this IP, please try again later.",
-});
-
-app.use(limiter);
 
 /* ====== SECURITY WALL: IP & MALICIOUS PATH BLOCKING ====== */
 const bannedIPInput = ["172.71.151.229, 172.70.248.180, 172.71.151.230, 172.71.151.210,	172.71.151.221"];
