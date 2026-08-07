@@ -36,6 +36,9 @@ import * as activationController from "./controllers/activation.controller.js";
 import errorHandler from "./middleware/error.middleware.js";
 
 const app = express();
+app.set("trust proxy", 1);
+app.set("view engine", "ejs");
+
 logger.info(`Starting Bottoms Up Golf (${process.env.NODE_ENV})`);
 
 const SQLiteStore = SQLiteStoreFactory(session);
@@ -72,8 +75,6 @@ app.use(
 
 /* ====== BASIC APP SETTINGS & SECURITY ====== */
 app.disable("x-powered-by");
-app.set("view engine", "ejs");
-app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 
 /* ====== SECURITY WALL: IP & MALICIOUS PATH BLOCKING ====== */
