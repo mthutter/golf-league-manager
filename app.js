@@ -93,7 +93,8 @@ app.use((req, res, next) => {
   const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
   const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
 
-  if (matchesIP || matchesPath || matchesExtension) {
+  //if (matchesIP || matchesPath || matchesExtension) {
+  if (matchesPath || matchesExtension) {
     let blockReason = "Malicious File/Path Scan";
     if (matchesIP) blockReason = "Banned IP Address";
 
