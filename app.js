@@ -130,7 +130,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(spamhausCheck); // Safely evaluates remaining endpoints against real-time global spam lists
+//app.use(spamhausCheck); // Safely evaluates remaining endpoints against real-time global spam lists
 
 // CORS: Enforces secure multi-environment transport
 app.use(
