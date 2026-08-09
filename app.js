@@ -47,7 +47,9 @@ const SQLiteStore = SQLiteStoreFactory(session);
 
 // ====== 4. IMMEDIATE ASSETS & WELL-KNOWN FILTERS ======
 app.get("/favicon.ico", (req, res) => {
-  res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
+  res.sendFile(
+    path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"),
+  );
 });
 
 // SILENCE CHROME DEVTOOLS WORKSPACE DISCOVERY ALERTS
@@ -63,7 +65,13 @@ app.use((req, res, next) => {
 const hardcodedBannedIPs = [""];
 const autoBannedIPs = new Set(); // Holds dynamically caught attacker IPs
 
-const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content"];
+const blockedPaths = [
+  "wlwmanifest.xml",
+  "xmlrpc.php",
+  "wp-admin",
+  "wp-config",
+  "wp-content",
+];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
 // Helper to auto-unban after a cooldown window (e.g., 24 hours) to save memory
@@ -74,7 +82,7 @@ function scheduleUnban(ip, durationMs = 24 * 60 * 60 * 1000) {
   }, durationMs);
 }
 
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   const visitorIP = req.ip;
   const lowerPath = req.path.toLowerCase();
 
@@ -118,7 +126,7 @@ app.use((req, res, next) => {
   }
 
   next();
-});
+});*/
 
 // ====== 6. NETWORK PROTECTION LAYER (RATE LIMITS & EXTERNAL BLOCKLISTS) ======
 const limiter = rateLimit({
@@ -157,7 +165,12 @@ app.use((req, res, next) => {
 
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
-app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle =
+  process.env.NODE_ENV === "production"
+    ? "Bottoms Up Golf"
+    : process.env.NODE_ENV === "development"
+      ? "Bottoms Up Golf (DEV)"
+      : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(express.static("public"));
@@ -165,7 +178,9 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-const sessionDb = new sqlite3.Database(path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"));
+const sessionDb = new sqlite3.Database(
+  path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"),
+);
 app.use(
   session({
     name: "SessionCookie",
@@ -203,7 +218,10 @@ app.use((req, res, next) => {
 
 /* ====== ROUTES REGISTER ======= */
 /* ====== DEV ROUTES ====== */
-if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "development") {
+if (
+  process.env.NODE_ENV == "production" ||
+  process.env.NODE_ENV == "development"
+) {
   app.use("/dev", devRoutes);
 }
 
@@ -234,7 +252,10 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
+  if (
+    err.code === "ERR_HTTP_HEADERS_SENT" ||
+    err.message.includes("headers after they are sent")
+  ) {
     return;
   }
   logger.error(err);
