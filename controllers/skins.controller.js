@@ -11,22 +11,16 @@ export const calculateSkinsApi = catchAsync(async (req, res, next) => {
   const { weekId } = req.params;
 
   if (!weekId) {
-    logger.warn("Skins calculation API rejected: Missing weekId parameter");
+    logger.warn({ selectedWeekId }, "Skins calculation API rejected: Missing weekId parameter");
     return res.status(400).json({
       error: "Missing weekId parameter.",
     });
   }
 
-  logger.info(
-    { weekId: Number(weekId) },
-    "Executing skins matrix algorithm for target week",
-  );
+  logger.info("Executing skins matrix algorithm for target week");
   const results = await skinsService.calculateAndSaveSkins(Number(weekId));
 
-  logger.info(
-    { weekId: Number(weekId) },
-    "Skins metrics calculated and saved to cache successfully",
-  );
+  logger.info({ weekId: Number(weekId) }, "Skins metrics calculated and saved to cache successfully");
   posthog.capture({
     distinctId: req.session?.id || "anonymous",
     event: "skins_calculated",
@@ -49,14 +43,10 @@ export const getSkinsReport = catchAsync(async (req, res, next) => {
     return res.redirect(`/skins?weekId=${weeks[0].week_number}`);
   }
 
-  const selectedWeekId = req.query.weekId
-    ? Number(req.query.weekId)
-    : weeks[0]?.week_id || null;
+  const selectedWeekId = req.query.weekId ? Number(req.query.weekId) : weeks[0]?.week_id || null;
 
   if (!selectedWeekId) {
-    logger.info(
-      "No active week selection found. Rendering fallback empty leaderboard display.",
-    );
+    logger.info("No active week selection found. Rendering fallback empty leaderboard display.");
     return res.render("skins", {
       weeks: weeks || [],
       selectedWeekId: null,
@@ -67,10 +57,7 @@ export const getSkinsReport = catchAsync(async (req, res, next) => {
     });
   }
 
-  logger.info(
-    { selectedWeekId },
-    "Gathering score sheets and payouts for selected week context",
-  );
+  logger.info({ selectedWeekId }, "Gathering score sheets and payouts for selected week context");
 
   // Call services concurrently to accelerate execution times
   const [baseReportData, week, currentWeek] = await Promise.all([

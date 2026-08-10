@@ -11,7 +11,7 @@ import posthog from "../utilities/posthog.js";
  * GET /scores/new
  */
 export const getNewScoresForm = catchAsync(async (req, res, next) => {
-  logger.info({ sessionId: req.session?.id }, "Loading metadata configuration parameters for the weekly score entry form");
+  logger.info("Loading metadata configuration parameters for the weekly score entry form");
 
   // 1. Fetch raw data from the scores service
   const { members, holes } = await scoresService.getFormData();
@@ -33,7 +33,7 @@ export const saveScore = catchAsync(async (req, res, next) => {
 
   try {
     await scoresService.createScoreRecord(req.body);
-    logger.info({ memberId, weekId }, "Player performance metrics saved successfully");
+    logger.info("Player performance metrics saved successfully");
     posthog.capture({
       distinctId: req.session?.id || "anonymous",
       event: "score_saved",

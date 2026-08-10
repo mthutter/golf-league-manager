@@ -49,7 +49,7 @@ export const generateGroupings = catchAsync(async (req, res, next) => {
     return res.status(400).send("Invalid week ID provided.");
   }
 
-  logger.info({ weekId }, "Triggering automatic grouping generation engine");
+  logger.info("Triggering automatic grouping generation engine");
   await generateRandomGroupings(weekId);
 
   posthog.capture({
@@ -90,7 +90,7 @@ export const swapPlayers = catchAsync(async (req, res, next) => {
     position: player2.position ? Number(player2.position) : null,
   };
 
-  logger.info({ weekId: targetWeek, p1Id: p1.memberId, p2Id: p2.memberId }, "Executing database player position swap transaction");
+  logger.info("Executing database player position swap transaction");
 
   // 3. Execute the transactional SQLite update query block
   await swapPlayerPositions(targetWeek, p1, p2);

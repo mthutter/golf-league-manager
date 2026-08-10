@@ -9,12 +9,12 @@ import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrappe
 export const videosByYear = catchAsync(async (req, res, next) => {
   const { year } = req.params;
 
-  logger.info({ year }, "Fetching video asset records from the database directory index");
+  logger.info("Fetching video asset records from the database directory index");
   
   // Call service to pull video entries for the targeted year
   const videos = await getVideos(year); 
 
-  logger.info({ year, videoCount: videos.length }, "Video asset records index retrieved successfully");
+  logger.info("Video asset records index retrieved successfully");
 
   return res.render("videos", { year, videos }); 
 });

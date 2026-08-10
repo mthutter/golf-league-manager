@@ -13,7 +13,7 @@ export const renderEmailForm = catchAsync(async (req, res, next) => {
   const members = await all("SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'");
 
   // Safe structured JSON logging for Render streams
-  logger.info({ memberCount: members.length }, "Loaded active member directory for email mailing form");
+  logger.info("Loaded active member directory for email mailing form");
 
   // Pass the members array into EJS
   return res.render("email", { members: members });
@@ -41,12 +41,12 @@ export const sendBulkEmail = catchAsync(async (req, res, next) => {
     selectedEmails = Array.isArray(recipients) ? recipients : [recipients];
   }
 
-  logger.info({ subject, totalRecipients: selectedEmails.length }, "Initiating bulk email transmission sequence");
+  logger.info("Initiating bulk email transmission sequence");
 
   // Pass the selected emails array down into your service layer
   const result = await fetchAndSendEmails(subject, message, selectedEmails);
 
-  logger.info({ dispatchedCount: result.count }, "Bulk email broadcast delivered successfully");
+  logger.info("Bulk email broadcast delivered successfully");
   posthog.capture({
     distinctId: req.session?.id,
     event: "email_broadcast_sent",

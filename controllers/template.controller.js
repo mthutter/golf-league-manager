@@ -1,7 +1,7 @@
 // 1. ALWAYS import services, your Pino logger, and the catchAsync utility at the top
-import * as templateService from "../services/template.service.js"; 
-import logger from "../utilities/logger.js"; 
-import { catchAsync } from "../utilities/asyncHandler.js"; 
+import * as templateService from "../services/template.service.js";
+import logger from "../utilities/logger.js";
+import { catchAsync } from "../utilities/asyncHandler.js";
 
 /**
  * GET /items
@@ -9,7 +9,7 @@ import { catchAsync } from "../utilities/asyncHandler.js";
  */
 export const getAllItems = catchAsync(async (req, res, next) => {
   // Always log the action, passing context metadata as the FIRST argument object
-  logger.info({ sessionId: req.session?.id }, "Fetching application items catalog");
+  logger.info("Fetching application items catalog");
 
   const items = await templateService.getItems();
 
@@ -24,7 +24,7 @@ export const getAllItems = catchAsync(async (req, res, next) => {
 export const getItemById = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  logger.info({ itemId: id }, "Retrieving resource profile details");
+  logger.info("Retrieving resource profile details");
 
   const item = await templateService.findItem(id);
 
@@ -51,10 +51,10 @@ export const createNewItem = catchAsync(async (req, res, next) => {
     return res.status(400).send("Both name and value are strictly required fields.");
   }
 
-  logger.info({ name }, "Initiating transaction sequence to insert new item record");
+  logger.info("Initiating transaction sequence to insert new item record");
   const newItemId = await templateService.insertItem({ name, value });
 
-  logger.info({ itemId: newItemId }, "New data entity index generated successfully");
+  logger.info("New data entity index generated successfully");
   return res.redirect("/items");
 });
 
@@ -64,14 +64,14 @@ export const createNewItem = catchAsync(async (req, res, next) => {
  */
 export const updateItemApi = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  
-  logger.info({ itemId: id }, "Executing partial API profile modification update");
-  
+
+  logger.info("Executing partial API profile modification update");
+
   const updatedData = await templateService.updateItem(id, req.body);
-  
+
   // Return clean JSON instead of rendering an EJS template
   return res.status(200).json({
     success: true,
-    data: updatedData
+    data: updatedData,
   });
 });

@@ -130,7 +130,7 @@ export const updatePlayer = catchAsync(async (req, res, next) => {
     await playersService.syncPlayerRoles(playerId, roles);
   }
 
-  logger.info({ playerId, roles }, "League player profile details and roles updated successfully");
+  logger.info("League player profile details and roles updated successfully");
 
   posthog.capture({
     distinctId: req.session?.id || "anonymous",
