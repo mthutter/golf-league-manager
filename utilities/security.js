@@ -26,10 +26,13 @@ export const firewallMiddleware = (req, res, next) => {
 
   if (isHardBanned || isAutoBanned) {
     const reason = isHardBanned ? "Hardcoded Ban" : "Auto-Banned Scammer";
+
     if (typeof logger !== "undefined") {
       logger.warn(`[SECURITY] Request dropped from blocked IP: ${visitorIP} (${reason})`);
     }
-    return res.status(403).send("Access Denied");
+
+    // Send the specific reason back to the client/browser
+    return res.status(403).send(`Access Denied: ${reason}`);
   }
 
   // Path evaluation
@@ -64,12 +67,32 @@ export const firewallMiddleware = (req, res, next) => {
 };
 
 // 3. Network Protection Layer (Rate Limiter Setup)
+// 3. Network Protection Layer (Rate Limiter Setup)
 export const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200,
-  standardHeaders: true,
+  standardHeaders: true, // Returns RateLimit-* headers
   legacyHeaders: false,
-  message: "Too many requests from this IP, please try again later.",
+
+  // Custom handler that overrides the default message
+  handler: (req, res, next, options) => {
+    // Read the reset time or default to the 15-minute window fallback
+    const retryAfterSeconds = res.getHeader("Retry-After") || 15 * 60;
+
+    if (typeof logger !== "undefined") {
+      logger.warn(`[RATE LIMIT] IP ${req.ip} exceeded rate limit. Requests blocked.`);
+    }
+
+    // Set standard 429 status code
+    res.status(429);
+
+    // Provide detailed diagnostics directly to the screen
+    res.send(
+      `Access Denied: Too Many Requests.\n` +
+        `Reason: Your network IP (${req.ip}) exceeded the threshold of ${options.max} requests.\n` +
+        `Cooldown: Please try again in ${retryAfterSeconds} seconds.`,
+    );
+  },
 });
 
 // 4. Cross-Origin Resource Sharing Setup
