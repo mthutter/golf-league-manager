@@ -23,7 +23,7 @@ export const getPlayersInactive = catchAsync(async (req, res, next) => {
   // FIX: If you have an explicit service method like 'getInactivePlayers', swap it here.
   // Otherwise, filter the full roster array reactively to separate status properties.
   const allRows = await playersService.getAllPlayers();
-  const inactiveRows = allRows.filter((player) => player.status === "inactive" || player.is_active === 0);
+  const inactiveRows = allRows.filter((player) => player.status === "No" || player.is_active === 0);
 
   return res.render("inactive", { players: inactiveRows });
 });
