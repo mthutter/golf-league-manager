@@ -1,8 +1,5 @@
 import { calculateSkins } from "./skins.service.js";
-import {
-  calculateHandicaps,
-  writeCurrentHandicaps,
-} from "./handicap.service.js";
+import { calculateHandicaps, writeCurrentHandicaps } from "./handicap.service.js";
 import { get, all, run } from "../config/db.js"; // Added 'all' for complete lookup support
 import logger from "../utilities/logger.js";
 import { getWeekHoleRange } from "../services/weeks.service.js";
@@ -13,8 +10,7 @@ import { getWeekHoleRange } from "../services/weeks.service.js";
 export const processSkinsForWeek = async (weekId) => {
   // 1. Fetch raw metrics from the core skin calculator
 
-  const { skinTotals, payoutPerSkin, totalPot, detailedHoleWinners } =
-    await calculateSkins(weekId);
+  const { skinTotals, payoutPerSkin, totalPot, detailedHoleWinners } = await calculateSkins(weekId);
 
   const holeBreakdown = detailedHoleWinners;
 
@@ -31,22 +27,15 @@ export const processSkinsForWeek = async (weekId) => {
       let name_first = "Player";
       let name_last = `#${playerId}`;
       try {
-        const member = await get(
-          "SELECT name_last, name_first FROM members WHERE id = ?",
-          [playerId],
-        );
+        const member = await get("SELECT name_last, name_first FROM members WHERE id = ?", [playerId]);
         if (member) {
           name_first = member.name_first;
           name_last = member.name_last;
         }
       } catch (sqlError) {
-        logger.error(
-          `SQLite look up failed for player ID ${playerId}:`,
-          sqlError,
-        );
+        logger.error(`SQLite look up failed for player ID ${playerId}:`, sqlError);
       }
-      const skinsCount =
-        data && typeof data === "object" ? data.count || 0 : data || 0;
+      const skinsCount = data && typeof data === "object" ? data.count || 0 : data || 0;
       return {
         member_id: Number(playerId),
         name_first: name_first,
@@ -76,9 +65,7 @@ export const processSkinsForWeek = async (weekId) => {
         return Number(h) === hNum;
       }).length;
     } else if (skinTotals && typeof skinTotals === "object") {
-      winnersForThisHole = Object.entries(skinTotals).filter(
-        ([_, d]) => d.holes && d.holes.includes(hNum),
-      ).length;
+      winnersForThisHole = Object.entries(skinTotals).filter(([_, d]) => d.holes && d.holes.includes(hNum)).length;
     }
 
     // Add this hole's native purse to whatever jackpot has accumulated so far
@@ -103,8 +90,7 @@ export const processSkinsForWeek = async (weekId) => {
       if (holePayouts[h] > 0) totalSkinsClaimedAcrossField++;
     }
     if (totalSkinsClaimedAcrossField > 0) {
-      const leftoverBonusPerWonHole =
-        carriedPursePool / totalSkinsClaimedAcrossField;
+      const leftoverBonusPerWonHole = carriedPursePool / totalSkinsClaimedAcrossField;
       for (let h = 1; h <= 9; h++) {
         if (holePayouts[h] > 0) holePayouts[h] += leftoverBonusPerWonHole;
       }
@@ -117,20 +103,14 @@ export const processSkinsForWeek = async (weekId) => {
   if (holeBreakdown && Array.isArray(holeBreakdown)) {
     for (const record of holeBreakdown) {
       const holeNumber = record.hole_number || record.holeNumber || record.hole;
-      const memberId =
-        record.member_id || record.memberId || record.playerId || record.id;
+      const memberId = record.member_id || record.memberId || record.playerId || record.id;
       const netScore = record.net_score || record.netScore || record.net || 0;
-      const isSplit =
-        record.is_split || record.isSplit || record.winnersCount > 1 || false;
-      const first_name =
-        record.name_first || record.nameFirst || record.firstName || "Player";
+      const isSplit = record.is_split || record.isSplit || record.winnersCount > 1 || false;
+      const first_name = record.name_first || record.nameFirst || record.firstName || "Player";
 
       if (holeNumber && memberId) {
-        const totalWinnersForHole = holeBreakdown.filter(
-          (r) => (r.hole_number || r.holeNumber || r.hole) === holeNumber,
-        ).length;
-        const individualHolePayout =
-          holePayouts[holeNumber] / (totalWinnersForHole || 1);
+        const totalWinnersForHole = holeBreakdown.filter((r) => (r.hole_number || r.holeNumber || r.hole) === holeNumber).length;
+        const individualHolePayout = holePayouts[holeNumber] / (totalWinnersForHole || 1);
 
         detailsArray.push({
           hole_number: Number(holeNumber),
@@ -147,27 +127,19 @@ export const processSkinsForWeek = async (weekId) => {
   else if (skinTotals && typeof skinTotals === "object") {
     for (const [playerId, data] of Object.entries(skinTotals)) {
       if (data && data.holes && Array.isArray(data.holes)) {
-        const matchingWinnerObj = formattedWinners.find(
-          (w) => Number(w.member_id) === Number(playerId),
-        );
-        const mappedFirstName = matchingWinnerObj
-          ? matchingWinnerObj.name_first
-          : "Player";
+        const matchingWinnerObj = formattedWinners.find((w) => Number(w.member_id) === Number(playerId));
+        const mappedFirstName = matchingWinnerObj ? matchingWinnerObj.name_first : "Player";
 
         for (const holeNum of data.holes) {
-          const totalWinnersForHole = Object.entries(skinTotals).filter(
-            ([_, d]) => d.holes && d.holes.includes(holeNum),
-          ).length;
-          const individualHolePayout =
-            holePayouts[holeNum] / (totalWinnersForHole || 1);
+          const totalWinnersForHole = Object.entries(skinTotals).filter(([_, d]) => d.holes && d.holes.includes(holeNum)).length;
+          const individualHolePayout = holePayouts[holeNum] / (totalWinnersForHole || 1);
 
           detailsArray.push({
             hole_number: Number(holeNum),
             member_id: Number(playerId),
             name_first: mappedFirstName,
             net_score: "",
-            skins_won:
-              totalWinnersForHole === 1 ? 1.0 : 1 / totalWinnersForHole,
+            skins_won: totalWinnersForHole === 1 ? 1.0 : 1 / totalWinnersForHole,
             payout: individualHolePayout,
           });
         }
@@ -177,14 +149,10 @@ export const processSkinsForWeek = async (weekId) => {
   logger.info("DETAILS ARRAY", detailsArray);
   // 4. Update the formattedWinners Leaderboard standings with dynamic carryover math values
   const correctedLeaderboard = formattedWinners.map((winner) => {
-    const totalCashWon = detailsArray
-      .filter((d) => Number(d.member_id) === Number(winner.member_id))
-      .reduce((sum, h) => sum + h.payout, 0);
+    const totalCashWon = detailsArray.filter((d) => Number(d.member_id) === Number(winner.member_id)).reduce((sum, h) => sum + h.payout, 0);
 
     // Sum total fractional skin values dynamically based on split records
-    const dynamicSkinsCount = detailsArray
-      .filter((d) => Number(d.member_id) === Number(winner.member_id))
-      .reduce((sum, h) => sum + h.skins_won, 0);
+    const dynamicSkinsCount = detailsArray.filter((d) => Number(d.member_id) === Number(winner.member_id)).reduce((sum, h) => sum + h.skins_won, 0);
 
     return {
       ...winner,
@@ -221,8 +189,8 @@ export const processSkinsForWeek = async (weekId) => {
 export const runHandicapEngine = async () => {
   logger.info(`[HANDICAP ENGINE] Recalculating player handicaps...`);
 
-  //await writeCurrentHandicaps();
-  //logger.info("[HANDICAP ENGINE] Current handicaps have been archived.");
+  await writeCurrentHandicaps();
+  logger.info("[HANDICAP ENGINE] Current handicaps have been archived.");
 
   await calculateHandicaps();
   logger.info("[HANDICAP ENGINE] Current handicaps have been computed.");

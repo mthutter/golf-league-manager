@@ -1,4 +1,4 @@
-import { getFilenames } from "../services/ftp.service.js"; 
+import { getFilenames } from "../services/ftp.service.js";
 import logger from "../utilities/logger.js"; // Added the missing logger import
 import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrapper utility
 
@@ -9,12 +9,12 @@ import { catchAsync } from "../utilities/asyncHandler.js"; // Import your wrappe
 export const imagesByYear = catchAsync(async (req, res, next) => {
   const { year } = req.params;
 
-  logger.info({ year }, "Initiating connection to remote storage to fetch image directory index");
-  
+  logger.info("Initiating connection to remote storage to fetch image directory index");
+
   // Call FTP service to scan the target remote subdirectory asset files
-  const filenames = await getFilenames(year); 
+  const filenames = await getFilenames(year);
 
-  logger.info({ year, imageCount: filenames.length }, "Image registry index retrieved successfully");
+  logger.info("Image registry index retrieved successfully");
 
-  return res.render("images", { year, filenames }); 
+  return res.render("images", { year, filenames });
 });

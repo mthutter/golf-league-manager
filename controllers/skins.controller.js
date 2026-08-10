@@ -20,7 +20,7 @@ export const calculateSkinsApi = catchAsync(async (req, res, next) => {
   logger.info("Executing skins matrix algorithm for target week");
   const results = await skinsService.calculateAndSaveSkins(Number(weekId));
 
-  logger.info({ weekId: Number(weekId) }, "Skins metrics calculated and saved to cache successfully");
+  logger.info("Skins metrics calculated and saved to cache successfully");
   posthog.capture({
     distinctId: req.session?.id || "anonymous",
     event: "skins_calculated",

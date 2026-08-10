@@ -9,7 +9,7 @@ import posthog from "../utilities/posthog.js";
 export const renderIndex = catchAsync(async (req, res, next) => {
   const search = req.query.search?.trim();
 
-  logger.info({ search }, "Fetching blog index listings");
+  logger.info("Fetching blog index listings");
 
   const rawPosts = search ? await blogService.searchPosts(search) : await blogService.getAllPosts();
 
@@ -94,7 +94,7 @@ export const createPost = catchAsync(async (req, res, next) => {
 
   try {
     await blogService.createNewPost(title, content, image_url);
-    logger.info({ title }, "New blog post created successfully");
+    logger.info("New blog post created successfully");
     posthog.capture({
       distinctId: req.session?.id,
       event: "blog_post_created",
@@ -119,6 +119,6 @@ export const deletePost = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   await blogService.deletePostById(id);
 
-  logger.info({ postId: id }, "Blog post removed cleanly");
+  logger.info("Blog post removed cleanly");
   return res.redirect("/blog");
 });

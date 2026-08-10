@@ -1,13 +1,6 @@
-import {
-  validateActivationToken,
-  activateMember,
-  resetPassword,
-} from "../services/activation.service.js";
+import { validateActivationToken, activateMember, resetPassword } from "../services/activation.service.js";
 
-import {
-  findMemberByEmail,
-  resendActivationEmail,
-} from "../services/account.service.js";
+import { findMemberByEmail, resendActivationEmail } from "../services/account.service.js";
 
 import { createToken, TOKEN_PURPOSE } from "../services/activation.service.js";
 import { sendPasswordResetEmail } from "../services/email.service.js";
@@ -107,7 +100,7 @@ export async function handleActivationRequest(req, res, next) {
     }
 
     const member = await findMemberByEmail(email.trim());
-    logger.info({ member }, "Member lookup complete");
+    logger.info("Member lookup complete");
     //
     // SECURITY NOTE:
     // Don't reveal whether the email exists.
@@ -142,10 +135,7 @@ export async function handleForgotPassword(req, res) {
     logger.error(err);
   }
 
-  req.flash(
-    "success",
-    "If an account exists for that email address, a password reset link has been sent.",
-  );
+  req.flash("success", "If an account exists for that email address, a password reset link has been sent.");
 
   res.redirect("/login");
 }
@@ -197,19 +187,13 @@ export async function handleResetPassword(req, res) {
       return res.redirect("/login");
     }
 
-    req.flash(
-      "success",
-      "Your password has been updated. Please sign in with your new password.",
-    );
+    req.flash("success", "Your password has been updated. Please sign in with your new password.");
 
     res.redirect("/login");
   } catch (err) {
     logger.error(err);
 
-    req.flash(
-      "error",
-      "An unexpected error occurred while resetting your password.",
-    );
+    req.flash("error", "An unexpected error occurred while resetting your password.");
 
     res.redirect("/login");
   }

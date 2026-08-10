@@ -14,7 +14,7 @@ export const getDashboard = catchAsync(async (req, res, next) => {
     req.session.handicapSuccess = null;
   }
 
-  logger.info({ sessionId: req.session?.id }, "Admin dashboard accessed");
+  logger.info("Admin dashboard accessed");
 
   return res.render("admin-utilities", {
     title: "Admin Utilities",
@@ -30,7 +30,7 @@ export const getDashboard = catchAsync(async (req, res, next) => {
 export const calculateSkinsMetrics = catchAsync(async (req, res, next) => {
   const weekId = Number(req.body.weekId);
 
-  logger.info({ weekId }, "Starting skins metric calculations");
+  logger.info("Starting skins metric calculations");
 
   // Call service to do the heavy calculations and database queries
   await skinsService.calculateAndSaveSkins(weekId);
