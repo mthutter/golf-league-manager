@@ -1,14 +1,5 @@
-import {
-  getGroupingsForWeek,
-  generateRandomGroupings,
-  swapPlayerPositions,
-} from "../services/grouping.service.js";
-import {
-  getAllWeeks,
-  getWeek,
-  getUpcomingWeek,
-  formatDateTime,
-} from "../services/weeks.service.js";
+import { getGroupingsForWeek, generateRandomGroupings, swapPlayerPositions } from "../services/grouping.service.js";
+import { getAllWeeks, getWeek, getUpcomingWeek, formatDateTime } from "../services/weeks.service.js";
 import logger from "../utilities/logger.js";
 import { catchAsync } from "../utilities/asyncHandler.js";
 import posthog from "../utilities/posthog.js";
@@ -25,18 +16,14 @@ export const showTeeTimes = catchAsync(async (req, res, next) => {
     weekId = upcomingWeek.week_number;
   }
 
-  logger.info(
-    { weekId, sessionId: req.sessionId },
-    "Fetching league pairings and tee times",
-  );
+  logger.info("Fetching league pairings and tee times");
 
   // Extended to match your complete 22-week league season calendar
   const weeks = await getAllWeeks();
   const currentWeek = await getWeek(weekId);
 
   // Destructure the groupings array and outPlayers array from the service
-  const { groupings, outPlayers, subPlayers, lastUpdated } =
-    await getGroupingsForWeek(weekId);
+  const { groupings, outPlayers, subPlayers, lastUpdated } = await getGroupingsForWeek(weekId);
   const formattedLastUpdated = formatDateTime(lastUpdated);
 
   return res.render("tee-times", {
@@ -58,10 +45,7 @@ export const generateGroupings = catchAsync(async (req, res, next) => {
   const weekId = Number(req.params.weekId);
 
   if (isNaN(weekId)) {
-    logger.warn(
-      { rawParam: req.params.weekId },
-      "Rejected grouping generation: Invalid week ID input",
-    );
+    logger.warn({ rawParam: req.params.weekId }, "Rejected grouping generation: Invalid week ID input");
     return res.status(400).send("Invalid week ID provided.");
   }
 
@@ -86,10 +70,7 @@ export const swapPlayers = catchAsync(async (req, res, next) => {
   const { weekId, player1, player2 } = req.body;
 
   if (!weekId || !player1 || !player2) {
-    logger.warn(
-      { hasWeekId: !!weekId, hasP1: !!player1, hasP2: !!player2 },
-      "Player position swap validation rejected: Missing payload fields",
-    );
+    logger.warn({ hasWeekId: !!weekId, hasP1: !!player1, hasP2: !!player2 }, "Player position swap validation rejected: Missing payload fields");
     return res.status(400).json({
       success: false,
       error: "Missing required swap parameters.",
@@ -109,10 +90,7 @@ export const swapPlayers = catchAsync(async (req, res, next) => {
     position: player2.position ? Number(player2.position) : null,
   };
 
-  logger.info(
-    { weekId: targetWeek, p1Id: p1.memberId, p2Id: p2.memberId },
-    "Executing database player position swap transaction",
-  );
+  logger.info({ weekId: targetWeek, p1Id: p1.memberId, p2Id: p2.memberId }, "Executing database player position swap transaction");
 
   // 3. Execute the transactional SQLite update query block
   await swapPlayerPositions(targetWeek, p1, p2);

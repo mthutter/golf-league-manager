@@ -29,7 +29,7 @@ export const getNewScoresForm = catchAsync(async (req, res, next) => {
 export const saveScore = catchAsync(async (req, res, next) => {
   const { memberId, weekId } = req.body;
 
-  logger.info({ memberId, weekId }, "Processing new league score entry record submission");
+  logger.info("Processing new league score entry record submission");
 
   try {
     await scoresService.createScoreRecord(req.body);
@@ -69,7 +69,7 @@ export const getStandings = catchAsync(async (req, res, next) => {
 export const getWeeklyScores = catchAsync(async (req, res, next) => {
   const weekId = req.params.weekId;
 
-  logger.info({ weekId }, "Aggregating individual stroke scores and points for week breakdown");
+  logger.info("Aggregating individual stroke scores and points for week breakdown");
 
   const results = await scoresService.getWeeklyBreakdown(weekId);
   const weekDate = await weeksService.getWeek(weekId);
@@ -83,7 +83,7 @@ export const getWeeklyScores = catchAsync(async (req, res, next) => {
 export const getMemberProfile = catchAsync(async (req, res, next) => {
   const memberId = parseInt(req.params.id, 10);
 
-  logger.info({ memberId }, "Assembling historical player scorecard profiles");
+  logger.info("Assembling historical player scorecard profiles");
 
   const profileData = await scoresService.getMemberProfileData(memberId);
 

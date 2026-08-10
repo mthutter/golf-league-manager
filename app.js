@@ -16,6 +16,7 @@ import passport from "./config/passport.js";
 import { ROLES } from "./services/roles.service.js";
 import posthogClient from "./utilities/posthog.js";
 import { spamhausCheck } from "./utilities/spamhaus.js";
+import { corsMiddleware, firewallMiddleware, rateLimiter } from "./utilities/security.js";
 
 // ====== 2. ROUTES ======
 import publicRoutes from "./routes/public.routes.js";
@@ -47,9 +48,7 @@ const SQLiteStore = SQLiteStoreFactory(session);
 
 // ====== 4. IMMEDIATE ASSETS & WELL-KNOWN FILTERS ======
 app.get("/favicon.ico", (req, res) => {
-  res.sendFile(
-    path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"),
-  );
+  res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
 });
 
 // SILENCE CHROME DEVTOOLS WORKSPACE DISCOVERY ALERTS
@@ -60,93 +59,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== 5. LOCAL SECURITY WALL: IP & MALICIOUS PATH BLOCKING ======
-
-const hardcodedBannedIPs = [""];
-const autoBannedIPs = new Set(); // Holds dynamically caught attacker IPs
-
-const blockedPaths = [
-  "wlwmanifest.xml",
-  "xmlrpc.php",
-  "wp-admin",
-  "wp-config",
-  "wp-content",
-];
-const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
-
-// Helper to auto-unban after a cooldown window (e.g., 24 hours) to save memory
-function scheduleUnban(ip, durationMs = 24 * 60 * 60 * 1000) {
-  setTimeout(() => {
-    autoBannedIPs.delete(ip);
-    logger.info(`[SECURITY] Auto-ban expired for IP: ${ip}`);
-  }, durationMs);
-}
-
-/*app.use((req, res, next) => {
-  const visitorIP = req.ip;
-  const lowerPath = req.path.toLowerCase();
-
-  // Check against hardcoded entries AND dynamically captured bot IPs
-  const isHardBanned = visitorIP && hardcodedBannedIPs.includes(visitorIP);
-  const isAutoBanned = visitorIP && autoBannedIPs.has(visitorIP);
-
-  const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
-  const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
-
-  // 1. Instantly drop requests from already flagged/banned attackers
-  if (isHardBanned || isAutoBanned) {
-    const reason = isHardBanned ? "Hardcoded Ban" : "Auto-Banned Scammer";
-    logger.warn(`[SECURITY] Request dropped from blocked IP: ${visitorIP} (${reason})`);
-    return res.status(403).send("Access Denied");
-  }
-
-  // 2. Catch fresh scanners red-handed and lock them out
-  if (matchesPath || matchesExtension) {
-    const blockReason = "Malicious File/Path Scan Trigger";
-
-    if (visitorIP) {
-      autoBannedIPs.add(visitorIP);
-      scheduleUnban(visitorIP); // Automatically clears out tomorrow
-      logger.error(`[SECURITY] DETECTED MALICIOUS SCAN: IP ${visitorIP} trapped at "${req.path}". IP auto-banned for 24 hours.`);
-    }
-
-    posthogClient.capture({
-      distinctId: visitorIP || "unknown_bot",
-      event: "bot_attack_blocked",
-      properties: {
-        $ip: visitorIP,
-        requested_path: req.path,
-        block_reason: blockReason,
-        user_agent: req.headers["user-agent"],
-        action_taken: "IP_Auto_Banned_24h",
-      },
-    });
-
-    return res.status(404).send("Not Found");
-  }
-
-  next();
-});*/
-
-// ====== 6. NETWORK PROTECTION LAYER (RATE LIMITS & EXTERNAL BLOCKLISTS) ======
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per window
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  message: "Too many requests from this IP, please try again later.",
-});
-
-app.use(limiter);
-//app.use(spamhausCheck); // Safely evaluates remaining endpoints against real-time global spam lists
-
-// CORS: Enforces secure multi-environment transport
-app.use(
-  cors({
-    origin: ["http://localhost:8080", "https://bottoms-up-cos.org"],
-    credentials: true,
-  }),
-);
+// SECURITY WALL
+app.use(corsMiddleware); // 1. Check CORS policies
+app.use(firewallMiddleware); // 2. Drop malicious/banned IPs immediately
+app.use(rateLimiter); // 3. Throttle request velocities
 
 /* ====== BASIC APP SETTINGS & SECURITY ====== */
 app.disable("x-powered-by");
@@ -165,12 +81,7 @@ app.use((req, res, next) => {
 
 // NOTE: PostHog Proxy routes have been completely removed.
 // Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(express.static("public"));
@@ -178,9 +89,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-const sessionDb = new sqlite3.Database(
-  path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"),
-);
+const sessionDb = new sqlite3.Database(path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"));
 app.use(
   session({
     name: "SessionCookie",
@@ -218,10 +127,7 @@ app.use((req, res, next) => {
 
 /* ====== ROUTES REGISTER ======= */
 /* ====== DEV ROUTES ====== */
-if (
-  process.env.NODE_ENV == "production" ||
-  process.env.NODE_ENV == "development"
-) {
+if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "development") {
   app.use("/dev", devRoutes);
 }
 
@@ -252,10 +158,7 @@ const server = app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", async (err) => {
-  if (
-    err.code === "ERR_HTTP_HEADERS_SENT" ||
-    err.message.includes("headers after they are sent")
-  ) {
+  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
   }
   logger.error(err);

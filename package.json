@@ -48,6 +48,7 @@
     "jsonwebtoken": "^9.0.3",
     "jws": "^3.2.3",
     "memorystore": "^1.6.7",
+    "node-cache": "^5.1.2",
     "nodemailer": "^9.0.1",
     "nodemon": "^3.1.9",
     "nvm": "^0.0.4",
