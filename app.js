@@ -61,7 +61,7 @@ app.use((req, res, next) => {
 
 // SECURITY WALL
 app.use(corsMiddleware); // 1. Check CORS policies
-app.use(firewallMiddleware); // 2. Drop malicious/banned IPs immediately
+//app.use(firewallMiddleware); // 2. Drop malicious/banned IPs immediately
 app.use(rateLimiter); // 3. Throttle request velocities
 
 /* ====== BASIC APP SETTINGS & SECURITY ====== */
