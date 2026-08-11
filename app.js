@@ -48,7 +48,7 @@ const SQLiteStore = SQLiteStoreFactory(session);
 
 // ====== 4. IMMEDIATE ASSETS & WELL-KNOWN FILTERS ======
 app.get("/favicon.ico", (req, res) => {
-  res.sendFile(path.join(process.cwd(), "icons", "icons8-golf-lineal-color-32.png"));
+  res.sendFile(path.join(process.cwd(), "public", "icons", "icons8-golf-lineal-color-32.png"));
 });
 
 // SILENCE CHROME DEVTOOLS WORKSPACE DISCOVERY ALERTS
