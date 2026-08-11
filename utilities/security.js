@@ -8,7 +8,7 @@ const banCache = new NodeCache({ stdTTL: 86400, checkperiod: 3600 });
 
 // 2. Definitive security configurations
 const hardcodedBannedIPs = new Set(["192.168.1.100"]);
-const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content"];
+const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
 /**
@@ -36,7 +36,7 @@ export const firewallMiddleware = (req, res, next) => {
     return res.status(403).send(`Access Denied: ${reason}`);
   }
 
-  // Path evaluation
+  // 2. Path evaluation
   const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
   const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
 
