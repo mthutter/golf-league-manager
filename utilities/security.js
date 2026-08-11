@@ -2,6 +2,7 @@
 import rateLimit from "express-rate-limit";
 import NodeCache from "node-cache";
 import cors from "cors";
+import logger from "./logger.js";
 
 // 1. Initialize self-cleaning ban cache (TTL: 24h, check expired keys every hour)
 const banCache = new NodeCache({ stdTTL: 86400, checkperiod: 3600 });
