@@ -31,6 +31,7 @@ export const firewallMiddleware = (req, res, next) => {
       logger.warn(`[SECURITY] Request dropped from blocked IP: ${visitorIP} (${reason})`);
     }
 
+    logger.info("Reason: ", reason);
     // Send the specific reason back to the client/browser
     return res.status(403).send(`Access Denied: ${reason}`);
   }
@@ -66,7 +67,6 @@ export const firewallMiddleware = (req, res, next) => {
   next();
 };
 
-// 3. Network Protection Layer (Rate Limiter Setup)
 // 3. Network Protection Layer (Rate Limiter Setup)
 export const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
