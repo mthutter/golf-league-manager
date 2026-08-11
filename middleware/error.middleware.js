@@ -8,8 +8,7 @@ const errorHandler = (err, req, res, next) => {
 
   const statusCode = err.status || err.statusCode || 500;
 
-  // 1. Only capture exceptions in PostHog if it is NOT a 404 error
-  // This completely stops automated 404 scans from polluting your dashboards
+  // 1. Only capture system crashes in PostHog (ignores expected 404 noise)
   if (statusCode !== 404) {
     posthog.captureException(err, req.session?.id || "anonymous", {
       method: req.method,
@@ -18,41 +17,31 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // 2. Log structured JSON error details (Kept active for local/internal debugging)
+  // 2. Log details internally for your debugging records
   logger.error(
     {
-      err: {
-        name: err.name,
-        message: err.message,
-        stack: err.stack,
-      },
-      context: {
-        method: req.method,
-        url: req.url,
-        ip: req.ip,
-        userId: req.session?.userId || "anonymous",
-      },
+      err: { name: err.name, message: err.message, stack: err.stack },
+      context: { method: req.method, url: req.url, ip: req.ip, userId: req.session?.userId || "anonymous" },
     },
     `Application Error: ${err.message}`,
   );
-  // 3. Render your error page or send JSON response
+
+  // 3. Render unified layout or return JSON payload
   res.status(statusCode);
 
-  // Checks if client expects HTML (like EJS views) or JSON (like API calls)
   if (req.accepts("html")) {
     return res.render("error", {
-      // 1. Core error data expected by error.ejs
+      // Core error indicators
       message: statusCode === 500 ? "Internal Server Error" : err.message,
       status: statusCode,
-      error: process.env.NODE_ENV === "development" ? err : {}, // Don't leak stack traces in prod
 
-      // 2. Global context fallbacks expected by navbar.ejs
+      // Global navigation contexts to safeguard EJS templates
       user: req.user || null,
       isAuthenticated: typeof req.isAuthenticated === "function" ? req.isAuthenticated() : false,
       isAdmin: req.user?.roles?.includes("ADMIN") ?? false,
       isMember: req.user?.roles?.includes("MEMBER") ?? false,
       success: req.flash ? req.flash("success") : [],
-      error_msg: req.flash ? req.flash("error") : [],
+      error: req.flash ? req.flash("error") : [], // Replaces old error variable
     });
   }
 

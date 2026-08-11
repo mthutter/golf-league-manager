@@ -1,33 +1,30 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <%- include ('./partials/header'); %>
-    <style>
-      .error-box {
-        max-width: 600px;
-        margin: 3rem auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+<head>
+  <%- include ('./partials/header'); %>
+</head>
+<body>
+  <%- include ('./partials/navbar'); %>
+  
+  <div class="main-wrapper" style="padding-top: 80px; text-align: center;">
+    <div class="error-box">
+      
+      <% if (status === 404) { %>
+        <!-- 404 Content Block -->
+        <h1 style="font-size: 3rem; color: #dc3545;">PAGE NOT FOUND (404)</h1>
+        <p style="font-size: 1.2rem;">The page or asset you requested does not exist on this server.</p>
+        <a href="/" class="btn btn-primary" style="margin-top: 15px; display: inline-block;">Return to Home</a>
+      <% } else { %>
+        <!-- 500/General Error Content Block -->
+        <h1 style="font-size: 3rem; color: #dc3545;">Something Went Wrong (500)</h1>
+        <p style="font-size: 1.2rem;">An internal system error occurred. Our team has been automatically alerted.</p>
+        <a href="/" class="btn btn-primary" style="margin-top: 15px; display: inline-block;">Return to Home</a>
+      <% } %>
 
-      h1 {
-        margin-top: 0;
-        color: #b00020;
-      }
-    </style>
-  </head>
-
-  <body>
-    <%- include ('./partials/navbar'); %>
-    <div class="main-wrapper">
-      <div class="error-box">
-        <h1>Something Went Wrong</h1>
-        <p><%= message %></p>
-      </div>
     </div>
-    <%- include('partials/footer'); %>
-    <%- include('partials/scripts'); %>
-  </body>
+  </div>
+
+  <%- include('partials/footer'); %>
+  <%- include('partials/scripts'); %>
+</body>
 </html>
