@@ -35,15 +35,24 @@ const errorHandler = (err, req, res, next) => {
     },
     `Application Error: ${err.message}`,
   );
-
   // 3. Render your error page or send JSON response
   res.status(statusCode);
 
   // Checks if client expects HTML (like EJS views) or JSON (like API calls)
   if (req.accepts("html")) {
     return res.render("error", {
+      // 1. Core error data expected by error.ejs
       message: statusCode === 500 ? "Internal Server Error" : err.message,
       status: statusCode,
+      error: process.env.NODE_ENV === "development" ? err : {}, // Don't leak stack traces in prod
+
+      // 2. Global context fallbacks expected by navbar.ejs
+      user: req.user || null,
+      isAuthenticated: typeof req.isAuthenticated === "function" ? req.isAuthenticated() : false,
+      isAdmin: req.user?.roles?.includes("ADMIN") ?? false,
+      isMember: req.user?.roles?.includes("MEMBER") ?? false,
+      success: req.flash ? req.flash("success") : [],
+      error_msg: req.flash ? req.flash("error") : [],
     });
   }
 
