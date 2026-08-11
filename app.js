@@ -149,6 +149,13 @@ app.post("/forgot-password", activationController.handleForgotPassword);
 app.get("/reset-password", activationController.showResetPasswordPage);
 app.post("/reset-password", activationController.handleResetPassword);
 
+// ====== CATCH-ALL 404 HANDLER ======
+app.use((req, res, next) => {
+  const error = new Error(`Page Not Found: ${req.originalUrl}`);
+  error.status = 404;
+  next(error); // Pushes the 404 into the errorHandler below
+});
+
 app.use(errorHandler);
 
 /* ====== PORT BINDING & CRASH HOOKS ====== */

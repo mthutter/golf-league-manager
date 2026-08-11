@@ -1,16 +1,10 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <%- include ('./partials/header'); %>
-  </head>
-
-  <body>
-    <%- include ('./partials/navbar'); %>
-    <br /><br /><br />
+<!-- Inside error.ejs -->
+<div class="error-box">
+  <% if (status === 404) { %>
     <h1>PAGE NOT FOUND (404)</h1>
     <p>The page you requested does not exist.</p>
-
-    <%- include('partials/footer'); %>
-    <%- include('partials/scripts'); %>
-  </body>
-</html>
+  <% } else { %>
+    <h1>Something Went Wrong (500)</h1>
+    <p>Internal Server Error.</p>
+  <% } %>
+</div>
