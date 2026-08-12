@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <%- include('./partials/header'); %>
     <link rel="stylesheet" href="/assets/css/round-details.css" />
-  </head>
+</head>
 
-  <body>
+<body>
     <%- include('./partials/navbar'); %>
 
     <%
@@ -26,167 +27,161 @@ const totalsMap = {
     points: round.totals.points
 };
 %>
-<div id="custom form" class="gallery-header">
+    <div id="custom form" class="gallery-header">
         <h1><%= round.player.displayName %> - Week <%= round.week.number %> Scorecard</h1>
         <p>Bottoms Up Golf League • 2026 Season</p>
-      </div>
+    </div>
     <div class="container py-4">
-      <!-- Round Information -->
+        <!-- Round Information -->
 
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <div class="row text-center">
-            <div class="col-md-3">
-              <div class="info-label">Player</div>
-              <div class="info-value"><%= round.player.displayName %></div>
-            </div>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="info-label">Player</div>
+                        <div class="info-value"><%= round.player.displayName %></div>
+                    </div>
 
-            <div class="col-md-3">
-              <div class="info-label">Week</div>
-              <div class="info-value">
-                Week <%= round.week.number %><br />
-                <small>(<%= round.week.displayDate %>)</small>
-              </div>
-            </div>
+                    <div class="col-md-3">
+                        <div class="info-label">Week</div>
+                        <div class="info-value">
+                            Week <%= round.week.number %><br />
+                            <small>(<%= round.week.displayDate %>)</small>
+                        </div>
+                    </div>
 
-            <div class="col-md-3">
-              <div class="info-label">Handicap</div>
-              <div class="info-value"><%= round.handicapUsed %></div>
-            </div>
+                    <div class="col-md-3">
+                        <div class="info-label">Handicap</div>
+                        <div class="info-value"><%= round.handicapUsed %></div>
+                    </div>
 
-            <div class="col-md-3">
-              <div class="info-label">Skins</div>
-              <div class="info-value">
-                <%= round.skinsEntered ? "Yes" : "No" %>
-              </div>
+                    <div class="col-md-3">
+                        <div class="info-label">Skins</div>
+                        <div class="info-value">
+                            <%= round.skinsEntered ? "Yes" : "No" %>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
 
-      <!-- Scorecard -->
+        <!-- Scorecard -->
 
-      <div class="card shadow-sm">
-        <div class="card-body table-responsive">
-          <table
-            class="table table-bordered text-center align-middle scorecard"
-          >
-            <colgroup>
-              <col style="width: 82px" />
-              <col span="9" style="width: 32px" />
-              <col style="width: 48px" />
-            </colgroup>
+        <div class="card shadow-sm">
+            <div class="card-body table-responsive">
+                <table class="table table-bordered text-center align-middle scorecard">
+                    <colgroup>
+                        <col style="width: 82px" />
+                        <col span="9" style="width: 32px" />
+                        <col style="width: 48px" />
+                    </colgroup>
 
-            <thead>
-              <tr>
-                <th></th>
+                    <thead>
+                        <tr>
+                            <th></th>
 
-                <% round.holes.forEach(hole => { %>
+                            <% round.holes.forEach(hole => { %>
 
-                <th><%= hole.holeNumber %></th>
+                            <th><%= hole.holeNumber %></th>
 
-                <% }) %>
+                            <% }) %>
 
-                <th class="score-total-header">Total</th>
-              </tr>
-            </thead>
+                            <th class="score-total-header">Total</th>
+                        </tr>
+                    </thead>
 
-            <tbody>
-              <% scoreRows.forEach(row => { %>
+                    <tbody>
+                        <% scoreRows.forEach(row => { %>
 
-              <tr class="<%= row.field === 'gross' ? 'gross-row' : '' %>">
-                <th class="score-label"><%= row.label %></th>
+                        <tr class="<%= row.field === 'gross' ? 'gross-row' : '' %>">
+                            <th class="score-label"><%= row.label %></th>
 
-                <% round.holes.forEach(hole => { %>
+                            <% round.holes.forEach(hole => { %>
 
-                <% if (row.field === "gross") { %>
+                            <% if (row.field === "gross") { %>
 
-                <td class="<%= hole.result %>"><%= hole.gross || "" %></td>
+                            <td class="<%= hole.result %>"><%= hole.gross || "" %></td>
 
-                <% } else { %>
+                            <% } else { %>
 
-                <td>
-                  <%= hole[row.field] ?? "" %>
-                </td>
+                            <td>
+                                <%= hole[row.field] ?? "" %>
+                            </td>
 
-                <% } %>
+                            <% } %>
 
-                <% }) %>
+                            <% }) %>
 
-                <th class="score-total"><%= totalsMap[row.field] ?? "" %></th>
-              </tr>
+                            <th class="score-total"><%= totalsMap[row.field] ?? "" %></th>
+                        </tr>
 
-              <% }) %>
-            </tbody>
-          </table>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
 
-      <!-- Summary -->
+        <!-- Summary -->
 
-      <div class="row mt-4">
-        <div class="col-lg-6 offset-lg-3">
-          <div class="card shadow-sm summary-card">
-            <div class="card-header">Round Summary</div>
+        <div class="row mt-4">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="card shadow-sm summary-card">
+                    <div class="card-header">Round Summary</div>
 
-            <table class="table table-sm mb-0">
-              <tr>
-                <th>Gross Score</th>
-                <td><%= round.totals.gross %></td>
-              </tr>
+                    <table class="table table-sm mb-0">
+                        <tr>
+                            <th>Gross Score</th>
+                            <td><%= round.totals.gross %></td>
+                        </tr>
 
-              <tr>
-                <th>Net Score</th>
-                <td><%= round.totals.net %></td>
-              </tr>
+                        <tr>
+                            <th>Net Score</th>
+                            <td><%= round.totals.net %></td>
+                        </tr>
 
-              <tr>
-                <th>Stableford Points</th>
-                <td><%= round.totals.stableford %></td>
-              </tr>
+                        <tr>
+                            <th>Stableford Points</th>
+                            <td><%= round.totals.stableford %></td>
+                        </tr>
 
-              <tr>
-                <th>Birdie Bonus</th>
-                <td><%= round.totals.birdies %></td>
-              </tr>
+                        <tr>
+                            <th>Birdie Bonus</th>
+                            <td><%= round.totals.birdies %></td>
+                        </tr>
 
-              <tr>
-                <th>CTP Points</th>
-                <td><%= round.totals.ctp %></td>
-              </tr>
+                        <tr>
+                            <th>CTP Points</th>
+                            <td><%= round.totals.ctp %></td>
+                        </tr>
 
-              <tr class="table-success fw-bold">
-                <th>League Points</th>
-                <td><%= round.totals.leaguePoints %></td>
-              </tr>
-            </table>
-          </div>
+                        <tr class="table-success fw-bold">
+                            <th>League Points</th>
+                            <td><%= round.totals.leaguePoints %></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- Buttons -->
+        <!-- Buttons -->
 
-      <div
-        class="d-flex flex-column flex-sm-row gap-2 justify-content-between mt-4"
-      >
-        <a
-          href="/scores/members/<%= round.player.id %>"
-          class="btn btn-success round-btn"
-        >
-          <i class="bi bi-arrow-left"></i>
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-between mt-4">
+            <a href="/scores/members/<%= round.player.id %>" class="btn btn-success round-btn">
+                <i class="bi bi-arrow-left"></i>
 
-          Back to Player
-        </a>
+                Back to Player
+            </a>
 
-        <button class="btn btn-success round-btn" onclick="window.print()">
-          <i class="bi bi-printer"></i>
+            <button class="btn btn-success round-btn" onclick="window.print()">
+                <i class="bi bi-printer"></i>
 
-          Print Scorecard
-        </button>
-      </div>
+                Print Scorecard
+            </button>
+        </div>
     </div>
 
     <%- include('./partials/footer'); %>
-     <%- include('./partials/scripts'); %>
-  </body>
+    <%- include('./partials/scripts'); %>
+</body>
+
 </html>

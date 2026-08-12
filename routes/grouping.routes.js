@@ -1,11 +1,14 @@
 import express from "express";
 import {
-  showTeeTimes,
-  generateGroupings,
-  swapPlayers,
+    showTeeTimes,
+    generateGroupings,
+    swapPlayers,
 } from "../controllers/grouping.controller.js";
 
-import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
+import {
+    requireAuth,
+    requireAdmin
+} from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -22,10 +25,10 @@ router.get("/tee-times", showTeeTimes);
  * @access  Admin
  */
 router.post(
-  "/groupings/generate/:weekId",
-  requireAuth,
-  requireAdmin,
-  generateGroupings,
+    "/groupings/generate/:weekId",
+    requireAuth,
+    requireAdmin,
+    generateGroupings,
 );
 
 /**

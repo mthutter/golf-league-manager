@@ -1,56 +1,60 @@
-<% if (isAuthenticated) { %> 
+<% if (isAuthenticated) { %>
 <script>
-  // 1. Clear any URL parameters to prevent refresh bugs
-  if (window.history.replaceState) {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('logged_out');
-    window.history.replaceState({path: url.href}, '', url.href);
-  }
+    // 1. Clear any URL parameters to prevent refresh bugs
+    if (window.history.replaceState) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('logged_out');
+        window.history.replaceState({
+            path: url.href
+        }, '', url.href);
+    }
 
-  // Extract EJS data into valid JS variables first to satisfy the formatter
-  const rawRoles = <%- JSON.stringify(user.roles) %>;
-  const userId = "<%= user.id %>";
-  const userFirstName = "<%= user.firstName %>";
-  const userLastName = "<%= user.lastName %>";
-  const userEmail = "<%= user.email %>";
+    // Extract EJS data into valid JS variables first to satisfy the formatter
+    const rawRoles = < % -JSON.stringify(user.roles) % > ;
+    const userId = "<%= user.id %>";
+    const userFirstName = "<%= user.firstName %>";
+    const userLastName = "<%= user.lastName %>";
+    const userEmail = "<%= user.email %>";
 
-  // Build client-side strings
-  const memberName = `${userLastName}, ${userFirstName}`;
-  console.log("memberName =", memberName);
+    // Build client-side strings
+    const memberName = `${userLastName}, ${userFirstName}`;
+    console.log("memberName =", memberName);
 
-  // PostHog Tracking
-  posthog.identify(userId);
-  posthog.setPersonProperties({
-    member_name: memberName,
-    first_name: userFirstName,
-    last_name: userLastName,
-    email: userEmail,
-    roles: rawRoles
-  });
-  
-  posthog.register({
-    member_id: userId,
-    member_name: memberName,
-    member_roles: rawRoles
-  });
-  console.log("Stored member_name:", posthog.get_property("member_name"));
+    // PostHog Tracking
+    posthog.identify(userId);
+    posthog.setPersonProperties({
+        member_name: memberName,
+        first_name: userFirstName,
+        last_name: userLastName,
+        email: userEmail,
+        roles: rawRoles
+    });
+
+    posthog.register({
+        member_id: userId,
+        member_name: memberName,
+        member_roles: rawRoles
+    });
+    console.log("Stored member_name:", posthog.get_property("member_name"));
 </script>
 <% } else { %>
 <script>
-  // Runs every single time an unauthenticated user loads the page
-  if (typeof posthog !== 'undefined') {
-    // 1. Wipe all local caching, cookies, and identity data
-    posthog.reset(); 
-    console.log("PostHog profile memory cleared successfully.");
+    // Runs every single time an unauthenticated user loads the page
+    if (typeof posthog !== 'undefined') {
+        // 1. Wipe all local caching, cookies, and identity data
+        posthog.reset();
+        console.log("PostHog profile memory cleared successfully.");
 
-    // 2. Clean up URL parameters if they exist
-    if (window.history.replaceState) {
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('logged_out')) {
-        url.searchParams.delete('logged_out');
-        window.history.replaceState({path: url.href}, '', url.href);
-      }
+        // 2. Clean up URL parameters if they exist
+        if (window.history.replaceState) {
+            const url = new URL(window.location.href);
+            if (url.searchParams.has('logged_out')) {
+                url.searchParams.delete('logged_out');
+                window.history.replaceState({
+                    path: url.href
+                }, '', url.href);
+            }
+        }
     }
-  }
 </script>
 <% } %>

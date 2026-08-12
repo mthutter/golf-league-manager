@@ -1,5 +1,8 @@
 import express from "express";
-import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
+import {
+    requireAuth,
+    requireAdmin
+} from "../middleware/auth.middleware.js";
 import * as scoresController from "../controllers/scores.controller.js";
 
 const router = express.Router();
@@ -31,9 +34,9 @@ router.get("/round/:scoreId", scoresController.getRoundDetails);
 
 // 8. GET /scores/edit/:scoreId - Render the score modification form with filled values
 router.get(
-  "/edit/:scoreId",
-  requireAdmin,
-  scoresController.getModifyScoresForm,
+    "/edit/:scoreId",
+    requireAdmin,
+    scoresController.getModifyScoresForm,
 );
 
 // 9. POST /scores/update/:scoreId - Process changes and commit them to SQLite

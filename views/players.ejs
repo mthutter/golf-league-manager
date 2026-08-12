@@ -1,165 +1,173 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <%- include('partials/header'); %>
     <style>
-      /* ===== Layout & Typography Colors from skins.ejs ===== */
-      .player-link {
-        color: #1b4332;
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-      .player-link:hover {
-        color: #18aa24;
-        text-decoration: underline;
-      }
-      .gallery-header {
-        text-align: center;
-        margin-top: 1.5rem;
-      }
-      .gallery-header h1 {
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-      .gallery-header p {
-        opacity: 0.9;
-        margin-bottom: 1rem;
-      }
+        /* ===== Layout & Typography Colors from skins.ejs ===== */
+        .player-link {
+            color: #1b4332;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
 
-      /* ===== Table & Card Framework Architecture ===== */
-      .players-table-card {
-        border: 1.5px solid rgba(27, 67, 50, 0.15);
-        border-radius: 18px;
-        overflow: hidden;
-      }
-      .players-custom-table th {
-        background-color: #1b4332 !important;
-        color: white !important;
-        padding: clamp(6px, 1vw, 14px);
-        font-weight: 700;
-        font-size: clamp(0.55rem, 0.9vw, 0.8rem);
-        letter-spacing: 0.5px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        white-space: nowrap;
-      }
-      .players-custom-table td {
-        vertical-align: middle;
-        padding: 10px 14px !important;
-        border: 1px solid rgba(27, 67, 50, 0.1);
-        white-space: nowrap;
-      }
-      .players-text {
-        font-size: clamp(0.65rem, 1vw, 0.85rem);
-      }
+        .player-link:hover {
+            color: #18aa24;
+            text-decoration: underline;
+        }
 
-      /* ===== Table Content Constraints ===== */
-      .players-custom-table a {
-        color: #1b4332;
-        text-decoration: none;
-      }
-      .players-custom-table a:hover {
-        color: #18aa24;
-        text-decoration: underline;
-      }
-      .action-cell {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+        .gallery-header {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
 
-      /* Custom styling for your system action buttons */
-      .btn-league-edit {
-        background-color: #18aa24 !important;
-        border-color: #18aa24 !important;
-        color: white !important;
-        font-weight: 600;
-        border-radius: 50px;
-        transition: all 0.2s ease;
-      }
-      .btn-league-edit:hover {
-        transform: translateY(-1px);
-        background-color: #1b4332 !important;
-        border-color: #1b4332 !important;
-      }
+        .gallery-header h1 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-header p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== Table & Card Framework Architecture ===== */
+        .players-table-card {
+            border: 1.5px solid rgba(27, 67, 50, 0.15);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .players-custom-table th {
+            background-color: #1b4332 !important;
+            color: white !important;
+            padding: clamp(6px, 1vw, 14px);
+            font-weight: 700;
+            font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            white-space: nowrap;
+        }
+
+        .players-custom-table td {
+            vertical-align: middle;
+            padding: 10px 14px !important;
+            border: 1px solid rgba(27, 67, 50, 0.1);
+            white-space: nowrap;
+        }
+
+        .players-text {
+            font-size: clamp(0.65rem, 1vw, 0.85rem);
+        }
+
+        /* ===== Table Content Constraints ===== */
+        .players-custom-table a {
+            color: #1b4332;
+            text-decoration: none;
+        }
+
+        .players-custom-table a:hover {
+            color: #18aa24;
+            text-decoration: underline;
+        }
+
+        .action-cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Custom styling for your system action buttons */
+        .btn-league-edit {
+            background-color: #18aa24 !important;
+            border-color: #18aa24 !important;
+            color: white !important;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-league-edit:hover {
+            transform: translateY(-1px);
+            background-color: #1b4332 !important;
+            border-color: #1b4332 !important;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <%- include('partials/navbar'); %>
 
     <!-- Header Banner -->
     <div class="container">
-      <div class="gallery-header">
-        <h1>League Members (Active)</h1>
-        <p>Bottoms Up Golf League • 2026 Season</p>
-      </div>
+        <div class="gallery-header">
+            <h1>League Members (Active)</h1>
+            <p>Bottoms Up Golf League • 2026 Season</p>
+        </div>
     </div>
 
     <!-- Roster Management Dashboard Layout -->
     <div class="container my-4">
-      <div class="card shadow-sm players-table-card">        
-        <!-- Table-responsive division wrap safely enables horizontal sweeping on modern setups -->
-        <div class="table-responsive">
-          <table
-            class="table table-bordered align-middle text-center mb-0 players-custom-table table-hover"
-          >
-            <thead>
-              <tr>
-                <th style="width: 60px">#</th>
-                <th class="text-start">Last Name</th>
-                <th class="text-start">First Name</th>
-                <th>Phone</th>
-                <th>E-Mail</th>
-                <th>Joined</th>
-                <th>Status (Reg/Sub)</th>
-                <!-- Conditional Administrative Header Column Protection -->
-                <% if (isAdmin) { %>
-                <th style="width: 100px">Actions</th>
-                <% } %>
-              </tr>
-            </thead>
-            <tbody>
-              <% let activeCount = 1; %>
-              <% players.forEach(player => { if (player.status == 'Yes') { %>
-              <tr>
-                <td class="fw-bold bg-light players-text">
-                  <%= activeCount++ %>
-                </td>
-                <td class="text-start fw-semibold players-text">
-                  <%= player.name_last %>
-                </td>
-                <td class="text-start fw-semibold players-text">
-                  <%= player.name_first %>
-                </td>
-                <td class="players-text">
-                  <a href="tel:<%= player.phone %>"><%= player.phone %></a>
-                </td>
-                <td class="players-text">
-                  <a href="mailto:<%= player.e_mail %>"><%= player.e_mail %></a>
-                </td>
-                <td class="players-text"><%= player.year_joined %></td>
-                <td class="players-text"><%= player.type %></td>
-                <!-- Conditional Administrative Row Content Isolation -->
-                <% if (isAdmin) { %>
-                <td>
-                  <div class="action-cell">
-                    <a
-                      href="/players/<%= player.id %>/edit"
-                      class="btn btn-sm btn-league-edit"
-                    >
-                      Edit
-                    </a>
-                  </div>
-                </td>
-                <% } %>
-              </tr>
-              <% }}) %>
-            </tbody>
-          </table>
+        <div class="card shadow-sm players-table-card">
+            <!-- Table-responsive division wrap safely enables horizontal sweeping on modern setups -->
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center mb-0 players-custom-table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px">#</th>
+                            <th class="text-start">Last Name</th>
+                            <th class="text-start">First Name</th>
+                            <th>Phone</th>
+                            <th>E-Mail</th>
+                            <th>Joined</th>
+                            <th>Status (Reg/Sub)</th>
+                            <!-- Conditional Administrative Header Column Protection -->
+                            <% if (isAdmin) { %>
+                            <th style="width: 100px">Actions</th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% let activeCount = 1; %>
+                        <% players.forEach(player => { if (player.status == 'Yes') { %>
+                        <tr>
+                            <td class="fw-bold bg-light players-text">
+                                <%= activeCount++ %>
+                            </td>
+                            <td class="text-start fw-semibold players-text">
+                                <%= player.name_last %>
+                            </td>
+                            <td class="text-start fw-semibold players-text">
+                                <%= player.name_first %>
+                            </td>
+                            <td class="players-text">
+                                <a href="tel:<%= player.phone %>"><%= player.phone %></a>
+                            </td>
+                            <td class="players-text">
+                                <a href="mailto:<%= player.e_mail %>"><%= player.e_mail %></a>
+                            </td>
+                            <td class="players-text"><%= player.year_joined %></td>
+                            <td class="players-text"><%= player.type %></td>
+                            <!-- Conditional Administrative Row Content Isolation -->
+                            <% if (isAdmin) { %>
+                            <td>
+                                <div class="action-cell">
+                                    <a href="/players/<%= player.id %>/edit" class="btn btn-sm btn-league-edit">
+                                        Edit
+                                    </a>
+                                </div>
+                            </td>
+                            <% } %>
+                        </tr>
+                        <% }}) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
 
     <%- include('partials/footer'); %>
     <%- include('partials/scripts'); %>
-  </body>
+</body>
+
 </html>

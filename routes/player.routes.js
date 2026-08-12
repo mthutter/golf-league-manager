@@ -2,14 +2,17 @@
 import express from "express";
 // We don't necessarily need the old middleware if we define the flexible role checks here
 import {
-  getPlayers,
-  showAddPlayerForm,
-  createPlayer,
-  getPlayersInactive,
-  showEditPlayerForm,
-  updatePlayer,
+    getPlayers,
+    showAddPlayerForm,
+    createPlayer,
+    getPlayersInactive,
+    showEditPlayerForm,
+    updatePlayer,
 } from "../controllers/players.controller.js";
-import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
+import {
+    requireAuth,
+    requireAdmin
+} from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 

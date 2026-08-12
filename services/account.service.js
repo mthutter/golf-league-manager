@@ -1,37 +1,44 @@
 import "../config/env.js";
 import bcrypt from "bcrypt";
-import { validateToken, markTokenUsed } from "./activation.service.js";
-import { run } from "../config/db.js";
 import {
-  createActivationToken,
-  createToken,
-  TOKEN_PURPOSE,
+    validateToken,
+    markTokenUsed
+} from "./activation.service.js";
+import {
+    run
+} from "../config/db.js";
+import {
+    createActivationToken,
+    createToken,
+    TOKEN_PURPOSE,
 } from "./activation.service.js";
 import db from "../config/db.js";
 import logger from "../utilities/logger.js";
 import * as rolesService from "./roles.service.js";
 import {
-  sendActivationEmail,
-  sendPasswordResetEmail,
+    sendActivationEmail,
+    sendPasswordResetEmail,
 } from "./email.service.js";
-import { ROLES } from "./roles.service.js";
+import {
+    ROLES
+} from "./roles.service.js";
 
 // -----------------------------------------------------------------------------
 // Promise Helpers
 // -----------------------------------------------------------------------------
 
 const dbGet = (sql, params = []) =>
-  new Promise((resolve, reject) =>
-    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row))),
-  );
+    new Promise((resolve, reject) =>
+        db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row))),
+    );
 
 // -----------------------------------------------------------------------------
 // Private Helpers
 // -----------------------------------------------------------------------------
 
 export async function findMemberByEmail(email) {
-  return await dbGet(
-    `
+    return await dbGet(
+        `
     SELECT
       id,
       name_first,
@@ -40,8 +47,8 @@ export async function findMemberByEmail(email) {
     FROM members
     WHERE lower(e_mail) = lower(?)
     `,
-    [email],
-  );
+        [email],
+    );
 }
 
 // -----------------------------------------------------------------------------
@@ -49,42 +56,41 @@ export async function findMemberByEmail(email) {
 // -----------------------------------------------------------------------------
 
 export async function initializeAccount(
-  memberId,
-  {
-    roles = [ROLES.MEMBER],
-    sendActivationEmail: sendEmail = true,
-    email,
-    firstName,
-  },
+    memberId, {
+        roles = [ROLES.MEMBER],
+        sendActivationEmail: sendEmail = true,
+        email,
+        firstName,
+    },
 ) {
-  await rolesService.replaceRoles(memberId, roles);
+    await rolesService.replaceRoles(memberId, roles);
 
-  const token = await createActivationToken(memberId);
+    const token = await createActivationToken(memberId);
 
-  if (sendEmail && email) {
-    const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
+    if (sendEmail && email) {
+        const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
 
-    await sendActivationEmail({
-      member: {
-        id: memberId,
-        name_first: firstName,
-        e_mail: email,
-      },
-      activationUrl,
-    });
-  }
+        await sendActivationEmail({
+            member: {
+                id: memberId,
+                name_first: firstName,
+                e_mail: email,
+            },
+            activationUrl,
+        });
+    }
 
-  logger.info(`Initialized account for member ${memberId}`);
+    logger.info(`Initialized account for member ${memberId}`);
 
-  return {
-    memberId,
-    token,
-  };
+    return {
+        memberId,
+        token,
+    };
 }
 
 export async function resendActivationEmail(memberId) {
-  const member = await dbGet(
-    `
+    const member = await dbGet(
+        `
     SELECT
       id,
       name_first,
@@ -92,71 +98,71 @@ export async function resendActivationEmail(memberId) {
     FROM members
     WHERE id = ?
     `,
-    [memberId],
-  );
+        [memberId],
+    );
 
-  if (!member) {
-    throw new Error("Member not found.");
-  }
+    if (!member) {
+        throw new Error("Member not found.");
+    }
 
-  const token = await createActivationToken(memberId);
+    const token = await createActivationToken(memberId);
 
-  const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
+    const activationUrl = `${process.env.APP_URL}/activate?token=${token}`;
 
-  await sendActivationEmail({
-    member,
-    activationUrl,
-  });
+    await sendActivationEmail({
+        member,
+        activationUrl,
+    });
 
-  logger.info(`Resent activation email for member ${memberId}`);
+    logger.info(`Resent activation email for member ${memberId}`);
 
-  return {
-    memberId,
-    token,
-  };
+    return {
+        memberId,
+        token,
+    };
 }
 
 export async function requestPasswordReset(email) {
-  email = email.trim();
-  const member = await findMemberByEmail(email);
+    email = email.trim();
+    const member = await findMemberByEmail(email);
 
-  // Don't reveal whether the account exists or is active.
-  if (!member || !member.is_active) {
-    logger.info(`Password reset requested for unknown/inactive account.`);
-    return;
-  }
+    // Don't reveal whether the account exists or is active.
+    if (!member || !member.is_active) {
+        logger.info(`Password reset requested for unknown/inactive account.`);
+        return;
+    }
 
-  const token = await createToken(member.id, TOKEN_PURPOSE.PASSWORD_RESET);
+    const token = await createToken(member.id, TOKEN_PURPOSE.PASSWORD_RESET);
 
-  const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
 
-  await sendPasswordResetEmail({
-    member,
-    resetUrl,
-  });
+    await sendPasswordResetEmail({
+        member,
+        resetUrl,
+    });
 
-  logger.info(`Password reset email sent for member ${member.id}`);
+    logger.info(`Password reset email sent for member ${member.id}`);
 }
 
 export async function resetPassword(token, newPassword) {
-  const result = await validateToken(token, TOKEN_PURPOSE.PASSWORD_RESET);
+    const result = await validateToken(token, TOKEN_PURPOSE.PASSWORD_RESET);
 
-  if (!result.valid) {
-    throw new Error(result.reason);
-  }
+    if (!result.valid) {
+        throw new Error(result.reason);
+    }
 
-  const passwordHash = await bcrypt.hash(newPassword, 12);
+    const passwordHash = await bcrypt.hash(newPassword, 12);
 
-  await run(
-    `
+    await run(
+        `
     UPDATE members
     SET password_hash = ?
     WHERE id = ?
     `,
-    [passwordHash, result.member.memberId],
-  );
+        [passwordHash, result.member.memberId],
+    );
 
-  await markTokenUsed(result.member.activationTokenId);
+    await markTokenUsed(result.member.activationTokenId);
 
-  logger.info(`Password reset completed for member ${result.member.memberId}`);
+    logger.info(`Password reset completed for member ${result.member.memberId}`);
 }

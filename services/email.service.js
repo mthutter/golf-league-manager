@@ -1,7 +1,12 @@
-import { all } from "../config/db.js";
+import {
+    all
+} from "../config/db.js";
 import "../config/env.js";
 import logger from "../utilities/logger.js";
-import { EMAIL, transporter } from "../config/email.js";
+import {
+    EMAIL,
+    transporter
+} from "../config/email.js";
 
 /**
  * Builds the standard Bottoms Up branded email layout.
@@ -175,14 +180,19 @@ You are receiving this email because you are a league member.
 /**
  * Generic email sender used by all email functions.
  */
-const sendEmail = async ({ to, bcc, subject, bodyHtml }) => {
-  return transporter.sendMail({
-    from: `"Bottoms Up Golf League" <${process.env.SMTP_USER}>`,
+const sendEmail = async ({
     to,
     bcc,
     subject,
-    html: buildLeagueEmail(bodyHtml),
-  });
+    bodyHtml
+}) => {
+    return transporter.sendMail({
+        from: `"Bottoms Up Golf League" <${process.env.SMTP_USER}>`,
+        to,
+        bcc,
+        subject,
+        html: buildLeagueEmail(bodyHtml),
+    });
 };
 
 /**
@@ -190,23 +200,23 @@ const sendEmail = async ({ to, bcc, subject, bodyHtml }) => {
  * (Backwards compatible.)
  */
 export const fetchAndSendEmails = async (
-  subject,
-  rawBodyContent,
-  recipients = [],
+    subject,
+    rawBodyContent,
+    recipients = [],
 ) => {
-  try {
-    let emailList = [];
+    try {
+        let emailList = [];
 
-    if (recipients.length > 0) {
-      emailList = recipients;
+        if (recipients.length > 0) {
+            emailList = recipients;
 
-      logger.info(
-        `Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`,
-      );
-    } else {
-      logger.info("Global Broadcast Mode Activated.");
+            logger.info(
+                `Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`,
+            );
+        } else {
+            logger.info("Global Broadcast Mode Activated.");
 
-      const members = await all(`
+            const members = await all(`
         SELECT e_mail
         FROM members
         WHERE e_mail IS NOT NULL
@@ -214,41 +224,44 @@ export const fetchAndSendEmails = async (
           AND e_mail <> 'tbd@tbd.com'
       `);
 
-      emailList = members.map((m) => m.e_mail);
+            emailList = members.map((m) => m.e_mail);
+        }
+
+        if (emailList.length === 0) {
+            return {
+                success: true,
+                count: 0,
+            };
+        }
+
+        const bodyHtml = rawBodyContent.replace(/(?:\r\n|\r|\n)/g, "<br>");
+
+        const info = await sendEmail({
+            to: process.env.SMTP_USER,
+            bcc: emailList,
+            subject,
+            bodyHtml,
+        });
+
+        return {
+            success: true,
+            count: emailList.length,
+            messageId: info.messageId,
+        };
+    } catch (error) {
+        logger.error("Email service execution failed", error);
+        throw error;
     }
-
-    if (emailList.length === 0) {
-      return {
-        success: true,
-        count: 0,
-      };
-    }
-
-    const bodyHtml = rawBodyContent.replace(/(?:\r\n|\r|\n)/g, "<br>");
-
-    const info = await sendEmail({
-      to: process.env.SMTP_USER,
-      bcc: emailList,
-      subject,
-      bodyHtml,
-    });
-
-    return {
-      success: true,
-      count: emailList.length,
-      messageId: info.messageId,
-    };
-  } catch (error) {
-    logger.error("Email service execution failed", error);
-    throw error;
-  }
 };
 
 /**
  * Sends an activation email to a new member.
  */
-export const sendActivationEmail = async ({ member, activationUrl }) => {
-  const bodyHtml = `
+export const sendActivationEmail = async ({
+    member,
+    activationUrl
+}) => {
+    const bodyHtml = `
 <h2>Welcome to Bottoms Up Golf League!</h2>
 
 <p>
@@ -294,19 +307,22 @@ We look forward to seeing you on the course!
 </p>
 `;
 
-  const info = await sendEmail({
-    to: member.e_mail,
-    subject: "Activate Your Bottoms Up Golf League Account",
-    bodyHtml,
-  });
+    const info = await sendEmail({
+        to: member.e_mail,
+        subject: "Activate Your Bottoms Up Golf League Account",
+        bodyHtml,
+    });
 
-  logger.info(`Activation email sent to ${member.e_mail}`);
+    logger.info(`Activation email sent to ${member.e_mail}`);
 
-  return info;
+    return info;
 };
 
-export const sendPasswordResetEmail = async ({ member, resetUrl }) => {
-  const bodyHtml = `
+export const sendPasswordResetEmail = async ({
+    member,
+    resetUrl
+}) => {
+    const bodyHtml = `
 <h2>Password Reset Request</h2>
 
 <p>
@@ -355,13 +371,13 @@ Your existing password will remain unchanged.
 </p>
 `;
 
-  const info = await sendEmail({
-    to: member.e_mail,
-    subject: "Bottoms Up Golf - Password Reset",
-    bodyHtml,
-  });
+    const info = await sendEmail({
+        to: member.e_mail,
+        subject: "Bottoms Up Golf - Password Reset",
+        bodyHtml,
+    });
 
-  logger.info(`Password reset email sent to ${member.e_mail}`);
+    logger.info(`Password reset email sent to ${member.e_mail}`);
 
-  return info;
+    return info;
 };

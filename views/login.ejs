@@ -1,79 +1,69 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <%- include ('./partials/header'); %>
-    <link href="/assets/css/auth.css" rel="stylesheet" />   
-  </head>
 
-  <body>
+<head>
+    <%- include ('./partials/header'); %>
+    <link href="/assets/css/auth.css" rel="stylesheet" />
+</head>
+
+<body>
     <%- include ('./partials/navbar'); %>
     <br />
     <div class="auth-wrapper">
-      <div class="auth-card">
-      <div class="logo-icon"><img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
-        <div class="league-title">Bottoms Up Golf League</div>
-        <div class="league-subtitle">Member Sign In</div>
+        <div class="auth-card">
+            <div class="logo-icon"><img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
+            <div class="league-title">Bottoms Up Golf League</div>
+            <div class="league-subtitle">Member Sign In</div>
 
-        <% if (success && success.length > 0) { %>
-        <div class="alert alert-success"><%= success %></div>
-        <% } %>
+            <% if (success && success.length > 0) { %>
+            <div class="alert alert-success"><%= success %></div>
+            <% } %>
 
-        <% if (error && error.length > 0) { %>
-        <div class="alert alert-danger"><%= error %></div>
-        <% } %>
+            <% if (error && error.length > 0) { %>
+            <div class="alert alert-danger"><%= error %></div>
+            <% } %>
 
-        <form  method="POST" action="/login">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">E-Mail Address</label>
+            <form method="POST" action="/login">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">E-Mail Address</label>
 
-            <input
-              type="email"
-              name="email"
-              class="form-control"
-              autocomplete="email"
-              required
-            />
-          </div>
+                    <input type="email" name="email" class="form-control" autocomplete="email" required />
+                </div>
 
-          <div class="mb-4">
-            <label class="form-label fw-semibold">Password</label>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Password</label>
 
-            <input
-              type="password"
-              name="password"
-              class="form-control"
-              autocomplete="current-password"
-              required
-            />
-          </div>
+                    <input type="password" name="password" class="form-control" autocomplete="current-password" required />
+                </div>
 
-          <button type="submit" class="btn btn-success w-100 btn-auth">
-            Sign In
-          </button>
+                <button type="submit" class="btn btn-success w-100 btn-auth">
+                    Sign In
+                </button>
 
-          <hr class="my-4" />
+                <hr class="my-4" />
 
-          <div class="text-center">
-            <div class="mb-2">
-              <a href="/activate/request">
-                First time here? Activate your account
-              </a>
+                <div class="text-center">
+                    <div class="mb-2">
+                        <a href="/activate/request">
+                            First time here? Activate your account
+                        </a>
+                    </div>
+
+                    <div class="mt-2">
+                        <a href="/forgot-password"> Forgot your password? </a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="/" class="text-decoration-none"> ← Return to League Home </a>
             </div>
-
-            <div class="mt-2">
-              <a href="/forgot-password"> Forgot your password? </a>
-            </div>
-          </div>
-        </form>
-
-        <div class="text-center mt-4">
-          <a href="/" class="text-decoration-none"> ← Return to League Home </a>
         </div>
-      </div>
     </div>
 
     <%- include ('./partials/footer'); %>
     <%- include ('./partials/scripts'); %>
-  
-  </body>
+
+</body>
+
 </html>

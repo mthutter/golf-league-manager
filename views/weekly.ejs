@@ -1,197 +1,208 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <%- include('./partials/header'); %>
     <style>
-      /* ===== Layout & Typography Colors from skins.ejs ===== */
-      .player-link {
-        color: #1b4332;
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-      .player-link:hover {
-        color: #18aa24;
-        text-decoration: underline;
-      }
-      .gallery-header {
-        text-align: center;
-        margin-top: 1.5rem;
-      }
-      .gallery-header h1 {
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-      .gallery-header p {
-        opacity: 0.9;
-        margin-bottom: 1rem;
-      }
-      /* ===== Table & Card Framework Architecture ===== */
-      .results-table-card {
-        border: 1.5px solid rgba(27, 67, 50, 0.15);
-        border-radius: 18px;
-        overflow: hidden;
-        width: max-content !important;
-        max-width: 100%;
-        margin: 0 auto;
-      }
-      .results-custom-table th {
-        background-color: #1b4332 !important;
-        color: white !important;
-        padding: 10px 14px;
-        font-weight: 700;
-        font-size: clamp(0.55rem, 0.9vw, 0.8rem);
-        letter-spacing: 0.5px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        cursor: pointer;
-        user-select: none;
-        position: relative;
-        white-space: nowrap;
-      }
-      .results-custom-table td {
-        vertical-align: middle;
-        padding: 10px 14px;
-        border: 1px solid rgba(27, 67, 50, 0.1);
-      }
-      .players {
-        font-size: clamp(0.65rem, 1vw, 0.85rem);
-      }
-      /* ===== Sort Indicators ===== */
-      th.sort-asc::after {
-        content: " ▲";
-        position: absolute;
-        right: 8px;
-      }
-      th.sort-desc::after {
-        content: " ▼";
-        position: absolute;
-        right: 8px;
-      }
-      /* ===== Navigation Layout ===== */
-      .button-link {
-        display: inline-block;
-        text-decoration: none;
-      }
-      .week-nav {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .week-nav .btn {
-        min-width: 85px;
-        font-weight: 600;
-        border-radius: 50px;
-        border: none;
-        transition: all 0.2s ease;
-      }
-      .week-nav .btn:hover {
-        transform: translateY(-1px);
-      }
-      /* ===== CRITICAL COMPACT COLUMN FIX ===== */
-      .compact-pixel-table {
-        width: max-content !important;
-        max-width: 100%;
-        margin: 0 auto;
-        table-layout: auto !important;
-      }
-      .nowrap-cell {
-        white-space: nowrap !important;
-      }
-      .btn-modify {
-        border-radius: 8px;
-        padding: 0.25rem 0.6rem;
-        font-weight: 600;
-        font-size: 0.75rem;
-      }
+        /* ===== Layout & Typography Colors from skins.ejs ===== */
+        .player-link {
+            color: #1b4332;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .player-link:hover {
+            color: #18aa24;
+            text-decoration: underline;
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-header h1 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-header p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== Table & Card Framework Architecture ===== */
+        .results-table-card {
+            border: 1.5px solid rgba(27, 67, 50, 0.15);
+            border-radius: 18px;
+            overflow: hidden;
+            width: max-content !important;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .results-custom-table th {
+            background-color: #1b4332 !important;
+            color: white !important;
+            padding: 10px 14px;
+            font-weight: 700;
+            font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .results-custom-table td {
+            vertical-align: middle;
+            padding: 10px 14px;
+            border: 1px solid rgba(27, 67, 50, 0.1);
+        }
+
+        .players {
+            font-size: clamp(0.65rem, 1vw, 0.85rem);
+        }
+
+        /* ===== Sort Indicators ===== */
+        th.sort-asc::after {
+            content: " ▲";
+            position: absolute;
+            right: 8px;
+        }
+
+        th.sort-desc::after {
+            content: " ▼";
+            position: absolute;
+            right: 8px;
+        }
+
+        /* ===== Navigation Layout ===== */
+        .button-link {
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .week-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .week-nav .btn {
+            min-width: 85px;
+            font-weight: 600;
+            border-radius: 50px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .week-nav .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* ===== CRITICAL COMPACT COLUMN FIX ===== */
+        .compact-pixel-table {
+            width: max-content !important;
+            max-width: 100%;
+            margin: 0 auto;
+            table-layout: auto !important;
+        }
+
+        .nowrap-cell {
+            white-space: nowrap !important;
+        }
+
+        .btn-modify {
+            border-radius: 8px;
+            padding: 0.25rem 0.6rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <%- include('./partials/navbar'); %>
     <!-- Header Banner -->
     <div class="container">
-      <div class="gallery-header">
-        <h1>
-          Week
-          <%= weekId %>
-          (<%= weekDate.displayDate %>) Results
-        </h1>
-        <p>Bottoms Up Golf League • 2026 Season</p>
-      </div>
-      <div class="week-nav mb-4">
-        <a href="/scores/standings" class="button-link btn btn-light btn-sm">
-          ← Back to Standings
-        </a>
-      </div>
+        <div class="gallery-header">
+            <h1>
+                Week
+                <%= weekId %>
+                (<%= weekDate.displayDate %>) Results
+            </h1>
+            <p>Bottoms Up Golf League • 2026 Season</p>
+        </div>
+        <div class="week-nav mb-4">
+            <a href="/scores/standings" class="button-link btn btn-light btn-sm">
+                ← Back to Standings
+            </a>
+        </div>
     </div>
     <!-- Weekly Performance Dashboard Layout -->
     <div class="container my-4">
-      <div class="card shadow-sm results-table-card">
-        <div
-          class="card-header text-white py-3"
-          style="background-color: #1b4332"
-        >
-          <h5 class="card-title mb-0 fw-bold">Scoring</h5>
-        </div>
-        <div class="table-responsive" style="text-align: center">
-          <table
-            id="sortableTable"
-            class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover"
-          >
-            <thead>
-              <tr>
-                <th style="width: 60px">Rank</th>
-                <th class="text-start" style="width: 160px; min-width: 140px">
-                  Player
-                </th>
-                <th style="width: 110px">Total Points</th>
-                <th style="width: 75px">Gross</th>
-                <th style="width: 75px">Net</th>
-                <th style="width: 80px">Points</th>
-                <th style="width: 100px">CTP Points</th>
-                <th style="width: 110px">Birdie Points</th>
-                <!-- Actions header column added safely -->
-                <% if (isAdmin) { %>
-                <th style="width: 90px">Actions</th>
-                <% } %>
-              </tr>
-            </thead>
-            <tbody>
-              <% results.forEach((player, idx) => { %>
-              <tr>
-                <td class="fw-bold bg-light players"><%= idx + 1 %></td>
-                <td class="text-start fw-semibold players nowrap-cell">
-                  <%= player.player_name %>
-                </td>
-                <td class="fw-bold text-success pe-3 players nowrap-cell">
-                  <strong><%= player.total_points %></strong>
-                </td>
-                <td class="players nowrap-cell"><%= player.gross_total %></td>
-                <td class="players nowrap-cell"><%= player.net_total %></td>
-                <td class="players nowrap-cell">
-                  <%= player.stableford_total %>
-                </td>
-                <td class="players nowrap-cell"><%= player.ctp_points %></td>
-                <td class="players nowrap-cell"><%= player.birdie_points %></td>
+        <div class="card shadow-sm results-table-card">
+            <div class="card-header text-white py-3" style="background-color: #1b4332">
+                <h5 class="card-title mb-0 fw-bold">Scoring</h5>
+            </div>
+            <div class="table-responsive" style="text-align: center">
+                <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px">Rank</th>
+                            <th class="text-start" style="width: 160px; min-width: 140px">
+                                Player
+                            </th>
+                            <th style="width: 110px">Total Points</th>
+                            <th style="width: 75px">Gross</th>
+                            <th style="width: 75px">Net</th>
+                            <th style="width: 80px">Points</th>
+                            <th style="width: 100px">CTP Points</th>
+                            <th style="width: 110px">Birdie Points</th>
+                            <!-- Actions header column added safely -->
+                            <% if (isAdmin) { %>
+                            <th style="width: 90px">Actions</th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% results.forEach((player, idx) => { %>
+                        <tr>
+                            <td class="fw-bold bg-light players"><%= idx + 1 %></td>
+                            <td class="text-start fw-semibold players nowrap-cell">
+                                <%= player.player_name %>
+                            </td>
+                            <td class="fw-bold text-success pe-3 players nowrap-cell">
+                                <strong><%= player.total_points %></strong>
+                            </td>
+                            <td class="players nowrap-cell"><%= player.gross_total %></td>
+                            <td class="players nowrap-cell"><%= player.net_total %></td>
+                            <td class="players nowrap-cell">
+                                <%= player.stableford_total %>
+                            </td>
+                            <td class="players nowrap-cell"><%= player.ctp_points %></td>
+                            <td class="players nowrap-cell"><%= player.birdie_points %></td>
 
-                <!-- Matching Admin Edit Button Cell -->
-                <% if (isAdmin) { %>
-                <td class="players nowrap-cell">
-                  <a
-                    href="/scores/edit/<%= player.score_id %>"
-                    class="btn btn-outline-primary btn-sm btn-modify"
-                  >
-                    ✏️ Modify
-                  </a>
-                </td>
-                <% } %>
-              </tr>
-              <% }) %>
-            </tbody>
-          </table>
+                            <!-- Matching Admin Edit Button Cell -->
+                            <% if (isAdmin) { %>
+                            <td class="players nowrap-cell">
+                                <a href="/scores/edit/<%= player.score_id %>" class="btn btn-outline-primary btn-sm btn-modify">
+                                    ✏️ Modify
+                                </a>
+                            </td>
+                            <% } %>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
     <%- include('./partials/footer'); %>
     <%- include('./partials/scripts'); %>
-  </body>
+</body>
+
 </html>

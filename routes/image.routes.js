@@ -1,6 +1,11 @@
 import express from "express";
-import { imagesByYear } from "../controllers/images.controller.js";
-import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
+import {
+    imagesByYear
+} from "../controllers/images.controller.js";
+import {
+    requireAuth,
+    requireAdmin
+} from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
