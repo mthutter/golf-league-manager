@@ -38,24 +38,7 @@ export async function getWeek(weekNumber) {
         [weekNumber],
     );
 
-<<<<<<< HEAD
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-=======
-    const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
->>>>>>> 1b9e111890d5b3a533ce166c1e2d4fcb3ed93d61
 
     const [, month, day] = week.date.split("-");
 
