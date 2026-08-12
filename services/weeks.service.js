@@ -2,6 +2,7 @@
 
 import { all, get } from "../config/db.js";
 import { LEAGUE_TIME_ZONE } from "../config/league.js";
+import logger from "../utilities/logger.js";
 
 export async function getAllWeeks() {
   const weeks = await all(`
@@ -27,20 +28,7 @@ export async function getWeek(weekNumber) {
     [weekNumber],
   );
 
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const [, month, day] = week.date.split("-");
 
@@ -62,10 +50,12 @@ export async function getCurrentWeek() {
 }
 
 export async function getCurrentWeekPlayed() {
-  return await get(`
-    SELECT MAX(week_id) AS week_number
-    FROM scores
-  `);
+  const currentWeek = await get(`
+        SELECT MAX(week_id) AS week_number 
+        FROM scores 
+    `);
+  logger.info(`currentWeek internal: ${JSON.stringify(currentWeek)}`);
+  return currentWeek;
 }
 
 export async function getPreviousWeekPlayed(currentWeekNumber) {
@@ -119,7 +109,5 @@ export function getWeekHoleRange(weekId) {
     throw new Error("A valid week ID is required.");
   }
 
-  return weekId <= 11
-    ? { startHole: 1, endHole: 9 }
-    : { startHole: 10, endHole: 18 };
+  return weekId <= 11 ? { startHole: 1, endHole: 9 } : { startHole: 10, endHole: 18 };
 }

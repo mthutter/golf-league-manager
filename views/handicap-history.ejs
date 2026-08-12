@@ -1,0 +1,210 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <%- include('./partials/header'); %> 
+    <style> 
+        /* ===== Layout & Typography Colors from skins.ejs ===== */ 
+        .player-link { color: #1b4332; text-decoration: none; transition: color 0.2s ease; } 
+        .player-link:hover { color: #18aa24; text-decoration: underline; } 
+        .gallery-header { text-align: center; margin-top: 1.5rem; } 
+        .gallery-header h1 { font-weight: 700; margin-bottom: 0.5rem; } 
+        .gallery-header p { opacity: 0.9; margin-bottom: 1rem; } 
+        
+        /* ===== Control Center Filter Panel ===== */
+        .filter-card {
+            background-color: #ffffff;
+            border: 1px solid rgba(27, 67, 50, 0.15);
+            border-radius: 12px;
+            max-width: 650px;
+            margin: 0 auto 1.5rem auto;
+        }
+        .form-select-custom {
+            border: 1.5px solid rgba(27, 67, 50, 0.2);
+            border-radius: 8px;
+            color: #1b4332;
+            font-weight: 500;
+        }
+        .form-select-custom:focus {
+            border-color: #18aa24;
+            box-shadow: 0 0 0 0.25rem rgba(24, 170, 36, 0.25);
+        }
+
+        /* ===== Table & Card Framework Architecture ===== */ 
+        .results-table-card { 
+            border: 1.5px solid rgba(27, 67, 50, 0.15); 
+            border-radius: 18px; 
+            overflow: hidden; 
+            width: max-content !important; 
+            max-width: 100%; 
+            margin: 0 auto; 
+        } 
+        .results-custom-table th { 
+            background-color: #1b4332 !important; 
+            color: white !important; 
+            padding: 10px 14px; 
+            font-weight: 700; 
+            font-size: clamp(0.55rem, 0.9vw, 0.8rem); 
+            letter-spacing: 0.5px; 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            cursor: pointer; 
+            user-select: none; 
+            position: relative; 
+            white-space: nowrap; 
+        } 
+        .results-custom-table td { vertical-align: middle; padding: 10px 14px; border: 1px solid rgba(27, 67, 50, 0.1); } 
+        .players { font-size: clamp(0.65rem, 1vw, 0.85rem); } 
+        
+        /* ===== Sort Indicators ===== */ 
+        th.sort-asc::after { content: " ▲"; position: absolute; right: 8px; } 
+        th.sort-desc::after { content: " ▼"; position: absolute; right: 8px; } 
+        
+        /* ===== Navigation Layout ===== */ 
+        .button-link { display: inline-block; text-decoration: none; } 
+        .week-nav { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; } 
+        .week-nav .btn { min-width: 85px; font-weight: 600; border-radius: 50px; border: none; transition: all 0.2s ease; } 
+        .week-nav .btn:hover { transform: translateY(-1px); } 
+        
+        /* ===== CRITICAL COMPACT COLUMN FIX ===== */ 
+        .compact-pixel-table { 
+            width: max-content !important; 
+            max-width: 100%; 
+            margin: 0 auto; 
+            table-layout: auto !important; 
+        } 
+        .nowrap-cell { white-space: nowrap !important; } 
+    </style> 
+</head> 
+<body> 
+    <%- include('./partials/navbar'); %> 
+    
+    <!-- Header Banner --> 
+    <div class="container"> 
+        <div class="gallery-header"> 
+            <!-- Clean adaptive headings to avoid undefined object crashes -->
+            <h1> 
+                <% if (!selectedWeek) { %>
+                    Handicap History Log
+                <% } else { %>
+                    Week <%= selectedWeek %> Handicap Records
+                <% } %>
+            </h1> 
+            <p>
+                <%= (typeof weekDate !== 'undefined' && weekDate.displayDate) ? weekDate.displayDate : 'Bottoms Up Golf League • 2026 Season' %>
+            </p> 
+        </div> 
+        <div class="week-nav mb-4"> 
+            <a href="/scores/standings" class="button-link btn btn-light btn-sm"> ← Back to Standings </a> 
+        </div> 
+    </div> 
+
+    <!-- Filtering Selection Controls Tool -->
+    <div class="container">
+        <div class="card p-3 shadow-sm filter-card">
+            <form id="filterForm" method="GET" action="/handicaps" class="row g-2 align-items-center">
+                <!-- YEAR LIST BOX -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted mb-1">Season Year</label>
+                    <select name="year" class="form-select form-select-sm form-select-custom" onchange="document.getElementById('filterForm').submit()">
+                        <% filters.years.forEach(y => { %>
+                            <option value="<%= y %>" <%= selectedYear == y ? 'selected' : '' %>>Year <%= y %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <!-- WEEK LIST BOX -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted mb-1">League Week</label>
+                    <select name="weekId" id="weekSelector" class="form-select form-select-sm form-select-custom" onchange="clearMemberAndSubmit()">
+                        <option value="">-- All Weeks --</option>
+                        <% filters.weeks.forEach(w => { %>
+                            <option value="<%= w %>" <%= selectedWeek == w ? 'selected' : '' %>>Week <%= w %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <!-- MEMBER LIST BOX -->
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold text-muted mb-1">Filter by Individual Player</label>
+                    <select name="memberId" id="memberSelector" class="form-select form-select-sm form-select-custom" onchange="clearWeekAndSubmit()">
+                        <option value="">-- View Whole Field Output --</option>
+                        <% filters.members.forEach(m => { %>
+                            <option value="<%= m.id %>" <%= selectedMember == m.id ? 'selected' : '' %>>
+                                <%= m.name_last %>, <%= m.name_first %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Handicap History Dashboard Layout --> 
+    <div class="container my-4"> 
+        <div class="card shadow-sm results-table-card"> 
+            <div class="card-header text-white py-3" style="background-color: #1b4332"> 
+                <h5 class="card-title mb-0 fw-bold">
+                    <%= selectedMember ? 'Player Progress Timeline' : 'Recorded Field Handicaps' %>
+                </h5> 
+            </div> 
+            <div class="table-responsive" style="text-align: center"> 
+                <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover"> 
+                    <thead> 
+                        <tr> 
+                            <th style="width: 60px">Rank</th> 
+                            <th class="text-start" style="width: 200px; min-width: 160px">Player</th> 
+                            <th style="width: 80px">Week</th> 
+                            <th style="width: 80px">Year</th> 
+                            <th style="width: 100px">Handicap</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody> 
+                        <% if (history && history.length > 0) { %>
+                            <% history.forEach((row, idx) => { %> 
+                                <tr> 
+                                    <td class="fw-bold bg-light players"><%= idx + 1 %></td> 
+                                    <td class="text-start fw-semibold players nowrap-cell"> 
+                                        <a href="/members/<%= row.member_id %>" class="player-link">
+                                            <% if (row.name_last && row.name_first) { %>
+                                                <%= row.name_last %>, <%= row.name_first %>
+                                            <% } else { %>
+                                                Member #<%= row.member_id %>
+                                            <% } %>
+                                        </a> 
+                                    </td> 
+                                    <td class="players nowrap-cell text-muted">
+                                        Wk <%= row.week_id %>
+                                    </td> 
+                                    <td class="players nowrap-cell text-muted">
+                                        <%= row.year %>
+                                    </td> 
+                                    <td class="fw-bold text-success players nowrap-cell"> 
+                                        <strong><%= row.handicap %></strong> 
+                                    </td> 
+                                </tr> 
+                            <% }) %> 
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" class="p-4 text-muted">No historical handicap metrics match this filter selection.</td>
+                            </tr>
+                        <% } %>
+                    </tbody> 
+                </table> 
+            </div> 
+        </div> 
+    </div> 
+    
+    <%- include('./partials/footer'); %> 
+    <%- include('./partials/scripts'); %> 
+
+    <script>
+        function clearMemberAndSubmit() {
+            document.getElementById('memberSelector').value = "";
+            document.getElementById('filterForm').submit();
+        }
+        function clearWeekAndSubmit() {
+            document.getElementById('weekSelector').value = "";
+            document.getElementById('filterForm').submit();
+        }
+    </script>
+</body> 
+</html>

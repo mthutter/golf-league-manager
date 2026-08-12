@@ -32,6 +32,7 @@ import groupingRoutes from "./routes/grouping.routes.js";
 import devRoutes from "./routes/dev.routes.js";
 import activationRoutes from "./routes/activation.routes.js";
 import * as activationController from "./controllers/activation.controller.js";
+import handicapsRouter from "./controllers/handicaps.controller.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
@@ -143,6 +144,7 @@ app.use("/admin", adminRoutes);
 app.use("/skins", skinsRouter);
 app.use("/email", emailRoutes);
 app.use("/activate", activationRoutes);
+app.use("/handicaps", handicapsRouter);
 
 app.get("/forgot-password", activationController.showForgotPasswordPage);
 app.post("/forgot-password", activationController.handleForgotPassword);
