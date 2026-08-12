@@ -1,4 +1,4 @@
-import { Router } from "express"; // or import Router from "router" based on your project requirements
+import { Router } from "express";
 import { getFilteredHandicapHistory, getHandicapFilterMetadata } from "../services/handicap.service.js";
 import { getCurrentWeekPlayed } from "../services/weeks.service.js";
 
@@ -8,19 +8,27 @@ router.get("/", async (req, res) => {
   try {
     let { year, weekId, memberId } = req.query;
 
+    // Fetch metadata dropdown arrays
     const meta = await getHandicapFilterMetadata();
 
-    // Fallback strategy if page is loaded fresh
-    if (!year && meta.years.length > 0) year = meta.years[0];
+    // 1. FIXED: Extract the first scalar value out of the arrays rather than the entire array object
+    if (!year && meta.years.length > 0) {
+      year = meta.years[0]; // Selects the latest year, e.g., "2026"
+    }
+
     if (!weekId && !memberId) {
       const currentWeekObj = await getCurrentWeekPlayed();
       weekId = currentWeekObj && typeof currentWeekObj === "object" ? currentWeekObj.week_number : currentWeekObj;
-      if (!weekId && meta.weeks.length > 0) weekId = meta.weeks[0];
+
+      // 2. FIXED: Select the first index fallback week
+      if (!weekId && meta.weeks.length > 0) {
+        weekId = meta.weeks[0];
+      }
     }
 
+    // Run the dynamic filter engine query
     const historyData = await getFilteredHandicapHistory({ year, weekId, memberId });
 
-    // Targets 'handicap-history.ejs' cleanly
     res.render("handicap-history", {
       history: historyData,
       filters: meta,
@@ -32,7 +40,9 @@ router.get("/", async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).send("Error compiling dashboard datasets.");
+    // 3. ENHANCEMENT: Log the real root cause message to your console so you can see exact database failures!
+    console.error("CRITICAL HANDICAP ROUTE REASON FOR CRASH:", error);
+    res.status(500).send(`Error compiling dashboard datasets: ${error.message}`);
   }
 });
 
