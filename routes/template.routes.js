@@ -1,14 +1,16 @@
-import { Router } from "express";
+import {
+    Router
+} from "express";
 // 1. Import your matching controllers 
 import {
-  getAllItems,
-  getItemById,
-  createNewItem,
-  updateItemApi
+    getAllItems,
+    getItemById,
+    createNewItem,
+    updateItemApi
 } from "../controllers/template.controller.js";
 
 // 2. Import your authorization security filters
-import authMiddleware from "../middleware/auth.middleware.js"; 
+import authMiddleware from "../middleware/auth.middleware.js";
 
 const router = Router();
 

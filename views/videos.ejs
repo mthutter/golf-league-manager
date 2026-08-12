@@ -1,32 +1,33 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <%- include('./partials/header'); %>
-  </head>
 
-  <body>
+<head>
+    <%- include('./partials/header'); %>
+</head>
+
+<body>
     <%- include('./partials/navbar'); %>
 
     <div class="main-wrapper">
-      <div class="gallery-header">
-        <h1>
-          <%= year %>
-          Videos
-        </h1>
-        <p>Bottoms Up Golf League</p>
-      </div>
-
-      <div class="container">
-        <div class="row g-3">
-          <% videos.forEach(video => { %>
-
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <%- include( 'partials/media-card', video ) %>
-          </div>
-
-          <% }) %>
+        <div class="gallery-header">
+            <h1>
+                <%= year %>
+                Videos
+            </h1>
+            <p>Bottoms Up Golf League</p>
         </div>
-      </div>
+
+        <div class="container">
+            <div class="row g-3">
+                <% videos.forEach(video => { %>
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <%- include( 'partials/media-card', video ) %>
+                </div>
+
+                <% }) %>
+            </div>
+        </div>
     </div>
 
     <%- include('./partials/footer'); %>
@@ -35,7 +36,8 @@
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 
     <script>
-      const lightbox = GLightbox();
+        const lightbox = GLightbox();
     </script>
-  </body>
+</body>
+
 </html>

@@ -1,26 +1,31 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <%- include("partials/header") %>
     <link href="/assets/css/auth.css" rel="stylesheet" />
-  </head>
+</head>
 
-  <body>
+<body>
     <%- include("partials/navbar") %>s
 
     <div class="auth-wrapper">
-      <div class="auth-card text-center">
-        <div class="logo-icon"><img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
-        <div class="league-title">Bottoms Up Golf League</div>
-        <div class="league-subtitle">Activation E-Mail Sent</div>
+        <div class="auth-card text-center">
+            <div class="logo-icon">
+                <img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" />
+            </div>
+            <div class="league-title">Bottoms Up Golf League</div>
+            <div class="league-subtitle">Activation E-Mail Sent</div>
 
-        <p>Check your e-mail for the activation link.</p>
-        <p>The sender will be: <strong>admin@bottoms-up-cos.org</strong></p>
-        <br />
+            <p>Check your e-mail for the activation link.</p>
+            <p>The sender will be: <strong>admin@bottoms-up-cos.org</strong></p>
+            <br />
 
-        <a href="/login" class="btn btn-primary"> Return to Login </a>
-      </div>
+            <a href="/login" class="btn btn-primary"> Return to Login </a>
+        </div>
     </div>
-    <%- include("partials/scripts") %> <%- include("partials/footer") %>
-  </body>
+    <%- include("partials/scripts") %>
+    <%- include("partials/footer") %>
+</body>
+
 </html>

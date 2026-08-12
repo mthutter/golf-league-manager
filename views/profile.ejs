@@ -1,189 +1,196 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <%- include('./partials/header'); %>
     <style>
-      /* ===== Layout & Typography Colors from skins.ejs ===== */
-      .player-link {
-        color: #1b4332;
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-      .player-link:hover {
-        color: #18aa24;
-        text-decoration: underline;
-      }
-      .gallery-header {
-        text-align: center;
-        margin-top: 1.5rem;
-      }
-      .gallery-header h1 {
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-      .gallery-header p {
-        opacity: 0.9;
-        margin-bottom: 1rem;
-      }
+        /* ===== Layout & Typography Colors from skins.ejs ===== */
+        .player-link {
+            color: #1b4332;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
 
-      /* ===== Table & Card Framework Architecture ===== */
-      .results-table-card {
-        border: 1.5px solid rgba(27, 67, 50, 0.15);
-        border-radius: 18px;
-        overflow: hidden;
-        /* Forces the card component to shrink tightly around the table width */
-        width: max-content !important;
-        max-width: 100%;
-        margin: 0 auto;
-      }
-      .results-custom-table th {
-        background-color: #1b4332 !important;
-        color: white !important;
-        padding: 10px 14px;
-        font-weight: 700;
-        font-size: clamp(0.55rem, 0.9vw, 0.8rem);
-        letter-spacing: 0.5px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        white-space: nowrap;
-      }
-      .results-custom-table td {
-        vertical-align: middle;
-        padding: 10px 14px;
-        border: 1px solid rgba(27, 67, 50, 0.1);
-      }
-      /* Unified font class applied to all body cells */
-      .players {
-        font-size: clamp(0.65rem, 1vw, 0.85rem);
-      }
+        .player-link:hover {
+            color: #18aa24;
+            text-decoration: underline;
+        }
 
-      /* ===== Navigation Layout ===== */
-      .button-link {
-        display: inline-block;
-        text-decoration: none;
-      }
-      .week-nav {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .week-nav .btn {
-        min-width: 85px;
-        font-weight: 600;
-        border-radius: 50px;
-        border: none;
-        transition: all 0.2s ease;
-      }
-      .week-nav .btn:hover {
-        transform: translateY(-1px);
-      }
+        .gallery-header {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
 
-      /* ===== CRITICAL COMPACT COLUMN FIX ===== */
-      .compact-pixel-table {
-        /* Tells table to hug content tightly instead of stretching 100% wide */
-        width: max-content !important;
-        max-width: 100%;
-        margin: 0 auto;
-        table-layout: auto !important;
-      }
-      .nowrap-cell {
-        white-space: nowrap !important;
-      }
+        .gallery-header h1 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-header p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== Table & Card Framework Architecture ===== */
+        .results-table-card {
+            border: 1.5px solid rgba(27, 67, 50, 0.15);
+            border-radius: 18px;
+            overflow: hidden;
+            /* Forces the card component to shrink tightly around the table width */
+            width: max-content !important;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .results-custom-table th {
+            background-color: #1b4332 !important;
+            color: white !important;
+            padding: 10px 14px;
+            font-weight: 700;
+            font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            white-space: nowrap;
+        }
+
+        .results-custom-table td {
+            vertical-align: middle;
+            padding: 10px 14px;
+            border: 1px solid rgba(27, 67, 50, 0.1);
+        }
+
+        /* Unified font class applied to all body cells */
+        .players {
+            font-size: clamp(0.65rem, 1vw, 0.85rem);
+        }
+
+        /* ===== Navigation Layout ===== */
+        .button-link {
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .week-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .week-nav .btn {
+            min-width: 85px;
+            font-weight: 600;
+            border-radius: 50px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .week-nav .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* ===== CRITICAL COMPACT COLUMN FIX ===== */
+        .compact-pixel-table {
+            /* Tells table to hug content tightly instead of stretching 100% wide */
+            width: max-content !important;
+            max-width: 100%;
+            margin: 0 auto;
+            table-layout: auto !important;
+        }
+
+        .nowrap-cell {
+            white-space: nowrap !important;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <%- include('./partials/navbar'); %>
 
     <!-- Header Banner -->
     <div class="container">
-      <div class="gallery-header">
-        <h1>
-          <%= member.name_first %>
-          <%= member.name_last %> - Weekly Scores
-        </h1>
-        <p>Bottoms Up Golf League • 2026 Season</p>
-      </div>
+        <div class="gallery-header">
+            <h1>
+                <%= member.name_first %>
+                <%= member.name_last %> - Weekly Scores
+            </h1>
+            <p>Bottoms Up Golf League • 2026 Season</p>
+        </div>
 
-      <div class="week-nav mb-4">
-        <a href="/scores/standings" class="button-link btn btn-light btn-sm">
-          ← Back to Standings
-        </a>
-      </div>
+        <div class="week-nav mb-4">
+            <a href="/scores/standings" class="button-link btn btn-light btn-sm">
+                ← Back to Standings
+            </a>
+        </div>
     </div>
 
     <!-- Performance History Dashboard Layout -->
     <div class="container my-4">
-      <div class="card shadow-sm results-table-card">
-        <div
-          class="card-header text-white py-3"
-          style="background-color: #1b4332"
-        >
-          <h5 class="card-title mb-0 fw-bold">2026 Weekly Scoring</h5>          
+        <div class="card shadow-sm results-table-card">
+            <div class="card-header text-white py-3" style="background-color: #1b4332">
+                <h5 class="card-title mb-0 fw-bold">2026 Weekly Scoring</h5>
+            </div>
+
+            <div class="table-responsive" style="text-align: center">
+                <table class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
+                    <thead>
+                        <tr>
+                            <!-- Explicitly declare small column constraints -->
+                            <th style="width: 120px">Week / Round</th>
+                            <th style="width: 95px">Gross Score</th>
+                            <th style="width: 95px">Net Score</th>
+                            <th style="width: 105px">Stableford Pts</th>
+                            <th style="width: 95px">Birdie Pts</th>
+                            <th style="width: 95px">CTP Pts</th>
+                            <th style="width: 130px">Total Pts Earned</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (scores.length === 0) { %>
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted players">
+                                No rounds recorded for this player yet.
+                            </td>
+                        </tr>
+                        <% } else { %>
+                        <% scores.forEach(row => { %>
+                        <tr>
+                            <td class="fw-bold bg-light players nowrap-cell">
+
+                                <% if (row.score_id) { %>
+
+                                <a href="/scores/round/<%= row.score_id %>" class="player-link">
+
+                                    Week <%= row.week_number %>
+
+                                </a>
+
+                                <% } else { %>
+
+                                Week <%= row.week_number %>
+
+                                <% } %>
+
+                            </td>
+                            <td class="players nowrap-cell"><%= row.gross_total %></td>
+                            <td class="players nowrap-cell"><%= row.net_total %></td>
+                            <td class="players nowrap-cell"><%= row.stableford_total %></td>
+                            <td class="players nowrap-cell"><%= row.birdie_points %></td>
+                            <td class="players nowrap-cell"><%= row.ctp_points %></td>
+                            <td class="fw-bold text-success pe-3 players nowrap-cell">
+                                <strong><%= row.total_points %></strong>
+                            </td>
+                        </tr>
+                        <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <div class="table-responsive" style="text-align: center">
-          <table
-            class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover"
-          >
-            <thead>
-              <tr>
-                <!-- Explicitly declare small column constraints -->
-                <th style="width: 120px">Week / Round</th>
-                <th style="width: 95px">Gross Score</th>
-                <th style="width: 95px">Net Score</th>
-                <th style="width: 105px">Stableford Pts</th>
-                <th style="width: 95px">Birdie Pts</th>
-                <th style="width: 95px">CTP Pts</th>
-                <th style="width: 130px">Total Pts Earned</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (scores.length === 0) { %>
-              <tr>
-                <td colspan="7" class="text-center py-4 text-muted players">
-                  No rounds recorded for this player yet.
-                </td>
-              </tr>
-              <% } else { %>
-              <% scores.forEach(row => { %>
-              <tr>
-               <td class="fw-bold bg-light players nowrap-cell">
-
-<% if (row.score_id) { %>
-
-    <a
-        href="/scores/round/<%= row.score_id %>"
-        class="player-link">
-
-        Week <%= row.week_number %>
-
-    </a>
-
-<% } else { %>
-
-    Week <%= row.week_number %>
-
-<% } %>
-
-</td>
-                <td class="players nowrap-cell"><%= row.gross_total %></td>
-                <td class="players nowrap-cell"><%= row.net_total %></td>
-                <td class="players nowrap-cell"><%= row.stableford_total %></td>
-                <td class="players nowrap-cell"><%= row.birdie_points %></td>
-                <td class="players nowrap-cell"><%= row.ctp_points %></td>
-                <td class="fw-bold text-success pe-3 players nowrap-cell">
-                  <strong><%= row.total_points %></strong>
-                </td>
-              </tr>
-              <% }) %>
-              <% } %>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
 
     <%- include('./partials/footer'); %>
     <%- include('./partials/scripts'); %>
-  </body>
+</body>
+
 </html>

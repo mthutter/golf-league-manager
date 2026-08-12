@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <%- include('./partials/header'); %>
     <link href="/assets/css/auth.css" rel="stylesheet" />
@@ -7,59 +8,51 @@
 
 <body>
 
-<%- include('./partials/navbar'); %>
+    <%- include('./partials/navbar'); %>
 
-<div class="auth-wrapper">
-    <div class="auth-card">
-        <div class="logo-icon"><img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
-        <div class="league-title">
-            Bottoms Up Golf League
-        </div>
-        <div class="league-subtitle">
-            Request Account Activation E-Mail
-        </div>
-        <p class="auth-text">
-            If you're a league member,
-            enter the email address associated
-            with your contact profile and we'll send
-            you an activation link.
-        </p>
-        <% if (error) { %>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="logo-icon"><img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
+            <div class="league-title">
+                Bottoms Up Golf League
+            </div>
+            <div class="league-subtitle">
+                Request Account Activation E-Mail
+            </div>
+            <p class="auth-text">
+                If you're a league member,
+                enter the email address associated
+                with your contact profile and we'll send
+                you an activation link.
+            </p>
+            <% if (error) { %>
             <div class="alert alert-danger">
                 <%= error %>
             </div>
-        <% } %>
-        <form method="POST" action="/activate/request">
-            <div class="mb-4 mt-4">
-                <label class="form-label fw-semibold">
-                    Email Address
-                </label>
-                <input
-                    type="email"
-                    class="form-control"
-                    name="email"
-                    autocomplete="email"
-                    required
-                >
-            </div>
-            <button
-                class="btn btn-success w-100 btn-auth"
-                type="submit">
-                Send Activation Email
-            </button>
-        </form>
+            <% } %>
+            <form method="POST" action="/activate/request">
+                <div class="mb-4 mt-4">
+                    <label class="form-label fw-semibold">
+                        Email Address
+                    </label>
+                    <input type="email" class="form-control" name="email" autocomplete="email" required>
+                </div>
+                <button class="btn btn-success w-100 btn-auth" type="submit">
+                    Send Activation Email
+                </button>
+            </form>
 
-        <div class="text-center mt-4">
-            <a href="/login"
-               class="text-decoration-none">
-                ← Return to Login
-            </a>
+            <div class="text-center mt-4">
+                <a href="/login" class="text-decoration-none">
+                    ← Return to Login
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-<%- include('./partials/footer'); %>
-<%- include('./partials/scripts'); %>
+    <%- include('./partials/footer'); %>
+    <%- include('./partials/scripts'); %>
 
 </body>
+
 </html>

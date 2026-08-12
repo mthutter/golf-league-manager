@@ -1,96 +1,88 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <%- include('./partials/header'); %>
     <link href="/assets/css/auth.css" rel="stylesheet" />
-  </head>
+</head>
 
-  <body>
+<body>
     <%- include('./partials/navbar'); %>
 
     <br />
     <div class="auth-wrapper">
-      <div class="auth-card">
-        <div class="logo-icon"><img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" /></div>
+        <div class="auth-card">
+            <div class="logo-icon">
+                <img height="90px" width="90px" src="/images/bottoms-up-logo.png" alt="Bottoms Up Golf League" />
+            </div>
 
-        <div class="league-title">Bottoms Up Golf League</div>
+            <div class="league-title">Bottoms Up Golf League</div>
 
-        <div class="league-subtitle">
-          Welcome,
-          <strong><%= member.firstName %></strong>!
-          <br />
-          Create a password to activate your account.
+            <div class="league-subtitle">
+                Welcome,
+                <strong><%= member.firstName %></strong>!
+                <br />
+                Create a password to activate your account.
+            </div>
+
+            <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+
+            <form method="POST" action="/activate">
+                <input type="hidden" name="token" value="<%= token %>" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold"> Password </label>
+
+                    <input type="password" name="password" class="form-control" autocomplete="new-password" required />
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-semibold"> Confirm Password </label>
+
+                    <input type="password" name="confirmPassword" class="form-control" autocomplete="new-password" required />
+                </div>
+
+                <div class="password-help mb-3">
+                    Password must be at least 12 characters long.
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="showPassword" />
+
+                    <label class="form-check-label" for="showPassword">
+                        Show passwords
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 btn-auth">
+                    Activate Account
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="/" class="text-decoration-none"> ← Return to League Home </a>
+            </div>
         </div>
-
-        <% if (error) { %>
-        <div class="alert alert-danger"><%= error %></div>
-        <% } %>
-
-        <form method="POST" action="/activate">
-          <input type="hidden" name="token" value="<%= token %>" />
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold"> Password </label>
-
-            <input
-              type="password"
-              name="password"
-              class="form-control"
-              autocomplete="new-password"
-              required
-            />
-          </div>
-
-          <div class="mb-2">
-            <label class="form-label fw-semibold"> Confirm Password </label>
-
-            <input
-              type="password"
-              name="confirmPassword"
-              class="form-control"
-              autocomplete="new-password"
-              required
-            />
-          </div>
-
-          <div class="password-help mb-3">
-            Password must be at least 12 characters long.
-          </div>
-
-          <div class="form-check mb-4">
-            <input class="form-check-input" type="checkbox" id="showPassword" />
-
-            <label class="form-check-label" for="showPassword">
-              Show passwords
-            </label>
-          </div>
-
-          <button type="submit" class="btn btn-success w-100 btn-auth">
-            Activate Account
-          </button>
-        </form>
-
-        <div class="text-center mt-4">
-          <a href="/" class="text-decoration-none"> ← Return to League Home </a>
-        </div>
-      </div>
     </div>
 
     <script>
-      document
-        .getElementById("showPassword")
-        .addEventListener("change", function () {
-          const type = this.checked ? "text" : "password";
+        document
+            .getElementById("showPassword")
+            .addEventListener("change", function() {
+                const type = this.checked ? "text" : "password";
 
-          document
-            .querySelectorAll(
-              'input[name="password"], input[name="confirmPassword"]',
-            )
-            .forEach((input) => (input.type = type));
-        });
+                document
+                    .querySelectorAll(
+                        'input[name="password"], input[name="confirmPassword"]',
+                    )
+                    .forEach((input) => (input.type = type));
+            });
     </script>
 
     <%- include('./partials/footer'); %>
     <%- include('./partials/scripts'); %>
-  </body>
+</body>
+
 </html>
