@@ -7,18 +7,16 @@ import posthog from "../utilities/posthog.js";
 /**
  * GET /scores/new
  */
-/**
- * GET /scores/new
- */
 export const getNewScoresForm = catchAsync(async (req, res, next) => {
-  logger.info("Loading metadata configuration parameters for the weekly score entry form");
-
+  logger.info(
+    "Loading metadata configuration parameters for the weekly score entry form",
+  );
   // 1. Fetch raw data from the scores service
   const { members, holes } = await scoresService.getFormData();
-
   // 2. Filter the members list to remove inactive players (status = 'NO')
-  const activeMembers = Array.isArray(members) ? members.filter((member) => member.status !== "No") : [];
-
+  const activeMembers = Array.isArray(members)
+    ? members.filter((member) => member.status !== "No")
+    : [];
   // 3. Render the form with only active league members
   return res.render("weekly-scores-form", { members: activeMembers, holes });
 });
@@ -28,9 +26,7 @@ export const getNewScoresForm = catchAsync(async (req, res, next) => {
  */
 export const saveScore = catchAsync(async (req, res, next) => {
   const { memberId, weekId } = req.body;
-
   logger.info("Processing new league score entry record submission");
-
   try {
     await scoresService.createScoreRecord(req.body);
     logger.info("Player performance metrics saved successfully");
@@ -43,8 +39,13 @@ export const saveScore = catchAsync(async (req, res, next) => {
   } catch (err) {
     // Safely isolate and intercept expected duplicate entry constraints
     if (err.message.includes("UNIQUE")) {
-      logger.warn({ memberId, weekId }, "Score card entry rejected: Unique database index conflict");
-      return res.status(400).send("Scores already entered for this player/week.");
+      logger.warn(
+        { memberId, weekId },
+        "Score card entry rejected: Unique database index conflict",
+      );
+      return res
+        .status(400)
+        .send("Scores already entered for this player/week.");
     }
     // Forward unexpected errors (like disk lock or network timeout) to centralized handler
     throw err;
@@ -55,25 +56,24 @@ export const saveScore = catchAsync(async (req, res, next) => {
  * GET /scores/standings
  */
 export const getStandings = catchAsync(async (req, res, next) => {
-  logger.info("Computing global season point totals and league handicaps for standings table");
-
+  logger.info(
+    "Computing global season point totals and league handicaps for standings table",
+  );
   const selectedWeek = Number(req.query.week) || null;
-
   const data = await scoresService.getSeasonStandings(selectedWeek);
-
   return res.render("standings", data);
 });
+
 /**
  * GET /scores/weekly/:weekId
  */
 export const getWeeklyScores = catchAsync(async (req, res, next) => {
   const weekId = req.params.weekId;
-
-  logger.info("Aggregating individual stroke scores and points for week breakdown");
-
+  logger.info(
+    "Aggregating individual stroke scores and points for week breakdown",
+  );
   const results = await scoresService.getWeeklyBreakdown(weekId);
   const weekDate = await weeksService.getWeek(weekId);
-
   return res.render("weekly", { weekId, results, weekDate });
 });
 
@@ -82,17 +82,16 @@ export const getWeeklyScores = catchAsync(async (req, res, next) => {
  */
 export const getMemberProfile = catchAsync(async (req, res, next) => {
   const memberId = parseInt(req.params.id, 10);
-
   logger.info("Assembling historical player scorecard profiles");
-
   const profileData = await scoresService.getMemberProfileData(memberId);
-
   if (!profileData) {
-    logger.warn({ memberId }, "Target member identification record does not exist");
+    logger.warn(
+      { memberId },
+      "Target member identification record does not exist",
+    );
     res.status(404);
     return res.render("404"); // Fall back to your custom 404 template safely
   }
-
   return res.render("profile", profileData);
 });
 
@@ -100,26 +99,78 @@ export const getMemberProfile = catchAsync(async (req, res, next) => {
  * Legacy redirect wrapper handler
  */
 export const getScoresLegacy = catchAsync(async (req, res, next) => {
-  logger.info("Rerouting legacy leaderboard endpoint request to standard standings layout");
+  logger.info(
+    "Rerouting legacy leaderboard endpoint request to standard standings layout",
+  );
   return res.redirect("/scores/standings");
 });
 
-export const getRoundDetails = async (req, res, next) => {
-  try {
-    const scoreId = Number(req.params.scoreId);
-
-    const round = await scoresService.getRoundDetails(scoreId);
-
-    if (!round) {
-      req.flash("error", "Round not found.");
-      return res.redirect("/players");
-    }
-
-    res.render("round-details", {
-      title: "Scorecard",
-      round,
-    });
-  } catch (err) {
-    next(err);
+export const getRoundDetails = catchAsync(async (req, res, next) => {
+  const scoreId = Number(req.params.scoreId);
+  const round = await scoresService.getRoundDetails(scoreId);
+  if (!round) {
+    req.flash("error", "Round not found.");
+    return res.redirect("/players");
   }
-};
+  res.render("round-details", { title: "Scorecard", round });
+});
+
+/** =========================================================================
+ *  NEW MODIFY / EDIT CONTROLLERS
+ *  ========================================================================= */
+
+/**
+ * GET /scores/edit/:scoreId
+ * Pulls an existing round's score metadata and passes it to the modification form
+ */
+export const getModifyScoresForm = catchAsync(async (req, res, next) => {
+  const scoreId = Number(req.params.scoreId);
+  logger.info(
+    { scoreId },
+    "Fetching existing round record data for modification form rendering",
+  );
+
+  // Fetch the single scorecard record and the course layout configuration
+  const scoreRecord = await scoresService.getRoundDetails(scoreId);
+  const { holes } = await scoresService.getFormData();
+
+  if (!scoreRecord) {
+    logger.warn(
+      { scoreId },
+      "Failed to find requested scorecard record for modification",
+    );
+    res.status(404);
+    return res.render("404");
+  }
+
+  // Render the modification view with the loaded datasets
+  return res.render("weekly-scores-modify-form", { scoreRecord, holes });
+});
+
+/**
+ * POST /scores/update/:scoreId
+ * Processes edits to a user scorecard, recalculates data pools, and persists update records
+ */
+export const updateScore = catchAsync(async (req, res, next) => {
+  const scoreId = Number(req.params.scoreId);
+  const { memberId, weekId } = req.body;
+  logger.info(
+    { scoreId },
+    "Processing updates for scorecard modification request payload",
+  );
+
+  await scoresService.updateScoreRecord(scoreId, req.body);
+  logger.info(
+    { scoreId },
+    "Scorecard metrics modified and updated safely in database",
+  );
+
+  posthog.capture({
+    distinctId: req.session?.id || "anonymous",
+    event: "score_modified",
+    properties: { score_id: scoreId, member_id: memberId, week_id: weekId },
+  });
+
+  // Send the manager back to the weekly breakdown matrix view they came from
+  return res.redirect(`/scores/weekly/${weekId}`);
+});

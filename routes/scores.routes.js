@@ -25,4 +25,18 @@ router.get("/", requireAdmin, scoresController.getScoresLegacy);
 // 7. GET /scores/round/:scoreId - Individual hole-to-hole scoring per week
 router.get("/round/:scoreId", scoresController.getRoundDetails);
 
+/** =========================================================================
+ *  NEW MODIFY / EDIT ROUTES
+ *  ========================================================================= */
+
+// 8. GET /scores/edit/:scoreId - Render the score modification form with filled values
+router.get(
+  "/edit/:scoreId",
+  requireAdmin,
+  scoresController.getModifyScoresForm,
+);
+
+// 9. POST /scores/update/:scoreId - Process changes and commit them to SQLite
+router.post("/update/:scoreId", requireAdmin, scoresController.updateScore);
+
 export default router;
