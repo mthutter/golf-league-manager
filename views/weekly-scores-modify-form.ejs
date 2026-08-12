@@ -2,19 +2,74 @@
 <html lang="en"> 
 <head> 
     <%- include('partials/header'); %> 
-    <style> 
-        body { background-color: #f5f7fa; } 
-        .score-card { border-radius: 18px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); } 
-        .score-card .card-header { background: #0d6efd; color: white; font-weight: 600; font-size: 1.1rem; padding: 1rem 1.25rem; } 
-        table { margin-bottom: 0; } 
-        th { text-align: center; vertical-align: middle; white-space: nowrap; } 
-        td { text-align: center; vertical-align: middle; } 
-        .score-input { width: 65px; text-align: center; border-radius: 10px; margin: 0 auto; } 
-        .hole-header { min-width: 70px; } 
-        .total-box { font-weight: bold; background-color: #f1f3f5; } 
-        .btn-save { border-radius: 12px; padding: 0.65rem 1.5rem; font-weight: 600; } 
-        @media (max-width: 768px) { .score-input { width: 55px; } } 
-    </style> 
+
+    <style>
+      body {
+        background-color: #f5f7fa;
+      }
+
+      .score-card {
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .score-card .card-header {
+        background: #198754;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 1.25rem;
+      }
+
+      table {
+        margin-bottom: 0;
+      }
+
+      th {
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      td {
+        text-align: center;
+        vertical-align: middle;
+        margin: 0 auto;
+      }
+
+      td,
+      input {
+        margin: 0 auto;
+      }
+
+      .score-input {
+        width: 65px;
+        text-align: center;
+        border-radius: 10px;
+      }
+
+      .hole-header {
+        min-width: 70px;
+      }
+
+      .total-box {
+        font-weight: bold;
+        background-color: #f1f3f5;
+      }
+
+      .btn-save {
+        border-radius: 12px;
+        padding: 0.65rem 1.5rem;
+        font-weight: 600;
+      }
+
+      @media (max-width: 768px) {
+        .score-input {
+          width: 55px;
+        }
+      }
+    </style>
 </head> 
 <body> 
     <%- include('partials/navbar'); %> 
@@ -25,7 +80,7 @@
         </div> 
         <div class="container py-3"> 
             <div class="card score-card"> 
-                <div class="card-header bg-primary">Modify League Score Record</div> 
+                <div class="card-header">Modify League Score Record</div> 
                 <div class="card-body"> 
                     <form method="POST" action="/scores/update/<%= scoreRecord.id %>"> 
                         
@@ -63,10 +118,10 @@
                                 <label class="form-label fw-semibold">Birdie Points (Gross)</label> 
                                 <input class="form-control" type="number" id="birdiePoints" name="birdie_points" readonly value="<%= scoreRecord.birdie_points || 0 %>" /> 
                             </div> 
-                            <div class="col-md-3"> 
-                                <label class="form-label fw-semibold">Player Handicap</label> 
-                                <input type="number" id="handicap" class="form-control" name="handicap" value="<%= scoreRecord.handicap %>" readonly /> 
-                            </div> 
+                            <div class="col-md-3">
+  <label class="form-label fw-semibold">Player Handicap</label>
+  <input type="number" id="handicap" class="form-control" name="handicap" value="<%= scoreRecord.handicap %>" disabled />
+</div>
                         </div>
                         <!-- Score Table --> 
                         <div class="table-responsive"> 
@@ -144,7 +199,7 @@
 
                         <div class="mt-4 d-flex justify-content-end gap-2"> 
                             <a href="/scores/weekly/<%= scoreRecord.week_id %>" class="btn btn-outline-secondary btn-save d-flex align-items-center"> Cancel </a> 
-                            <button type="submit" class="btn btn-primary btn-save"> Update Scores </button> 
+                            <button type="submit" class="btn btn-success btn-save"> Update Scores </button> 
                         </div> 
                         <input type="hidden" name="gross_total" id="grossTotalInput" /> 
                         <input type="hidden" name="net_total" id="netTotalInput" /> 
