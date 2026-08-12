@@ -61,17 +61,6 @@ export async function writeCurrentHandicaps() {
   });
 }
 
-// 4. Standalone connection cleanup function
-function closeDatabase() {
-  db.close((closeErr) => {
-    if (closeErr) {
-      logger.error("Error closing database:", closeErr.message);
-    } else {
-      logger.info("Database connection closed cleanly.");
-    }
-  });
-}
-
 export async function calculateHandicaps(coursePar = 36) {
   const players = await all(`
     SELECT
