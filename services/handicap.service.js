@@ -181,13 +181,9 @@ export async function calculateHandicaps(coursePar = 36) {
         console.log("Average: ", average);
         console.log("Handicap: ", handicap);
 
-<<<<<<< HEAD
-    logger.info(`${player.name_last}: avg=${average.toFixed(2)} hcp=${handicap} rnds=${rounds.length}`);
-=======
         logger.info(
             `${player.name_last}: avg=${average.toFixed(2)} hcp=${handicap} rnds=${rounds.length}`,
         );
->>>>>>> 1b9e111890d5b3a533ce166c1e2d4fcb3ed93d61
 
         await run(
             `
