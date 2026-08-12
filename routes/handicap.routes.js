@@ -1,5 +1,6 @@
 import { getFilteredHandicapHistory, getHandicapFilterMetadata } from "./services/handicap.service.js";
 import { getCurrentWeekPlayed } from "./services/weeks.service.js";
+import app from "../app.js";
 
 app.get("/handicaps", async (req, res) => {
   try {

@@ -1,9 +1,5 @@
 // Import your database helper functions and the raw connection instance
-import dbInstance, {
-    get,
-    all,
-    run
-} from "../config/db.js";
+import dbInstance, { all, run } from "../config/db.js";
 import logger from "../utilities/logger.js";
 
 /*
@@ -14,12 +10,12 @@ import logger from "../utilities/logger.js";
 
 // Helper: Fisher-Yates array shuffle algorithm
 function shuffle(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
 
 /**
@@ -31,8 +27,8 @@ function shuffle(array) {
  * dynamically calculating unassigned regular players and available substitutes.
  */
 export const getGroupingsForWeek = async (weekId) => {
-    try {
-        const sql = `
+  try {
+    const sql = `
             SELECT g.id, g.week_id, g.tee_time, g.group_number, g.position, g.member_id,
                    (m.name_first || ' ' || m.name_last) AS name
             FROM groupings g
@@ -41,68 +37,68 @@ export const getGroupingsForWeek = async (weekId) => {
             ORDER BY g.group_number ASC, g.position ASC
         `;
 
-        const rows = await all(sql, [weekId]);
+    const rows = await all(sql, [weekId]);
 
-        // Rebuild the 4 groups from the individual positional rows
-        const groupMap = {};
-        const assignedMemberIds = [];
+    // Rebuild the 4 groups from the individual positional rows
+    const groupMap = {};
+    const assignedMemberIds = [];
 
-        const updateSql = `
+    const updateSql = `
     SELECT updated_at
     FROM grouping_updates
     WHERE week_id = ?
 `;
 
-        const updateRows = await all(updateSql, [weekId]);
-        const updateRow = updateRows[0];
+    const updateRows = await all(updateSql, [weekId]);
+    const updateRow = updateRows[0];
 
-        rows.forEach((row) => {
-            if (row.member_id && row.member_id !== 0) {
-                assignedMemberIds.push(row.member_id);
-            }
+    rows.forEach((row) => {
+      if (row.member_id && row.member_id !== 0) {
+        assignedMemberIds.push(row.member_id);
+      }
 
-            if (!groupMap[row.group_number]) {
-                groupMap[row.group_number] = {
-                    teeTime: row.tee_time,
-                    groupNumber: row.group_number,
-                    players: [],
-                };
-            }
+      if (!groupMap[row.group_number]) {
+        groupMap[row.group_number] = {
+          teeTime: row.tee_time,
+          groupNumber: row.group_number,
+          players: [],
+        };
+      }
 
-            // Only push if a valid member exists, otherwise let it render as empty/vacant
-            if (row.member_id) {
-                groupMap[row.group_number].players.push({
-                    position: row.position,
-                    memberId: row.member_id,
-                    name: row.name || "OPEN",
-                });
-            }
+      // Only push if a valid member exists, otherwise let it render as empty/vacant
+      if (row.member_id) {
+        groupMap[row.group_number].players.push({
+          position: row.position,
+          memberId: row.member_id,
+          name: row.name || "OPEN",
         });
+      }
+    });
 
-        // 1. Fetch ALL active members (both regulars and substitutes)
-        const allActiveSql = `
+    // 1. Fetch ALL active members (both regulars and substitutes)
+    const allActiveSql = `
         SELECT id, (name_first || ' ' || name_last) AS name, type 
         FROM members 
         WHERE status = 'Yes'
     `;
-        const allActiveMembers = await all(allActiveSql);
+    const allActiveMembers = await all(allActiveSql);
 
-        // 2. Filter out anyone who is already assigned a tee time on the grid
-        const unassignedPool = allActiveMembers.filter((member) => !assignedMemberIds.includes(member.id));
+    // 2. Filter out anyone who is already assigned a tee time on the grid
+    const unassignedPool = allActiveMembers.filter((member) => !assignedMemberIds.includes(member.id));
 
-        // 3. Split the unassigned pool into Regulars (Out) and Substitutes
-        const outPlayers = null;
-        const subPlayers = unassignedPool.filter((member) => member.type === "Substitute" || "Regular");
+    // 3. Split the unassigned pool into Regulars (Out) and Substitutes
+    const outPlayers = null;
+    const subPlayers = unassignedPool.filter((member) => member.type === "Substitute" || "Regular");
 
-        return {
-            groupings: Object.values(groupMap),
-            outPlayers: outPlayers,
-            subPlayers: subPlayers,
-            lastUpdated: updateRow?.updated_at ?? null,
-        };
-    } catch (err) {
-        throw new Error(`Failed to retrieve groupings: ${err.message}`);
-    }
+    return {
+      groupings: Object.values(groupMap),
+      outPlayers: outPlayers,
+      subPlayers: subPlayers,
+      lastUpdated: updateRow?.updated_at ?? null,
+    };
+  } catch (err) {
+    throw new Error(`Failed to retrieve groupings: ${err.message}`);
+  }
 };
 
 /**
@@ -114,227 +110,227 @@ export const getGroupingsForWeek = async (weekId) => {
  * Enforces the Bess constraint: Ami and John Bess are always paired in the final 5:20pm slot.
  */
 export const generateRandomGroupings = async (weekId) => {
-    try {
-        const memberSql = `
+  try {
+    const memberSql = `
       SELECT id, (name_first || ' ' || name_last) AS name
       FROM members 
       WHERE status = 'Yes' and type = 'Regular'
     `;
-        const members = await all(memberSql);
+    const members = await all(memberSql);
 
-        if (members.length === 0) {
-            throw new Error("No active regular members found to assign.");
-        }
-
-        await deleteGroupingsForWeek(weekId);
-
-        // 1. Isolate Ami and John Bess from the pool if they are active this week
-        const bessPlayers = members.filter((m) => m.name === "Ami Bess" || m.name === "John Bess");
-        const otherPlayers = members.filter((m) => m.name !== "Ami Bess" && m.name !== "John Bess");
-
-        // Shuffle only the remaining league members
-        const randomizedOthers = shuffle(otherPlayers);
-        const dbRowsToInsert = [];
-
-        // Define times slots (Note: 5:20pm is index 3 / Group 4)
-        const teeTimes = ["4:50pm", "5:00pm", "5:10pm", "5:20pm"];
-        let otherIndex = 0;
-
-        // 2. Loop through every time slot to assign positions
-        for (let gIdx = 0; gIdx < teeTimes.length; gIdx++) {
-            const groupNum = gIdx + 1;
-            const timeSlot = teeTimes[gIdx];
-
-            // Handle the Special 5:20pm Slot (Group 4)
-            if (timeSlot === "5:20pm") {
-                let currentPos = 1;
-
-                // Force Ami and John into the first positions of this group
-                bessPlayers.forEach((bessMember) => {
-                    dbRowsToInsert.push({
-                        week_id: weekId,
-                        tee_time: timeSlot,
-                        group_number: groupNum,
-                        member_id: bessMember.id,
-                        position: currentPos,
-                    });
-                    currentPos++;
-                });
-
-                // Fill remaining spaces in the 5:20pm slot with random regular players
-                while (currentPos <= 4 && otherIndex < randomizedOthers.length) {
-                    const member = randomizedOthers[otherIndex];
-                    dbRowsToInsert.push({
-                        week_id: weekId,
-                        tee_time: timeSlot,
-                        group_number: groupNum,
-                        member_id: member.id,
-                        position: currentPos,
-                    });
-                    otherIndex++;
-                    currentPos++;
-                }
-            }
-            // Handle normal time slots (4:50pm, 5:00pm, 5:10pm)
-            else {
-                for (let pos = 1; pos <= 4; pos++) {
-                    if (otherIndex >= randomizedOthers.length) break;
-
-                    const member = randomizedOthers[otherIndex];
-                    dbRowsToInsert.push({
-                        week_id: weekId,
-                        tee_time: timeSlot,
-                        group_number: groupNum,
-                        member_id: member.id,
-                        position: pos,
-                    });
-                    otherIndex++;
-                }
-            }
-        }
-
-        // Bulk save calculated rows to the SQLite database
-        if (dbRowsToInsert.length > 0) {
-            await saveGroupings(weekId, dbRowsToInsert);
-            await updateGroupingTimestamp(weekId);
-        }
-
-        // Capture players left over after filling the 16 maximum spots
-        const outPlayers = randomizedOthers.slice(otherIndex);
-
-        return {
-            dbRowsToInsert,
-            outPlayers
-        };
-    } catch (err) {
-        throw new Error(`Failed to generate random groupings: ${err.message}`);
+    if (members.length === 0) {
+      throw new Error("No active regular members found to assign.");
     }
+
+    await deleteGroupingsForWeek(weekId);
+
+    // 1. Isolate Ami and John Bess from the pool if they are active this week
+    const bessPlayers = members.filter((m) => m.name === "Ami Bess" || m.name === "John Bess");
+    const otherPlayers = members.filter((m) => m.name !== "Ami Bess" && m.name !== "John Bess");
+
+    // Shuffle only the remaining league members
+    const randomizedOthers = shuffle(otherPlayers);
+    const dbRowsToInsert = [];
+
+    // Define times slots (Note: 5:20pm is index 3 / Group 4)
+    const teeTimes = ["4:50pm", "5:00pm", "5:10pm", "5:20pm"];
+    let otherIndex = 0;
+
+    // 2. Loop through every time slot to assign positions
+    for (let gIdx = 0; gIdx < teeTimes.length; gIdx++) {
+      const groupNum = gIdx + 1;
+      const timeSlot = teeTimes[gIdx];
+
+      // Handle the Special 5:20pm Slot (Group 4)
+      if (timeSlot === "5:20pm") {
+        let currentPos = 1;
+
+        // Force Ami and John into the first positions of this group
+        bessPlayers.forEach((bessMember) => {
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: bessMember.id,
+            position: currentPos,
+          });
+          currentPos++;
+        });
+
+        // Fill remaining spaces in the 5:20pm slot with random regular players
+        while (currentPos <= 4 && otherIndex < randomizedOthers.length) {
+          const member = randomizedOthers[otherIndex];
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: member.id,
+            position: currentPos,
+          });
+          otherIndex++;
+          currentPos++;
+        }
+      }
+      // Handle normal time slots (4:50pm, 5:00pm, 5:10pm)
+      else {
+        for (let pos = 1; pos <= 4; pos++) {
+          if (otherIndex >= randomizedOthers.length) break;
+
+          const member = randomizedOthers[otherIndex];
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: member.id,
+            position: pos,
+          });
+          otherIndex++;
+        }
+      }
+    }
+
+    // Bulk save calculated rows to the SQLite database
+    if (dbRowsToInsert.length > 0) {
+      await saveGroupings(weekId, dbRowsToInsert);
+      await updateGroupingTimestamp(weekId);
+    }
+
+    // Capture players left over after filling the 16 maximum spots
+    const outPlayers = randomizedOthers.slice(otherIndex);
+
+    return {
+      dbRowsToInsert,
+      outPlayers,
+    };
+  } catch (err) {
+    throw new Error(`Failed to generate random groupings: ${err.message}`);
+  }
 };
 
 /**
  * Commits an array of individual member positions to your SQLite DB.
  */
 export const saveGroupings = (weekId, rows) => {
-    return new Promise((resolve, reject) => {
-        const sql = `
+  return new Promise((resolve, reject) => {
+    const sql = `
             INSERT INTO groupings (week_id, tee_time, group_number, member_id, position)
             VALUES (?, ?, ?, ?, ?)
         `;
 
-        dbInstance.serialize(() => {
-            dbInstance.run("BEGIN TRANSACTION;");
+    dbInstance.serialize(() => {
+      dbInstance.run("BEGIN TRANSACTION;");
 
-            const stmt = dbInstance.prepare(sql, (err) => {
-                if (err) {
-                    dbInstance.run("ROLLBACK;");
-                    return reject(new Error(`Failed to prepare insert statement: ${err.message}`));
-                }
-            });
+      const stmt = dbInstance.prepare(sql, (err) => {
+        if (err) {
+          dbInstance.run("ROLLBACK;");
+          return reject(new Error(`Failed to prepare insert statement: ${err.message}`));
+        }
+      });
 
-            rows.forEach((row) => {
-                stmt.run(row.week_id, row.tee_time, row.group_number, row.member_id, row.position, (err) => {
-                    if (err) {
-                        dbInstance.run("ROLLBACK;");
-                        return reject(new Error(`Failed insertion step: ${err.message}`));
-                    }
-                });
-            });
-
-            stmt.finalize((err) => {
-                if (err) {
-                    dbInstance.run("ROLLBACK;");
-                    return reject(new Error(`Failed to finalize insert: ${err.message}`));
-                }
-
-                dbInstance.run("COMMIT;", (commitErr) => {
-                    if (commitErr) {
-                        return reject(new Error(`Transaction commit failed: ${commitErr.message}`));
-                    }
-                    logger.info(`Successfully saved ${rows.length} rows for week ${weekId}`);
-                    resolve(true);
-                });
-            });
+      rows.forEach((row) => {
+        stmt.run(row.week_id, row.tee_time, row.group_number, row.member_id, row.position, (err) => {
+          if (err) {
+            dbInstance.run("ROLLBACK;");
+            return reject(new Error(`Failed insertion step: ${err.message}`));
+          }
         });
+      });
+
+      stmt.finalize((err) => {
+        if (err) {
+          dbInstance.run("ROLLBACK;");
+          return reject(new Error(`Failed to finalize insert: ${err.message}`));
+        }
+
+        dbInstance.run("COMMIT;", (commitErr) => {
+          if (commitErr) {
+            return reject(new Error(`Transaction commit failed: ${commitErr.message}`));
+          }
+          logger.info(`Successfully saved ${rows.length} rows for week ${weekId}`);
+          resolve(true);
+        });
+      });
     });
+  });
 };
 
 /**
  * Deletes any existing groupings for a week.
  */
 export const deleteGroupingsForWeek = async (weekId) => {
-    try {
-        const sql = `DELETE FROM groupings WHERE week_id = ?`;
-        await run(sql, [weekId]);
-        logger.info(`Cleared old records for week ${weekId}`);
-        return true;
-    } catch (err) {
-        throw new Error(`Failed to clear old records: ${err.message}`);
-    }
+  try {
+    const sql = `DELETE FROM groupings WHERE week_id = ?`;
+    await run(sql, [weekId]);
+    logger.info(`Cleared old records for week ${weekId}`);
+    return true;
+  } catch (err) {
+    throw new Error(`Failed to clear old records: ${err.message}`);
+  }
 };
 
 /**
  * Updates the "last modified" timestamp for a week's tee sheet.
  */
 export const updateGroupingTimestamp = async (weekId) => {
-    const sql = `
+  const sql = `
     INSERT INTO grouping_updates (week_id, updated_at)
     VALUES (?, CURRENT_TIMESTAMP)
     ON CONFLICT(week_id)
     DO UPDATE SET updated_at = CURRENT_TIMESTAMP
   `;
 
-    await run(sql, [weekId]);
+  await run(sql, [weekId]);
 };
 /**
  * Swaps two players' database slots for a given week safely.
  */
 export const swapPlayerPositions = async (weekId, p1, p2) => {
-    try {
-        const updateSql = `
+  try {
+    const updateSql = `
             UPDATE groupings 
             SET member_id = ? 
             WHERE week_id = ? AND group_number = ? AND position = ?
         `;
 
-        // Scenario A: Both players are currently on the grid (Standard Swap)
-        if (p1.groupNumber && p2.groupNumber) {
-            const tempP1 = -1;
-            const tempP2 = -2;
+    // Scenario A: Both players are currently on the grid (Standard Swap)
+    if (p1.groupNumber && p2.groupNumber) {
+      const tempP1 = -1;
+      const tempP2 = -2;
 
-            await run(updateSql, [tempP1, weekId, p1.groupNumber, p1.position]);
-            await run(updateSql, [tempP2, weekId, p2.groupNumber, p2.position]);
+      await run(updateSql, [tempP1, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [tempP2, weekId, p2.groupNumber, p2.position]);
 
-            await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
-            await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
-        }
-
-        // Scenario B1: Dragging a Sub/Out player onto an OCCUPIED grid cell
-        else if (p1.groupNumber && p2.memberId && !p2.groupNumber) {
-            await run(updateSql, [-99, weekId, p1.groupNumber, p1.position]);
-            await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
-        }
-        // Scenario B2: Dragging a Sub/Out player onto an OCCUPIED grid cell (reverse direction)
-        else if (p2.groupNumber && p1.memberId && !p1.groupNumber) {
-            await run(updateSql, [-99, weekId, p2.groupNumber, p2.position]);
-            await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
-        }
-
-        // 🎯 NEW SCENARIO C: Dragging a player OUT of the grid and dropping them into an unassigned Pool
-        // Sets the slot value to 0 to satisfy the database table's NOT NULL constraint!
-        else if (p1.groupNumber && !p2.groupNumber && !p2.memberId) {
-            // Creates a completely unique negative number (e.g., group 3, position 2 becomes -32)
-            const uniqueEmptyId = -parseInt(`${p1.groupNumber}${p1.position}`);
-            await run(updateSql, [uniqueEmptyId, weekId, p1.groupNumber, p1.position]);
-        } else if (p2.groupNumber && !p1.groupNumber && !p1.memberId) {
-            const uniqueEmptyId = -parseInt(`${p2.groupNumber}${p2.position}`);
-            await run(updateSql, [uniqueEmptyId, weekId, p2.groupNumber, p2.position]);
-        }
-
-        logger.info(`Successfully completed manual database grid structural sync for week ${weekId}`);
-        await updateGroupingTimestamp(weekId);
-        return true;
-    } catch (err) {
-        logger.error("Database execution error during swap:", err.message);
-        throw new Error(`Failed to execute swap: ${err.message}`);
+      await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
     }
+
+    // Scenario B1: Dragging a Sub/Out player onto an OCCUPIED grid cell
+    else if (p1.groupNumber && p2.memberId && !p2.groupNumber) {
+      await run(updateSql, [-99, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
+    }
+    // Scenario B2: Dragging a Sub/Out player onto an OCCUPIED grid cell (reverse direction)
+    else if (p2.groupNumber && p1.memberId && !p1.groupNumber) {
+      await run(updateSql, [-99, weekId, p2.groupNumber, p2.position]);
+      await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
+    }
+
+    // 🎯 NEW SCENARIO C: Dragging a player OUT of the grid and dropping them into an unassigned Pool
+    // Sets the slot value to 0 to satisfy the database table's NOT NULL constraint!
+    else if (p1.groupNumber && !p2.groupNumber && !p2.memberId) {
+      // Creates a completely unique negative number (e.g., group 3, position 2 becomes -32)
+      const uniqueEmptyId = -parseInt(`${p1.groupNumber}${p1.position}`);
+      await run(updateSql, [uniqueEmptyId, weekId, p1.groupNumber, p1.position]);
+    } else if (p2.groupNumber && !p1.groupNumber && !p1.memberId) {
+      const uniqueEmptyId = -parseInt(`${p2.groupNumber}${p2.position}`);
+      await run(updateSql, [uniqueEmptyId, weekId, p2.groupNumber, p2.position]);
+    }
+
+    logger.info(`Successfully completed manual database grid structural sync for week ${weekId}`);
+    await updateGroupingTimestamp(weekId);
+    return true;
+  } catch (err) {
+    logger.error("Database execution error during swap:", err.message);
+    throw new Error(`Failed to execute swap: ${err.message}`);
+  }
 };
