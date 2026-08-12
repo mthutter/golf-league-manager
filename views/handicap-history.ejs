@@ -106,7 +106,7 @@
                     <label class="form-label small fw-bold text-muted mb-1">Season Year</label>
                     <select name="year" class="form-select form-select-sm form-select-custom" onchange="document.getElementById('filterForm').submit()">
                         <% filters.years.forEach(y => { %>
-                            <option value="<%= y %>" <%= selectedYear == y ? 'selected' : '' %>>Year <%= y %></option>
+                            <option value="<%= y %>" <%= selectedYear == y ? 'selected' : '' %>><%= y %></option>
                         <% }) %>
                     </select>
                 </div>
@@ -139,29 +139,51 @@
     </div>
     
     <!-- Handicap History Dashboard Layout --> 
-    <div class="container my-4"> 
-        <div class="card shadow-sm results-table-card"> 
-            <div class="card-header text-white py-3" style="background-color: #1b4332"> 
-                <h5 class="card-title mb-0 fw-bold">
-                    <%= selectedMember ? 'Player Progress Timeline' : 'Recorded Field Handicaps' %>
-                </h5> 
-            </div> 
-            <div class="table-responsive" style="text-align: center"> 
-                <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover"> 
-                    <thead> 
-                        <tr> 
-                            <th style="width: 60px">Rank</th> 
-                            <th class="text-start" style="width: 200px; min-width: 160px">Player</th> 
-                            <th style="width: 80px">Week</th> 
-                            <th style="width: 80px">Year</th> 
-                            <th style="width: 100px">Handicap</th> 
-                        </tr> 
-                    </thead> 
-                    <tbody> 
-                        <% if (history && history.length > 0) { %>
-                            <% history.forEach((row, idx) => { %> 
-                                <tr> 
-                                    <td class="fw-bold bg-light players"><%= idx + 1 %></td> 
+  <!-- Handicap History Dashboard Layout --> 
+<div class="container my-4"> 
+    <div class="card shadow-sm results-table-card"> 
+        <!-- Dynamic Header: Reflects selection parameters contextually inside the top bar -->
+        <div class="card-header text-white py-3" style="background-color: #1b4332"> 
+            <h5 class="card-title mb-0 fw-bold d-flex justify-content-between align-items-center">
+                <span>
+                    <% if (selectedMember && history && history.length > 0) { %>
+                        <%= history[0].name_last %>, <%= history[0].name_first %> — Handicap Progress
+                    <% } else { %>
+                        Player Handicaps
+                    <% } %>
+                </span>
+                <span class="badge font-monospace" style="background-color: rgba(255,255,255,0.15); color: #ffffff; font-size: 0.85rem;">
+                    <% if (selectedWeek) { %>
+                        Week <%= selectedWeek %> • 
+                    <% } %>
+                    <%= selectedYear %>
+                </span>
+            </h5> 
+        </div> 
+        
+        <div class="table-responsive" style="text-align: center"> 
+            <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover"> 
+                <thead> 
+                    <tr> 
+                        <th style="width: 60px">Rank</th> 
+                        
+                        <!-- Show Player column only if we aren't isolated to an individual profile chart -->
+                        <% if (!selectedMember) { %>
+                            <th class="text-start" style="width: 220px; min-width: 180px">Player</th> 
+                        <% } else { %>
+                            <th style="width: 100px">Week</th> 
+                        <% } %>
+                        
+                        <th style="width: 110px">Handicap</th> 
+                    </tr> 
+                </thead> 
+                <tbody> 
+                    <% if (history && history.length > 0) { %>
+                        <% history.forEach((row, idx) => { %> 
+                            <tr> 
+                                <td class="fw-bold bg-light players"><%= idx + 1 %></td> 
+                                
+                                <% if (!selectedMember) { %>
                                     <td class="text-start fw-semibold players nowrap-cell"> 
                                         <a href="/members/<%= row.member_id %>" class="player-link">
                                             <% if (row.name_last && row.name_first) { %>
@@ -171,27 +193,32 @@
                                             <% } %>
                                         </a> 
                                     </td> 
-                                    <td class="players nowrap-cell text-muted">
-                                        Wk <%= row.week_id %>
+                                <% } else { %>
+                                    <td class="players nowrap-cell text-muted fw-semibold">
+                                        Week <%= row.week_id %>
                                     </td> 
-                                    <td class="players nowrap-cell text-muted">
-                                        <%= row.year %>
-                                    </td> 
-                                    <td class="fw-bold text-success players nowrap-cell"> 
-                                        <strong><%= row.handicap %></strong> 
-                                    </td> 
-                                </tr> 
-                            <% }) %> 
-                        <% } else { %>
-                            <tr>
-                                <td colspan="5" class="p-4 text-muted">No historical handicap metrics match this filter selection.</td>
-                            </tr>
-                        <% } %>
-                    </tbody> 
-                </table> 
-            </div> 
+                                <% } %>
+                                
+                                <td class="fw-bold text-success players nowrap-cell"> 
+                                    <span class="badge px-3 py-2" style="background-color: rgba(27, 67, 50, 0.08); color: #1b4332; font-weight: 700; font-size: 0.9rem; border-radius: 6px;">
+                                        <%= row.handicap %>
+                                    </span>
+                                </td> 
+                            </tr> 
+                        <% }) %> 
+                    <% } else { %>
+                        <tr>
+                            <td colspan="<%= selectedMember ? 3 : 3 %>" class="p-4 text-muted">
+                                No historical handicap metrics match this filter selection.
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody> 
+            </table> 
         </div> 
     </div> 
+</div>
+
     
     <%- include('./partials/footer'); %> 
     <%- include('./partials/scripts'); %> 
