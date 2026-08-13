@@ -1,5 +1,5 @@
 import ftp from "basic-ftp";
-import logger from "../utilities/logger";
+import logger from "../utilities/logger.js";
 
 export async function getFilenames(year) {
   const client = new ftp.Client();
