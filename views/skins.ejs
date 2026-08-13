@@ -321,10 +321,37 @@
                                 </tr>
                                 <% }); %>
 
-                                <tr class="fw-bold border-top border-dark"
-                                    style="background-color: #179117 !important; color: white">
-                                    <td colspan="<%= 1 + holeInfo.length %>"></td>
-                                    <td class="text-center players">TOTALS:</td>
+                                <!-- Combined Grand Totals & Hole Outcomes Row -->
+                                <!-- Combined Grand Totals & Hole Outcomes Row -->
+                                <tr class="fw-bold border-top border-dark align-middle"
+                                    style="background-color: #179117 !important; color: white; font-size: clamp(0.65rem, 0.9vw, 0.8rem);">
+                                    <!-- FIXED: Changed text-start ps-3 to text-end pe-3 for right justification -->
+                                    <td class="text-end pe-3" colspan="2">TOTALS / RESULTS:</td>
+
+                                    <!-- Inline Dynamic Hole-to-Hole Outcome Calculators -->
+                                    <% if (week.week_number > 11 ) { %>
+                                    <% for (let h = 10; h <= 18; h++) { %>
+                                    <% 
+                            const count = holeDetails.filter(d => Number(d.hole_number) === h).length;
+                            let outcome = "Carry";
+                            if (count === 1) outcome = "Win";
+                            if (count === 2) outcome = "Split";
+                          %>
+                                    <td class="text-center small opacity-90"><%= outcome %></td>
+                                    <% } %>
+                                    <% } else { %>
+                                    <% for (let h = 1; h <= 9; h++) { %>
+                                    <% 
+                            const count = holeDetails.filter(d => Number(d.hole_number) === h).length;
+                            let outcome = "Carry";
+                            if (count === 1) outcome = "Win";
+                            if (count === 2) outcome = "Split";
+                          %>
+                                    <td class="text-center small opacity-90"><%= outcome %></td>
+                                    <% } %>
+                                    <% } %>
+
+                                    <!-- Final Aggregated League Stats Columns -->
                                     <td class="text-center players">
                                         <%= (typeof reportTotals !== 'undefined' && reportTotals.skins) ? reportTotals.skins : 0 %>
                                     </td>
@@ -332,6 +359,7 @@
                                         $<%= (typeof reportTotals !== 'undefined' && reportTotals.payout) ? reportTotals.payout.toFixed(2) : '0.00' %>
                                     </td>
                                 </tr>
+
                                 <% } %>
                             </tbody>
                         </table>
