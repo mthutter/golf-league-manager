@@ -335,7 +335,7 @@
                             const count = holeDetails.filter(d => Number(d.hole_number) === h).length;
                             let outcome = "Carry";
                             if (count === 1) outcome = "Win";
-                            if (count === 2) outcome = "Split";
+                            if (count === 2) outcome = "Win (Split)";
                           %>
                                     <td class="text-center small opacity-90"><%= outcome %></td>
                                     <% } %>
@@ -345,7 +345,7 @@
                             const count = holeDetails.filter(d => Number(d.hole_number) === h).length;
                             let outcome = "Carry";
                             if (count === 1) outcome = "Win";
-                            if (count === 2) outcome = "Split";
+                            if (count === 2) outcome = "Win (Split)";
                           %>
                                     <td class="text-center small opacity-90"><%= outcome %></td>
                                     <% } %>
