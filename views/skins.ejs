@@ -165,6 +165,32 @@
             color: #1b4332;
             margin-bottom: 0;
         }
+        /* Premium Glassmorphic Badge Layout for Hole Value Metrics */
+.hole-value-badge {
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50px;
+  padding: 4px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+/* Secondary Muted text label spacing */
+.hole-value-badge .badge-label {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Distinctive crisp white color layer for numbers */
+.hole-value-badge .badge-price {
+  color: #fff3cd; /* Soft gold tint matching your carryover text theme */
+  font-weight: 700;
+}
+
     </style>
 </head>
 
@@ -203,17 +229,23 @@
         <div class="row mt-2">
             <div class="col-12">
                 <div class="card shadow-sm skins-table-card">
-                    <div class="card-header text-white py-3 d-flex justify-content-between align-items-center" style="background-color: #1b4332">
-                        <div>
-                            <h5 class="card-title mb-0 fw-bold"> Participant Gross/Net Scores </h5>
-                        </div>
-                        <div class="text-end ps-3">
-                            <div class="fs-5 fw-bold text-nowrap text-white" style="letter-spacing: 0.5px">
-                                Pot:
-                                $<%= (typeof totalPot !== 'undefined' && totalPot) ? totalPot.toFixed(2) : '0.00' %>
-                            </div>
-                        </div>
-                    </div>
+<div class="card-header text-white py-3 d-flex justify-content-between align-items-center" style="background-color: #1b4332">
+  <div>
+    <h5 class="card-title mb-0 fw-bold"> Participant Gross/Net Scores </h5>
+  </div>
+  <div class="text-end ps-3 d-flex align-items-center gap-3">
+    <!-- Sleek Custom Hole Value Badge Component -->
+    <div class="hole-value-badge text-nowrap">
+      <span class="badge-label">Skin Value:</span>
+      <span class="badge-price">$<%= (typeof totalPot !== 'undefined' && totalPot) ? (totalPot / 9).toFixed(2) : '0.00' %></span>
+    </div>
+    <!-- Total Combined Purse Pot Component -->
+    <div class="fs-5 fw-bold text-nowrap text-white" style="letter-spacing: 0.5px">
+      Pot: $<%= (typeof totalPot !== 'undefined' && totalPot) ? totalPot.toFixed(2) : '0.00' %>
+    </div>
+  </div>
+</div>
+
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle text-center mb-0 skins-custom-table">
