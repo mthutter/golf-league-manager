@@ -34,7 +34,7 @@
         }
 
         .skin-tie-pushed-cell {
-            border: 3.5px dotted #e94e33 !important;
+            border: 2px solid #18aa24 !important;
         }
 
         .skin-carryover-winner-card .net-score {
@@ -79,13 +79,15 @@
             padding: 14px;
             font-weight: 600;
             letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            /* Brightened for header clarity */
         }
 
         .skins-custom-table td {
             vertical-align: middle;
             padding: 4px 6px;
-            border: 1px solid rgba(27, 67, 50, 0.1);
+            border: 1px solid rgba(27, 67, 50, 0.28);
+            /* Darkened opacity from 0.1 to 0.28 */
         }
 
         .skin-carryover-feeder-cell {
@@ -165,32 +167,33 @@
             color: #1b4332;
             margin-bottom: 0;
         }
+
         /* Premium Glassmorphic Badge Layout for Hole Value Metrics */
-.hole-value-badge {
-  background-color: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 50px;
-  padding: 4px 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: clamp(0.7rem, 0.9vw, 0.85rem);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
-}
+        .hole-value-badge {
+            background-color: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 50px;
+            padding: 4px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+        }
 
-/* Secondary Muted text label spacing */
-.hole-value-badge .badge-label {
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 500;
-  letter-spacing: 0.3px;
-}
+        /* Secondary Muted text label spacing */
+        .hole-value-badge .badge-label {
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
 
-/* Distinctive crisp white color layer for numbers */
-.hole-value-badge .badge-price {
-  color: #fff3cd; /* Soft gold tint matching your carryover text theme */
-  font-weight: 700;
-}
-
+        /* Distinctive crisp white color layer for numbers */
+        .hole-value-badge .badge-price {
+            color: #fff3cd;
+            /* Soft gold tint matching your carryover text theme */
+            font-weight: 700;
+        }
     </style>
 </head>
 
@@ -214,7 +217,8 @@
                     </option>
                     <% }) %>
                 </select>
-                <button type="button" class="btn btn-success text-nowrap" onclick="window.location.href='/skins?weekId=' + document.getElementById('weekSelect').value;">
+                <button type="button" class="btn btn-success text-nowrap"
+                    onclick="window.location.href='/skins?weekId=' + document.getElementById('weekSelect').value;">
                     View Results
                 </button>
             </div>
@@ -229,22 +233,25 @@
         <div class="row mt-2">
             <div class="col-12">
                 <div class="card shadow-sm skins-table-card">
-<div class="card-header text-white py-3 d-flex justify-content-between align-items-center" style="background-color: #1b4332">
-  <div>
-    <h5 class="card-title mb-0 fw-bold"> Participant Gross/Net Scores </h5>
-  </div>
-  <div class="text-end ps-3 d-flex align-items-center gap-3">
-    <!-- Sleek Custom Hole Value Badge Component -->
-    <div class="hole-value-badge text-nowrap">
-      <span class="badge-label">Skin Value:</span>
-      <span class="badge-price">$<%= (typeof totalPot !== 'undefined' && totalPot) ? (totalPot / 9).toFixed(2) : '0.00' %></span>
-    </div>
-    <!-- Total Combined Purse Pot Component -->
-    <div class="fs-5 fw-bold text-nowrap text-white" style="letter-spacing: 0.5px">
-      Pot: $<%= (typeof totalPot !== 'undefined' && totalPot) ? totalPot.toFixed(2) : '0.00' %>
-    </div>
-  </div>
-</div>
+                    <div class="card-header text-white py-3 d-flex justify-content-between align-items-center"
+                        style="background-color: #1b4332">
+                        <div>
+                            <h5 class="card-title mb-0 fw-bold"> Participant Gross/Net Scores </h5>
+                        </div>
+                        <div class="text-end ps-3 d-flex align-items-center gap-3">
+                            <!-- Sleek Custom Hole Value Badge Component -->
+                            <div class="hole-value-badge text-nowrap">
+                                <span class="badge-label">Skin Value:</span>
+                                <span
+                                    class="badge-price">$<%= (typeof totalPot !== 'undefined' && totalPot) ? (totalPot / 9).toFixed(2) : '0.00' %></span>
+                            </div>
+                            <!-- Total Combined Purse Pot Component -->
+                            <div class="fs-5 fw-bold text-nowrap text-white" style="letter-spacing: 0.5px">
+                                Pot:
+                                $<%= (typeof totalPot !== 'undefined' && totalPot) ? totalPot.toFixed(2) : '0.00' %>
+                            </div>
+                        </div>
+                    </div>
 
 
                     <div class="table-responsive">
@@ -285,7 +292,8 @@
                                 <% participantScores.forEach(function(player) { %>
                                 <tr>
                                     <td class="text-start fw-semibold bg-light players">
-                                        <a href="/scores/members/<%= player.memberId %>" class="player-link"><%= player.name %></a>
+                                        <a href="/scores/members/<%= player.memberId %>"
+                                            class="player-link"><%= player.name %></a>
                                     </td>
                                     <td class="text-muted small bg-light players">
                                         <%= player.handicap %>
@@ -297,7 +305,8 @@
                                             <div class="net-score">
                                                 <strong>Net: <%= h.net %></strong>
                                                 <% if (h.strokes > 0) { %>
-                                                <span class="stroke-marker" title="<%= h.strokes %> handicap stroke(s)">*</span>
+                                                <span class="stroke-marker"
+                                                    title="<%= h.strokes %> handicap stroke(s)">*</span>
                                                 <% } %>
                                             </div>
                                         </div>
@@ -312,7 +321,8 @@
                                 </tr>
                                 <% }); %>
 
-                                <tr class="fw-bold border-top border-dark" style="background-color: #179117 !important; color: white">
+                                <tr class="fw-bold border-top border-dark"
+                                    style="background-color: #179117 !important; color: white">
                                     <td colspan="<%= 1 + holeInfo.length %>"></td>
                                     <td class="text-center players">TOTALS:</td>
                                     <td class="text-center players">
