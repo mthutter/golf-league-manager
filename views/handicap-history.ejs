@@ -162,8 +162,7 @@
                 <!-- YEAR LIST BOX -->
                 <div class="col-md-3">
                     <label class="form-label small fw-bold text-muted mb-1">Season Year</label>
-                    <select name="year" class="form-select form-select-sm form-select-custom"
-                        onchange="document.getElementById('filterForm').submit()">
+                    <select name="year" class="form-select form-select-sm form-select-custom" onchange="document.getElementById('filterForm').submit()">
                         <% filters.years.forEach(y => { %>
                         <option value="<%= y %>" <%= selectedYear == y ? 'selected' : '' %>><%= y %></option>
                         <% }) %>
@@ -173,8 +172,7 @@
                 <!-- WEEK LIST BOX -->
                 <div class="col-md-3">
                     <label class="form-label small fw-bold text-muted mb-1">League Week</label>
-                    <select name="weekId" id="weekSelector" class="form-select form-select-sm form-select-custom"
-                        onchange="clearMemberAndSubmit()">
+                    <select name="weekId" id="weekSelector" class="form-select form-select-sm form-select-custom" onchange="clearMemberAndSubmit()">
                         <option value="">-- All Weeks --</option>
                         <% filters.weeks.forEach(w => { %>
                         <option value="<%= w %>" <%= selectedWeek == w ? 'selected' : '' %>>Week <%= w %></option>
@@ -185,8 +183,7 @@
                 <!-- MEMBER LIST BOX -->
                 <div class="col-md-6">
                     <label class="form-label small fw-bold text-muted mb-1">Filter by Individual Player</label>
-                    <select name="memberId" id="memberSelector" class="form-select form-select-sm form-select-custom"
-                        onchange="clearWeekAndSubmit()">
+                    <select name="memberId" id="memberSelector" class="form-select form-select-sm form-select-custom" onchange="clearWeekAndSubmit()">
                         <option value="">-- View Whole Field Output --</option>
                         <% filters.members.forEach(m => { %>
                         <option value="<%= m.id %>" <%= selectedMember == m.id ? 'selected' : '' %>>
@@ -213,8 +210,7 @@
                         Player Handicaps
                         <% } %>
                     </span>
-                    <span class="badge font-monospace"
-                        style="background-color: rgba(255,255,255,0.15); color: #ffffff; font-size: 0.85rem;">
+                    <span class="badge font-monospace" style="background-color: rgba(255,255,255,0.15); color: #ffffff; font-size: 0.85rem;">
                         <% if (selectedWeek) { %>
                         Week <%= selectedWeek %> •
                         <% } %>
@@ -224,8 +220,7 @@
             </div>
 
             <div class="table-responsive" style="text-align: center">
-                <table id="sortableTable"
-                    class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
+                <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
                     <thead>
                         <tr>
                             <th style="width: 60px">Rank</th>
@@ -263,8 +258,7 @@
                             <% } %>
 
                             <td class="fw-bold text-success players nowrap-cell">
-                                <span class="badge px-3 py-2"
-                                    style="background-color: rgba(27, 67, 50, 0.08); color: #1b4332; font-weight: 700; font-size: 0.9rem; border-radius: 6px;">
+                                <span class="badge px-3 py-2" style="background-color: rgba(27, 67, 50, 0.08); color: #1b4332; font-weight: 700; font-size: 0.9rem; border-radius: 6px;">
                                     <%= row.handicap %>
                                 </span>
                             </td>
@@ -292,6 +286,7 @@
             document.getElementById('memberSelector').value = "";
             document.getElementById('filterForm').submit();
         }
+
         function clearWeekAndSubmit() {
             document.getElementById('weekSelector').value = "";
             document.getElementById('filterForm').submit();
