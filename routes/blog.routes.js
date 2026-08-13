@@ -1,11 +1,7 @@
 // blog.routes.js
 import express from "express";
 import * as blogController from "../controllers/blog.controller.js"; // Adjust path to your controller
-import {
-    requireAuth,
-    requireAdmin,
-    requireMember
-} from "../middleware/auth.middleware.js";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
