@@ -83,7 +83,7 @@ Automatic calculation of skins including hole carryovers.
 
 - EJS
 - Bootstrap 5
-- Vanilla JavaScript
+- JavaScript
 
 ### Architecture
 
@@ -104,6 +104,7 @@ views/
 middleware/
 config/
 public/
+utilities/
 ```
 
 The application separates business rules from presentation concerns through a service layer, enabling cleaner controllers, improved maintainability, and easier testing.

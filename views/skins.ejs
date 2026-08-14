@@ -2,404 +2,398 @@
 <html lang="en">
 
 <head>
-    <%- include('partials/header') %>
-    <style>
-        .player-link {
-            color: #1b4332;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
+  <%- include('partials/header') %>
+  <style>
+    .player-link {
+      color: #1b4332;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
 
-        .player-link:hover {
-            color: #18aa24;
-            text-decoration: underline;
-        }
+    .player-link:hover {
+      color: #18aa24;
+      text-decoration: underline;
+    }
 
-        .skin-winner-card {
-            background-color: #d1e7dd;
-            border: 3px solid #18aa24 !important;
-            font-weight: 700;
-        }
+    .skin-winner-card {
+      background-color: #d1e7dd;
+      border: 3px solid #18aa24 !important;
+      font-weight: 700;
+    }
 
-        .skin-winner-card .net-score {
-            color: #0f5132;
-            font-weight: 700;
-        }
+    .skin-winner-card .net-score {
+      color: #0f5132;
+      font-weight: 700;
+    }
 
-        /* Enhances the winning carryover cell card look */
-        .skin-carryover-winner-card {
-            background-color: #fff3cd !important;
-            border: 3px solid #18aa24 !important;
-            font-weight: 700;
-        }
+    /* Enhances the winning carryover cell card look */
+    .skin-carryover-winner-card {
+      background-color: #fff3cd !important;
+      border: 3px solid #18aa24 !important;
+      font-weight: 700;
+    }
 
-        .skin-tie-pushed-cell {
-            border: 2px solid #18aa24 !important;
-        }
+    .skin-tie-pushed-cell {
+      border: 2px solid #18aa24 !important;
+    }
 
-        .skin-carryover-winner-card .net-score {
-            color: #664d03 !important;
-            font-weight: 700;
-        }
+    .skin-carryover-winner-card .net-score {
+      color: #664d03 !important;
+      font-weight: 700;
+    }
 
-        .border-dashed {
-            border: 1.5px dashed rgba(27, 67, 50, 0.25) !important;
-        }
+    .border-dashed {
+      border: 1.5px dashed rgba(27, 67, 50, 0.25) !important;
+    }
 
-        .stroke-marker {
-            color: #dc3545;
-            font-weight: bold;
-            margin-left: 2px;
-        }
+    .stroke-marker {
+      color: #dc3545;
+      font-weight: bold;
+      margin-left: 2px;
+    }
 
-        .gallery-header {
-            text-align: center;
-            margin-top: 1.5rem;
-        }
+    .gallery-header {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
 
-        .gallery-header h1 {
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
+    .gallery-header h1 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
 
-        .gallery-header p {
-            opacity: 0.9;
-            margin-bottom: 1rem;
-        }
+    .gallery-header p {
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
 
-        .skins-table-card {
-            border: 1.5px solid rgba(27, 67, 50, 0.15);
-            border-radius: 18px;
-            overflow: hidden;
-        }
+    .skins-table-card {
+      border: 1.5px solid rgba(27, 67, 50, 0.15);
+      border-radius: 18px;
+      overflow: hidden;
+    }
 
-        .skins-custom-table th {
-            background-color: #1b4332 !important;
-            color: white !important;
-            padding: 14px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            /* Brightened for header clarity */
-        }
+    .skins-custom-table th {
+      background-color: #1b4332 !important;
+      color: white !important;
+      padding: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      /* Brightened for header clarity */
+    }
 
-        .skins-custom-table td {
-            vertical-align: middle;
-            padding: 4px 6px;
-            border: 1px solid rgba(27, 67, 50, 0.28);
-            /* Darkened opacity from 0.1 to 0.28 */
-        }
+    .skins-custom-table td {
+      vertical-align: middle;
+      padding: 4px 6px;
+      border: 1px solid rgba(27, 67, 50, 0.28);
+      /* Darkened opacity from 0.1 to 0.28 */
+    }
 
-        .skin-carryover-feeder-cell {
-            border: 3px dotted #18aa24 !important;
-            background-color: rgba(255, 243, 205, 0.4) !important;
-        }
+    .skin-carryover-feeder-cell {
+      border: 3px dotted #18aa24 !important;
+      background-color: rgba(255, 243, 205, 0.4) !important;
+    }
 
-        .score-cell {
-            line-height: 1.05;
-        }
+    .score-cell {
+      line-height: 1.05;
+    }
 
-        .gross-score {
-            font-size: clamp(0.55rem, 0.9vw, 0.75rem);
-        }
+    .gross-score {
+      font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+    }
 
-        .net-score {
-            font-size: clamp(0.45rem, 0.8vw, 0.65rem);
-        }
+    .net-score {
+      font-size: clamp(0.45rem, 0.8vw, 0.65rem);
+    }
 
-        .players {
-            font-size: clamp(0.65rem, 1vw, 0.85rem);
-        }
+    .players {
+      font-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
 
-        .scorecard td:first-child,
-        .scorecard th:first-child {
-            padding-left: clamp(4px, 0.5vw, 10px);
-        }
+    .scorecard td:first-child,
+    .scorecard th:first-child {
+      padding-left: clamp(4px, 0.5vw, 10px);
+    }
 
-        .scorecard-header th {
-            font-size: clamp(0.55rem, 1vw, 0.8rem);
-            padding: clamp(2px, 0.4vw, 5px) clamp(3px, 0.6vw, 8px);
-            font-weight: 700;
-        }
+    .scorecard-header th {
+      font-size: clamp(0.55rem, 1vw, 0.8rem);
+      padding: clamp(2px, 0.4vw, 5px) clamp(3px, 0.6vw, 8px);
+      font-weight: 700;
+    }
 
-        .active-week {
-            background-color: #18aa24 !important;
-            color: white !important;
-            font-weight: bold;
-            border-color: #1b4332 !important;
-        }
+    .active-week {
+      background-color: #18aa24 !important;
+      color: white !important;
+      font-weight: bold;
+      border-color: #1b4332 !important;
+    }
 
-        .button-link {
-            display: inline-block;
-            text-decoration: none;
-        }
+    .button-link {
+      display: inline-block;
+      text-decoration: none;
+    }
 
-        .week-nav {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+    .week-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
 
-        .week-nav .btn {
-            min-width: 85px;
-            font-weight: 600;
-            border-radius: 50px;
-            border: none;
-            transition: all 0.2s ease;
-        }
+    .week-nav .btn {
+      min-width: 85px;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      transition: all 0.2s ease;
+    }
 
-        .week-nav .btn:hover {
-            transform: translateY(-1px);
-        }
+    .week-nav .btn:hover {
+      transform: translateY(-1px);
+    }
 
-        .week-results-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: .75rem;
-            margin-top: .75rem;
-            flex-wrap: wrap;
-        }
+    .week-results-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      margin-top: .75rem;
+      flex-wrap: wrap;
+    }
 
-        .week-results-label {
-            font-weight: 700;
-            color: #1b4332;
-            margin-bottom: 0;
-        }
+    .week-results-label {
+      font-weight: 700;
+      color: #1b4332;
+      margin-bottom: 0;
+    }
 
-        /* Premium Glassmorphic Badge Layout for Hole Value Metrics */
-        .hole-value-badge {
-            background-color: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 50px;
-            padding: 4px 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: clamp(0.7rem, 0.9vw, 0.85rem);
-            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
-        }
+    /* Premium Glassmorphic Badge Layout for Hole Value Metrics */
+    .hole-value-badge {
+      background-color: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50px;
+      padding: 4px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    }
 
-        /* Secondary Muted text label spacing */
-        .hole-value-badge .badge-label {
-            color: rgba(255, 255, 255, 0.75);
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
+    /* Secondary Muted text label spacing */
+    .hole-value-badge .badge-label {
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
 
-        /* Distinctive crisp white color layer for numbers */
-        .hole-value-badge .badge-price {
-            color: #fff3cd;
-            /* Soft gold tint matching your carryover text theme */
-            font-weight: 700;
-        }
-    </style>
+    /* Distinctive crisp white color layer for numbers */
+    .hole-value-badge .badge-price {
+      color: #fff3cd;
+      /* Soft gold tint matching your carryover text theme */
+      font-weight: 700;
+    }
+  </style>
 </head>
 
 <body>
-    <%- include('partials/navbar') %>
-    <div class="container">
-        <div class="gallery-header">
-            <h1> Skins Results - Week <%= week.week_number %> (<%= week.displayDate %>) </h1>
-            <p>Bottoms Up Golf League • 2026 Season</p>
-        </div>
+  <%- include('partials/navbar') %>
+  <div class="container">
+    <div class="gallery-header">
+      <h1> Skins Results - Week <%= week.week_number %> (<%= week.displayDate %>) </h1>
+      <p>Bottoms Up Golf League • 2026 Season</p>
+    </div>
 
-        <div class="week-results-container">
-            <label for="weekSelect" class="week-results-label"> Jump to Weekly Results: </label>
-            <div class="d-inline-flex align-items-center gap-2">
-                <select id="weekSelect" class="form-select" style="width: 240px;">
-                    <% weeks
+    <div class="week-results-container">
+      <label for="weekSelect" class="week-results-label"> Jump to Weekly Results: </label>
+      <div class="d-inline-flex align-items-center gap-2">
+        <select id="weekSelect" class="form-select" style="width: 240px;">
+          <% weeks
             .filter(w => w.week_number <= currentWeek.week_number)
             .forEach(w => { %>
-                    <option value="<%= w.week_number %>" <%= w.week_number === selectedWeekId ? "selected" : "" %>>
-                        Week <%= w.week_number %> (<%= w.displayDate %>)
-                    </option>
-                    <% }) %>
-                </select>
-                <button type="button" class="btn btn-success text-nowrap"
-                    onclick="window.location.href='/skins?weekId=' + document.getElementById('weekSelect').value;">
-                    View Results
-                </button>
-            </div>
-        </div>
+          <option value="<%= w.week_number %>" <%= w.week_number === selectedWeekId ? "selected" : "" %>>
+            Week <%= w.week_number %> (<%= w.displayDate %>)
+          </option>
+          <% }) %>
+        </select>
+        <button type="button" class="btn btn-success text-nowrap" onclick="window.location.href='/skins?weekId=' + document.getElementById('weekSelect').value;">
+          View Results
+        </button>
+      </div>
     </div>
-    <div class="container my-4">
-        <% if (!selectedWeekId) { %>
-        <div class="alert alert-warning text-center shadow-sm" style="border-radius: 12px">
-            No game data has been processed yet.
-        </div>
-        <% } else { %>
-        <div class="row mt-2">
-            <div class="col-12">
-                <div class="card shadow-sm skins-table-card">
-                    <div class="card-header text-white py-3 d-flex justify-content-between align-items-center"
-                        style="background-color: #1b4332">
-                        <div>
-                            <h5 class="card-title mb-0 fw-bold"> Participant Gross/Net Scores </h5>
-                        </div>
-                        <div class="text-end ps-3 d-flex align-items-center gap-3">
-                            <!-- Sleek Custom Hole Value Badge Component -->
-                            <div class="hole-value-badge text-nowrap">
-                                <span class="badge-label">Skin Value:</span>
-                                <span
-                                    class="badge-price">$<%= (typeof totalPot !== 'undefined' && totalPot) ? (totalPot / 9).toFixed(2) : '0.00' %></span>
-                            </div>
-                            <!-- Total Combined Purse Pot Component -->
-                            <div class="fs-5 fw-bold text-nowrap text-white" style="letter-spacing: 0.5px">
-                                Pot:
-                                $<%= (typeof totalPot !== 'undefined' && totalPot) ? totalPot.toFixed(2) : '0.00' %>
-                            </div>
-                        </div>
+  </div>
+  <div class="container my-4">
+    <% if (!selectedWeekId) { %>
+    <div class="alert alert-warning text-center shadow-sm" style="border-radius: 12px">
+      No game data has been processed yet.
+    </div>
+    <% } else { %>
+    <div class="row mt-2">
+      <div class="col-12">
+        <div class="card shadow-sm skins-table-card">
+          <div class="card-header text-white py-3 d-flex justify-content-between align-items-center" style="background-color: #1b4332">
+            <div>
+              <h5 class="card-title mb-0 fw-bold"> Participant Gross/Net Scores </h5>
+            </div>
+            <div class="text-end ps-3 d-flex align-items-center gap-3">
+              <!-- Sleek Custom Hole Value Badge Component -->
+              <div class="hole-value-badge text-nowrap">
+                <span class="badge-label">Skin Value:</span>
+                <span class="badge-price">$<%= (typeof totalPot !== 'undefined' && totalPot) ? (totalPot / 9).toFixed(2) : '0.00' %></span>
+              </div>
+              <!-- Total Combined Purse Pot Component -->
+              <div class="fs-5 fw-bold text-nowrap text-white" style="letter-spacing: 0.5px">
+                Pot:
+                $<%= (typeof totalPot !== 'undefined' && totalPot) ? totalPot.toFixed(2) : '0.00' %>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center mb-0 skins-custom-table">
+              <thead class="scorecard-header">
+                <tr>
+                  <th rowspan="2" class="text-start" style="min-width: 110px"> Player </th>
+                  <th rowspan="2" style="width: 70px">HCP</th>
+                  <% if (week.week_number > 11 ) { %>
+                  <% for (let h = 10; h <= 18; h++) { %>
+                  <th> Hole <%= h %> </th>
+                  <% } %>
+                  <% } else { %>
+                  <% for (let h = 1; h <= 9; h++) { %>
+                  <th> Hole <%= h %> </th>
+                  <% } %>
+                  <% } %>
+                  <th rowspan="2" style="width: 60px">Skins</th>
+                  <th rowspan="2" style="width: 100px">Payout ($)</th>
+                </tr>
+                <tr>
+                  <% holeInfo.forEach(hole => { %>
+                  <th class="small py-1">
+                    <span class="text-warning fw-semibold">M<%= hole.handicap_men %></span> /
+                    <span class="text-info fw-semibold">W<%= hole.handicap_women %></span>
+                  </th>
+                  <% }) %>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!participantScores || participantScores.length === 0) { %>
+                <tr>
+                  <td colspan="<%= 4 + holeInfo.length %>" class="text-muted py-4">
+                    No active participant data found for this week.
+                  </td>
+                </tr>
+                <% } else { %>
+                <% participantScores.forEach(function(player) { %>
+                <tr>
+                  <td class="text-start fw-semibold bg-light players">
+                    <a href="/scores/members/<%= player.memberId %>" class="player-link"><%= player.name %></a>
+                  </td>
+                  <td class="text-muted small bg-light players">
+                    <%= player.handicap %>
+                  </td>
+                  <% player.holes.forEach(function(h) { %>
+                  <td class="<%= h.cellClass %>">
+                    <div class="score-cell">
+                      <div class="gross-score">Gross: <%= h.gross %></div>
+                      <div class="net-score">
+                        <strong>Net: <%= h.net %></strong>
+                        <% if (h.strokes > 0) { %>
+                        <span class="stroke-marker" title="<%= h.strokes %> handicap stroke(s)">*</span>
+                        <% } %>
+                      </div>
                     </div>
+                  </td>
+                  <% }); %>
+                  <td class="fw-bold text-center players">
+                    <%= player.skinsWon %>
+                  </td>
+                  <td class="fw-bold text-end text-success bg-light pe-3">
+                    $<%= player.payout.toFixed(2) %>
+                  </td>
+                </tr>
+                <% }); %>
 
+                <!-- Combined Grand Totals & Hole Outcomes Row -->
+                <!-- Combined Grand Totals & Hole Outcomes Row -->
+                <tr class="fw-bold border-top border-dark align-middle" style="background-color: #179117 !important; color: white; font-size: clamp(0.65rem, 0.9vw, 0.8rem);">
+                  <!-- FIXED: Changed text-start ps-3 to text-end pe-3 for right justification -->
+                  <td class="text-end pe-3" colspan="2">TOTALS / RESULTS:</td>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle text-center mb-0 skins-custom-table">
-                            <thead class="scorecard-header">
-                                <tr>
-                                    <th rowspan="2" class="text-start" style="min-width: 110px"> Player </th>
-                                    <th rowspan="2" style="width: 70px">HCP</th>
-                                    <% if (week.week_number > 11 ) { %>
-                                    <% for (let h = 10; h <= 18; h++) { %>
-                                    <th> Hole <%= h %> </th>
-                                    <% } %>
-                                    <% } else { %>
-                                    <% for (let h = 1; h <= 9; h++) { %>
-                                    <th> Hole <%= h %> </th>
-                                    <% } %>
-                                    <% } %>
-                                    <th rowspan="2" style="width: 60px">Skins</th>
-                                    <th rowspan="2" style="width: 100px">Payout ($)</th>
-                                </tr>
-                                <tr>
-                                    <% holeInfo.forEach(hole => { %>
-                                    <th class="small py-1">
-                                        <span class="text-warning fw-semibold">M<%= hole.handicap_men %></span> /
-                                        <span class="text-info fw-semibold">W<%= hole.handicap_women %></span>
-                                    </th>
-                                    <% }) %>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if (!participantScores || participantScores.length === 0) { %>
-                                <tr>
-                                    <td colspan="<%= 4 + holeInfo.length %>" class="text-muted py-4">
-                                        No active participant data found for this week.
-                                    </td>
-                                </tr>
-                                <% } else { %>
-                                <% participantScores.forEach(function(player) { %>
-                                <tr>
-                                    <td class="text-start fw-semibold bg-light players">
-                                        <a href="/scores/members/<%= player.memberId %>"
-                                            class="player-link"><%= player.name %></a>
-                                    </td>
-                                    <td class="text-muted small bg-light players">
-                                        <%= player.handicap %>
-                                    </td>
-                                    <% player.holes.forEach(function(h) { %>
-                                    <td class="<%= h.cellClass %>">
-                                        <div class="score-cell">
-                                            <div class="gross-score">Gross: <%= h.gross %></div>
-                                            <div class="net-score">
-                                                <strong>Net: <%= h.net %></strong>
-                                                <% if (h.strokes > 0) { %>
-                                                <span class="stroke-marker"
-                                                    title="<%= h.strokes %> handicap stroke(s)">*</span>
-                                                <% } %>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <% }); %>
-                                    <td class="fw-bold text-center players">
-                                        <%= player.skinsWon %>
-                                    </td>
-                                    <td class="fw-bold text-end text-success bg-light pe-3">
-                                        $<%= player.payout.toFixed(2) %>
-                                    </td>
-                                </tr>
-                                <% }); %>
-
-                                <!-- Combined Grand Totals & Hole Outcomes Row -->
-                                <!-- Combined Grand Totals & Hole Outcomes Row -->
-                                <tr class="fw-bold border-top border-dark align-middle"
-                                    style="background-color: #179117 !important; color: white; font-size: clamp(0.65rem, 0.9vw, 0.8rem);">
-                                    <!-- FIXED: Changed text-start ps-3 to text-end pe-3 for right justification -->
-                                    <td class="text-end pe-3" colspan="2">TOTALS / RESULTS:</td>
-
-                                    <!-- Inline Dynamic Hole-to-Hole Outcome Calculators -->
-                                    <% if (week.week_number > 11 ) { %>
-                                    <% for (let h = 10; h <= 18; h++) { %>
-                                    <% 
+                  <!-- Inline Dynamic Hole-to-Hole Outcome Calculators -->
+                  <% if (week.week_number > 11 ) { %>
+                  <% for (let h = 10; h <= 18; h++) { %>
+                  <% 
                             const count = holeDetails.filter(d => Number(d.hole_number) === h).length;
                             let outcome = "Carry";
                             if (count === 1) outcome = "Win";
                             if (count === 2) outcome = "Win (Split)";
                           %>
-                                    <td class="text-center small opacity-90"><%= outcome %></td>
-                                    <% } %>
-                                    <% } else { %>
-                                    <% for (let h = 1; h <= 9; h++) { %>
-                                    <% 
+                  <td class="text-center small opacity-90"><%= outcome %></td>
+                  <% } %>
+                  <% } else { %>
+                  <% for (let h = 1; h <= 9; h++) { %>
+                  <% 
                             const count = holeDetails.filter(d => Number(d.hole_number) === h).length;
                             let outcome = "Carry";
                             if (count === 1) outcome = "Win";
                             if (count === 2) outcome = "Win (Split)";
                           %>
-                                    <td class="text-center small opacity-90"><%= outcome %></td>
-                                    <% } %>
-                                    <% } %>
+                  <td class="text-center small opacity-90"><%= outcome %></td>
+                  <% } %>
+                  <% } %>
 
-                                    <!-- Final Aggregated League Stats Columns -->
-                                    <td class="text-center players">
-                                        <%= (typeof reportTotals !== 'undefined' && reportTotals.skins) ? reportTotals.skins : 0 %>
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        $<%= (typeof reportTotals !== 'undefined' && reportTotals.payout) ? reportTotals.payout.toFixed(2) : '0.00' %>
-                                    </td>
-                                </tr>
+                  <!-- Final Aggregated League Stats Columns -->
+                  <td class="text-center players">
+                    <%= (typeof reportTotals !== 'undefined' && reportTotals.skins) ? reportTotals.skins : 0 %>
+                  </td>
+                  <td class="text-end pe-3">
+                    $<%= (typeof reportTotals !== 'undefined' && reportTotals.payout) ? reportTotals.payout.toFixed(2) : '0.00' %>
+                  </td>
+                </tr>
 
-                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
 
-                </div>
-            </div>
         </div>
-        <% } %>
+      </div>
     </div>
+    <% } %>
+  </div>
 
-    <script>
-        document.getElementById("recalcBtn")?.addEventListener("click", async () => {
-            const weekId = "<%= selectedWeekId || '' %>";
-            if (!weekId) return;
-            const btn = document.getElementById("recalcBtn");
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = "⏳ Calculating...";
-            try {
-                const response = await fetch(`/skins-report/calculate/${weekId}`, {
-                    method: "POST"
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    window.location.reload();
-                } else {
-                    alert("Error: " + (result.error || "Unknown error"));
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                }
-            } catch (err) {
-                alert("Server fetch error.");
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            }
+  <script>
+    document.getElementById("recalcBtn")?.addEventListener("click", async () => {
+      const weekId = "<%= selectedWeekId || '' %>";
+      if (!weekId) return;
+      const btn = document.getElementById("recalcBtn");
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = "⏳ Calculating...";
+      try {
+        const response = await fetch(`/skins-report/calculate/${weekId}`, {
+          method: "POST"
         });
-    </script>
-    <%- include('partials/scripts') %>
-    <%- include('partials/footer') %>
+        const result = await response.json();
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert("Error: " + (result.error || "Unknown error"));
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      } catch (err) {
+        alert("Server fetch error.");
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
+  </script>
+  <%- include('partials/scripts') %>
+  <%- include('partials/footer') %>
 </body>
 
 </html>
