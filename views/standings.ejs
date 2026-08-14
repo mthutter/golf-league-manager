@@ -51,8 +51,11 @@
         }
 
         .standings-custom-table td {
-            vertical-align: middle;
-            padding: 8px 12px;
+            display: table-cell;
+            /* Forces standard cell behavior */
+            vertical-align: middle !important;
+            /* Overrides any competing styles */
+ 
             border: 1px solid rgba(27, 67, 50, 0.1);
         }
 
@@ -188,9 +191,6 @@
     <!-- Standings Table Dashboard Layout -->
     <div class="container my-4">
         <div class="card shadow-sm standings-table-card">
-            <div class="card-header text-white py-3" style="background-color: #1b4332">
-                <h5 class="card-title mb-0 fw-bold">Official Leaderboard</h5>
-            </div>
             <div class="table-responsive">
                 <table id="sortableTable"
                     class="table table-bordered align-middle text-center mb-0 standings-custom-table">
