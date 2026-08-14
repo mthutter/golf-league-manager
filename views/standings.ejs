@@ -41,16 +41,13 @@
         .standings-custom-table th {
             background-color: #1b4332 !important;
             color: white !important;
-            padding: clamp(6px, 1vw, 14px);
-            /* Fluid padding shrinks on mobile */
+            padding: 4px 6px clamp(6px, 1vw, 14px);
             font-weight: 700;
-            font-size: clamp(0.55rem,
-                    0.9vw,
-                    0.8rem);
-            /* Shrinks the text smoothly */
+            font-size: clamp(0.55rem, 0.9vw, 0.8rem);
             letter-spacing: 0.5px;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            white-space: nowrap;
+            white-space: normal;
+            /* Changed from nowrap to normal */
         }
 
         .standings-custom-table td {
@@ -170,14 +167,16 @@
         .filter(week => week.week_number <= currentWeek.week_number)
         .forEach(week => { %>
 
-                    <option value="<%= week.week_number %>" <%= week.week_number === currentWeek.week_number ? "selected" : "" %>>
+                    <option value="<%= week.week_number %>"
+                        <%= week.week_number === currentWeek.week_number ? "selected" : "" %>>
                         Week <%= week.week_number %> (<%= week.displayDate %>)
                     </option>
 
                     <% }) %>
                 </select>
 
-                <button type="button" class="btn btn-success text-nowrap" onclick="window.location.href='/scores/weekly/' + document.getElementById('weekSelect').value;">
+                <button type="button" class="btn btn-success text-nowrap"
+                    onclick="window.location.href='/scores/weekly/' + document.getElementById('weekSelect').value;">
                     View Results
                 </button>
             </div>
@@ -193,20 +192,21 @@
                 <h5 class="card-title mb-0 fw-bold">Official Leaderboard</h5>
             </div>
             <div class="table-responsive">
-                <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 standings-custom-table">
+                <table id="sortableTable"
+                    class="table table-bordered align-middle text-center mb-0 standings-custom-table">
                     <thead>
                         <tr>
-                            <th>Pos</th>
-                            <th class="text-start">Player</th>
+                            <th>Position</th>
+                            <th>Player</th>
                             <th></th>
-                            <th>Avg Pts</th>
-                            <th>HCP</th>
-                            <th>Rounds</th>
+                            <th>Weekly Points Average</th>
+                            <th>Handicap</th>
+                            <th>Rounds Played</th>
                             <th>Birdies</th>
-                            <th>CTP</th>
-                            <th>Total Pts</th>
-                            <th>Gross Avg</th>
-                            <th>Net Avg</th>
+                            <th>Closest Points</th>
+                            <th>Total Points</th>
+                            <th>Gross Weekly Average</th>
+                            <th>Net Weekly Average</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -256,7 +256,8 @@
                             </td>
 
                             <!-- Average Points column -->
-                            <td class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>">
+                            <td
+                                class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>">
                                 <%= Number(player.avg_points).toFixed(2) %>
                             </td>
                             <td style="color: #1b4332" class="fw-bold bg-light players">
