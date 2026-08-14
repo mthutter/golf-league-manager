@@ -45,19 +45,24 @@
         .results-custom-table th {
             background-color: #1b4332 !important;
             color: white !important;
-            padding: 10px 14px;
+            padding: 4px 6px clamp(6px, 1vw, 14px);
             font-weight: 700;
             font-size: clamp(0.55rem, 0.9vw, 0.8rem);
             letter-spacing: 0.5px;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            white-space: nowrap;
+            white-space: normal;
+            /* Changed from nowrap to normal */
         }
 
         .results-custom-table td {
-            vertical-align: middle;
-            padding: 10px 14px;
+            display: table-cell;
+            /* Forces standard cell behavior */
+            vertical-align: middle !important;
+            /* Overrides any competing styles */
+            padding: 4px 6px;
             border: 1px solid rgba(27, 67, 50, 0.1);
         }
+
 
         /* Unified font class applied to all body cells */
         .players {
@@ -126,23 +131,19 @@
 
     <!-- Performance History Dashboard Layout -->
     <div class="container my-4">
-        <div class="card shadow-sm results-table-card">
-            <div class="card-header text-white py-3" style="background-color: #1b4332">
-                <h5 class="card-title mb-0 fw-bold">2026 Weekly Scoring</h5>
-            </div>
-
+        <div class="card shadow-sm results-table-card">           
             <div class="table-responsive" style="text-align: center">
                 <table class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
                     <thead>
                         <tr>
                             <!-- Explicitly declare small column constraints -->
-                            <th style="width: 120px">Week / Round</th>
-                            <th style="width: 95px">Gross Score</th>
-                            <th style="width: 95px">Net Score</th>
-                            <th style="width: 105px">Stableford Pts</th>
-                            <th style="width: 95px">Birdie Pts</th>
-                            <th style="width: 95px">CTP Pts</th>
-                            <th style="width: 130px">Total Pts Earned</th>
+                            <th>Week / Round</th>
+                            <th>Gross Score</th>
+                            <th>Net Score</th>
+                            <th>Stableford Points</th>
+                            <th>Birdie Points</th>
+                            <th>CTP Points</th>
+                            <th>Total Points</th>
                         </tr>
                     </thead>
                     <tbody>
