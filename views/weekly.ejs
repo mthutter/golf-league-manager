@@ -41,27 +41,6 @@
             margin: 0 auto;
         }
 
-        .results-custom-table th {
-            background-color: #1b4332 !important;
-            color: white !important;
-            padding: 4px 6px clamp(6px, 1vw, 14px);
-            font-weight: 700;
-            font-size: clamp(0.55rem, 0.9vw, 0.8rem);
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            white-space: normal;
-            /* Changed from nowrap to normal */
-        }
-
-        .results-custom-table td {
-            display: table-cell;
-            /* Forces standard cell behavior */
-            vertical-align: middle !important;
-            /* Overrides any competing styles */
-            padding: 4px 6px;
-            border: 1px solid rgba(27, 67, 50, 0.1);
-        }
-
         .players {
             font-size: clamp(0.65rem, 1vw, 0.85rem);
         }
@@ -148,7 +127,7 @@
         <div class="card shadow-sm results-table-card">
             <div class="table-responsive" style="text-align: center">
                 <table id="sortableTable"
-                    class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
+                    class="table table-bordered align-middle text-center mb-0 league-table compact-pixel-table table-hover">
                     <thead>
                         <tr>
                             <th>Rank</th>
