@@ -1,42 +1,37 @@
 // players.routes.js
 import express from "express";
-// We don't necessarily need the old middleware if we define the flexible role checks here
 import {
-    getPlayers,
-    showAddPlayerForm,
-    createPlayer,
-    getPlayersInactive,
-    showEditPlayerForm,
-    updatePlayer,
+  getPlayers,
+  showAddPlayerForm,
+  createPlayer,
+  getPlayersInactive,
+  showEditPlayerForm,
+  updatePlayer,
+  showOwnProfileForm,
+  updateOwnProfile,
 } from "../controllers/players.controller.js";
-import {
-    requireAuth,
-    requireAdmin
-} from "../middleware/auth.middleware.js";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-/* ========================================= PLAYER LIST ========================================= */
-// 🔓 Open to any authenticated player or admin
-router.get("/", requireAuth, getPlayers);
+/* ========================================= MEMBER SELF PROFILE ========================================= */
+// 🔑 PLACE THIS ABOVE PARAMS! Evaluated first.
+router.get("/profile", requireAuth, showOwnProfileForm);
+router.post("/profile", requireAuth, updateOwnProfile);
 
-// 🔒 Restricted to Admin view lists only
+/* ========================================= PLAYER LIST ========================================= */
+router.get("/", requireAuth, getPlayers);
 router.get("/inactive", requireAuth, requireAdmin, getPlayersInactive);
 
 /* ========================================= ADD PLAYER FORM ========================================= */
-// 🔒 Admin-only action
 router.get("/new", requireAuth, requireAdmin, showAddPlayerForm);
 
 /* ========================================= CREATE PLAYER ========================================= */
-// 🔒 Admin-only action
 router.post("/", requireAuth, requireAdmin, createPlayer);
 
-/* ========================================= EDIT PLAYER FORM ========================================= */
-// 🔒 Admin-only action
+/* ========================================= EDIT / UPDATE PLAYER ========================================= */
+// ❌ If these are higher up, /profile hits these and fails
 router.get("/:id/edit", requireAuth, requireAdmin, showEditPlayerForm);
-
-/* ========================================= UPDATE PLAYER ========================================= */
-// 🔒 Admin-only action
 router.post("/:id", requireAuth, requireAdmin, updatePlayer);
 
 export default router;
