@@ -151,9 +151,24 @@
         </div>
       <% } %>
 
+      <!-- PASSWORD RESET TEMPORARY OUTPUT BANNER -->
+      <% if (typeof query !== 'undefined' && query.pwdReset && query.tempPwd) { %>
+        <div class="alert alert-warning" style="max-width: 800px; margin: 1.5rem auto; border-radius: 12px; border-left: 5px solid #ffc107; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+          <div class="d-flex align-items-center">
+            <span style="font-size: 1.5rem; margin-right: 1rem;">🔑</span>
+            <div>
+              <h5 class="alert-heading mb-1" style="font-weight: 700; color: #664d03;">Account Password Reset Overridden!</h5>
+              <p class="mb-2 text-dark small">Provide the player with this custom generated credential string. They can use it to log in immediately:</p>
+              <code style="font-size: 1.25rem; font-weight: 700; background: #ffffff; padding: 4px 10px; border: 1px solid #ffe69c; border-radius: 6px; color: #dc3545; display: inline-block; letter-spacing: 0.5px;">
+                <%= query.tempPwd %>
+              </code>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
       <!-- FORM CARD -->
       <div class="player-form-card">
-        <!-- FIXED: Removed early self-closing tag block -->
         <% if (typeof isSelfProfile !== 'undefined' && isSelfProfile) { %>
           <form action="/players/profile" method="POST">
         <% } else { %>
@@ -171,7 +186,6 @@
                 <label class="form-label">Last Name <span style="color: red">*</span></label>
                 <input type="text" name="name_last" class="form-control" value="<%= player.name_last %>" required />
               </div>
-              
               <div class="col-md-6">
                 <label class="form-label">Year Joined</label>
                 <% if (typeof isSelfProfile !== 'undefined' && isSelfProfile) { %>
@@ -191,7 +205,6 @@
                   </div>
                 <% } %>
               </div>
-
               <div class="col-md-6">
                 <label class="form-label">Sex (for hole handicaps)</label>
                 <% if (typeof isSelfProfile !== 'undefined' && isSelfProfile) { %>
@@ -267,10 +280,8 @@
           <div class="form-section">
             <h3>Assigned Roles</h3>
             <% if (typeof isSelfProfile !== 'undefined' && isSelfProfile) { %>
-              <!-- Profile context: output fields to read-only layout with distinct IDs -->
               <input type="text" id="roleMember-profile" class="form-control bg-light text-muted" value="<%= player.roles ? player.roles.join(', ') : 'Member' %>" readonly />
             <% } else { %>
-              <!-- Admin context: output interactive modification checkboxes -->
               <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
                 <div>
                   <input type="checkbox" name="roles" value="Member" id="roleMember" <%= (player.roles && player.roles.includes('Member')) ? 'checked' : '' %> />
@@ -290,12 +301,46 @@
             </button>
           </div>
         </form>
-      </div>
+      </div> <!-- Closes .player-form-card -->
+
+      <!-- SECURITY OVERRIDE DASHBOARD (Only visible to Admins editing OTHER profiles) -->
+      <!-- SECURITY OVERRIDE DASHBOARD (Only visible to Admins editing OTHER profiles) -->
+<% if (typeof isAdmin !== 'undefined' && isAdmin && (typeof isSelfProfile === 'undefined' || !isSelfProfile)) { %>
+  <div class="player-form-card" style="border: 2px solid rgba(220, 53, 69, 0.25); background-color: #fffafb; margin-top: 2rem;">
+    <div class="form-section">
+      <h3 style="color: #dc3545;">Security Override Dashboard</h3>
+      <p class="text-muted small" style="margin-bottom: 1.5rem;">
+        Manually assign a new password to this member's account. This overrides their existing credentials instantly.
+      </p>
+      
+      <form action="/players/<%= player.id %>/reset-password" method="POST" onsubmit="return confirm('Are you sure you want to force-change this player\'s password?');">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-7">
+            <label class="form-label" style="font-weight: 600; color: #333;">Enter New Password <span style="color: red">*</span></label>
+            <input 
+              type="text" 
+              name="manual_password" 
+              class="form-control" 
+              placeholder="e.g., TemporaryPassword2026!" 
+              minlength="6"
+              required 
+            />
+          </div>
+          <div class="col-md-5">
+            <button type="submit" class="btn w-100" style="background-color: #dc3545; color: white; padding: 0.85rem 1rem; font-weight: 600; border-radius: 14px;">
+              Apply New Password
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
+<% } %>
+
+    </div> <!-- Closes .main-wrapper -->
 
     <%- include('partials/scripts'); %>
     <script>
-      // 1. Formats phone numbers dynamically during manual user inputs
       function formatPhoneNumber(input) {
         let value = input.value.replace(/\D/g, "");
         if (value.length > 10) value = value.slice(0, 10);
@@ -304,7 +349,6 @@
         else if (value.length > 0) input.value = `(${value}`;
       }
 
-      // 2. Automates raw SQLite digit transformations during document hydration
       window.addEventListener('DOMContentLoaded', () => {
         const phoneInput = document.querySelector('input[name="phone"]');
         if (phoneInput && phoneInput.value) {

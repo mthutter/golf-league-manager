@@ -1,4 +1,7 @@
 import * as playersService from "../services/players.service.js";
+// Near the top of controllers/players.controller.js
+import * as authService from "../services/auth.service.js"; // 👈 Add this line
+
 import logger from "../utilities/logger.js";
 import { catchAsync } from "../utilities/asyncHandler.js";
 import posthog from "../utilities/posthog.js";
@@ -241,4 +244,32 @@ export const updateOwnProfile = catchAsync(async (req, res, next) => {
   });
 
   return res.redirect("/players/profile?success=true");
+});
+/**
+ * POST /players/:id/reset-password - Admin secure password reset bypass
+ */
+/**
+ * POST /players/:id/reset-password - Admin secure password reset bypass
+ */
+/**
+ * POST /players/:id/reset-password - Admin manual password overwrite
+ */
+export const adminResetPassword = catchAsync(async (req, res, next) => {
+  const playerId = req.params.id;
+  const { manual_password } = req.body; // 👈 1. Extract the manually typed password
+
+  // Validation fallback boundary check
+  if (!manual_password || manual_password.trim() === "") {
+    logger.warn({ playerId }, "Password override rejected: Input password string field is blank");
+    res.status(400);
+    return res.render("error", { message: "A valid custom password is required." });
+  }
+
+  // 2. Pass the custom string directly to your auth hash service
+  await authService.updateMemberPassword(playerId, manual_password.trim());
+
+  logger.info({ playerId }, "Administrative manual password overwrite executed successfully");
+
+  // 3. Redirect back to the form view passing the custom text block value to display in the alert banner
+  return res.redirect(`/players/${playerId}/edit?pwdReset=true&tempPwd=${encodeURIComponent(manual_password.trim())}`);
 });
