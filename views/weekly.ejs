@@ -44,20 +44,21 @@
         .results-custom-table th {
             background-color: #1b4332 !important;
             color: white !important;
-            padding: 10px 14px;
+            padding: 4px 6px clamp(6px, 1vw, 14px);
             font-weight: 700;
             font-size: clamp(0.55rem, 0.9vw, 0.8rem);
             letter-spacing: 0.5px;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            cursor: pointer;
-            user-select: none;
-            position: relative;
-            white-space: nowrap;
+            white-space: normal;
+            /* Changed from nowrap to normal */
         }
 
         .results-custom-table td {
-            vertical-align: middle;
-            padding: 10px 14px;
+            display: table-cell;
+            /* Forces standard cell behavior */
+            vertical-align: middle !important;
+            /* Overrides any competing styles */
+            padding: 4px 6px;
             border: 1px solid rgba(27, 67, 50, 0.1);
         }
 
@@ -145,26 +146,22 @@
     <!-- Weekly Performance Dashboard Layout -->
     <div class="container my-4">
         <div class="card shadow-sm results-table-card">
-            <div class="card-header text-white py-3" style="background-color: #1b4332">
-                <h5 class="card-title mb-0 fw-bold">Scoring</h5>
-            </div>
             <div class="table-responsive" style="text-align: center">
-                <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
+                <table id="sortableTable"
+                    class="table table-bordered align-middle text-center mb-0 results-custom-table compact-pixel-table table-hover">
                     <thead>
                         <tr>
-                            <th style="width: 60px">Rank</th>
-                            <th class="text-start" style="width: 160px; min-width: 140px">
-                                Player
-                            </th>
-                            <th style="width: 110px">Total Points</th>
-                            <th style="width: 75px">Gross</th>
-                            <th style="width: 75px">Net</th>
-                            <th style="width: 80px">Points</th>
-                            <th style="width: 100px">CTP Points</th>
-                            <th style="width: 110px">Birdie Points</th>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Total Points</th>
+                            <th>Gross Score</th>
+                            <th>Net Score</th>
+                            <th>Stableford Points</th>
+                            <th>CTP Points</th>
+                            <th>Birdie Points</th>
                             <!-- Actions header column added safely -->
                             <% if (isAdmin) { %>
-                            <th style="width: 90px">Actions</th>
+                            <th>Actions</th>
                             <% } %>
                         </tr>
                     </thead>
@@ -189,7 +186,8 @@
                             <!-- Matching Admin Edit Button Cell -->
                             <% if (isAdmin) { %>
                             <td class="players nowrap-cell">
-                                <a href="/scores/edit/<%= player.score_id %>" class="btn btn-outline-primary btn-sm btn-modify">
+                                <a href="/scores/edit/<%= player.score_id %>"
+                                    class="btn btn-outline-primary btn-sm btn-modify">
                                     ✏️ Modify
                                 </a>
                             </td>
