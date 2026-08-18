@@ -62,7 +62,7 @@
     "react-dom": "^18.3.1",
     "redis": "^6.0.0",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7",
+    "sqlite3": "^6.0.1",
     "ssl": "^1.0.0",
     "strip-json-comments": "^3.1.1",
     "uuid": ">=11.1.1",
