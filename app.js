@@ -171,8 +171,16 @@ app.use(errorHandler);
 
 /* ====== PORT BINDING & CRASH HOOKS ====== */
 const PORT = process.env.PORT || 8080;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   logger.info(`Bottoms Up Golf application started on port ${PORT}`);
+
+  // Safely fire verification once the server socket is fully established
+  try {
+    const { verifyMailServer } = await import("./config/email.js");
+    await verifyMailServer();
+  } catch (error) {
+    logger.error("Failed to run email verification hook:", error);
+  }
 });
 
 process.on("uncaughtException", async (err) => {

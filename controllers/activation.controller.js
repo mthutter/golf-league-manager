@@ -1,7 +1,5 @@
 import { validateActivationToken, activateMember, resetPassword } from "../services/activation.service.js";
-
 import { findMemberByEmail, resendActivationEmail } from "../services/account.service.js";
-
 import { requestPasswordReset } from "../services/account.service.js";
 import logger from "../utilities/logger.js";
 
@@ -23,7 +21,7 @@ export async function showActivationPage(req, res, next) {
       });
     }
     console.log(result.member);
-    res.render("activate-account", {
+    res.render("activation/activate-account", {
       token,
       member: result.member,
       error: null,
@@ -45,7 +43,7 @@ export async function activateAccount(req, res, next) {
     }
 
     if (password !== confirmPassword) {
-      return res.render("activate-account", {
+      return res.render("activation/activate-account", {
         token,
         member: validation.member,
         error: "Passwords do not match.",
@@ -72,7 +70,7 @@ export async function activateAccount(req, res, next) {
 
     // 3. ✅ FIX: Send a response to the browser to stop the spinning loader
     // Option A: Render a success page
-    return res.render("activation-success", {
+    return res.render("activation/activation-success", {
       member: result.member,
     });
 
@@ -84,7 +82,7 @@ export async function activateAccount(req, res, next) {
 }
 
 export function showActivationRequestPage(req, res) {
-  res.render("request-activation", {
+  res.render("activation/request-activation", {
     error: null,
   });
 }
@@ -107,7 +105,7 @@ export async function handleActivationRequest(req, res, next) {
     //
 
     if (!member) {
-      return res.render("activation-requested");
+      return res.render("activation/activation-requested");
     }
 
     if (member.is_active) {
@@ -118,7 +116,7 @@ export async function handleActivationRequest(req, res, next) {
     }
     await resendActivationEmail(member.id);
 
-    return res.render("activation-requested");
+    return res.render("activation/activation-requested");
   } catch (err) {
     next(err);
   }
