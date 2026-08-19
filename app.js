@@ -126,6 +126,7 @@ app.use(flash());
 
 app.use((req, res, next) => {
   const user = req.user;
+  console.log(user);
   res.locals.user = user;
   res.locals.isAuthenticated = req.isAuthenticated();
   res.locals.isAdmin = user?.roles?.includes(ROLES.ADMIN) ?? false;
