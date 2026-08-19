@@ -677,14 +677,14 @@ th.sort-desc::after {
   letter-spacing: 0.5px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   white-space: nowrap;
-  /* Responsive structural padding matching your ideal look */
-  padding: clamp(6px, 1vw, 14px) !important;
+  /* Locks headers into a neat, short footprint */
+  padding: 6px 8px !important;
 }
 
 .league-table td {
   vertical-align: middle !important;
   border: 1px solid rgba(27, 67, 50, 0.1);
   white-space: nowrap;
-  /* Standardized responsive data padding */
-  padding: clamp(4px, 0.75vw, 12px) clamp(6px, 1vw, 14px) !important;
+  /* 💡 FIXED: Strict, ultra-compact cell spacing layout tracking */
+  padding: 4px 6px !important;
 }
