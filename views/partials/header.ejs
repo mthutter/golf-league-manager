@@ -157,6 +157,8 @@
           isAdmin: <%= isAdmin %>,
           isMember: <%= isMember %>
         });
+        <% } else { %>
+        ph.reset();
         <% } %>
       },
     });
