@@ -12,7 +12,8 @@ const banCache = new NodeCache({
 });
 
 const activeBans = banCache.keys();
-console.log(activeBans);
+logger.info(activeBans);
+
 // 2. Definitive security configurations
 const hardcodedBannedIPs = new Set(["192.168.1.100"]);
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
