@@ -666,3 +666,25 @@ th.sort-desc::after {
     width: 100%;
   }
 }
+
+/* =============== GLOBAL TABLE STYLING ==================== */
+/* ===== Global Table Padding Standardization ===== */
+.league-table th {
+  background-color: #1b4332 !important;
+  color: white !important;
+  font-weight: 700;
+  font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+  /* Locks headers into a neat, short footprint */
+  padding: 6px 8px !important;
+}
+
+.league-table td {
+  vertical-align: middle !important;
+  border: 1px solid rgba(27, 67, 50, 0.1);
+  white-space: nowrap;
+  /* 💡 FIXED: Strict, ultra-compact cell spacing layout tracking */
+  padding: 4px 6px !important;
+}
