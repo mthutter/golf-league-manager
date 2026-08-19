@@ -175,7 +175,7 @@ export async function getFilteredHandicapHistory({ year, weekId, memberId }) {
 export async function getHandicapFilterMetadata() {
   const years = await all(`SELECT DISTINCT year FROM handicap_history ORDER BY year DESC`);
   const weeks = await all(`SELECT DISTINCT week_id FROM handicap_history ORDER BY week_id DESC`);
-  const members = await all(`SELECT id, name_last, name_first FROM members ORDER BY name_last ASC`);
+  const members = await all(`SELECT id, name_last, name_first FROM members WHERE status != "No" ORDER BY name_last ASC`);
 
   return {
     years: years.map((y) => y.year),
