@@ -8,7 +8,12 @@
 
 <link rel="icon" href="/icons/icons8-golf-lineal-color-32.png" type="image/png" />
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+  crossorigin="anonymous"
+/>
 
 <link href="/assets/css/site.css" rel="stylesheet" />
 <link href="/assets/css/cards.css" rel="stylesheet" />
@@ -19,121 +24,135 @@
 <link rel="dns-prefetch" href="//bottoms-up.b-cdn.net" />
 
 <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Bottoms Up Golf League",
-        "alternateName": "Bottoms Up",
-        "url": "https://bottoms-up-cos.org",
-        "logo": "https://bottoms-up.b-cdn.net/bottoms-up-logo.png",
-        "email": "admin@bottoms-up-cos.org",
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "email": "admin@bottoms-up-cos.org"
-        }
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Bottoms Up Golf League",
+    "alternateName": "Bottoms Up",
+    "url": "https://bottoms-up-cos.org",
+    "logo": "https://bottoms-up.b-cdn.net/bottoms-up-logo.png",
+    "email": "admin@bottoms-up-cos.org",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "admin@bottoms-up-cos.org"
     }
+  }
 </script>
 
 <script>
-    (function() {
-        const isLocal =
-            window.location.hostname === "localhost" ||
-            window.location.hostname === "127.0.0.1";
+  (function() {
+      const isLocal =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1";
 
-        const finalHost = isLocal ?
-            "https://us.i.posthog.com" :
-            "https://t.bottoms-up-cos.org";
+      const finalHost = isLocal ?
+          "https://us.i.posthog.com" :
+          "https://t.bottoms-up-cos.org";
 
-        !(function(t, e) {
-            var o, n, p, r;
+      !(function(t, e) {
+          var o, n, p, r;
 
-            if (e.__SV) return;
+          if (e.__SV) return;
 
-            window.posthog = e;
-            e._i = [];
+          window.posthog = e;
+          e._i = [];
 
-            e.init = function(i, s, a) {
-                function g(t, e) {
-                    var o = e.split(".");
-                    if (o.length === 2) {
-                        t = t[o[0]];
-                        e = o[1];
+          e.init = function(i, s, a) {
+              function g(t, e) {
+                  var o = e.split(".");
+                  if (o.length === 2) {
+                      t = t[o[0]];
+                      e = o[1];
+                  }
+
+                  t[e] = function() {
+                      t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
+                  };
+              }
+
+              var c = a ? (e[a] = []) : e;
+
+              if (!a) {
+                  a = "posthog";
+              }
+
+              c.people = c.people || [];
+
+              c.toString = function(debug) {
+                  var name = "posthog";
+
+                  if (a !== "posthog") {
+                      name += "." + a;
                     }
 
-                    t[e] = function() {
-                        t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
-                    };
-                }
+                  return debug ? name : name + " (stub)";
+              };
 
-                var c = a ? (e[a] = []) : e;
+              c.people.toString = function() {
+                  return c.toString(1) + ".people (stub)";
+              };
 
-                if (!a) {
-                    a = "posthog";
-                }
+              var methods =
+                  "capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures onSessionId getSurveys getActiveMatchingSurveys renderSurvey getNextSurveyStep feedbackFeatures".split(
+                      " ",
+                  );
 
-                c.people = c.people || [];
+              for (o = 0; o < methods.length; o++) {
+                  g(c, methods[o]);
+              }
 
-                c.toString = function(debug) {
-                    var name = "posthog";
+              e._i.push([i, s, a]);
+          };
 
-                    if (a !== "posthog") {
-                        name += "." + a;
-                    }
+          e.__SV = 1;
 
-                    return debug ? name : name + " (stub)";
-                };
+          r = t.createElement("script");
+          r.type = "text/javascript";
+          r.async = true;
+          r.src = finalHost + "/static/array.js";
 
-                c.people.toString = function() {
-                    return c.toString(1) + ".people (stub)";
-                };
+          p = t.getElementsByTagName("script")[0];
+          p.parentNode.insertBefore(r, p);
+      })(document, window.posthog || {});
 
-                var methods =
-                    "capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures onSessionId getSurveys getActiveMatchingSurveys renderSurvey getNextSurveyStep feedbackFeatures".split(
-                        " ",
-                    );
+      posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
+          api_host: finalHost,
+          ui_host: "https://us.posthog.com",
+          persistence: "cookie",
 
-                for (o = 0; o < methods.length; o++) {
-                    g(c, methods[o]);
-                }
+          // 1. Ensures person profiles are explicitly processed for name mapping
+          person_profiles: 'always',
 
-                e._i.push([i, s, a]);
-            };
+          capture_pageview: true,
+          capture_pageleave: true,
 
-            e.__SV = 1;
+          session_recording: {},
 
-            r = t.createElement("script");
-            r.type = "text/javascript";
-            r.async = true;
-            r.src = finalHost + "/static/array.js";
+          capture_exceptions: {
+              capture_unhandled_errors: true,
+              capture_unhandled_rejections: true,
+              capture_console_errors: true,
+          },
 
-            p = t.getElementsByTagName("script")[0];
-            p.parentNode.insertBefore(r, p);
-        })(document, window.posthog || {});
+          disable_compression: isLocal,
 
-        posthog.init("phc_sv3aBkEY4DE4wejGWfMHfNYxCUpDBxBc6iVRsJu7Q47t", {
-            api_host: finalHost,
-            ui_host: "https://us.posthog.com",
-            persistence: "cookie",
+          loaded: function(ph) {
+              if (isLocal) {
+                  ph.debug();
+                  console.log("🚀 POSTHOG ACTIVE ON:", finalHost);
+              }
 
-            capture_pageview: true,
-            capture_pageleave: true,
-
-            session_recording: {},
-
-            capture_exceptions: {
-                capture_unhandled_errors: true,
-                capture_unhandled_rejections: true,
-                capture_console_errors: true,
-            },
-
-            disable_compression: isLocal,
-
-            loaded: function(ph) {
-                if (isLocal) {
-                    ph.debug();
-                    console.log("🚀 POSTHOG ACTIVE ON:", finalHost);
-                }
-            },
-        });
-    })();
+              // 2. Bridges the frontend session with your app.js Passport context
+              <% if (locals.user) { %>
+                  ph.identify("<%= String(user.id) %>", {
+                      // 👇 UPDATED: Formats dashboard display name to "Last, First"
+                      name: "<%= user.name_last %>, <%= user.name_first %>",
+                      email: "<%= user.email %>",
+                      isAdmin: <%= isAdmin %>,
+                      isMember: <%= isMember %>
+                  });
+              <% } %>
+          },
+      });
+  })();
 </script>
