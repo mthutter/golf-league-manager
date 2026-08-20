@@ -50,6 +50,7 @@ export const firewallMiddleware = (req, res, next) => {
 
   if (matchesPath || matchesExtension) {
     banCache.set(visitorIP, true);
+    logger.info("Banned IPs: ", banCache);
 
     if (typeof logger !== "undefined") {
       logger.error(`[SECURITY] DETECTED MALICIOUS SCAN: IP ${visitorIP} trapped at "${req.path}". IP auto-banned safely for 24 hours.`);
