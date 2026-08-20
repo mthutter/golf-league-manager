@@ -12,7 +12,7 @@ const banCache = new NodeCache({
 });
 
 const activeBans = banCache.keys();
-logger.info(activeBans);
+logger.info("Blocked IPs in cache: ", activeBans.keys);
 
 // 2. Definitive security configurations
 const hardcodedBannedIPs = new Set(["192.168.1.100"]);
