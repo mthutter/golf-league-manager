@@ -7,7 +7,7 @@ import posthogClient from "./posthog.js";
 
 // 1. Initialize self-cleaning ban cache (TTL: 24h, check expired keys every hour)
 const banCache = new NodeCache({
-  stdTTL: 3600,
+  stdTTL: 86400,
   checkperiod: 3600,
 });
 
