@@ -29,7 +29,7 @@ const isPrivateIP = (ip) => {
   if (parts[0] === 10) return true;
 
   // 172.16.0.0/12 (Internal Docker networks, Kubernetes pods, AWS VPC components)
-  if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+  if ((parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || parts[1] === 71) return true;
 
   // 192.168.0.0/16
   if (parts[0] === 192 && parts[1] === 168) return true;
