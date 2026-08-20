@@ -41,13 +41,10 @@
 
 <script>
   (function() {
-    const isLocal =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
-    const finalHost = isLocal ?
-      "https://us.i.posthog.com" :
-      "https://t.bottoms-up-cos.org";
+    // Local routes directly to the US ingestion server; production uses your functional proxy
+    const finalHost = isLocal ? "https://posthog.com" : "https://bottoms-up-cos.org";
 
     !(function(t, e) {
       var o, n, p, r;
