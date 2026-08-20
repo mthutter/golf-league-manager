@@ -18,9 +18,28 @@ const getCleanIp = (req) => {
   return rawIp.replace(/^::ffff:/, "").trim();
 };
 
+// Helper to accurately bypass internal private infrastructure networks
+const isPrivateIP = (ip) => {
+  if (!ip || !ip.includes(".")) return false;
+
+  const parts = ip.split(".").map(Number);
+  if (parts.length !== 4 || parts.some(isNaN)) return false;
+
+  // 10.0.0.0/8
+  if (parts[0] === 10) return true;
+
+  // 172.16.0.0/12 (Internal Docker networks, Kubernetes pods, AWS VPC components)
+  if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+
+  // 192.168.0.0/16
+  if (parts[0] === 192 && parts[1] === 168) return true;
+
+  return false;
+};
+
 const isWhitelisted = (ip) => {
   if (!ip) return false;
-  return whitelistedIPs.has(ip);
+  return whitelistedIPs.has(ip) || isPrivateIP(ip);
 };
 
 export const corsMiddleware = cors({
