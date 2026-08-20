@@ -7,7 +7,7 @@ const posthogClient = new PostHog(process.env.POSTHOG_PROJECT_TOKEN, {
   debug: false,
 });
 
-/* =========================================================================
+/* ========================================================================= 
    💡 PROXY INTERCEPTOR: Automatic Pino Logging for Every Event
    ========================================================================= */
 // 1. Capture and bind a safe reference to the native SDK capture pipeline
@@ -21,15 +21,19 @@ posthogClient.capture = function (options) {
     const distinctId = options?.distinctId || "anonymous";
     const customProps = options?.properties || {};
 
+    // 💡 EXTRACT MEMBER NAME: Pulls from payload properties or falls back to an anonymous string
+    const memberName = customProps.member_name || customProps.$set?.name || "Guest/Anonymous";
+
     // Stream a structured payload tracking entry straight to your Pino local console
     logger.info(
       {
         telemetry: "posthog",
         event: eventName,
         distinctId,
+        member_name: memberName, // 👈 Added explicitly as a root filter field
         ...customProps,
       },
-      `PostHog Analytics Dispatch: [${eventName}] fired for User [${distinctId}]`,
+      `PostHog Analytics Dispatch: [${eventName}] fired for Player [${memberName}] (${distinctId})`,
     );
   } catch (logError) {
     // Safe check ensures a logging parsing failure never corrupts the actual analytics pipeline
