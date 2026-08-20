@@ -152,7 +152,8 @@
         // 2. Map custom legacy dashboard variables directly into the active event profile cache
         ph.register({
           member_id: "<%= user.id %>",
-          member_name: "<%= user.lastName %>, <%= user.firstName %>", // ✅ This injects it directly into web events
+          member_name: "<%= user.lastName %>, <%= user.firstName %>",
+          // 💡 FIXED: Bracket space removed to output raw unescaped JSON text arrays
           roles: <%- JSON.stringify(user.roles || []) %>,
           isAdmin: <%= isAdmin %>,
           isMember: <%= isMember %>

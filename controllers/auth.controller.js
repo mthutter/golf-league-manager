@@ -64,7 +64,7 @@ export const handleLogin = (req, res, next) => {
       );
 
       const stringUserId = String(user.id);
-      const fullName = `${user.firstName} ${user.lastName}`;
+      const fullName = `${user.lastName}, ${user.firstName}`;
 
       // 1. 👇 Call identify to link this ID to standard global reporting properties
       posthog.identify({
