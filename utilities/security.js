@@ -1,59 +1,87 @@
-// utils/securityWall.js
-import rateLimit from "express-rate-limit";
-import NodeCache from "node-cache";
+// utilities/security.js
+import dns from "node:dns/promises";
+import { rateLimit, ipKeyGenerator } from "express-rate-limit";
 import cors from "cors";
+import { securityModel } from "../models/security.model.js";
 import logger from "./logger.js";
 import posthogClient from "./posthog.js";
 
-// 1. Initialize self-cleaning ban cache (TTL: 24h, check expired keys every hour)
-const banCache = new NodeCache({
-  stdTTL: 86400,
-  checkperiod: 3600,
-});
+// 1. Single central location for local whitelist controls
+const whitelistedIPs = new Set([
+  "127.0.0.1", // IPv4 loopback
+  "::1", // IPv6 loopback
+  "::ffff:127.0.0.1", // IPv4-mapped IPv6 loopback
+]);
 
-const activeBans = banCache.keys();
-logger.info("Blocked IPs in cache: ", activeBans.keys);
+const isWhitelisted = (ip) => {
+  if (!ip) return false;
+  return whitelistedIPs.has(ip.trim());
+};
 
-// 2. Definitive security configurations
 const hardcodedBannedIPs = new Set(["192.168.1.100"]);
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
-/**
- * Custom firewall middleware to auto-ban scanners and block hardcoded IPs
- */
-export const firewallMiddleware = (req, res, next) => {
+export const corsMiddleware = cors({
+  origin: ["http://localhost:8080", "https://bottoms-up-cos.org"],
+  credentials: true,
+});
+
+export const spamhausCheck = async (req, res, next) => {
+  const clientIp = req.ip;
+  if (!clientIp) return next();
+
+  // Bypass if local development is whitelisted
+  if (isWhitelisted(clientIp)) return next();
+
+  const cleanIp = clientIp.replace(/^::ffff:/, "");
+  if (hardcodedBannedIPs.has(cleanIp) || securityModel.isBanned(cleanIp)) {
+    return res.status(403).send("Access Denied.");
+  }
+
+  if (!cleanIp.includes(".")) return next();
+  const reversed = cleanIp.split(".").reverse().join(".");
+
+  try {
+    await dns.resolve4(`${reversed}.zen.spamhaus.org`);
+    securityModel.setTransientBan(cleanIp);
+    logger.warn(`[SECURITY] Spamhaus ZEN blocked target: ${cleanIp}`);
+    return res.status(403).send("Access Denied.");
+  } catch (err) {
+    if (err.code === "ENOTFOUND" || err.code === "ENODATA") return next();
+    logger.error("[SECURITY] Spamhaus check error:", err);
+    return next();
+  }
+};
+
+export const firewallMiddleware = async (req, res, next) => {
   const visitorIP = req.ip;
   if (!visitorIP) return next();
 
-  const lowerPath = req.path.toLowerCase();
+  // Bypass if local development is whitelisted
+  if (isWhitelisted(visitorIP)) return next();
 
-  // Instant drops for flagged/banned attackers (O(1) lookup)
-  const isHardBanned = hardcodedBannedIPs.has(visitorIP);
-  const isAutoBanned = banCache.has(visitorIP);
-
-  if (isHardBanned || isAutoBanned) {
-    const reason = isHardBanned ? "Hardcoded Ban" : "Auto-Banned Scammer";
-
-    if (typeof logger !== "undefined") {
-      logger.warn(`[SECURITY] Request dropped from blocked IP: ${visitorIP} (${reason})`);
-    }
-
-    logger.info("Reason: ", reason);
-    // Send the specific reason back to the client/browser
-    return res.status(403).send(`Access Denied: ${reason}`);
+  if (hardcodedBannedIPs.has(visitorIP) || securityModel.isBanned(visitorIP)) {
+    return res.status(403).send("Access Denied.");
   }
 
-  // 2. Path evaluation
+  const lowerPath = req.path.toLowerCase();
   const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
   const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
 
   if (matchesPath || matchesExtension) {
-    banCache.set(visitorIP, true);
-    logger.info("Banned IPs: ", banCache);
+    let strikes = 1;
+    try {
+      strikes = await securityModel.logSecurityOffenseStrike(visitorIP);
+    } catch (err) {
+      logger.error(`[SECURITY] Logging strike failed for ${visitorIP}:`, err);
+    }
 
-    if (typeof logger !== "undefined") {
-      logger.error(`[SECURITY] DETECTED MALICIOUS SCAN: IP ${visitorIP} trapped at "${req.path}". IP auto-banned safely for 24 hours.`);
+    if (strikes >= 3) {
+      logger.error(`[SECURITY] PERMANENT BAN: IP ${visitorIP} reached 3 strikes.`);
+    } else {
+      securityModel.setTransientBan(visitorIP);
+      logger.warn(`[SECURITY] Path trap: IP ${visitorIP} banned 24h. Strike ${strikes}/3.`);
     }
 
     if (typeof posthogClient !== "undefined") {
@@ -63,49 +91,30 @@ export const firewallMiddleware = (req, res, next) => {
         properties: {
           $ip: visitorIP,
           requested_path: req.path,
-          block_reason: "Malicious File/Path Scan Trigger",
-          user_agent: req.headers["user-agent"],
-          action_taken: "IP_Auto_Banned_24h",
+          strike_count: strikes,
+          action_taken: strikes >= 3 ? "PERMANENT_MVC_BAN" : "TRANSIENT_24H_BAN",
         },
       });
     }
-
     return res.status(404).send("Not Found");
   }
-
   next();
 };
 
-// 3. Network Protection Layer (Rate Limiter Setup)
 export const rateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 200,
-  standardHeaders: true, // Returns RateLimit-* headers
+  standardHeaders: true,
   legacyHeaders: false,
 
-  // Custom handler that overrides the default message
-  handler: (req, res, next, options) => {
-    // Read the reset time or default to the 15-minute window fallback
-    const retryAfterSeconds = res.getHeader("Retry-After") || 15 * 60;
+  // Skip rate limiting entirely for your whitelisted IPs
+  skip: (req) => isWhitelisted(req.ip),
 
-    if (typeof logger !== "undefined") {
-      logger.warn(`[RATE LIMIT] IP ${req.ip} exceeded rate limit. Requests blocked.`);
-    }
-
-    // Set standard 429 status code
-    res.status(429);
-
-    // Provide detailed diagnostics directly to the screen
-    res.send(
-      `Access Denied: Too Many Requests.\n` +
-        `Reason: Your network IP (${req.ip}) exceeded the threshold of ${options.max} requests.\n` +
-        `Cooldown: Please try again in ${retryAfterSeconds} seconds.`,
-    );
+  keyGenerator: (req) => {
+    const rawIp = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    return ipKeyGenerator(rawIp);
   },
-});
-
-// 4. Cross-Origin Resource Sharing Setup
-export const corsMiddleware = cors({
-  origin: ["http://localhost:8080", "https://bottoms-up-cos.org"],
-  credentials: true,
+  handler: (req, res) => {
+    res.status(429).send("Too many requests. Please try again later.");
+  },
 });

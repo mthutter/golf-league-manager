@@ -12,7 +12,10 @@ import SQLiteStoreFactory from "connect-sqlite3";
 import logger from "./utilities/logger.js";
 import passport from "./config/passport.js";
 import { ROLES } from "./services/roles.service.js";
-import { corsMiddleware, firewallMiddleware, rateLimiter } from "./utilities/security.js";
+
+// ====== INTEGRATED SECURITY SYSTEMS ======
+import { securityModel } from "./models/security.model.js";
+import { corsMiddleware, spamhausCheck, firewallMiddleware, rateLimiter } from "./utilities/security.js";
 
 // ====== 2. ROUTES ======
 import publicRoutes from "./routes/public.routes.js";
@@ -56,10 +59,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// SECURITY WALL
+// ==========================================
+// 🛡️ SECURITY WALL MIDDLWARE PIPELINE
+// ==========================================
 app.use(corsMiddleware); // 1. Check CORS policies
-app.use(firewallMiddleware); // 2. Drop malicious/banned IPs immediately
-app.use(rateLimiter); // 3. Throttle request velocities
+app.use(spamhausCheck); // 2. Query global DNSBL threat registries
+app.use(firewallMiddleware); // 3. Drop local bad actors and record path scan strikes
+app.use(rateLimiter); // 4. Throttle request velocities from active nodes
 
 /* ====== BASIC APP SETTINGS & SECURITY ====== */
 app.disable("x-powered-by");
@@ -80,8 +86,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// NOTE: PostHog Proxy routes have been completely removed.
-// Client tracking maps directly to your t.bottoms-up-cos.org DNS records.
 app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
@@ -126,7 +130,6 @@ app.use(flash());
 
 app.use((req, res, next) => {
   const user = req.user;
-  console.log(user);
   res.locals.user = user;
   res.locals.isAuthenticated = req.isAuthenticated();
   res.locals.isAdmin = user?.roles?.includes(ROLES.ADMIN) ?? false;
@@ -165,17 +168,24 @@ app.post("/reset-password", activationController.handleResetPassword);
 app.use((req, res, next) => {
   const error = new Error(`Page Not Found: ${req.originalUrl}`);
   error.status = 404;
-  next(error); // Pushes the 404 into the errorHandler below
+  next(error);
 });
 
 app.use(errorHandler);
 
-/* ====== PORT BINDING & CRASH HOOKS ====== */
+/* ====== PORT BINDING & STARTUP PROCESS ====== */
 const PORT = process.env.PORT || 8080;
 const server = app.listen(PORT, async () => {
   logger.info(`Bottoms Up Golf application started on port ${PORT}`);
 
-  // Safely fire verification once the server socket is fully established
+  // 1. Asynchronously bootstrap your persistent SQLite security configurations
+  try {
+    await securityModel.initialize();
+  } catch (error) {
+    logger.error("Security Model layer failed to initialize safely:", error);
+  }
+
+  // 2. Validate standard application mailing setups
   try {
     const { verifyMailServer } = await import("./config/email.js");
     await verifyMailServer();
