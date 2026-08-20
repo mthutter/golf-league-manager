@@ -36,17 +36,36 @@ export const spamhausCheck = async (req, res, next) => {
     return res.status(403).send("Access Denied.");
   }
 
-  // Prevent DNS infrastructure crashes: Avoid path lookups for IPv6
   if (!cleanIp.includes(".")) return next();
   const reversed = cleanIp.split(".").reverse().join(".");
 
   try {
-    // Note: Ensure your server environment uses a registered query key if using public DNS
-    await dns.resolve4(`${reversed}.zen.spamhaus.org`);
-    securityModel.setTransientBan(cleanIp);
-    logger.warn(`[SECURITY] Spamhaus ZEN blocked target: ${cleanIp}`);
-    return res.status(403).send("Access Denied.");
+    const addresses = await dns.resolve4(`${reversed}.zen.spamhaus.org`);
+
+    // Check if any returned code represents a genuine malicious threat
+    const hasMaliciousMatch = addresses.some((address) => {
+      // 1. Ignore public resolver/limit errors (returns true to skip blocking)
+      if (address.startsWith("127.255.255.")) return false;
+
+      // 2. Ignore Policy Blocklist (PBL: 127.0.0.10, 127.0.0.11)
+      // These are normal residential/mobile IPs visiting your web app.
+      if (address === "127.0.0.10" || address === "127.0.0.11") return false;
+
+      // 3. Block true malicious sources:
+      // 127.0.0.2 (SBL - Known spammers/abusers)
+      // 127.0.0.4 - 127.0.0.7 (XBL/CBL - Infected bots, malware, exploits)
+      return true;
+    });
+
+    if (hasMaliciousMatch) {
+      securityModel.setTransientBan(cleanIp);
+      logger.warn(`[SECURITY] Spamhaus ZEN blocked malicious target: ${cleanIp} (Codes: ${addresses.join(", ")})`);
+      return res.status(403).send("Access Denied.");
+    }
+
+    return next();
   } catch (err) {
+    // ENOTFOUND or ENODATA means the IP is perfectly clean
     if (err.code === "ENOTFOUND" || err.code === "ENODATA") return next();
     logger.error("[SECURITY] Spamhaus check error:", err);
     return next();
