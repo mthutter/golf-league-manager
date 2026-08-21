@@ -79,7 +79,7 @@ export const getGroupingsForWeek = async (weekId) => {
     const allActiveSql = `
         SELECT id, (name_first || ' ' || name_last) AS name, type 
         FROM members 
-        WHERE status = 'Yes'
+        WHERE status = 'Yes' AND is_non_member != 1
     `;
     const allActiveMembers = await all(allActiveSql);
 
