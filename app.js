@@ -51,6 +51,8 @@ app.get("/favicon.ico", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "icons", "icons8-golf-lineal-color-32.png"));
 });
 
+app.use(express.static("public"));
+
 // SILENCE CHROME DEVTOOLS WORKSPACE DISCOVERY ALERTS
 app.use((req, res, next) => {
   if (req.url.includes(".well-known/appspecific")) {
@@ -89,7 +91,7 @@ app.use((req, res, next) => {
 app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
-app.use(express.static("public"));
+
 app.use(
   express.urlencoded({
     limit: "50mb",
