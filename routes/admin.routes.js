@@ -1,13 +1,10 @@
 import express from "express";
 import * as adminController from "../controllers/admin.controller.js";
-import {
-    requireAuth,
-    requireAdmin
-} from "../middleware/auth.middleware.js";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-//Protect every /admin route
+// Protect every /admin route globally
 router.use(requireAuth);
 router.use(requireAdmin);
 
@@ -19,5 +16,8 @@ router.post("/skins/calculate", adminController.calculateSkinsMetrics);
 
 // 3. POST /admin/handicaps/calculate - Process handicap engine
 router.post("/handicaps/calculate", adminController.calculateHandicaps);
+
+// 💡 FIXED: Added the missing route endpoint to map to POST /admin/players/reset-password
+router.post("/players/reset-password", adminController.forcePasswordReset);
 
 export default router;

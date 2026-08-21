@@ -77,53 +77,60 @@
     <div class="container my-4">
       <div class="card shadow-sm players-table-card">
         <div class="table-responsive">
-          <table class="table table-bordered align-middle text-center mb-0 league-table table-hover">
+          <table
+            class="table table-bordered align-middle text-center mb-0 league-table table-hover"
+          >
             <thead>
               <tr>
-                <th style="width: 60px"></th>
-                <th class="text-start">Last Name</th>
-                <th class="text-start">First Name</th>
+                <th style="width: 3rem"></th>
+                <th>Last Name</th>
+                <th>First Name</th>
                 <th>Phone</th>
                 <th>E-Mail</th>
                 <th>Joined</th>
                 <th>Status (Reg/Sub)</th>
                 <% if (isAdmin) { %>
-                  <th style="width: 100px">Actions</th>
+                <th style="width: 100px">Actions</th>
                 <% } %>
               </tr>
             </thead>
             <tbody>
               <% let activeCount = 1; %>
               <% players.forEach(player => { if (player.status == 'Yes') { %>
-                <tr>
-                  <td class="fw-bold bg-light players-text">
-                    <%= activeCount++ %>
-                  </td>
-                  <td class="text-start fw-semibold players-text">
-                    <%= player.name_last %>
-                  </td>
-                  <td class="text-start fw-semibold players-text">
-                    <%= player.name_first %>
-                  </td>
-                  <td class="players-text">
-                    <!-- Added phone-link class for immediate document initialization -->
-                    <a href="tel:<%= player.phone %>" class="phone-link"><%= player.phone %></a>
-                  </td>
-                  <td class="players-text">
-                    <a href="mailto:<%= player.e_mail %>"><%= player.e_mail %></a>
-                  </td>
-                  <td class="players-text"><%= player.year_joined %></td>
-                  <td class="players-text"><%= player.type %></td>
-                  <% if (isAdmin) { %>
-                    <td>
-                      <div class="action-cell">
-                        <a href="/players/<%= player.id %>/edit" class="btn btn-sm btn-league-edit">
-                          Edit
-                        </a>
-                      </div>
-                    </td>
-                  <% } %>
-                </tr>
+              <tr>
+                <td class="fw-bold bg-light players-text">
+                  <%= activeCount++ %>
+                </td>
+                <td class="text-start fw-semibold players-text">
+                  <%= player.name_last %>
+                </td>
+                <td class="text-start fw-semibold players-text">
+                  <%= player.name_first %>
+                </td>
+                <td class="players-text">
+                  <!-- Added phone-link class for immediate document initialization -->
+                  <a href="tel:<%= player.phone %>" class="phone-link"
+                    ><%= player.phone %></a
+                  >
+                </td>
+                <td class="players-text">
+                  <a href="mailto:<%= player.e_mail %>"><%= player.e_mail %></a>
+                </td>
+                <td class="players-text"><%= player.year_joined %></td>
+                <td class="players-text"><%= player.type %></td>
+                <% if (isAdmin) { %>
+                <td>
+                  <div class="action-cell">
+                    <a
+                      href="/players/<%= player.id %>/edit"
+                      class="btn btn-sm btn-league-edit"
+                    >
+                      Edit
+                    </a>
+                  </div>
+                </td>
+                <% } %>
+              </tr>
               <% }}) %>
             </tbody>
           </table>
@@ -135,14 +142,12 @@
 
     <!-- PHONE NUMBER AUTO FORMATTER SCRIPT -->
     <script>
-      window.addEventListener('DOMContentLoaded', () => {
-        const phoneLinks = document.querySelectorAll('.phone-link');
-        
-        phoneLinks.forEach(link => {
+      window.addEventListener("DOMContentLoaded", () => {
+        const phoneLinks = document.querySelectorAll(".phone-link");
+        phoneLinks.forEach((link) => {
           let rawValue = link.textContent.replace(/\D/g, "");
-          
           if (rawValue.length === 10) {
-            link.textContent = `(${rawValue.slice(0, 3)}) ${rawValue.slice(3, 6)}-${value.slice(6)}`;
+            link.textContent = `(${rawValue.slice(0, 3)}) ${rawValue.slice(3, 6)}-${rawValue.slice(6)}`;
           }
         });
       });
