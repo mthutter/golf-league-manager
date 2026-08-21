@@ -7,7 +7,8 @@ import logger from "./logger.js";
 import posthogClient from "./posthog.js";
 
 // Whitelisted origins and structures
-const whitelistedIPs = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
+const whitelistedIPs = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1", ...(process.env.SECURITY_IP_WHITELIST ? process.env.SECURITY_IP_WHITELIST.split(",") : [])]);
+
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
@@ -27,7 +28,6 @@ const isPrivateIP = (ip) => {
   if (!ip || !ip.includes(".")) return false;
   const parts = ip.split(".").map(Number);
   if (parts.length !== 4 || parts.some(isNaN)) return false;
-
   if (parts[0] === 10) return true; // 10.0.0.0/8
   if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true; // 172.16.0.0/12
   if (parts[0] === 192 && parts[1] === 168) return true; // 192.168.0.0/16
@@ -48,25 +48,26 @@ export const spamhausCheck = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  // Rely entirely on your persistent dynamic models instead of hardcoded lists
+  // 1. VISIBILITY LOGGING FOR PRE-BANNED CACHE HITS
   if (await securityModel.isBanned(cleanIp)) {
+    logger.warn(`[SECURITY CACHE BLOCK] Spamhaus dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
+
+  // 2. BYPASS LOOKUPS IN NON-PROD ENVIRONMENTS
+  if (process.env.NODE_ENV !== "production") return next();
 
   if (!cleanIp.includes(".")) return next();
   const reversed = cleanIp.split(".").reverse().join(".");
 
   try {
     const addresses = await dns.resolve4(`${reversed}.zen.spamhaus.org`);
-
     const hasMaliciousMatch = addresses.some((address) => {
-      // 1. Ignore ALL variations of public resolver errors / limit codes
+      // Ignore ALL variations of public resolver errors / limit codes
       if (address.startsWith("127.255.255")) return false;
-
-      // 2. Ignore Policy Blocklist (PBL: normal residential end-users)
+      // Ignore Policy Blocklist (PBL: normal residential end-users)
       if (address === "127.0.0.10" || address === "127.0.0.11") return false;
-
-      // 3. Match SBL (127.0.0.2) and XBL/CBL bots/exploits (127.0.0.4-7)
+      // Match SBL (127.0.0.2) and XBL/CBL bots/exploits (127.0.0.4-7)
       return true;
     });
 
@@ -75,6 +76,7 @@ export const spamhausCheck = async (req, res, next) => {
       logger.warn(`[SECURITY] Spamhaus ZEN blocked malicious target: ${cleanIp} (Codes: ${addresses.join(", ")})`);
       return res.status(403).send("Access Denied.");
     }
+
     return next();
   } catch (err) {
     if (err.code === "ENOTFOUND" || err.code === "ENODATA") return next();
@@ -87,7 +89,9 @@ export const firewallMiddleware = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
+  // 1. VISIBILITY LOGGING FOR PRE-BANNED CACHE HITS
   if (await securityModel.isBanned(cleanIp)) {
+    logger.warn(`[SECURITY CACHE BLOCK] Firewall dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
 
