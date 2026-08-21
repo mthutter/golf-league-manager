@@ -48,6 +48,13 @@
             letter-spacing: -0.3px;
         }
 
+        /* Ensure card body and its form stretch to full height */
+        .card-body-flex {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
         /* ===== Form Controls & Buttons ===== */
         .form-select-custom,
         .form-control-custom {
@@ -90,10 +97,10 @@
             <p>Bottoms Up Golf League</p>
         </div>
 
-
         <!-- SECTION 1: LEAGUE OPERATIONS MATRIX -->
         <div class="mb-5">
-            <div class="d-flex align-items-center mb-3">              
+            <div class="d-flex align-items-center mb-3">
+
                 <h4 class="fw-bold text-dark m-0" style="letter-spacing: -0.5px;">League Operations</h4>
             </div>
 
@@ -102,10 +109,10 @@
                 <div class="col-md-6">
                     <div class="card shadow-sm streamlined-card h-100">
                         <div class="card-header card-header-clean">
-                            <h5 class="card-title text-success m-0">Process Weekly Skins</h5>
+                            <h5 class="card-title text-success m-0">Weekly Skins Processor</h5>
                         </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <form method="POST" action="/admin/skins/calculate">
+                        <div class="card-body card-body-flex p-4">
+                            <form method="POST" action="/admin/skins/calculate" class="d-flex flex-column h-100">
                                 <div class="mb-4">
                                     <label class="form-label small fw-bold text-secondary text-uppercase">Select Active
                                         Week</label>
@@ -121,8 +128,8 @@
                                     </select>
                                 </div>
                                 <button type="submit"
-                                    class="btn btn-admin-submit bg-success text-white w-100 shadow-sm">
-                                    Process & Save Skins Payouts
+                                    class="btn btn-admin-submit bg-success text-white w-100 shadow-sm mt-auto">
+                                    Process Skins Payout
                                 </button>
                             </form>
                         </div>
@@ -133,16 +140,17 @@
                 <div class="col-md-6">
                     <div class="card shadow-sm streamlined-card h-100">
                         <div class="card-header card-header-clean">
-                            <h5 class="card-title text-primary m-0">Recalculate Handicaps</h5>
+                            <h5 class="card-title text-primary m-0">Handicap Recalculation</h5>
                         </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <form method="POST" action="/admin/handicaps/calculate">
+                        <div class="card-body card-body-flex p-4">
+                            <form method="POST" action="/admin/handicaps/calculate" class="d-flex flex-column h-100">
                                 <p class="text-muted small mb-4">
-                                    <strong>IMPORTANT : </strong>Execute this ONLY after processing weekly scores and skins.
+                                    <strong>IMPORTANT :</strong> Execute ONLY after entering weekly scores and
+                                    processing of skins.
                                 </p>
                                 <button type="submit"
                                     class="btn btn-admin-submit bg-primary text-white w-100 shadow-sm mt-auto">
-                                    Recalculate Handicaps
+                                    Compute New Handicaps
                                 </button>
                             </form>
                         </div>
@@ -152,7 +160,8 @@
         </div>
         <!-- SECTION 2: SECURITY & SYSTEM CONTROLS MATRIX -->
         <div class="mb-5">
-            <div class="d-flex align-items-center mb-3">              
+            <div class="d-flex align-items-center mb-3">
+
                 <h4 class="fw-bold text-dark m-0" style="letter-spacing: -0.5px;">Security & System Access</h4>
             </div>
 
@@ -161,24 +170,25 @@
                 <div class="col-md-6">
                     <div class="card shadow-sm streamlined-card h-100">
                         <div class="card-header card-header-clean">
-                            <h5 class="card-title text-dark m-0">Reset Member Password</h5>
+                            <h5 class="card-title text-dark m-0">Member Password Reset</h5>
                         </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
+                        <div class="card-body card-body-flex p-4">
                             <form action="/admin/players/reset-password" method="POST"
-                                onsubmit="return confirm('Forcibly alter this member\'s account credentials? All current active sessions for this player will be terminated.');">
+                                onsubmit="return confirm('Forcibly alter this member\'s account credentials? All current active sessions for this player will be terminated.');"
+                                class="d-flex flex-column h-100">
 
                                 <div class="mb-3">
                                     <label class="form-label small fw-bold text-secondary text-uppercase">Select League
                                         Member</label>
                                     <select name="memberId" class="form-select form-select-custom" required>
-                                        <option value="">-- Select Member --</option>
+                                        <option value="">-- Choose Member --</option>
                                         <% if (locals.members) { members.forEach(p => { %>
                                         <option value="<%= p.id %>"><%= p.name_last %>, <%= p.name_first %></option>
                                         <% }) } %>
                                     </select>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label small fw-bold text-secondary text-uppercase">New Temporary
+                                    <label class="form-label small fw-bold text-secondary text-uppercase">New
                                         Password</label>
                                     <div class="input-group">
                                         <input type="text" name="newPassword" class="form-control form-control-custom"
@@ -190,9 +200,9 @@
                                         </button>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-admin-submit text-white w-100 shadow-sm"
+                                <button type="submit" class="btn btn-admin-submit text-white w-100 shadow-sm mt-auto"
                                     style="background-color: var(--admin-primary);">
-                                    Reset Password
+                                    Save New Password
                                 </button>
                             </form>
                         </div>
@@ -203,22 +213,25 @@
                 <div class="col-md-6">
                     <div class="card shadow-sm streamlined-card h-100">
                         <div class="card-header card-header-clean">
-                            <h5 class="card-title text-danger m-0">IP Firewall Blacklist</h5>
+                            <h5 class="card-title text-danger m-0">IP Blacklist</h5>
                         </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
+                        <div class="card-body card-body-flex p-4">
                             <form action="/admin/security/blacklist" method="POST"
-                                onsubmit="return confirm('Are you sure you want to permanently blacklist these target IP addresses across the system?');">
-
+                                onsubmit="return confirm('Are you sure you want to permanently blacklist these target IP addresses across the system?');"
+                                class="d-flex flex-column h-100">
+                                <p class="text-muted small mb-3">
+                                    Manually add IPs to the blacklist.
+                                </p>
                                 <div class="mb-3">
                                     <label class="form-label small fw-bold text-secondary text-uppercase">Target IP
                                         Nodes</label>
                                     <textarea name="ipList" class="form-control form-control-custom font-monospace"
-                                        rows="3" placeholder="Paste IPs here...&#10;One node per line"
+                                        rows="3" placeholder="Paste IPs here...&#10;One per line"
                                         required></textarea>
                                 </div>
                                 <button type="submit"
                                     class="btn btn-admin-submit btn-danger text-white w-100 shadow-sm mt-auto">
-                                    Submit List
+                                    Submit IP List
                                 </button>
                             </form>
                         </div>
@@ -302,7 +315,7 @@
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2">
                     <div class="spinner-grow spinner-grow-sm text-light" role="status"></div>
-                    <span><strong>Success!</strong> Player handicaps have been completely recalculated.</span>
+                    <span><strong>Success!</strong> Player handicaps have been recalculated and saved.</span>
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
                     aria-label="Close"></button>
