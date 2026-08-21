@@ -1,21 +1,10 @@
 import db from "../config/db.js";
-import {
-  getAllWeeks,
-  getCurrentWeekPlayed,
-  getPreviousWeekPlayed,
-  getWeek,
-} from "./weeks.service.js";
+import { getAllWeeks, getCurrentWeekPlayed, getPreviousWeekPlayed, getWeek } from "./weeks.service.js";
 import { buildHoleScores } from "./golf.service.js";
 
 // --- Promise Helpers for SQLite Callbacks ---
-const dbAll = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.all(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
-const dbGet = (sql, params = []) =>
-  new Promise((res, rej) =>
-    db.get(sql, params, (e, r) => (e ? rej(e) : res(r))),
-  );
+const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => (e ? rej(e) : res(r))));
+const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => (e ? rej(e) : res(r))));
 const dbRun = (sql, params = []) =>
   new Promise((res, rej) =>
     db.run(sql, params, function (e) {
@@ -47,15 +36,12 @@ export const getFormData = async () => {
   const memberSql = ` 
         SELECT id, name_first, name_last, status, COALESCE(current_handicap, handicap) AS handicap 
         FROM members 
-        WHERE status !== 'No'
-        AND in_non_member = 0
+        WHERE status != 'No'
+        AND is_non_member = 0
         ORDER BY name_last, name_first 
     `;
   const holesSql = `SELECT * FROM holes WHERE hole_number >= 10 ORDER BY hole_number`;
-  const [members, holes] = await Promise.all([
-    dbAll(memberSql),
-    dbAll(holesSql),
-  ]);
+  const [members, holes] = await Promise.all([dbAll(memberSql), dbAll(holesSql)]);
   return {
     members,
     holes,
@@ -110,16 +96,7 @@ export const updateScoreRecord = async (scoreId, body) => {
 
   const holeScores = extractHoleScoresFromPayload(body);
 
-  const params = [
-    body.ctp_points || 0,
-    body.birdie_points || 0,
-    ...holeScores,
-    body.gross_total,
-    body.net_total,
-    body.stableford_total,
-    body.skins_entered ? 1 : 0,
-    scoreId,
-  ];
+  const params = [body.ctp_points || 0, body.birdie_points || 0, ...holeScores, body.gross_total, body.net_total, body.stableford_total, body.skins_entered ? 1 : 0, scoreId];
 
   return dbRun(sql, params);
 };
@@ -131,9 +108,7 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
   const latestWeekPlayed = await getCurrentWeekPlayed();
   const latestWeek = await getWeek(latestWeekPlayed.week_number);
   if (latestWeek?.date) {
-    latestWeek.displayDate = new Date(
-      latestWeek.date + "T12:00:00",
-    ).toLocaleDateString("en-US", {
+    latestWeek.displayDate = new Date(latestWeek.date + "T12:00:00").toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
@@ -142,17 +117,13 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
   const previousWeekPlayed = await getPreviousWeekPlayed(currentWeekNumber);
   const currentWeek = await getWeek(currentWeekNumber);
   if (currentWeek && currentWeek.date) {
-    currentWeek.displayDate = new Date(
-      currentWeek.date + "T12:00:00",
-    ).toLocaleDateString("en-US", {
+    currentWeek.displayDate = new Date(currentWeek.date + "T12:00:00").toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
   }
   const standings = await getStandingsThroughWeek(currentWeekNumber);
-  const previousStandings = await getStandingsThroughWeek(
-    previousWeekPlayed.week_number,
-  );
+  const previousStandings = await getStandingsThroughWeek(previousWeekPlayed.week_number);
   const previousRanks = {};
   previousStandings.forEach((player) => {
     previousRanks[player.id] = player.rank;
@@ -232,10 +203,7 @@ export const getMemberProfileData = async (memberId) => {
     `;
   const member = await dbGet(memberSql, [memberId]);
   if (!member) return null;
-  const scores = await dbAll(historySql, [
-    lastWeekPlayed.week_number,
-    memberId,
-  ]);
+  const scores = await dbAll(historySql, [lastWeekPlayed.week_number, memberId]);
   return {
     member,
     scores,
@@ -269,13 +237,10 @@ export const getRoundDetails = async (scoreId) => {
   const round = await dbGet(roundSql, [scoreId]);
   if (!round) return null;
 
-  round.displayDate = new Date(round.date + "T12:00:00").toLocaleDateString(
-    "en-US",
-    {
-      month: "long",
-      day: "numeric",
-    },
-  );
+  round.displayDate = new Date(round.date + "T12:00:00").toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
   const holeData = await dbAll(` SELECT * FROM holes ORDER BY hole_number `);
   const startHole = round.week_number <= 11 ? 1 : 10;
   const holes = buildHoleScores(round, holeData, startHole);
@@ -287,8 +252,7 @@ export const getRoundDetails = async (scoreId) => {
     stableford: round.stableford_total,
     birdies: round.birdie_points,
     ctp: round.ctp_points,
-    leaguePoints:
-      round.stableford_total + round.birdie_points + round.ctp_points,
+    leaguePoints: round.stableford_total + round.birdie_points + round.ctp_points,
   };
   return {
     id: round.score_id,
