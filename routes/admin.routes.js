@@ -17,7 +17,16 @@ router.post("/skins/calculate", adminController.calculateSkinsMetrics);
 // 3. POST /admin/handicaps/calculate - Process handicap engine
 router.post("/handicaps/calculate", adminController.calculateHandicaps);
 
-// 💡 FIXED: Added the missing route endpoint to map to POST /admin/players/reset-password
+// 4. POST /admin/players/reset-password - Password Override
 router.post("/players/reset-password", adminController.forcePasswordReset);
+
+// 1. GET: Render the dedicated blacklist list page
+router.get("/security/blacklist", adminController.getBlacklistRoster);
+
+// 2. POST: Process bans (Update your existing route redirect target inside the controller)
+router.post("/security/blacklist", adminController.processBulkIpBlacklist);
+
+// 3. POST: Remove individual IP ban
+router.post("/security/blacklist/delete", adminController.unbanIpAddress);
 
 export default router;

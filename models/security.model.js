@@ -40,8 +40,8 @@ class SecurityModel {
     const upsertSql = `
       INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen)
       VALUES (?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-      ON CONFLICT(ip) DO UPDATE SET
-        strikes = strikes + 1,
+      ON CONFLICT(ip) DO UPDATE SET 
+        strikes = strikes + 1, 
         last_seen = CURRENT_TIMESTAMP
     `;
     await run(upsertSql, [ip]);
@@ -53,6 +53,33 @@ class SecurityModel {
       this.transientBanCache.del(ip);
     }
     return strikes;
+  }
+
+  /**
+   * Programmatically forces an absolute permanent ban entry into the SQLite tracking engine.
+   * @param {string} targetIp - The clean string representation of the bad actor's IP address.
+   */
+  async manuallyBanIP(targetIp) {
+    const cleanIp = targetIp.trim();
+    const sql = `
+      REPLACE INTO permanent_bans (ip, strikes, first_seen, last_seen)
+      VALUES (?, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    `;
+
+    try {
+      // 1. Write the row straight to SQLite using your run query module
+      await run(sql, [cleanIp]);
+
+      // 2. Inject it into the live RAM cache so it blocks instantly without a server reboot
+      this.permanentBanCache.add(cleanIp);
+      this.transientBanCache.del(cleanIp);
+
+      logger.info(`[SECURITY MANUAL] IP ${cleanIp} successfully added to permanent_bans schema and live cache.`);
+      return true;
+    } catch (err) {
+      logger.error(`[SECURITY ERROR] Failed to manually record ban execution for ${cleanIp}:`, err);
+      throw err;
+    }
   }
 }
 
