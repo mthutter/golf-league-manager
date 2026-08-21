@@ -38,12 +38,7 @@
 
 /* Hover state interaction to make the options reactive */
 .navbar-nav .nav-link:hover {
-  background-color: rgba(
-    212,
-    175,
-    55,
-    0.15
-  ) !important; /* Gentle transparent gold glow */
+  background-color: rgba(212, 175, 55, 0.15) !important; /* Gentle transparent gold glow */
   color: #18aa24 !important; /* Transitions text to your hover green */
   transform: translateY(-1px); /* Micro-lift behavior matching buttons */
 }
@@ -89,8 +84,8 @@
 
 /* ======================== RESPONSIVE BREAKPOINTS ======================== */
 
-/* Tablet & Mobile Layouts */
-@media (max-width: 1200px) {
+/* Mobile Layouts (Under 1200px) */
+@media (max-width: 1199.98px) {
   .navbar-collapse {
     background: var(--green-light);
     margin-top: 8px;
@@ -101,8 +96,13 @@
     margin-right: auto;
   }
 
+  /* Strip out the gold button borders on top-level mobile menu links */
   .navbar-nav .nav-link {
-    padding: 10px 0;
+    padding: 10px 0 !important;
+    border: none !important; /* Removes gold border */
+    border-radius: 0;
+    margin: 4px 0;
+    text-align: center;
   }
 
   /* Unify mobile dropdown styling to match collapse breakpoint */
@@ -126,4 +126,23 @@
 
 .dropdown-divider {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Desktop Tight-Fit Padding (1200px up to 1400px) */
+@media (min-width: 1200px) and (max-width: 1400px) {
+  .navbar-nav {
+    flex-wrap: nowrap !important; /* Forces links to stay on a single line */
+    white-space: nowrap !important; /* Prevents link text from wrapping internal words */
+  }
+
+  .navbar-nav .nav-link {
+    padding-left: 0.4rem !important; /* Tightened horizontal gap */
+    padding-right: 0.4rem !important;
+    margin: 0 2px; /* Reduced spacing between buttons */
+    font-size: 0.85rem !important; /* Down-scales cleanly */
+  }
+
+  .navbar-brand span {
+    font-size: 1.05rem !important; /* Compact branding text */
+  }
 }
