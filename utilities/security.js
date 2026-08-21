@@ -22,6 +22,22 @@ const getCleanIp = (req) => {
 };
 
 /**
+ * Checks if the IP belongs to Cloudflare's 172.64.0.0/13 routing infrastructure
+ */
+const isCloudflareIP = (ip) => {
+  if (!ip || !ip.includes(".")) return false;
+  const parts = ip.split(".").map(Number);
+
+  if (parts.length !== 4 || parts.some(isNaN)) return false;
+
+  // Catches Cloudflare proxy blocks between 172.64.x.x and 172.71.x.x
+  if (parts[0] === 172 && parts[1] >= 64 && parts[1] <= 71) {
+    return true;
+  }
+  return false;
+};
+
+/**
  * Checks for legitimate RFC 1918 internal subnets
  */
 const isPrivateIP = (ip) => {
@@ -36,7 +52,8 @@ const isPrivateIP = (ip) => {
 
 const isWhitelisted = (ip) => {
   if (!ip) return false;
-  return whitelistedIPs.has(ip) || isPrivateIP(ip);
+  // Bypasses checks if explicitly listed, private LAN, or Cloudflare reverse proxy node
+  return whitelistedIPs.has(ip) || isPrivateIP(ip) || isCloudflareIP(ip);
 };
 
 export const corsMiddleware = cors({
