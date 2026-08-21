@@ -1,156 +1,263 @@
-<!doctype html> 
-<html lang="en"> 
-<head> 
-  <%- include('./partials/header'); %> 
-</head> 
-<body> 
-  <section> 
-    <%- include('./partials/navbar'); %> 
-  </section> 
-  <div class="container my-4"> 
-    <div class="gallery-header"> 
-      <h1>Admin Tools</h1> 
-      <p>Bottoms Up Golf League • 2026 Season</p> 
-    </div> 
+<!doctype html>
+<html lang="en">
 
-    <!-- Main Dashboard Header Navigation --> 
-    <div class="d-flex justify-content-between align-items-center mb-4"> 
-      <a href="/admin" class="btn btn-sm btn-secondary">Back to Dashboard</a> 
-    </div> 
+<head>
+    <%- include('./partials/header'); %>
+    <style>
+        /* ===== Modern Minimalist Dashboard System ===== */
+        :root {
+            --admin-primary: #1b4332;
+            /* Deep Emerald */
+            --admin-accent: #2d6a4f;
+            /* Mid Emerald */
+            --admin-success: #40916c;
+            /* Muted Success Green */
+            --admin-danger: #e63946;
+            /* Clean Crimson */
+            --admin-bg-soft: #f8f9fa;
+            /* Off-White Layout canvas */
+        }
 
-    <!-- Row 1: Calculation Engines Grid Matrix --> 
-    <div class="row g-4 mb-4"> 
-      <!-- Utility 1: Weekly Skins Processor --> 
-      <div class="col-md-6"> 
-        <div class="card shadow-sm h-100"> 
-          <div class="card-header bg-success text-white"> 
-            <h5 class="card-title mb-0">Weekly Skins Processor</h5> 
-          </div> 
-          <div class="card-body d-flex flex-column justify-content-between"> 
-            <form method="POST" action="/admin/skins/calculate"> 
-              <div class="mb-3"> 
-                <label class="form-label fw-bold">Select Week</label> 
-                <select name="weekId" class="form-select" required> 
-                  <option value="">-- Choose Week --</option> 
-                  <% for(let i = 1; i <= 22; i++) { %> 
-                    <% if (typeof selectedWeek !== 'undefined' && selectedWeek === i) { %> 
-                      <option value="<%= i %>" selected> Week <%= i %> </option> 
-                    <% } else { %> 
-                      <option value="<%= i %>">Week <%= i %></option> 
-                    <% } %> 
-                  <% } %> 
-                </select> 
-              </div> 
-              <button type="submit" class="btn btn-success w-100"> Calculate & Save Skins </button> 
-            </form> 
-          </div> 
-        </div> 
-      </div> 
+        body {
+            background-color: #f4f6f8;
+            color: #212529;
+        }
 
-      <!-- Utility 2: Calculate Handicaps Engine --> 
-      <div class="col-md-6"> 
-        <div class="card shadow-sm h-100"> 
-          <div class="card-header bg-primary text-white"> 
-            <h5 class="card-title mb-0">Handicap Recalculation Engine</h5> 
-          </div> 
-          <div class="card-body d-flex flex-column justify-content-between"> 
-            <form method="POST" action="/admin/handicaps/calculate"> 
-              <p class="text-muted small mb-3"> 
-                Recalculates player handicaps using all scores entered for the current season. 
-              </p> 
-              <button type="submit" class="btn btn-primary w-100"> Recalculate Player Handicaps </button> 
-            </form> 
-          </div> 
-        </div> 
-      </div> 
-    </div>
-    <!-- Row 2: Security Utilities Grid Block --> 
-    <div class="row g-4 mb-4"> 
-      <!-- Player Password Override Panel -->
-      <div class="col-md-6"> 
-        <div class="card shadow-sm h-100"> 
-          <div class="card-header text-white fw-bold" style="background-color: #1b4332;"> 
-            🔐 Player Password Override Utility 
-          </div> 
-          <div class="card-body bg-light text-dark d-flex flex-column justify-content-between"> 
-            <form action="/admin/players/reset-password" method="POST" onsubmit="return confirm('Forcibly alter this member\'s account credentials? All current active sessions for this player will be terminated.');"> 
-              <p class="text-muted small mb-3"> Directly overwrite a player's login password. This updates their access token hash in SQLite immediately without requiring confirmation emails. </p>
-              <div class="mb-3"> 
-                <label class="form-label fw-semibold small">Select League Player</label> 
-                <select name="memberId" class="form-select form-select-sm" required> 
-                  <option value="">-- Choose Roster Target --</option> 
-                  <% if (locals.members) { members.forEach(p => { %> 
-                    <option value="<%= p.id %>"><%= p.name_last %>, <%= p.name_first %></option> 
-                  <% }) } %> 
-                </select> 
-              </div> 
-              <div class="mb-3"> 
-                <label class="form-label fw-semibold small">New Temporary Password</label> 
-                <div class="input-group input-group-sm"> 
-                  <input type="text" name="newPassword" class="form-control" placeholder="Type password or hit generate..." required minlength="6" /> 
-                  <button type="button" class="btn btn-outline-secondary" onclick="this.previousElementSibling.value = Math.random().toString(36).slice(-8)"> 🎲 Generate </button> 
-                </div> 
-              </div> 
-              <button type="submit" class="btn btn-sm text-white fw-bold w-100 py-2" style="background-color: #1b4332; border: none;"> Apply Override Updates </button> 
-            </form> 
-          </div> 
-        </div> 
-      </div> 
+        /* ===== Uniform Semantic Card Wrappers ===== */
+        .streamlined-card {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05) !important;
+            border-radius: 16px !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-      <!-- Bulk IP Blacklist Panel -->
-      <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-danger text-white fw-bold">
-            🚫 Bulk IP Firewall Blacklist
-          </div>
-          <div class="card-body bg-light text-dark d-flex flex-column justify-content-between">
-            <form action="/admin/security/blacklist" method="POST" onsubmit="return confirm('Are you sure you want to permanently blacklist these target IP addresses across the system?');">
-              <p class="text-muted small mb-3">
-                Manually append IP nodes straight into the persistent SQLite firewall block list cache. Dropping IPs here rejects their traffic at the threshold layer.
-              </p>
-              <div class="mb-3">
-                <label class="form-label fw-semibold small">Target IP Addresses</label>
-                <textarea name="ipList" class="form-control form-control-sm font-monospace" rows="4" placeholder="Enter one IP per line&#10;e.g.&#10;192.0.2.1&#10;203.0.113.5" required></textarea>
-                <div class="form-text text-muted extra-small" style="font-size: 0.75rem;">
-                  Accepts newlines, commas, or spaces as valid delimiters.
-                </div>
-              </div>
-              <button type="submit" class="btn btn-sm btn-danger fw-bold w-100 py-2">
-                Commit Permanent Block List
-              </button>
-            </form>
-          </div>
+        .streamlined-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(27, 67, 50, 0.08) !important;
+        }
+
+        .card-header-clean {
+            background: transparent !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+            padding: 1.25rem 1.5rem !important;
+        }
+
+        .card-header-clean h5 {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.3px;
+        }
+
+        /* ===== Form Controls & Buttons ===== */
+        .form-select-custom,
+        .form-control-custom {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-select-custom:focus,
+        .form-control-custom:focus {
+            border-color: var(--admin-accent);
+            box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.15);
+        }
+
+        .btn-admin-submit {
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 0.7rem 1.5rem;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-admin-submit:hover {
+            filter: brightness(90%);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <%- include('./partials/navbar'); %>
+    </section>
+
+    <div class="container my-4">
+        <div class="gallery-header text-center my-5">
+            <h1>Admin Control Suite</h1>
+            <p>Bottoms Up Golf League • 2026 Management Dashboard</p>
         </div>
-      </div>
-    </div>
-    <!-- Dynamic Results Presentation Section --> 
-    <% if (typeof results !== 'undefined' && results !== null) { %> 
-      <div class="card shadow-sm mb-4"> 
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center"> 
-          <h5 class="mb-0">Calculated Payouts: Week <%= selectedWeek %></h5> 
-          <span class="badge bg-success fs-6">Total Pot: $<%= Number(results.totalPot).toFixed(2) %></span> 
-        </div> 
-        <div class="card-body"> 
-          <div class="table-responsive"> 
-            <table class="table table-striped table-hover align-middle"> 
-              <thead class="table-light"> 
-                <tr> 
-                  <th>Player Name</th> 
-                  <th>Holes Claimed</th> 
-                  <th class="text-center">Skins Total</th> 
-                  <th class="text-end">Calculated Earnings</th> 
-                </tr> 
-              </thead> 
-              <tbody> 
-                <% if (!results.leaderboard || results.leaderboard.length === 0) { %> 
-                  <tr> 
-                    <td colspan="4" class="text-center py-4 text-muted"> 
-                      No unique skins claimed for Week <%= selectedWeek %>. All holes tied or data is missing. 
-                    </td> 
-                  </tr> 
-                <% } else { %> 
-                  <% results.leaderboard.forEach(winner => { %> 
-                    <% let itemsToRender = []; 
+
+
+        <!-- SECTION 1: LEAGUE OPERATIONS MATRIX -->
+        <div class="mb-5">
+            <div class="d-flex align-items-center mb-3">              
+                <h4 class="fw-bold text-dark m-0" style="letter-spacing: -0.5px;">League Operations</h4>
+            </div>
+
+            <div class="row g-4">
+                <!-- Utility 1: Weekly Skins Processor -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm streamlined-card h-100">
+                        <div class="card-header card-header-clean">
+                            <h5 class="card-title text-success m-0">Process Weekly Skins</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-between p-4">
+                            <form method="POST" action="/admin/skins/calculate">
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase">Select Active
+                                        Week</label>
+                                    <select name="weekId" class="form-select form-select-custom" required>
+                                        <option value="">-- Select Target Week --</option>
+                                        <% for(let i = 1; i <= 22; i++) { %>
+                                        <% if (typeof selectedWeek !== 'undefined' && selectedWeek === i) { %>
+                                        <option value="<%= i %>" selected> Week <%= i %> </option>
+                                        <% } else { %>
+                                        <option value="<%= i %>">Week <%= i %></option>
+                                        <% } %>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <button type="submit"
+                                    class="btn btn-admin-submit bg-success text-white w-100 shadow-sm">
+                                    Process & Save Skins Payouts
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Utility 2: Calculate Handicaps Engine -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm streamlined-card h-100">
+                        <div class="card-header card-header-clean">
+                            <h5 class="card-title text-primary m-0">Recalculate Handicaps</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-between p-4">
+                            <form method="POST" action="/admin/handicaps/calculate">
+                                <p class="text-muted small mb-4">
+                                    <strong>IMPORTANT : </strong>Execute this ONLY after processing weekly scores and skins.
+                                </p>
+                                <button type="submit"
+                                    class="btn btn-admin-submit bg-primary text-white w-100 shadow-sm mt-auto">
+                                    Recalculate Handicaps
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- SECTION 2: SECURITY & SYSTEM CONTROLS MATRIX -->
+        <div class="mb-5">
+            <div class="d-flex align-items-center mb-3">              
+                <h4 class="fw-bold text-dark m-0" style="letter-spacing: -0.5px;">Security & System Access</h4>
+            </div>
+
+            <div class="row g-4">
+                <!-- Player Password Override -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm streamlined-card h-100">
+                        <div class="card-header card-header-clean">
+                            <h5 class="card-title text-dark m-0">Reset Member Password</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-between p-4">
+                            <form action="/admin/players/reset-password" method="POST"
+                                onsubmit="return confirm('Forcibly alter this member\'s account credentials? All current active sessions for this player will be terminated.');">
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase">Select League
+                                        Member</label>
+                                    <select name="memberId" class="form-select form-select-custom" required>
+                                        <option value="">-- Select Member --</option>
+                                        <% if (locals.members) { members.forEach(p => { %>
+                                        <option value="<%= p.id %>"><%= p.name_last %>, <%= p.name_first %></option>
+                                        <% }) } %>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase">New Temporary
+                                        Password</label>
+                                    <div class="input-group">
+                                        <input type="text" name="newPassword" class="form-control form-control-custom"
+                                            placeholder="Minimum 6 characters..." required minlength="6" />
+                                        <button type="button" class="btn btn-outline-secondary px-3"
+                                            style="border-radius: 0 10px 10px 0;"
+                                            onclick="this.previousElementSibling.value = Math.random().toString(36).slice(-8)">
+                                            🎲 Auto-Gen
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-admin-submit text-white w-100 shadow-sm"
+                                    style="background-color: var(--admin-primary);">
+                                    Reset Password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk IP Blacklist Panel -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm streamlined-card h-100">
+                        <div class="card-header card-header-clean">
+                            <h5 class="card-title text-danger m-0">IP Firewall Blacklist</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-between p-4">
+                            <form action="/admin/security/blacklist" method="POST"
+                                onsubmit="return confirm('Are you sure you want to permanently blacklist these target IP addresses across the system?');">
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase">Target IP
+                                        Nodes</label>
+                                    <textarea name="ipList" class="form-control form-control-custom font-monospace"
+                                        rows="3" placeholder="Paste IPs here...&#10;One node per line"
+                                        required></textarea>
+                                </div>
+                                <button type="submit"
+                                    class="btn btn-admin-submit btn-danger text-white w-100 shadow-sm mt-auto">
+                                    Submit List
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Results Presentation Section -->
+        <% if (typeof results !== 'undefined' && results !== null) { %>
+        <div class="card shadow-sm streamlined-card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center p-3"
+                style="border-radius: 15px 15px 0 0;">
+                <h5 class="mb-0 fw-bold">Calculated Payouts: Week <%= selectedWeek %></h5>
+                <span class="badge bg-success fs-6 rounded-pill px-3">Total Pot:
+                    $<%= Number(results.totalPot).toFixed(2) %></span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0 text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-start ps-4">Player Name</th>
+                                <th>Holes Claimed</th>
+                                <th>Skins Total</th>
+                                <th class="text-end pe-4">Calculated Earnings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (!results.leaderboard || results.leaderboard.length === 0) { %>
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    No unique skins claimed for Week <%= selectedWeek %>. All holes tied or data is
+                                    missing.
+                                </td>
+                            </tr>
+                            <% } else { %>
+                            <% results.leaderboard.forEach(winner => { %>
+                            <% let itemsToRender = []; 
                        if (results.holeDetails && Array.isArray(results.holeDetails)) { 
                          const playerWins = results.holeDetails.filter(d => Number(d.member_id) === Number(winner.member_id)); 
                          playerWins.forEach(w => { 
@@ -166,59 +273,63 @@
                          }); 
                        } 
                        const holesText = itemsToRender.length > 0 ? itemsToRender.join(', ') : 'None'; 
-                       const formattedSkins = Number(winner.skins_won).toFixed(1).replace('.0', ''); %> 
-                    <tr> 
-                      <td> 
-                        <div class="fw-bold"> <%= winner.name_first %> <%= winner.name_last %> </div> 
-                      </td> 
-                      <td> <%= holesText %> </td> 
-                      <td class="text-center"> 
-                        <span class="badge bg-secondary rounded-pill px-3"> <%= formattedSkins %> </span> 
-                      </td> 
-                      <td class="text-end text-success fw-bold"> $<%= Number(winner.payout).toFixed(2) %> </td> 
-                    </tr> 
-                  <% }); %> 
-                <% } %> 
-              </tbody> 
-            </table> 
-          </div> 
-        </div> 
-      </div> 
-    <% } %> 
-  </div> 
+                       const formattedSkins = Number(winner.skins_won).toFixed(1).replace('.0', ''); %>
+                            <tr>
+                                <td class="text-start ps-4 fw-bold">
+                                    <%= winner.name_first %> <%= winner.name_last %>
+                                </td>
+                                <td class="small text-muted text-start"> <%= holesText %> </td>
+                                <td>
+                                    <span class="badge bg-secondary rounded-pill px-3"> <%= formattedSkins %> </span>
+                                </td>
+                                <td class="text-end text-success fw-bold pe-4"> $<%= Number(winner.payout).toFixed(2) %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
 
-  <!-- Global Action Notification Toast Elements -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100"> 
-    <div id="handicapToast" class="toast align-items-center text-white bg-primary border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000"> 
-      <div class="d-flex"> 
-        <div class="toast-body d-flex align-items-center gap-2"> 
-          <div class="spinner-grow spinner-grow-sm text-light" role="status"></div> 
-          <span><strong>Success!</strong> Player handicaps have been completely recalculated.</span> 
-        </div> 
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> 
-      </div> 
-    </div> 
-  </div> 
+    <!-- Global Action Notification Toast Elements -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <div id="handicapToast" class="toast align-items-center text-white bg-primary border-0 shadow" role="alert"
+            aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <div class="spinner-grow spinner-grow-sm text-light" role="status"></div>
+                    <span><strong>Success!</strong> Player handicaps have been completely recalculated.</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
-  <section> 
-    <%- include('./partials/footer'); %> 
-  </section> 
-  <section> 
-    <%- include('./partials/scripts'); %> 
-  </section> 
-  
-  <!-- Interactive Trigger Scripts -->
-  <script> 
-    document.addEventListener("DOMContentLoaded", function() { 
-      const showPopup = "<%= typeof showHandicapPopup !== 'undefined' && showHandicapPopup ? 'true' : 'false' %>"; 
-      if (showPopup === "true") { 
-        const toastElement = document.getElementById("handicapToast"); 
-        if (toastElement && typeof bootstrap !== "undefined") { 
-          const bootstrapToast = new bootstrap.Toast(toastElement); 
-          bootstrapToast.show(); 
-        } 
-      } 
-    }); 
-  </script> 
-</body> 
+    <section>
+        <%- include('./partials/footer'); %>
+    </section>
+    <section>
+        <%- include('./partials/scripts'); %>
+    </section>
+
+    <!-- Interactive Trigger Scripts -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const showPopup = "<%= typeof showHandicapPopup !== 'undefined' && showHandicapPopup ? 'true' : 'false' %>";
+            if (showPopup === "true") {
+                const toastElement = document.getElementById("handicapToast");
+                if (toastElement && typeof bootstrap !== "undefined") {
+                    const bootstrapToast = new bootstrap.Toast(toastElement);
+                    bootstrapToast.show();
+                }
+            }
+        }); 
+    </script>
+</body>
+
 </html>
