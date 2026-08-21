@@ -19,6 +19,14 @@ export const getPlayers = catchAsync(async (req, res, next) => {
   });
 });
 
+export const getSystemUsers = catchAsync(async (req, res, next) => {
+  logger.info("Retrieving system users");
+  const rows = await playersService.getSystemUsers();
+  return res.render("system-users", {
+    players: rows,
+  });
+});
+
 /**
  * GET /players/inactive - Display inactive players
  */

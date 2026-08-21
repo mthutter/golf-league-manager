@@ -3,15 +3,9 @@ import db from "../config/db.js";
 // -----------------------------------------------------------------------------
 // Promise Helpers
 // -----------------------------------------------------------------------------
-const dbAll = (sql, params = []) =>
-  new Promise((resolve, reject) =>
-    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows))),
-  );
+const dbAll = (sql, params = []) => new Promise((resolve, reject) => db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows))));
 
-const dbGet = (sql, params = []) =>
-  new Promise((resolve, reject) =>
-    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row))),
-  );
+const dbGet = (sql, params = []) => new Promise((resolve, reject) => db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row))));
 
 const dbRun = (sql, params = []) =>
   new Promise((resolve, reject) =>
@@ -37,6 +31,23 @@ export async function getAllPlayers() {
   return dbAll(sql);
 }
 
+export async function getSystemUsers() {
+  const sql = `
+    SELECT 
+      m.id, 
+      m.name_first || ' ' || m.name_last AS user, 
+      m.e_mail, 
+      m.is_non_member,
+      COALESCE(GROUP_CONCAT(r.role, ', '), 'No Role') AS roles
+    FROM members m
+    LEFT JOIN member_roles r ON m.id = r.member_id
+    WHERE m.is_non_member = 1 
+    GROUP BY m.id
+    ORDER BY m.name_last, m.name_first
+  `;
+  return dbAll(sql);
+}
+
 export async function getPlayerById(id) {
   const sql = `
     SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex
@@ -49,17 +60,7 @@ export async function getPlayerById(id) {
 // -----------------------------------------------------------------------------
 // Create Player
 // -----------------------------------------------------------------------------
-export async function createNewPlayer({
-  name_last,
-  name_first,
-  phone,
-  handicap = null,
-  e_mail,
-  year_joined,
-  status,
-  type,
-  sex,
-}) {
+export async function createNewPlayer({ name_last, name_first, phone, handicap = null, e_mail, year_joined, status, type, sex }) {
   const sql = `
     INSERT INTO members (
       name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex,
@@ -73,27 +74,14 @@ export async function createNewPlayer({
   const cleanPhone = phone ? phone.replace(/\D/g, "") : "";
   const cleanEmail = e_mail ? e_mail.trim().toLowerCase() : "";
 
-  const result = await dbRun(sql, [
-    name_last?.trim(),
-    name_first?.trim(),
-    cleanPhone,
-    handicap,
-    cleanEmail,
-    parseInt(year_joined, 10) || 2026,
-    status,
-    type,
-    sex,
-  ]);
+  const result = await dbRun(sql, [name_last?.trim(), name_first?.trim(), cleanPhone, handicap, cleanEmail, parseInt(year_joined, 10) || 2026, status, type, sex]);
   return result.lastID;
 }
 
 // -----------------------------------------------------------------------------
 // Update Player
 // -----------------------------------------------------------------------------
-export async function updatePlayerById(
-  id,
-  { name_last, name_first, phone, e_mail, year_joined, status, type, sex },
-) {
+export async function updatePlayerById(id, { name_last, name_first, phone, e_mail, year_joined, status, type, sex }) {
   const sql = `
     UPDATE members
     SET name_last = ?, name_first = ?, phone = ?, e_mail = ?, year_joined = ?, status = ?, type = ?, sex = ?
@@ -103,17 +91,7 @@ export async function updatePlayerById(
   const cleanPhone = phone ? phone.replace(/\D/g, "") : "";
   const cleanEmail = e_mail ? e_mail.trim().toLowerCase() : "";
 
-  return dbRun(sql, [
-    name_last?.trim(),
-    name_first?.trim(),
-    cleanPhone,
-    cleanEmail,
-    parseInt(year_joined, 10) || 2026,
-    status,
-    type,
-    sex,
-    id,
-  ]);
+  return dbRun(sql, [name_last?.trim(), name_first?.trim(), cleanPhone, cleanEmail, parseInt(year_joined, 10) || 2026, status, type, sex, id]);
 }
 
 // -----------------------------------------------------------------------------

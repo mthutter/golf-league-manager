@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <%- include('partials/header'); %>
+  <style>
+    /* ===== Layout & Typography Colors from skins.ejs ===== */
+    .player-link {
+      color: #1b4332;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .player-link:hover {
+      color: #18aa24;
+      text-decoration: underline;
+    }
+
+    .gallery-header {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .gallery-header h1 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .gallery-header p {
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+
+    /* ===== Table & Card Framework Architecture ===== */
+    .players-table-card {
+      border: 1.5px solid rgba(27, 67, 50, 0.15);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .players-text {
+      font-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+
+    /* ===== Table Content Constraints ===== */
+    .league-table a {
+      color: #1b4332;
+      text-decoration: none;
+    }
+
+    .league-table a:hover {
+      color: #18aa24;
+      text-decoration: underline;
+    }
+
+    .action-cell {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Custom styling for your system action buttons */
+    .btn-league-edit {
+      background-color: #18aa24 !important;
+      border-color: #18aa24 !important;
+      color: white !important;
+      font-weight: 600;
+      border-radius: 50px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-league-edit:hover {
+      transform: translateY(-1px);
+      background-color: #1b4332 !important;
+      border-color: #1b4332 !important;
+    }
+
+    .league-table {
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    .league-table td,
+    .league-table th {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Break long email addresses if screen gets too small */
+    .league-table td a {
+      word-break: break-all;
+    }
+
+    /* Limit the maximum width of the table card container so it doesn't stretch across huge screens */
+    .players-table-card {
+      border: 1.5px solid rgba(27, 67, 50, 0.15);
+      border-radius: 18px;
+      overflow: hidden;
+      max-width: 900px;
+      /* Forces the table to stay at a readable, compact desktop size */
+      margin: 0 auto;
+      /* Centers the table on the page */
+    }
+
+    /* Force the email column to wrap cleanly if it runs out of space */
+    .email-cell {
+      word-break: break-all;
+      white-space: normal !important;
+    }
+
+    /* Ensure actions cell doesn't bloat */
+    .action-cell {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('partials/navbar'); %>
+  <!-- Header Banner -->
+  <div class="container">
+    <div class="gallery-header">
+      <h1>System Users</h1>
+      <p>Bottoms Up Golf League • 2026 Season</p>
+    </div>
+  </div>
+  <!-- Roster Management Dashboard Layout -->
+  <div class="container my-4">
+    <div class="card shadow-sm players-table-card">
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center mb-0 league-table table-hover">
+          <thead>
+            <tr>
+              <th class="col-1">#</th>
+              <th class="col-3">User</th>
+              <th class="col-2">Roles</th>
+              <th class="col-4">E-Mail</th>
+              <% if (isAdmin) { %>
+              <th class="col-2">Actions</th>
+              <% } %>
+            </tr>
+          </thead>
+          <tbody>
+            <% let activeCount = 1; %>
+            <% players.forEach(player => { if (player.is_non_member == 1) { %>
+            <tr>
+              <td class="fw-bold bg-light players-text">
+                <%= activeCount++ %>
+              </td>
+              <td class="text-start fw-semibold players-text">
+                <%= player.user %>
+              </td>
+              <!-- New Roles Column -->
+              <td class="text-start players-text text-muted">
+                <%= player.roles %>
+              </td>
+              <td class="players-text email-cell">
+                <a href="mailto:<%= player.e_mail %>"><%= player.e_mail %></a>
+              </td>
+              <% if (isAdmin) { %>
+              <td>
+                <div class="action-cell">
+                  <a href="/players/<%= player.id %>/edit" class="btn btn-sm btn-league-edit">
+                    Edit
+                  </a>
+                </div>
+              </td>
+              <% } %>
+            </tr>
+            <% }}) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <%- include('partials/footer'); %>
+  <%- include('partials/scripts'); %>
+
+  <!-- PHONE NUMBER AUTO FORMATTER SCRIPT -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const phoneLinks = document.querySelectorAll('.phone-link');
+
+      phoneLinks.forEach(link => {
+        let rawValue = link.textContent.replace(/\D/g, "");
+
+        if (rawValue.length === 10) {
+          link.textContent = `(${rawValue.slice(0, 3)}) ${rawValue.slice(3, 6)}-${rawValue.slice(6)}`;
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

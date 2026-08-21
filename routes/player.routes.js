@@ -2,6 +2,7 @@
 import express from "express";
 import {
   getPlayers,
+  getSystemUsers,
   showAddPlayerForm,
   createPlayer,
   getPlayersInactive,
@@ -22,7 +23,7 @@ router.post("/profile", requireAuth, updateOwnProfile);
 /* ========================================= PLAYER LIST ========================================= */
 router.get("/", requireAuth, getPlayers);
 router.get("/inactive", requireAuth, requireAdmin, getPlayersInactive);
-
+router.get("/system-users", requireAuth, requireAdmin, getSystemUsers);
 /* ========================================= ADD PLAYER FORM ========================================= */
 router.get("/new", requireAuth, requireAdmin, showAddPlayerForm);
 
