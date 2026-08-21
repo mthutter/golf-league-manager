@@ -15,9 +15,12 @@
 .navbar-brand {
   font-family: "Merriweather", serif;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #ffffff !important; /* Replaced the gold text color with clean white */
-  text-shadow: none !important; /* Removed the heavy dark text shadows */
+  letter-spacing: 0.03em;
+
+  /* Modern text gradient fill */
+  background: linear-gradient(135deg, #f4e0a5 0%, #d4af37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .navbar-brand:hover {
