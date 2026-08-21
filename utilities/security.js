@@ -6,34 +6,31 @@ import { securityModel } from "../models/security.model.js";
 import logger from "./logger.js";
 import posthogClient from "./posthog.js";
 
+// Whitelisted origins and structures
 const whitelistedIPs = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
-
-const hardcodedBannedIPs = new Set(["192.168.1.100"]);
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
-// Helper to ensure consistent IP formatting across all middleware
+/**
+ * Normalizes IP output format.
+ * Expects Express `trust proxy` to be configured at the root app level.
+ */
 const getCleanIp = (req) => {
-  const rawIp = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+  const rawIp = req.ip || "";
   return rawIp.replace(/^::ffff:/, "").trim();
 };
 
-// Helper to accurately bypass internal private infrastructure networks
+/**
+ * Checks for legitimate RFC 1918 internal subnets
+ */
 const isPrivateIP = (ip) => {
   if (!ip || !ip.includes(".")) return false;
-
   const parts = ip.split(".").map(Number);
   if (parts.length !== 4 || parts.some(isNaN)) return false;
 
-  // 10.0.0.0/8
-  if (parts[0] === 10) return true;
-
-  // 172.16.0.0/12 (Internal Docker networks, Kubernetes pods, AWS VPC components)
-  if ((parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || parts[1] === 71) return true;
-
-  // 192.168.0.0/16
-  if (parts[0] === 192 && parts[1] === 168) return true;
-
+  if (parts[0] === 10) return true; // 10.0.0.0/8
+  if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true; // 172.16.0.0/12
+  if (parts[0] === 192 && parts[1] === 168) return true; // 192.168.0.0/16
   return false;
 };
 
@@ -51,7 +48,8 @@ export const spamhausCheck = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  if (hardcodedBannedIPs.has(cleanIp) || securityModel.isBanned(cleanIp)) {
+  // Rely entirely on your persistent dynamic models instead of hardcoded lists
+  if (await securityModel.isBanned(cleanIp)) {
     return res.status(403).send("Access Denied.");
   }
 
@@ -61,30 +59,24 @@ export const spamhausCheck = async (req, res, next) => {
   try {
     const addresses = await dns.resolve4(`${reversed}.zen.spamhaus.org`);
 
-    // Check if any returned code represents a genuine malicious threat
     const hasMaliciousMatch = addresses.some((address) => {
-      // 1. Ignore public resolver/limit errors (returns true to skip blocking)
-      if (address.startsWith("127.255.255.")) return false;
+      // 1. Ignore ALL variations of public resolver errors / limit codes
+      if (address.startsWith("127.255.255")) return false;
 
-      // 2. Ignore Policy Blocklist (PBL: 127.0.0.10, 127.0.0.11)
-      // These are normal residential/mobile IPs visiting your web app.
+      // 2. Ignore Policy Blocklist (PBL: normal residential end-users)
       if (address === "127.0.0.10" || address === "127.0.0.11") return false;
 
-      // 3. Block true malicious sources:
-      // 127.0.0.2 (SBL - Known spammers/abusers)
-      // 127.0.0.4 - 127.0.0.7 (XBL/CBL - Infected bots, malware, exploits)
+      // 3. Match SBL (127.0.0.2) and XBL/CBL bots/exploits (127.0.0.4-7)
       return true;
     });
 
     if (hasMaliciousMatch) {
-      securityModel.setTransientBan(cleanIp);
+      await securityModel.setTransientBan(cleanIp);
       logger.warn(`[SECURITY] Spamhaus ZEN blocked malicious target: ${cleanIp} (Codes: ${addresses.join(", ")})`);
       return res.status(403).send("Access Denied.");
     }
-
     return next();
   } catch (err) {
-    // ENOTFOUND or ENODATA means the IP is perfectly clean
     if (err.code === "ENOTFOUND" || err.code === "ENODATA") return next();
     logger.error("[SECURITY] Spamhaus check error:", err);
     return next();
@@ -95,7 +87,7 @@ export const firewallMiddleware = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  if (hardcodedBannedIPs.has(cleanIp) || securityModel.isBanned(cleanIp)) {
+  if (await securityModel.isBanned(cleanIp)) {
     return res.status(403).send("Access Denied.");
   }
 
@@ -114,7 +106,7 @@ export const firewallMiddleware = async (req, res, next) => {
     if (strikes >= 3) {
       logger.error(`[SECURITY] PERMANENT BAN: IP ${cleanIp} reached 3 strikes.`);
     } else {
-      securityModel.setTransientBan(cleanIp);
+      await securityModel.setTransientBan(cleanIp);
       logger.warn(`[SECURITY] Path trap: IP ${cleanIp} banned 24h. Strike ${strikes}/3.`);
     }
 
