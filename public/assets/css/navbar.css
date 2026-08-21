@@ -1,46 +1,54 @@
 @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap");
+
 /* ======================== NAVBAR MAIN ======================== */
 .navbar {
   margin-top: 0px;
-  border: 5px solid green;
+  border: none !important; /* Removed the heavy 5px green border */
   font-weight: 700;
   background: rgba(47, 138, 47, 0.9) !important;
   backdrop-filter: blur(6px);
   z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Added a subtle modern shadow layer */
 }
 
+/* Updated Branding - Clean Contemporary White */
 .navbar-brand {
   font-family: "Merriweather", serif;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: rgb(194, 178, 30);
-  text-shadow:
-    -1px -1px 0 rgba(18, 51, 41, 0.7),
-    1px -1px 0 rgba(18, 51, 41, 0.7),
-    -1px 1px 0 rgba(18, 51, 41, 0.7),
-    1px 1px 0 rgba(18, 51, 41, 0.7);
+  color: #ffffff !important; /* Replaced the gold text color with clean white */
+  text-shadow: none !important; /* Removed the heavy dark text shadows */
 }
 
 .navbar-brand:hover {
-  color: var(--accent-gold);
-  text-shadow: none;
-}
-/* Target the standard Bootstrap navbar menu navigation links */
-.navbar-nav .nav-link {
-  border: 1.5px solid #d4af37 !important; /* Subtle golf-gold border */
-  border-radius: 8px; /* Smooth rounded edges matching cards */
-  padding: 6px 12px !important; /* Balanced spacing inside the border box */
-  margin: 0 4px; /* Spacing between individual menu buttons */
-  transition: all 0.2s ease-in-out; /* Soft transition for interaction styles */
-  color: #1b4332 !important; /* Keeps text high-contrast dark green */
-  font-weight: 600;
+  opacity: 0.9;
 }
 
-/* Hover state interaction to make the options reactive */
+/* Target the standard Bootstrap navbar menu navigation links */
+.navbar-nav .nav-link {
+  /* Swapped the hard gold border for a clean, contemporary translucent white frame */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 6px; /* Smooth modern rounded edges */
+  padding: 6px 14px !important; /* Balanced internal breathing room */
+  margin: 0 5px; /* Clean spacing between individual menu buttons */
+
+  color: #ffffff !important; /* Changed the dark green text to crisp white */
+  font-weight: 500;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover state interaction for contemporary translucent items */
 .navbar-nav .nav-link:hover {
-  background-color: rgba(212, 175, 55, 0.15) !important; /* Gentle transparent gold glow */
-  color: #18aa24 !important; /* Transitions text to your hover green */
-  transform: translateY(-1px); /* Micro-lift behavior matching buttons */
+  background-color: rgba(255, 255, 255, 0.15) !important; /* Gentle transparent white glow */
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important; /* Keeps text cleanly white on hover */
+  transform: translateY(-1px); /* Retained your premium micro-lift behavior */
 }
 
 .navbar-collapse {
@@ -53,37 +61,48 @@
 }
 
 /* ======================== NAVBAR DROPDOWN ======================== */
+
 .navbar .dropdown-menu {
-  background: rgba(47, 138, 47, 0.98);
-  border: none;
+  /* Increased from 0.85 to 0.96 for a solid, highly-readable masking effect over tables */
+  background: rgba(30, 90, 30, 0.96) !important;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  padding: 6px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* Slightly deepened shadow for better separation */
+  padding: 8px 0;
   transition: all 0.2s ease;
-  /* Combined transform values to prevent overwrites */
   transform: translateX(-50%) translateY(6px) !important;
   left: 50% !important;
   right: auto !important;
 }
-
 .navbar .dropdown-item {
-  color: white;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
+  color: rgba(255, 255, 255, 0.85) !important; /* Soft white text by default */
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 10px 16px; /* Generous internal padding for easier clicking */
+  margin: 0 6px; /* Inset from the menu edges slightly */
+  width: calc(100% - 12px); /* Accommodates the inset margin */
+  border-radius: 8px; /* Beautiful nested rounded corners */
+  transition: all 0.15s ease;
   text-align: center;
 }
 
+/* 3. A premium, distinct hover tile inside the folder */
 .navbar .dropdown-item:hover,
 .navbar .dropdown-item:focus {
-  background-color: rgb(255, 255, 255, 0.12);
-  color: white;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important; /* Text highlights to pure white when hovered */
 }
 
 /* ======================== RESPONSIVE BREAKPOINTS ======================== */
-
 /* Mobile Layouts (Under 1200px) */
 @media (max-width: 1199.98px) {
   .navbar-collapse {
@@ -96,16 +115,16 @@
     margin-right: auto;
   }
 
-  /* Strip out the gold button borders on top-level mobile menu links */
+  /* Retained your clean mobile overrides */
   .navbar-nav .nav-link {
     padding: 10px 0 !important;
-    border: none !important; /* Removes gold border */
+    border: none !important;
+    background-color: transparent !important;
     border-radius: 0;
     margin: 4px 0;
     text-align: center;
   }
 
-  /* Unify mobile dropdown styling to match collapse breakpoint */
   .navbar .dropdown-menu {
     inset: auto !important;
     transform: none !important;
@@ -128,21 +147,19 @@
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Desktop Tight-Fit Padding (1200px up to 1400px) */
-@media (min-width: 1200px) and (max-width: 1400px) {
+/* Desktop Tight-Fit Padding (1200px up to 1425px) */
+@media (min-width: 1200px) and (max-width: 1425px) {
   .navbar-nav {
-    flex-wrap: nowrap !important; /* Forces links to stay on a single line */
-    white-space: nowrap !important; /* Prevents link text from wrapping internal words */
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
   }
-
   .navbar-nav .nav-link {
-    padding-left: 0.4rem !important; /* Tightened horizontal gap */
-    padding-right: 0.4rem !important;
-    margin: 0 2px; /* Reduced spacing between buttons */
-    font-size: 0.85rem !important; /* Down-scales cleanly */
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    margin: 0 3px;
+    font-size: 0.85rem !important;
   }
-
   .navbar-brand span {
-    font-size: 1.05rem !important; /* Compact branding text */
+    font-size: 1.05rem !important;
   }
 }
