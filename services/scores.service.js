@@ -47,6 +47,8 @@ export const getFormData = async () => {
   const memberSql = ` 
         SELECT id, name_first, name_last, status, COALESCE(current_handicap, handicap) AS handicap 
         FROM members 
+        WHERE status !== 'No'
+        AND in_non_member = 0
         ORDER BY name_last, name_first 
     `;
   const holesSql = `SELECT * FROM holes WHERE hole_number >= 10 ORDER BY hole_number`;
@@ -246,6 +248,7 @@ async function getStandingsThroughWeek(weekNumber) {
             SELECT m.id, m.status, m.name_last || ', ' || m.name_first AS player_name, m.standings_exempt, COUNT(s.score_id) AS weeks_played, TOTAL(s.stableford_total) AS stableford_points, TOTAL(s.ctp_points) AS ctp_points, TOTAL(s.birdie_points) AS birdie_points, TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) AS total_points, ROUND( TOTAL(s.stableford_total + s.ctp_points + s.birdie_points) / NULLIF(COUNT(s.score_id), 0), 2 ) AS avg_points, ROUND(AVG(s.gross_total), 2) AS avg_gross, ROUND(AVG(s.net_total), 2) AS avg_net, m.current_handicap 
             FROM members m 
             LEFT JOIN scores s ON s.member_id = m.id AND s.week_id <= ? 
+            WHERE m.is_non_member = 0
             GROUP BY m.id 
         ) 
         SELECT CASE WHEN standings_exempt = 1 THEN NULL ELSE RANK() OVER ( PARTITION BY standings_exempt ORDER BY avg_points DESC ) END AS rank, * 
