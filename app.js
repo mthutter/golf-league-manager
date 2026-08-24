@@ -39,7 +39,7 @@ import errorHandler from "./middleware/error.middleware.js";
 const app = express();
 
 // ====== 3. REVERSE PROXY & GLOBAL CONFIGURATION ======
-app.set("trust proxy", 1); // CRITICAL FOR RENDER: Safely extracts client IP from header
+app.set("trust proxy", true); // CRITICAL FOR RENDER: Safely extracts client IP from header
 app.set("view engine", "ejs");
 logger.info(`Starting Bottoms Up Golf (${process.env.NODE_ENV})`);
 
