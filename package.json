@@ -44,6 +44,7 @@
     "helmet": "^8.2.0",
     "http-proxy": "^1.18.1",
     "imagemin": "^7.0.1",
+    "ip-range-check": "^0.2.1",
     "jquery": "^3.7.1",
     "jsdom": "^25.0.0",
     "jsonwebtoken": "^9.0.3",
