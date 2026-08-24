@@ -8,6 +8,7 @@
         border-radius: 16px;
         overflow: hidden;
       }
+
       .ip-badge {
         font-family: var(--bs-font-monospace);
         font-weight: 600;
@@ -15,6 +16,7 @@
       }
     </style>
   </head>
+
   <body>
     <section>
       <%- include('./partials/navbar'); %>
@@ -83,9 +85,9 @@
                 <thead class="table-dark">
                   <tr>
                     <th style="width: 15%">Target IP Node</th>
-                    <th style="width: 15%">Offense Strikes</th>
-                    <th style="width: 20%">First Observed</th>
-                    <th style="width: 20%">Last Active Threat</th>
+                    <th style="width: 15%">Strikes/Hits</th>
+                    <th style="width: 20%">First Strike</th>
+                    <th style="width: 20%">Latest Strike</th>
                     <th style="width: 15%">Ban Type</th>
                     <th style="width: 15%">Action</th>
                   </tr>
@@ -107,7 +109,7 @@
                   <% bannedIps.forEach(target => { %>
                   <tr>
                     <!-- IP Node Address -->
-                    <td class="text-start ps-4">
+                    <td class="text-center">
                       <span class="text-danger ip-badge fs-6">
                         <%= target.ip %>
                       </span>
@@ -135,8 +137,7 @@
                       %>
                     </td>
                     <td class="small text-muted font-monospace">
-                      <%= target.manual_ban ? new
-                      Date(target.manual_ban).toLocaleString() : 'Manual Entry'
+                      <%= target.manual_ban = 1 ? `Manual Entry` : `Auto Entry`
                       %>
                     </td>
 
@@ -161,7 +162,7 @@
                           class="btn btn-xs btn-outline-success rounded-pill fw-bold py-1 px-3"
                           style="font-size: 0.75rem"
                         >
-                          🔓 Lift Ban
+                          Lift Ban
                         </button>
                       </form>
                     </td>
