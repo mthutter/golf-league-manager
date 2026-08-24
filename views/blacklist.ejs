@@ -72,10 +72,9 @@
               <tbody>
                 <% if (!bannedIps || bannedIps.length === 0) { %>
                   <tr>
-                    <td colspan="5" class="py-5 text-muted">
-                      <div class="fs-1 mb-2">💚</div>
-                      <h5 class="fw-bold m-0">The Firewall Roster is Clean</h5>
-                      <p class="small text-muted mb-0">No network nodes are currently locked out by the application.</p>
+                    <td colspan="5" class="py-5 text-muted">                   
+                      <h5 class="fw-bold m-0">The Firewall blacklist is clean</h5>
+                      <p class="small text-muted mb-0">No network nodes are currently blocked by the application.</p>
                     </td>
                   </tr>
                 <% } else { %>
