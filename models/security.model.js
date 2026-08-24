@@ -5,7 +5,10 @@ import logger from "../utilities/logger.js";
 
 class SecurityModel {
   constructor() {
-    this.transientBanCache = new NodeCache({ stdTTL: 86400, checkperiod: 3600 });
+    this.transientBanCache = new NodeCache({
+      stdTTL: 86400,
+      checkperiod: 3600,
+    });
     this.permanentBanCache = new Set();
   }
 
@@ -16,12 +19,15 @@ class SecurityModel {
           ip TEXT PRIMARY KEY,
           strikes INTEGER DEFAULT 1,
           first_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
-          last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
+          last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+          manual_ban INTEGER DEFAULT 0
         );
       `);
       const rows = await all("SELECT ip FROM permanent_bans");
       rows.forEach((row) => this.permanentBanCache.add(row.ip));
-      logger.info(`[SECURITY MODEL] Loaded ${this.permanentBanCache.size} permanent IP bans from SQLite.`);
+      logger.info(
+        `[SECURITY MODEL] Loaded ${this.permanentBanCache.size} permanent IP bans from SQLite.`,
+      );
     } catch (err) {
       logger.error("[SECURITY MODEL] Initialization failure:", err);
       throw err;
@@ -45,7 +51,9 @@ class SecurityModel {
         last_seen = CURRENT_TIMESTAMP
     `;
     await run(upsertSql, [ip]);
-    const row = await get("SELECT strikes FROM permanent_bans WHERE ip = ?", [ip]);
+    const row = await get("SELECT strikes FROM permanent_bans WHERE ip = ?", [
+      ip,
+    ]);
     const strikes = row ? row.strikes : 1;
 
     if (strikes >= 3) {
@@ -62,8 +70,8 @@ class SecurityModel {
   async manuallyBanIP(targetIp) {
     const cleanIp = targetIp.trim();
     const sql = `
-      REPLACE INTO permanent_bans (ip, strikes, first_seen, last_seen)
-      VALUES (?, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+      REPLACE INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
+      VALUES (?, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
     `;
 
     try {
@@ -74,10 +82,15 @@ class SecurityModel {
       this.permanentBanCache.add(cleanIp);
       this.transientBanCache.del(cleanIp);
 
-      logger.info(`[SECURITY MANUAL] IP ${cleanIp} successfully added to permanent_bans schema and live cache.`);
+      logger.info(
+        `[SECURITY MANUAL] IP ${cleanIp} successfully added to permanent_bans schema and live cache.`,
+      );
       return true;
     } catch (err) {
-      logger.error(`[SECURITY ERROR] Failed to manually record ban execution for ${cleanIp}:`, err);
+      logger.error(
+        `[SECURITY ERROR] Failed to manually record ban execution for ${cleanIp}:`,
+        err,
+      );
       throw err;
     }
   }
