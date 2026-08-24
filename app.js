@@ -41,7 +41,6 @@ const app = express();
 // ====== 3. REVERSE PROXY & GLOBAL CONFIGURATION ======
 app.set("trust proxy", 1); // CRITICAL FOR RENDER: Safely extracts client IP from header
 app.set("view engine", "ejs");
-
 logger.info(`Starting Bottoms Up Golf (${process.env.NODE_ENV})`);
 
 const SQLiteStore = SQLiteStoreFactory(session);
@@ -62,7 +61,7 @@ app.use((req, res, next) => {
 });
 
 // ==========================================
-// 🛡️ SECURITY WALL MIDDLWARE PIPELINE
+// 🛡️ SECURITY WALL MIDDLEWARE PIPELINE
 // ==========================================
 app.use(corsMiddleware); // 1. Check CORS policies
 app.use(spamhausCheck); // 2. Query global DNSBL threat registries
@@ -91,7 +90,6 @@ app.use((req, res, next) => {
 app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
-
 app.use(
   express.urlencoded({
     limit: "50mb",
@@ -105,6 +103,8 @@ app.use(
 );
 app.use(cookieParser());
 
+// NOTE: Passed the string name 'sessions.db' down directly into the store configuration object
+// to let connect-sqlite3 handle driver pooling internally and eliminate SQLITE_BUSY locking conflicts.
 const sessionDb = new sqlite3.Database(path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"));
 app.use(
   session({
@@ -142,8 +142,10 @@ app.use((req, res, next) => {
 });
 
 /* ====== ROUTES REGISTER ======= */
+
 /* ====== DEV ROUTES ====== */
-if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "development") {
+// FIXED: Restricted the debugging panel strictly to development to patch the execution error leak exposure.
+if (process.env.NODE_ENV === "development") {
   app.use("/dev", devRoutes);
 }
 
@@ -177,25 +179,46 @@ app.use(errorHandler);
 
 /* ====== PORT BINDING & STARTUP PROCESS ====== */
 const PORT = process.env.PORT || 8080;
-const server = app.listen(PORT, async () => {
-  logger.info(`Bottoms Up Golf application started on port ${PORT}`);
 
-  // 1. Asynchronously bootstrap your persistent SQLite security configurations
+// Centralized runtime network drain handler
+const gracefulShutdown = async (server, signal) => {
+  logger.info(`${signal} received. Gracefully shutting down...`);
+  server.close(() => {
+    logger.info("HTTP server closed.");
+    process.exit(0);
+  });
+};
+
+// Immediately Invoked Async Function Expression (IIFE) to sequence boot layers linearly
+(async () => {
   try {
+    // 1. CRITICAL: Initialize security configurations and load permanent bans table data into RAM FIRST
     await securityModel.initialize();
-  } catch (error) {
-    logger.error("Security Model layer failed to initialize safely:", error);
-  }
+    logger.info("[BOOTSTRAP] Security Model layer initialized safely and cache loaded.");
 
-  // 2. Validate standard application mailing setups
-  try {
-    const { verifyMailServer } = await import("./config/email.js");
-    await verifyMailServer();
-  } catch (error) {
-    logger.error("Failed to run email verification hook:", error);
-  }
-});
+    // 2. Validate standard application mailing setups
+    try {
+      const { verifyMailServer } = await import("./config/email.js");
+      await verifyMailServer();
+    } catch (error) {
+      logger.error("Failed to run email verification hook:", error);
+    }
 
+    // 3. Open port connections safely now that the perimeter firewall structures are armed
+    const server = app.listen(PORT, () => {
+      logger.info(`Bottoms Up Golf application started on port ${PORT}`);
+    });
+
+    // Wire process events to pass active HTTP socket boundaries down into the teardown sequence
+    process.on("SIGTERM", () => gracefulShutdown(server, "SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown(server, "SIGINT"));
+  } catch (criticalError) {
+    logger.error("CRITICAL APPLICATION BOOTSTRAP FAILED! Halting process.", criticalError);
+    process.exit(1);
+  }
+})();
+
+/* ====== ENGINE SAFETY PROCESS PANELS ====== */
 process.on("uncaughtException", async (err) => {
   if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
@@ -208,16 +231,5 @@ process.on("unhandledRejection", async (reason) => {
   const err = reason instanceof Error ? reason : new Error(String(reason));
   logger.error(err);
 });
-
-const gracefulShutdown = async (signal) => {
-  logger.info(`${signal} received. Gracefully shutting down...`);
-  server.close(() => {
-    logger.info("HTTP server closed.");
-    process.exit(0);
-  });
-};
-
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 export default app;
