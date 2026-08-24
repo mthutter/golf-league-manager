@@ -2,58 +2,76 @@
 import dns from "node:dns/promises";
 import { rateLimit } from "express-rate-limit";
 import cors from "cors";
+import ipRangeCheck from "ip-range-check"; // Robust subnet validator
+import ipaddr from "ipaddr.js";
 import { securityModel } from "../models/security.model.js";
 import logger from "./logger.js";
 import posthogClient from "./posthog.js";
 
-// Whitelisted origins and structures
-const whitelistedIPs = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1", ...(process.env.SECURITY_IP_WHITELIST ? process.env.SECURITY_IP_WHITELIST.split(",") : [])]);
+// Comprehensive Cloudflare IPv4 and IPv6 Ranges (Current 2026 Baseline)
+const CLOUDFLARE_RANGES = [
+  "103.21.244.0/22",
+  "103.22.200.0/22",
+  "103.31.4.0/22",
+  "141.101.64.0/18",
+  "172.64.0.0/13",
+  "173.245.48.0/20",
+  "188.114.96.0/20",
+  "190.93.240.0/20",
+  "197.234.240.0/22",
+  "198.41.128.0/17",
+  "162.158.0.0/15",
+  "104.16.0.0/13",
+  "104.24.0.0/14",
+  "172.68.0.0/15",
+  "190.93.240.0/20",
+  "2400:cb00::/32",
+  "2606:4700::/32",
+  "2803:f800::/32",
+  "2405:b500::/32",
+  "2405:8100::/32",
+  "2a06:98c0::/29",
+  "2c0f:f248::/32",
+];
 
-const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
-const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
+const PRIVATE_RANGES = ["127.0.0.1", "::1", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7"];
 
 /**
- * Normalizes IP output format.
- * Expects Express `trust proxy` to be configured at the root app level.
+ * Safely parses and normalizes incoming IPs.
+ * Express 'trust proxy' must be configured to extract the true client IP.
  */
 const getCleanIp = (req) => {
   const rawIp = req.ip || "";
-  return rawIp.replace(/^::ffff:/, "").trim();
-};
+  if (!rawIp) return "";
 
-/**
- * Checks if the IP belongs to Cloudflare's 172.64.0.0/13 routing infrastructure
- */
-const isCloudflareIP = (ip) => {
-  if (!ip || !ip.includes(".")) return false;
-  const parts = ip.split(".").map(Number);
-
-  if (parts.length !== 4 || parts.some(isNaN)) return false;
-
-  // Catches Cloudflare proxy blocks between 172.64.x.x and 172.71.x.x
-  if (parts[0] === 172 && parts[1] >= 64 && parts[1] <= 71) {
-    return true;
+  try {
+    // Strip IPv4-mapped IPv6 prefixes completely (e.g. ::ffff:127.0.0.1 -> 127.0.0.1)
+    if (ipaddr.IPv6.isValid(rawIp)) {
+      const addr = ipaddr.IPv6.parse(rawIp);
+      if (addr.isIPv4MappedAddress()) {
+        return addr.toIPv4Address().toString();
+      }
+    }
+    return rawIp.trim();
+  } catch (err) {
+    return rawIp.trim();
   }
-  return false;
 };
 
 /**
- * Checks for legitimate RFC 1918 internal subnets
+ * Checks if IP matches static whitelists, private LANs, or Cloudflare Edge proxies
  */
-const isPrivateIP = (ip) => {
-  if (!ip || !ip.includes(".")) return false;
-  const parts = ip.split(".").map(Number);
-  if (parts.length !== 4 || parts.some(isNaN)) return false;
-  if (parts[0] === 10) return true; // 10.0.0.0/8
-  if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true; // 172.16.0.0/12
-  if (parts[0] === 192 && parts[1] === 168) return true; // 192.168.0.0/16
-  return false;
-};
-
 const isWhitelisted = (ip) => {
   if (!ip) return false;
-  // Bypasses checks if explicitly listed, private LAN, or Cloudflare reverse proxy node
-  return whitelistedIPs.has(ip) || isPrivateIP(ip) || isCloudflareIP(ip);
+
+  // Resolve dynamic env values safely per evaluation
+  const structuralWhitelist = process.env.SECURITY_IP_WHITELIST ? process.env.SECURITY_IP_WHITELIST.split(",").map((i) => i.trim()) : [];
+
+  if (structuralWhitelist.includes(ip)) return true;
+  if (ipRangeCheck(ip, PRIVATE_RANGES)) return true;
+  if (ipRangeCheck(ip, CLOUDFLARE_RANGES)) return true;
+
+  return false;
 };
 
 export const corsMiddleware = cors({
@@ -65,27 +83,27 @@ export const spamhausCheck = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  // 1. VISIBILITY LOGGING FOR PRE-BANNED CACHE HITS
+  // 1. Structural DB Cache Check
   if (await securityModel.isBanned(cleanIp)) {
     logger.warn(`[SECURITY CACHE BLOCK] Spamhaus dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
 
-  // 2. BYPASS LOOKUPS IN NON-PROD ENVIRONMENTS
   if (process.env.NODE_ENV !== "production") return next();
+  if (!ipaddr.IPv4.isValid(cleanIp)) return next(); // Spamhaus ZEN focuses on IPv4 translation blocks
 
-  if (!cleanIp.includes(".")) return next();
   const reversed = cleanIp.split(".").reverse().join(".");
-
   try {
     const addresses = await dns.resolve4(`${reversed}.zen.spamhaus.org`);
+
+    // Explicitly target clear malicious profiles (SBL, XBL, CBL)
     const hasMaliciousMatch = addresses.some((address) => {
-      // Ignore ALL variations of public resolver errors / limit codes
-      if (address.startsWith("127.255.255")) return false;
-      // Ignore Policy Blocklist (PBL: normal residential end-users)
-      if (address === "127.0.0.10" || address === "127.0.0.11") return false;
-      // Match SBL (127.0.0.2) and XBL/CBL bots/exploits (127.0.0.4-7)
-      return true;
+      const parts = address.split(".");
+      if (parts[0] !== "127") return false;
+
+      const lastOctet = parseInt(parts[3], 10);
+      // 2 = SBL, 3 = CSS, 4-7 = XBL/CBL Botnets/Exploits
+      return lastOctet >= 2 && lastOctet <= 7;
     });
 
     if (hasMaliciousMatch) {
@@ -93,7 +111,6 @@ export const spamhausCheck = async (req, res, next) => {
       logger.warn(`[SECURITY] Spamhaus ZEN blocked malicious target: ${cleanIp} (Codes: ${addresses.join(", ")})`);
       return res.status(403).send("Access Denied.");
     }
-
     return next();
   } catch (err) {
     if (err.code === "ENOTFOUND" || err.code === "ENODATA") return next();
@@ -106,17 +123,54 @@ export const firewallMiddleware = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  // 1. VISIBILITY LOGGING FOR PRE-BANNED CACHE HITS
+  // 1. FAST DROP: Exit immediately if the IP is already flagged in the DB cache
   if (await securityModel.isBanned(cleanIp)) {
     logger.warn(`[SECURITY CACHE BLOCK] Firewall dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
 
-  const lowerPath = req.path.toLowerCase();
-  const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
-  const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
+  const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 
-  if (matchesPath || matchesExtension) {
+  // Cleaned signatures: Checked as substrings rather than extensions
+  const maliciousSignatures = [".php", ".asp", ".aspx", ".env", "wp-"];
+
+  // Normalize lower-case path for robust evaluation
+  const lowerPath = req.path.toLowerCase();
+
+  // --- ZERO TOLERANCE CRITICAL SIGNATURE TRAP ---
+  // Uses .some() with .includes() to catch parameters and trailing slash workarounds
+  const matchesSignature = maliciousSignatures.some((sig) => lowerPath.includes(sig));
+
+  if (matchesSignature) {
+    try {
+      // ZERO TOLERANCE: Force an unconditioned block on the spot
+      // If your model has a permanent ban method, swap this out to lock them out completely.
+      await securityModel.setTransientBan(cleanIp);
+
+      logger.error(`[SECURITY IMMEDIATE BAN] Critical signature compromise attempt by ${cleanIp} via path: "${req.originalUrl}". IP banned instantly.`);
+    } catch (err) {
+      logger.error(`[SECURITY] Immediate signature ban insertion failed for ${cleanIp}:`, err);
+    }
+
+    if (typeof posthogClient !== "undefined" && posthogClient.capture) {
+      posthogClient.capture({
+        distinctId: cleanIp,
+        event: "bot_attack_blocked",
+        properties: {
+          $ip: cleanIp,
+          requested_path: req.originalUrl, // Track full URL metadata including query flags
+          strike_count: "IMMEDIATE_BAN",
+          action_taken: "CRITICAL_SIGNATURE_VIOLATION_LOCKOUT",
+        },
+      });
+    }
+    return res.status(404).send("Not Found");
+  }
+
+  // --- STANDARD DIRECTORY PATH STRIKE ACCUMULATION ---
+  const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
+
+  if (matchesPath) {
     let strikes = 1;
     try {
       strikes = await securityModel.logSecurityOffenseStrike(cleanIp);
@@ -125,7 +179,7 @@ export const firewallMiddleware = async (req, res, next) => {
     }
 
     if (strikes >= 3) {
-      logger.error(`[SECURITY] PERMANENT BAN: IP ${cleanIp} reached 3 strikes.`);
+      logger.error(`[SECURITY] PERMANENT BAN: IP ${cleanIp} reached 3 structural path strikes.`);
     } else {
       await securityModel.setTransientBan(cleanIp);
       logger.warn(`[SECURITY] Path trap: IP ${cleanIp} banned 24h. Strike ${strikes}/3.`);
@@ -145,6 +199,7 @@ export const firewallMiddleware = async (req, res, next) => {
     }
     return res.status(404).send("Not Found");
   }
+
   next();
 };
 
@@ -153,7 +208,12 @@ export const rateLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => isWhitelisted(getCleanIp(req)),
+  // Never skip Cloudflare/Proxied loops entirely; rate limit them by client identity!
+  skip: (req) => {
+    const ip = getCleanIp(req);
+    const structuralWhitelist = process.env.SECURITY_IP_WHITELIST ? process.env.SECURITY_IP_WHITELIST.split(",").map((i) => i.trim()) : [];
+    return structuralWhitelist.includes(ip) || ipRangeCheck(ip, ["127.0.0.1", "::1"]);
+  },
   keyGenerator: (req) => getCleanIp(req),
   handler: (req, res) => {
     res.status(429).send("Too many requests. Please try again later.");
