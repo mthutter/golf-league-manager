@@ -24,7 +24,6 @@ const CLOUDFLARE_RANGES = [
   "104.16.0.0/13",
   "104.24.0.0/14",
   "172.68.0.0/15",
-  "190.93.240.0/20",
   "2400:cb00::/32",
   "2606:4700::/32",
   "2803:f800::/32",
@@ -38,10 +37,20 @@ const PRIVATE_RANGES = ["127.0.0.1", "::1", "10.0.0.0/8", "172.16.0.0/12", "192.
 
 /**
  * Safely parses and normalizes incoming IPs.
- * Express 'trust proxy' must be configured to extract the true client IP.
+ * Assures we evaluate the actual origin client.
  */
 const getCleanIp = (req) => {
-  const rawIp = req.ip || "";
+  // If 'trust proxy' is on, Express populates req.ip with the first link in X-Forwarded-For.
+  // Fall back manually to headers if Express 'trust proxy' configuration isn't running yet.
+  let rawIp = req.ip;
+
+  if (!rawIp && req.headers["x-forwarded-for"]) {
+    const parts = req.headers["x-forwarded-for"].split(",");
+    rawIp = parts[0].trim();
+  }
+
+  rawIp = rawIp || req.socket.remoteAddress || "";
+
   if (!rawIp) return "";
 
   try {
@@ -59,17 +68,17 @@ const getCleanIp = (req) => {
 };
 
 /**
- * Checks if IP matches static whitelists, private LANs, or Cloudflare Edge proxies
+ * Checks if IP matches static whitelists or private LANs.
+ * REMOVED CLOUDFLARE_RANGES from here so the real origin visitor IP
+ * doesn't get white-flagged by accident if proxy parsing drops out.
  */
 const isWhitelisted = (ip) => {
   if (!ip) return false;
 
-  // Resolve dynamic env values safely per evaluation
   const structuralWhitelist = process.env.SECURITY_IP_WHITELIST ? process.env.SECURITY_IP_WHITELIST.split(",").map((i) => i.trim()) : [];
 
   if (structuralWhitelist.includes(ip)) return true;
   if (ipRangeCheck(ip, PRIVATE_RANGES)) return true;
-  if (ipRangeCheck(ip, CLOUDFLARE_RANGES)) return true;
 
   return false;
 };
@@ -83,26 +92,21 @@ export const spamhausCheck = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  // 1. Structural DB Cache Check
   if (await securityModel.isBanned(cleanIp)) {
     logger.warn(`[SECURITY CACHE BLOCK] Spamhaus dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
 
   if (process.env.NODE_ENV !== "production") return next();
-  if (!ipaddr.IPv4.isValid(cleanIp)) return next(); // Spamhaus ZEN focuses on IPv4 translation blocks
+  if (!ipaddr.IPv4.isValid(cleanIp)) return next();
 
   const reversed = cleanIp.split(".").reverse().join(".");
   try {
     const addresses = await dns.resolve4(`${reversed}.zen.spamhaus.org`);
-
-    // Explicitly target clear malicious profiles (SBL, XBL, CBL)
     const hasMaliciousMatch = addresses.some((address) => {
       const parts = address.split(".");
       if (parts[0] !== "127") return false;
-
       const lastOctet = parseInt(parts[3], 10);
-      // 2 = SBL, 3 = CSS, 4-7 = XBL/CBL Botnets/Exploits
       return lastOctet >= 2 && lastOctet <= 7;
     });
 
@@ -121,32 +125,32 @@ export const spamhausCheck = async (req, res, next) => {
 
 export const firewallMiddleware = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
-  if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  // 1. FAST DROP: Exit immediately if the IP is already flagged in the DB cache
-  if (await securityModel.isBanned(cleanIp)) {
+  // Guard check: Reject request immediately if the actual parsed client IP is blocked.
+  if (cleanIp && (await securityModel.isBanned(cleanIp))) {
     logger.warn(`[SECURITY CACHE BLOCK] Firewall dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
 
+  // If it's a local/whitelisted path, bypass signature checking
+  if (!cleanIp || isWhitelisted(cleanIp)) return next();
+
   const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
-
-  // Cleaned signatures: Checked as substrings rather than extensions
   const maliciousSignatures = [".php", ".asp", ".aspx", ".env", "wp-"];
-
-  // Normalize lower-case path for robust evaluation
   const lowerPath = req.path.toLowerCase();
 
   // --- ZERO TOLERANCE CRITICAL SIGNATURE TRAP ---
-  // Uses .some() with .includes() to catch parameters and trailing slash workarounds
   const matchesSignature = maliciousSignatures.some((sig) => lowerPath.includes(sig));
 
   if (matchesSignature) {
-    try {
-      // ZERO TOLERANCE: Force an unconditioned block on the spot
-      // If your model has a permanent ban method, swap this out to lock them out completely.
-      await securityModel.setTransientBan(cleanIp);
+    // CRITICAL FIX: Verify we aren't accidentally banning a Cloudflare Proxy node if parsing failed
+    if (ipRangeCheck(cleanIp, CLOUDFLARE_RANGES)) {
+      logger.error(`[SECURITY WARNING] Block blocked due to proxy leakage. Direct socket connection detected instead of client address: ${cleanIp}`);
+      return res.status(404).send("Not Found");
+    }
 
+    try {
+      await securityModel.setTransientBan(cleanIp);
       logger.error(`[SECURITY IMMEDIATE BAN] Critical signature compromise attempt by ${cleanIp} via path: "${req.originalUrl}". IP banned instantly.`);
     } catch (err) {
       logger.error(`[SECURITY] Immediate signature ban insertion failed for ${cleanIp}:`, err);
@@ -158,7 +162,7 @@ export const firewallMiddleware = async (req, res, next) => {
         event: "bot_attack_blocked",
         properties: {
           $ip: cleanIp,
-          requested_path: req.originalUrl, // Track full URL metadata including query flags
+          requested_path: req.originalUrl,
           strike_count: "IMMEDIATE_BAN",
           action_taken: "CRITICAL_SIGNATURE_VIOLATION_LOCKOUT",
         },
@@ -169,8 +173,11 @@ export const firewallMiddleware = async (req, res, next) => {
 
   // --- STANDARD DIRECTORY PATH STRIKE ACCUMULATION ---
   const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
-
   if (matchesPath) {
+    if (ipRangeCheck(cleanIp, CLOUDFLARE_RANGES)) {
+      return res.status(404).send("Not Found");
+    }
+
     let strikes = 1;
     try {
       strikes = await securityModel.logSecurityOffenseStrike(cleanIp);
@@ -208,7 +215,6 @@ export const rateLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  // Never skip Cloudflare/Proxied loops entirely; rate limit them by client identity!
   skip: (req) => {
     const ip = getCleanIp(req);
     const structuralWhitelist = process.env.SECURITY_IP_WHITELIST ? process.env.SECURITY_IP_WHITELIST.split(",").map((i) => i.trim()) : [];
