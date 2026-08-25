@@ -35,18 +35,17 @@
         gap: 1.5rem;
         width: 100%;
         max-width: 1200px;
-        align-items: stretch; /* Vertically locks both heights together */
+        align-items: stretch;
       }
 
-      /* =========================== CENTERED RADAR FRAME =========================== */
+      /* =========================== RADAR WINDOW =========================== */
       .radar-outer-container {
-        flex: 1; /* Automatically expands to consume all available desktop width */
+        flex: 1;
         height: 550px;
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
         border: 2px solid #1b4332;
-        background: #fff;
       }
       .radar-frame {
         width: 100%;
@@ -55,46 +54,49 @@
         display: block;
       }
 
-      /* =========================== MATCHED WEATHER WIDGET CARD =========================== */
+      /* =========================== WEATHER WIDGET SIDEBAR =========================== */
       .weather-widget-container {
         width: 100%;
-        max-width: 300px; /* FIX: Reduced from 340px to hug the 300px widget framework exactly */
+        max-width: 300px; /* Snug desktop fit for the 300px widget */
         height: 550px;
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
         border: 2px solid #1b4332;
-        background: #67676c; /* FIX: Changed from #fff to match the widget header shade */
+        background: #67676c;
         position: relative;
         flex-shrink: 0;
       }
 
-      /* Ensure footer pushes down elegantly */
-      footer {
-        flex-shrink: 0;
-      }
-
       /* =========================== RESPONSIVE BREAKPOINTS =========================== */
+      /* For Tablets (landscape & portrait) and smaller laptops */
       @media (max-width: 992px) {
         .weather-dashboard {
-          flex-direction: column;
+          flex-direction: column; /* Shifts layout from side-by-side to stacked rows */
           align-items: center;
         }
+
         .radar-outer-container {
           width: 100%;
           max-width: 800px;
-          height: 400px; /* Shrinks map height on tablet displays */
+          height: 450px; /* Lowers map height so it doesn't take over tablet viewports */
         }
+
         .weather-widget-container {
           width: 100%;
-          max-width: 800px; /* Relaxes constraints on tablet stack to fill row */
+          max-width: 800px; /* Allows widget block to widen and fill row like the radar card */
           height: auto;
-          min-height: 150px;
+          min-height: 150px; /* Snaps weather back to standard horizontal ribbon profile */
         }
       }
+
+      /* For Small Mobile Phones */
       @media (max-width: 576px) {
         .radar-outer-container {
-          height: 350px; /* Shrinks map height further on small phones */
+          height: 350px; /* Shrinks map height further on compact screens */
+        }
+        .main-wrapper {
+          padding: 1rem 0.5rem; /* Tightens white spacing padded around layout margins */
         }
       }
     </style>
@@ -115,7 +117,7 @@
         <div class="radar-outer-container">
           <iframe
             class="radar-frame"
-            src="https://embed.windy.com/embed2.html?lat=38.8576&lon=-104.7171&zoom=11&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1"
+            src="https://embed.windy.com/embed2.html?lat=38.8576&lon=-104.7171&zoom=11&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1&detailLat=38.8576&detailLon=-104.7171&detail=true"
             allowfullscreen
           ></iframe>
         </div>
