@@ -151,7 +151,7 @@
 }
 
 /* Desktop Tight-Fit Padding (1200px up to 1425px) */
-@media (min-width: 1200px) and (max-width: 1425px) {
+@media (min-width: 1200px) and (max-width: 1525px) {
   .navbar-nav {
     flex-wrap: nowrap !important;
     white-space: nowrap !important;
