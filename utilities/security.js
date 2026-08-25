@@ -92,7 +92,7 @@ export const spamhausCheck = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
-  if (await securityModel.isBanned(cleanIp)) {
+  if (securityModel.isBanned(cleanIp)) {
     logger.warn(`[SECURITY CACHE BLOCK] Spamhaus dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
@@ -127,11 +127,10 @@ export const firewallMiddleware = async (req, res, next) => {
   const cleanIp = getCleanIp(req);
 
   // Guard check: Reject request immediately if the actual parsed client IP is blocked.
-  if (cleanIp && (await securityModel.isBanned(cleanIp))) {
+  if (cleanIp && securityModel.isBanned(cleanIp)) {
     logger.warn(`[SECURITY CACHE BLOCK] Firewall dropped pre-banned IP: ${cleanIp} on route: ${req.originalUrl}`);
     return res.status(403).send("Access Denied.");
   }
-
   // If it's a local/whitelisted path, bypass signature checking
   if (!cleanIp || isWhitelisted(cleanIp)) return next();
 
@@ -150,8 +149,8 @@ export const firewallMiddleware = async (req, res, next) => {
     }
 
     try {
-      await securityModel.setTransientBan(cleanIp);
-      logger.error(`[SECURITY IMMEDIATE BAN] Critical signature compromise attempt by ${cleanIp} via path: "${req.originalUrl}". IP banned instantly.`);
+      await securityModel.manuallyBanIP(cleanIp);
+      logger.error(`[SECURITY IMMEDIATE BAN] Critical signature compromise attempt by ${cleanIp} via path: "${req.originalUrl}". IP banned permanently.`);
     } catch (err) {
       logger.error(`[SECURITY] Immediate signature ban insertion failed for ${cleanIp}:`, err);
     }
