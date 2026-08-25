@@ -34,11 +34,15 @@
             <li><a class="dropdown-item" href="/handicaps">Handicap History</a></li>
           </ul>
         </li>
-        <!-- PRIVATE MEMBER NAVIGATION LINKS -->
-        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
-        <li class="nav-item">
+         <li class="nav-item">
           <a class="nav-link px-3" href="/course">Course</a>
         </li>
+         <li class="nav-item">
+          <a class="nav-link px-3" href="/weather">Weather</a>
+        </li>
+        <!-- PRIVATE MEMBER NAVIGATION LINKS -->
+        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+       
         <li class="nav-item">
           <a class="nav-link px-3" href="/blog">Blog Page</a>
         </li>

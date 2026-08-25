@@ -74,9 +74,9 @@
 </script>
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("auto-scroll").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    const scrollTarget = document.getElementById("auto-scroll");
+    if (scrollTarget) {
+      scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   });
 </script>
