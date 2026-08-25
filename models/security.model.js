@@ -1,5 +1,5 @@
 // utilities/security.model.js
-import { run, all, get } from "../config/db.js"; // Tailor path to your db.js location
+import { run, all, get } from "../config/db.js";
 import NodeCache from "node-cache";
 import logger from "../utilities/logger.js";
 
@@ -44,10 +44,10 @@ class SecurityModel {
 
   async logSecurityOffenseStrike(ip) {
     const upsertSql = `
-      INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen)
-      VALUES (?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-      ON CONFLICT(ip) DO UPDATE SET 
-        strikes = strikes + 1, 
+      INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
+      VALUES (?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
+      ON CONFLICT(ip) DO UPDATE SET
+        strikes = strikes + 1,
         last_seen = CURRENT_TIMESTAMP
     `;
     await run(upsertSql, [ip]);
@@ -64,35 +64,48 @@ class SecurityModel {
   }
 
   /**
-   * Programmatically forces an absolute permanent ban entry into the SQLite tracking engine.
-   * @param {string} targetIp - The clean string representation of the bad actor's IP address.
+   * Programmatically forces an immediate permanent ban entry into the SQLite engine.
+   * @param {string} targetIp - The clean string representation of the IP address.
+   * @param {boolean} isManual - True if added via admin tool dashboard, false if triggered by firewall automation.
    */
-  async manuallyBanIP(targetIp) {
+  async banIP(targetIp, isManual = true) {
     const cleanIp = targetIp.trim();
+    const flagValue = isManual ? 1 : 0;
+
+    // FIXED: Uses ON CONFLICT to protect first_seen timestamps, and binds the dynamic manual_ban flag
     const sql = `
-      REPLACE INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
-      VALUES (?, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+      INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
+      VALUES (?, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)
+      ON CONFLICT(ip) DO UPDATE SET
+        strikes = 3,
+        last_seen = CURRENT_TIMESTAMP,
+        manual_ban = ?
     `;
 
     try {
-      // 1. Write the row straight to SQLite using your run query module
-      await run(sql, [cleanIp]);
+      await run(sql, [cleanIp, flagValue, flagValue]);
 
-      // 2. Inject it into the live RAM cache so it blocks instantly without a server reboot
       this.permanentBanCache.add(cleanIp);
       this.transientBanCache.del(cleanIp);
 
       logger.info(
-        `[SECURITY MANUAL] IP ${cleanIp} successfully added to permanent_bans schema and live cache.`,
+        `[SECURITY ${isManual ? "MANUAL" : "AUTOMATED"}] IP ${cleanIp} recorded permanently (manual_ban = ${flagValue}).`,
       );
       return true;
     } catch (err) {
       logger.error(
-        `[SECURITY ERROR] Failed to manually record ban execution for ${cleanIp}:`,
+        `[SECURITY ERROR] Failed to record permanent ban execution for ${cleanIp}:`,
         err,
       );
       throw err;
     }
+  }
+
+  /**
+   * Backward-compatible helper link for old dashboard controllers calling the old method name
+   */
+  async manuallyBanIP(targetIp) {
+    return this.banIP(targetIp, true);
   }
 }
 

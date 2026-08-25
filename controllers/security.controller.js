@@ -41,6 +41,7 @@ const PRIVATE_RANGES = [
   "192.168.0.0/16",
   "fc00::/7",
 ];
+
 const BLOCKED_PATHS = [
   "wlwmanifest.xml",
   "xmlrpc.php",
@@ -49,8 +50,8 @@ const BLOCKED_PATHS = [
   "wp-content",
   ".git",
 ];
+
 const MALICIOUS_SIGNATURES = [".php", ".asp", ".aspx", ".env", "wp-"];
-const HARDCODED_BANNED_IPS = new Set(["192.168.1.100"]);
 
 class SecurityController {
   /**
@@ -97,7 +98,6 @@ class SecurityController {
     const structuralWhitelist = process.env.SECURITY_IP_WHITELIST
       ? process.env.SECURITY_IP_WHITELIST.split(",").map((i) => i.trim())
       : [];
-
     if (structuralWhitelist.includes(ip)) return true;
     return ipRangeCheck(ip, PRIVATE_RANGES);
   }
@@ -117,12 +117,13 @@ class SecurityController {
     credentials: true,
   });
 
-  // --- MIDDLEWARE LAYERS (Bound to Arrow Functions to resolve context loss) ---
+  // --- MIDDLEWARE LAYERS ---
   spamhausCheck = async (req, res, next) => {
     const cleanIp = this.#getCleanIp(req);
     if (!cleanIp || this.#isWhitelisted(cleanIp)) return next();
 
-    if (HARDCODED_BANNED_IPS.has(cleanIp) || securityModel.isBanned(cleanIp)) {
+    // FIXED: Clean database-only check execution
+    if (securityModel.isBanned(cleanIp)) {
       return this.renderAccessDenied(res);
     }
 
@@ -152,14 +153,14 @@ class SecurityController {
     }
   };
 
+  // security/security.controller.js
+  // ... [Keep the top half of your file exactly as it is now] ...
+
   firewallMiddleware = async (req, res, next) => {
     const cleanIp = this.#getCleanIp(req);
     const directConnection = this.#normalizeIp(req.socket.remoteAddress);
 
-    if (
-      cleanIp &&
-      (HARDCODED_BANNED_IPS.has(cleanIp) || securityModel.isBanned(cleanIp))
-    ) {
+    if (cleanIp && securityModel.isBanned(cleanIp)) {
       return this.renderAccessDenied(res);
     }
 
@@ -172,7 +173,6 @@ class SecurityController {
     const matchesPath = BLOCKED_PATHS.some((path) => lowerPath.includes(path));
 
     if (matchesSignature || matchesPath) {
-      // Proxy leakage defense check
       if (
         ipRangeCheck(directConnection, CLOUDFLARE_RANGES) &&
         ipRangeCheck(cleanIp, CLOUDFLARE_RANGES)
@@ -183,11 +183,15 @@ class SecurityController {
         return this.renderNotFound(res);
       }
 
+      // --- ZERO TOLERANCE CRITICAL SIGNATURE TRAP ---
+      // --- ZERO TOLERANCE CRITICAL SIGNATURE TRAP ---
       if (matchesSignature) {
         try {
-          await securityModel.manuallyBanIP(cleanIp);
+          // FIXED: Calls the new banIP method and explicitly passes false to set manual_ban = 0
+          await securityModel.banIP(cleanIp, false);
+
           logger.error(
-            `[SECURITY IMMEDIATE BAN] Critical signature compromise attempt by ${cleanIp} via path: "${req.originalUrl}".`,
+            `[SECURITY IMMEDIATE BAN] Critical signature compromise attempt by ${cleanIp} via path: "${req.originalUrl}". IP banned permanently.`,
           );
         } catch (err) {
           logger.error(
@@ -211,6 +215,7 @@ class SecurityController {
         return this.renderNotFound(res);
       }
 
+      // --- STANDARD DIRECTORY PATH STRIKE ACCUMULATION ---
       if (matchesPath) {
         let strikes = 1;
         try {
@@ -249,6 +254,8 @@ class SecurityController {
 
     next();
   };
+
+  // ... [Keep your rateLimiter code as-is below this block] ...
 
   rateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
