@@ -86,19 +86,9 @@ class SecurityModel {
 
     // FIXED: Uses ON CONFLICT to protect first_seen timestamps, and binds the dynamic manual_ban flag
     const sql = `
-<<<<<<< HEAD
       REPLACE INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
       VALUES (?, 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
     `; // 🔴 REFACTORED: Sets default strike tracking to 10 for manual inputs
-=======
-      INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
-      VALUES (?, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)
-      ON CONFLICT(ip) DO UPDATE SET
-        strikes = 3,
-        last_seen = CURRENT_TIMESTAMP,
-        manual_ban = ?
-    `;
->>>>>>> 5f1687a0fa2dcd660c5add84731c957b37b52cb7
 
     try {
       await run(sql, [cleanIp, flagValue, flagValue]);
@@ -106,22 +96,10 @@ class SecurityModel {
       this.permanentBanCache.add(cleanIp);
       this.transientBanCache.del(cleanIp);
 
-<<<<<<< HEAD
       logger.info(`[SECURITY MANUAL] IP ${cleanIp} successfully added to permanent_bans schema and live cache.`);
       return true;
     } catch (err) {
       logger.error(`[SECURITY ERROR] Failed to manually record ban execution for ${cleanIp}:`, err);
-=======
-      logger.info(
-        `[SECURITY ${isManual ? "MANUAL" : "AUTOMATED"}] IP ${cleanIp} recorded permanently (manual_ban = ${flagValue}).`,
-      );
-      return true;
-    } catch (err) {
-      logger.error(
-        `[SECURITY ERROR] Failed to record permanent ban execution for ${cleanIp}:`,
-        err,
-      );
->>>>>>> 5f1687a0fa2dcd660c5add84731c957b37b52cb7
       throw err;
     }
   }
