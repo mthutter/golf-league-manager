@@ -1,14 +1,47 @@
 // security/security.controller.js
 import dns from "node:dns/promises";
-import rateLimit, { ipKeyGenerator } from "express-rate-limit"; // 🚀 Clean named import
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { securityModel } from "../models/security.model.js";
 import logger from "../utilities/logger.js";
 import posthogClient from "../utilities/posthog.js";
+import cors from "cors";
 
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
 class SecurityController {
+  constructor() {
+    // 🔴 CRITICAL FIX: Explicitly bind the context execution layer
+    // This stops Express from losing track of "this" when running route stacks
+    this.spamhausCheck = this.spamhausCheck.bind(this);
+    this.firewallMiddleware = this.firewallMiddleware.bind(this);
+
+    this.corsMiddleware = cors({
+      origin: ["http://localhost:8080", "https://bottoms-up-cos.org"],
+      credentials: true,
+    });
+
+    // Compile the rate limiter directly to an active instance property
+    this.rateLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 200,
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: (req) => {
+        const ip = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+        return ipKeyGenerator(ip);
+      },
+      validate: {
+        keyGeneratorIpFallback: false,
+        ip: false,
+        trustProxy: false,
+      },
+      handler: (req, res) => {
+        res.status(429).send("Too many requests from this client. Please try again later.");
+      },
+    });
+  }
+
   /**
    * View Presenter Helper for generic access rejection
    */
@@ -26,7 +59,7 @@ class SecurityController {
   /**
    * Middleware to check target against global DNSBL lists
    */
-  spamhausCheck = async (req, res, next) => {
+  async spamhausCheck(req, res, next) {
     const clientIp = req.ip;
     if (!clientIp) return next();
     const cleanIp = clientIp.replace(/^::ffff:/, "");
@@ -50,12 +83,12 @@ class SecurityController {
       logger.error("[SECURITY] DNSBL validation issue:", err);
       return next();
     }
-  };
+  }
 
   /**
    * Middleware to trap and log malicious system path scanners
    */
-  firewallMiddleware = async (req, res, next) => {
+  async firewallMiddleware(req, res, next) {
     const visitorIP = req.ip;
     if (!visitorIP) return next();
 
@@ -97,35 +130,7 @@ class SecurityController {
     }
 
     next();
-  };
-
-  /**
-   * Rate Limit standard compliance layer
-   */
-  rateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 200,
-    standardHeaders: true,
-    legacyHeaders: false,
-
-    // 🛠️ FIXES ERR_ERL_KEY_GEN_IPV6: Uses express-rate-limit's helper to securely map keys
-    keyGenerator: (req) => {
-      const ip = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
-      return ipKeyGenerator(ip);
-    },
-
-    // 🛠️ ADDITIONAL SAFETIES: Silences strict validation crashes on production launch
-    validate: {
-      keyGeneratorIpFallback: false,
-      ip: false,
-      trustProxy: false,
-    },
-
-    handler: (req, res) => {
-      res.status(429).send("Too many requests from this client. Please try again later.");
-    },
-  });
+  }
 }
 
-// 🛠️ FIXES TYPEERROR: Exports the fully instantiated controller instance
 export const securityController = new SecurityController();
