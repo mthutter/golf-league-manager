@@ -23,9 +23,8 @@ class SecurityModel {
           manual_ban INTEGER DEFAULT 0
         );
       `);
-      const rows = await all("SELECT ip FROM permanent_bans");
-      // Only cache them if they actually crossed the 10-strike threshold or were manually banned
-      // This prevents a low-level transient scanner from sticking in your persistent RAM state upon server reboot
+
+      // 🟢 FIX: Cleaned up dual-read rows initialization to run in a single clean pass
       const activeBans = await all("SELECT ip FROM permanent_bans WHERE strikes >= 10 OR manual_ban = 1");
       activeBans.forEach((row) => this.permanentBanCache.add(row.ip));
 
@@ -50,17 +49,20 @@ class SecurityModel {
       VALUES (?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
       ON CONFLICT(ip) DO UPDATE SET strikes = strikes + 1, last_seen = CURRENT_TIMESTAMP
     `;
-    await run(upsertSql, [ip]);
+
+    try {
+      await run(upsertSql, [ip]);
+    } catch (dbError) {
+      // 🟢 SAFETIES: Added explicit runtime logging catchers to isolate storage issues instantly
+      logger.error(`[SQLITE STRIKE FAIL] Upsert transaction broken for IP: ${ip}:`, dbError);
+    }
 
     const row = await get("SELECT strikes FROM permanent_bans WHERE ip = ?", [ip]);
     const strikes = row ? row.strikes : 1;
 
-    // 🔴 REFACTORED: Threshold bumped from 3 to 10 strikes
     if (strikes >= 10) {
       this.permanentBanCache.add(ip);
       this.transientBanCache.del(ip);
-
-      // Found it! This matches your Render output perfectly when automation locks down an attacker.
       logger.info(`[SECURITY AUTOMATED] IP ${ip} recorded permanently (manual_ban = 0).`);
     }
 
@@ -76,11 +78,16 @@ class SecurityModel {
     const cleanIp = targetIp.trim();
     const flagValue = isManual ? 1 : 0;
 
-    // FIXED: Uses ON CONFLICT to protect first_seen timestamps, and binds the dynamic manual_ban flag
+    // 🟢 FIX: Added matching tracking parameters (3 tokens '?' for 3 mapped execution inputs)
+    // Avoids using REPLACE INTO directly, which deletes columns and corrupts first_seen dates.
     const sql = `
-      REPLACE INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
-      VALUES (?, 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
-    `; // 🔴 REFACTORED: Sets default strike tracking to 10 for manual inputs
+      INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
+      VALUES (?, 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)
+      ON CONFLICT(ip) DO UPDATE SET 
+        strikes = 10,
+        last_seen = CURRENT_TIMESTAMP,
+        manual_ban = ?
+    `;
 
     try {
       await run(sql, [cleanIp, flagValue, flagValue]);
