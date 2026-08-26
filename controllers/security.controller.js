@@ -1,7 +1,7 @@
 // security/security.controller.js
 import dns from "node:dns/promises";
 import rateLimit from "express-rate-limit";
-import { securityModel } from "./security.model.js";
+import { securityModel } from "../models/security.model.js";
 import logger from "../utilities/logger.js";
 import posthogClient from "../utilities/posthog.js";
 
