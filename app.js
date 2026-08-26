@@ -64,7 +64,7 @@ app.use((req, res, next) => {
 // ==========================================
 // FIXED: Using arrow-bound controller instance hooks to completely prevent runtime context crashes
 app.use(securityController.corsMiddleware); // 1. Check CORS policies
-app.use(securityController.spamhausCheck); // 2. Query global DNSBL threat registries
+//app.use(securityController.spamhausCheck); // 2. Query global DNSBL threat registries
 app.use(securityController.firewallMiddleware); // 3. Drop local bad actors and record path scan strikes
 app.use(securityController.rateLimiter); // 4. Throttle request velocities from active nodes
 
