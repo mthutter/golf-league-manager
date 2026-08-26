@@ -46,17 +46,9 @@ class SecurityModel {
 
   async logSecurityOffenseStrike(ip) {
     const upsertSql = `
-<<<<<<< HEAD
       INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen)
       VALUES (?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
       ON CONFLICT(ip) DO UPDATE SET strikes = strikes + 1, last_seen = CURRENT_TIMESTAMP
-=======
-      INSERT INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
-      VALUES (?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-      ON CONFLICT(ip) DO UPDATE SET
-        strikes = strikes + 1,
-        last_seen = CURRENT_TIMESTAMP
->>>>>>> 5f1687a0fa2dcd660c5add84731c957b37b52cb7
     `;
     await run(upsertSql, [ip]);
 
