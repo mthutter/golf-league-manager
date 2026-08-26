@@ -79,7 +79,7 @@ class SecurityModel {
     // FIXED: Uses ON CONFLICT to protect first_seen timestamps, and binds the dynamic manual_ban flag
     const sql = `
       REPLACE INTO permanent_bans (ip, strikes, first_seen, last_seen, manual_ban)
-      VALUES (?, 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+      VALUES (?, 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
     `; // 🔴 REFACTORED: Sets default strike tracking to 10 for manual inputs
 
     try {
