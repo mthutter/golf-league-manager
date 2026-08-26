@@ -48,14 +48,7 @@ const SQLiteStore = SQLiteStoreFactory(session);
 
 // ====== 4. IMMEDIATE ASSETS & WELL-KNOWN FILTERS ======
 app.get("/favicon.ico", (req, res) => {
-  res.sendFile(
-    path.join(
-      process.cwd(),
-      "public",
-      "icons",
-      "icons8-golf-lineal-color-32.png",
-    ),
-  );
+  res.sendFile(path.join(process.cwd(), "public", "icons", "icons8-golf-lineal-color-32.png"));
 });
 
 // SILENCE CHROME DEVTOOLS WORKSPACE DISCOVERY ALERTS
@@ -98,12 +91,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.locals.siteTitle =
-  process.env.NODE_ENV === "production"
-    ? "Bottoms Up Golf"
-    : process.env.NODE_ENV === "development"
-      ? "Bottoms Up Golf (DEV)"
-      : "Bottoms Up Golf (UNK)";
+app.locals.siteTitle = process.env.NODE_ENV === "production" ? "Bottoms Up Golf" : process.env.NODE_ENV === "development" ? "Bottoms Up Golf (DEV)" : "Bottoms Up Golf (UNK)";
 
 /* ====== PARSERS / STATIC / SESSION ====== */
 app.use(
@@ -119,9 +107,7 @@ app.use(
 );
 app.use(cookieParser());
 
-const sessionDb = new sqlite3.Database(
-  path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"),
-);
+const sessionDb = new sqlite3.Database(path.join(process.env.EXPRESS_SESSION_DB_PATH, "sessions.db"));
 app.use(
   session({
     name: "SessionCookie",
@@ -214,9 +200,7 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
   try {
     // 1. Initialize security configurations and load permanent bans table data into RAM FIRST
     await securityModel.initialize();
-    logger.info(
-      "[BOOTSTRAP] Security Model layer initialized safely and cache loaded.",
-    );
+    logger.info("[BOOTSTRAP] Security Model layer initialized safely and cache loaded.");
 
     // 2. Validate standard application mailing setups
     try {
@@ -232,20 +216,14 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
       logger.info(`Bottoms Up Golf application started on port ${PORT}`);
     });
   } catch (criticalError) {
-    logger.error(
-      "CRITICAL APPLICATION BOOTSTRAP FAILED! Halting process.",
-      criticalError,
-    );
+    logger.error("CRITICAL APPLICATION BOOTSTRAP FAILED! Halting process.", criticalError);
     process.exit(1);
   }
 })();
 
 /* ====== ENGINE SAFETY PROCESS PANELS ====== */
 process.on("uncaughtException", async (err) => {
-  if (
-    err.code === "ERR_HTTP_HEADERS_SENT" ||
-    err.message.includes("headers after they are sent")
-  ) {
+  if (err.code === "ERR_HTTP_HEADERS_SENT" || err.message.includes("headers after they are sent")) {
     return;
   }
   logger.error(err);
