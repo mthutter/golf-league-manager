@@ -30,7 +30,6 @@ class SecurityController {
   spamhausCheck = async (req, res, next) => {
     const clientIp = req.ip;
     if (!clientIp) return next();
-
     const cleanIp = clientIp.replace(/^::ffff:/, "");
 
     // Quick early exit using our model's cached lookups
@@ -43,10 +42,8 @@ class SecurityController {
 
     try {
       await dns.resolve4(`${reversed}.zen.spamhaus.org`);
-
       // Auto-cache to transient memory layer to preserve external DNS query limits
       securityModel.setTransientBan(cleanIp);
-
       logger.warn(`[SECURITY] Spamhaus ZEN blocked client: ${cleanIp}`);
       return this.renderAccessDenied(res);
     } catch (err) {
@@ -75,18 +72,19 @@ class SecurityController {
 
     if (matchesPath || matchesExtension) {
       let strikes = 1;
-
       try {
         strikes = await securityModel.logSecurityOffenseStrike(visitorIP);
       } catch (err) {
         logger.error(`[SECURITY] Action logging broke for ${visitorIP}:`, err);
       }
 
-      if (strikes >= 3) {
+      // 🔴 REFACTORED: Structural threshold updated from 3 to 10 strikes
+      if (strikes >= 10) {
         logger.error(`[SECURITY] PERMANENT BLOCK CONFIGURED: ${visitorIP} reached strike maximum.`);
       } else {
-        securityModel.setTransientBan(visitorIP);
-        logger.warn(`[SECURITY] Transient 24h ban added for ${visitorIP}. Strike ${strikes}/3.`);
+        // securityModel.setTransientBan(visitorIP);
+        // Updated console notification to reflect the 10 strike layout accurately
+        logger.warn(`[SECURITY] Permanent accumulation logging added for ${visitorIP}. Strike ${strikes}/10.`);
       }
 
       if (typeof posthogClient !== "undefined") {
@@ -97,11 +95,11 @@ class SecurityController {
             $ip: visitorIP,
             requested_path: req.path,
             strike_count: strikes,
-            action_taken: strikes >= 3 ? "PERMANENT_MVC_BAN" : "TRANSIENT_24H_MVC_BAN",
+            // 🔴 REFACTORED: Keeps consistent event values reflecting the modified maximum
+            action_taken: strikes >= 10 ? "PERMANENT_MVC_BAN" : "ACCUMULATING_STRIKE_LOCKOUT",
           },
         });
       }
-
       return this.renderNotFound(res);
     }
 
