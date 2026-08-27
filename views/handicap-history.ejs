@@ -1,28 +1,123 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <%- include('./partials/header'); %>
   <style>
-    .player-link { color: #1b4332; text-decoration: none; transition: color 0.2s ease; }
-    .player-link:hover { color: #18aa24; text-decoration: underline; }
-    .gallery-header { text-align: center; margin-top: 1.5rem; }
-    .gallery-header h1 { font-weight: 700; margin-bottom: 0.5rem; }
-    .gallery-header p { opacity: 0.9; margin-bottom: 1rem; }
-    .filter-card { background-color: #ffffff; border: 1px solid rgba(27, 67, 50, 0.15); border-radius: 12px; max-width: 650px; margin: 0 auto 1.5rem auto; }
-    .form-select-custom { border: 1.5px solid rgba(27, 67, 50, 0.2); border-radius: 8px; color: #1b4332; font-weight: 500; }
-    .form-select-custom:focus { border-color: #18aa24; box-shadow: 0 0 0 0.25rem rgba(24, 170, 36, 0.25); }
-    .results-table-card { border: 1.5px solid rgba(27, 67, 50, 0.15); border-radius: 18px; overflow: hidden; width: max-content !important; max-width: 100%; margin: 0 auto; }
-    .league-table th { background-color: #1b4332 !important; color: white !important; font-weight: 700; font-size: clamp(0.55rem, 0.9vw, 0.8rem); letter-spacing: 0.5px; border: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; padding: clamp(6px, 1vw, 14px) !important; }
-    .league-table td { vertical-align: middle !important; border: 1px solid rgba(27, 67, 50, 0.1); white-space: nowrap; padding: clamp(4px, 0.75vw, 12px) clamp(6px, 1vw, 14px) !important; }
-    .players { font-size: clamp(0.65rem, 1vw, 0.85rem); }
-    .button-link { display: inline-block; text-decoration: none; }
-    .week-nav { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
-    .week-nav .btn { min-width: 85px; font-weight: 600; border-radius: 50px; border: none; transition: all 0.2s ease; }
-    .week-nav .btn:hover { transform: translateY(-1px); }
-    .compact-pixel-table { width: max-content !important; max-width: 100%; margin: 0 auto; table-layout: auto !important; }
-    .nowrap-cell { white-space: nowrap !important; }
+    .player-link {
+      color: #1b4332;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .player-link:hover {
+      color: #18aa24;
+      text-decoration: underline;
+    }
+
+    .gallery-header {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .gallery-header h1 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .gallery-header p {
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+
+    .filter-card {
+      background-color: #ffffff;
+      border: 1px solid rgba(27, 67, 50, 0.15);
+      border-radius: 12px;
+      max-width: 650px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .form-select-custom {
+      border: 1.5px solid rgba(27, 67, 50, 0.2);
+      border-radius: 8px;
+      color: #1b4332;
+      font-weight: 500;
+    }
+
+    .form-select-custom:focus {
+      border-color: #18aa24;
+      box-shadow: 0 0 0 0.25rem rgba(24, 170, 36, 0.25);
+    }
+
+    .results-table-card {
+      border: 1.5px solid rgba(27, 67, 50, 0.15);
+      border-radius: 18px;
+      overflow: hidden;
+      width: max-content !important;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .league-table th {
+      background-color: #1b4332 !important;
+      color: white !important;
+      font-weight: 700;
+      font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      white-space: nowrap;
+      padding: clamp(6px, 1vw, 14px) !important;
+    }
+
+    .league-table td {
+      vertical-align: middle !important;
+      border: 1px solid rgba(27, 67, 50, 0.1);
+      white-space: nowrap;
+      padding: clamp(4px, 0.75vw, 12px) clamp(6px, 1vw, 14px) !important;
+    }
+
+    .players {
+      font-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+
+    .button-link {
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    .week-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .week-nav .btn {
+      min-width: 85px;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .week-nav .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .compact-pixel-table {
+      width: max-content !important;
+      max-width: 100%;
+      margin: 0 auto;
+      table-layout: auto !important;
+    }
+
+    .nowrap-cell {
+      white-space: nowrap !important;
+    }
   </style>
 </head>
+
 <body>
   <%- include('./partials/navbar'); %>
 
@@ -43,7 +138,7 @@
           <label class="form-label small fw-bold text-muted mb-1">Season Year</label>
           <select name="year" class="form-select form-select-sm form-select-custom" onchange="document.getElementById('filterForm').submit()">
             <% filters.years.forEach(y => { %>
-              <option value="<%= y %>" <%= selectedYear == y ? 'selected' : '' %>><%= y %></option>
+            <option value="<%= y %>" <%= selectedYear == y ? 'selected' : '' %>><%= y %></option>
             <% }) %>
           </select>
         </div>
@@ -53,7 +148,7 @@
           <select name="weekId" id="weekSelector" class="form-select form-select-sm form-select-custom" onchange="clearMemberAndSubmit()">
             <option value="">-- All Weeks --</option>
             <% filters.weeks.forEach(w => { %>
-              <option value="<%= w %>" <%= selectedWeek == w ? 'selected' : '' %>>Week <%= w %></option>
+            <option value="<%= w %>" <%= selectedWeek == w ? 'selected' : '' %>>Week <%= w %></option>
             <% }) %>
           </select>
         </div>
@@ -64,7 +159,7 @@
             <option value="">-- View Whole Field Output --</option>
             <% var activeDropdownMembers = filters.members.filter(m => m.status !== 'No' && m.status !== 'NO');
                activeDropdownMembers.forEach(m => { %>
-                <option value="<%= m.id %>" <%= selectedMember == m.id ? 'selected' : '' %>><%= m.name_last %>, <%= m.name_first %></option>
+            <option value="<%= m.id %>" <%= selectedMember == m.id ? 'selected' : '' %>><%= m.name_last %>, <%= m.name_first %></option>
             <% }) %>
           </select>
         </div>
@@ -78,9 +173,9 @@
         <h5 class="card-title mb-0 fw-bold d-flex justify-content-between align-items-center">
           <span>
             <% if (selectedMember && history && history.length > 0) { %>
-              <%= history[0].name_first %> <%= history[0].name_last %>
+            <%= history[0].name_first %> <%= history[0].name_last %>
             <% } else { %>
-              Player Handicaps
+            Player Handicaps
             <% } %>
           </span>
           <span class="badge font-monospace" style="background-color: rgba(255,255,255,0.15); color: #ffffff; font-size: 0.85rem;">
@@ -88,24 +183,17 @@
           </span>
         </h5>
       </div>
-      
+
       <div class="table-responsive" style="text-align: center">
         <!-- 🟢 THE CLIENT SIDE FIXED BYPASS TRICK: If selectedMember is true, we remove the handicapTable 
              id completely to prevent browser extensions/scripts from hijacking your sorted week layouts -->
-        <table 
-          <% if (selectedMember) { %>
-            id="timelineHistoryViewTable" class="table table-bordered align-middle text-center mb-0 raw-timeline compact-pixel-table table-hover"
-          <% } else { %>
-            id="handicapTable" class="table table-bordered align-middle text-center mb-0 league-table compact-pixel-table table-hover"
-          <% } %>
-        >
+        <table <% if (selectedMember) { %> id="timelineHistoryViewTable" class="table table-bordered align-middle text-center mb-0 raw-timeline compact-pixel-table table-hover" <% } else { %> id="handicapTable" class="table table-bordered align-middle text-center mb-0 league-table compact-pixel-table table-hover" <% } %>>
           <thead>
-            <tr>
-              <th style="width: 60px"><%= selectedMember ? '#' : 'Rank' %></th>
+            <tr>             
               <% if (!selectedMember) { %>
-                <th class="text-start" style="width: 220px; min-width: 180px">Player</th>
+              <th class="text-start" style="width: 220px; min-width: 180px">Player</th>
               <% } else { %>
-                <th style="width: 100px">Week</th>
+              <th style="width: 100px">Week</th>
               <% } %>
               <th style="width: 110px">Handicap</th>
             </tr>
@@ -118,45 +206,45 @@
                
                if (activeHistoryRows.length > 0) {
                  activeHistoryRows.forEach((row, idx) => { %>
-                  <tr>
-                    <td class="fw-bold bg-light players"><%= idx + 1 %></td>
-                    
-                    <% if (!selectedMember) { %>
-                      <td class="text-start fw-semibold players nowrap-cell">
-                        <!-- Redirecting to /members/ or /players/ safely matching your public lookup tables -->
-                        <a href="/members/<%= row.member_id %>" class="player-link">
-                          <% if (row.name_last && row.name_first) { %>
-                            <%= row.name_last %>, <%= row.name_first %>
-                          <% } else { %>
-                            Member #<%= row.member_id %>
-                          <% } %>
-                        </a>
-                      </td>
-                    <% } else { %>
-                      <td class="players nowrap-cell text-muted fw-semibold">
-                        Week <%= row.week_number || row.week_id %>
-                      </td>
-                    <% } %>
-                    
-                    <td class="fw-bold text-success players nowrap-cell">
-                      <% if (row.calculated_handicap === 'Provisional') { %>
-                        <span class="badge px-3 py-2 text-uppercase font-monospace" style="background-color: rgba(108, 117, 125, 0.1); color: #495057; font-weight: 600; font-size: 0.8rem; border: 1px dashed rgba(108, 117, 125, 0.4); border-radius: 6px;">
-                          <%= row.calculated_handicap %>
-                        </span>
-                      <% } else { %>
-                        <span class="badge px-3 py-2" style="background-color: rgba(27, 67, 50, 0.08); color: #1b4332; font-weight: 700; font-size: 0.9rem; border-radius: 6px;">
-                          <%= row.calculated_handicap %>
-                        </span>
-                      <% } %>
-                    </td>
-                  </tr>
-              <% }) %>
+            <tr>
+             
+
+              <% if (!selectedMember) { %>
+              <td class="text-start fw-semibold players nowrap-cell">
+                <!-- Redirecting to /members/ or /players/ safely matching your public lookup tables -->
+                <a href="/members/<%= row.member_id %>" class="player-link">
+                  <% if (row.name_last && row.name_first) { %>
+                  <%= row.name_last %>, <%= row.name_first %>
+                  <% } else { %>
+                  Member #<%= row.member_id %>
+                  <% } %>
+                </a>
+              </td>
+              <% } else { %>
+              <td class="players nowrap-cell text-muted fw-semibold">
+                Week <%= row.week_number || row.week_id %>
+              </td>
+              <% } %>
+
+              <td class="fw-bold text-success players nowrap-cell">
+                <% if (row.calculated_handicap === 'Provisional') { %>
+                <span class="badge px-3 py-2 text-uppercase font-monospace" style="background-color: rgba(108, 117, 125, 0.1); color: #495057; font-weight: 600; font-size: 0.8rem; border: 1px dashed rgba(108, 117, 125, 0.4); border-radius: 6px;">
+                  <%= row.calculated_handicap %>
+                </span>
+                <% } else { %>
+                <span class="badge px-3 py-2" style="background-color: rgba(27, 67, 50, 0.08); color: #1b4332; font-weight: 700; font-size: 0.9rem; border-radius: 6px;">
+                  <%= row.calculated_handicap %>
+                </span>
+                <% } %>
+              </td>
+            </tr>
+            <% }) %>
             <% } else { %>
-              <tr>
-                <td colspan="3" class="p-4 text-muted">
-                  No historical handicap metrics match this filter selection.
-                </td>
-              </tr>
+            <tr>
+              <td colspan="3" class="p-4 text-muted">
+                No historical handicap metrics match this filter selection.
+              </td>
+            </tr>
             <% } %>
           </tbody>
         </table>
@@ -172,10 +260,12 @@
       document.getElementById('memberSelector').value = "";
       document.getElementById('filterForm').submit();
     }
+
     function clearWeekAndSubmit() {
       document.getElementById('weekSelector').value = "";
       document.getElementById('filterForm').submit();
     }
   </script>
 </body>
+
 </html>
