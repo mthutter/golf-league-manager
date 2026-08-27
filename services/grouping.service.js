@@ -20,10 +20,6 @@ function shuffle(array) {
 
 /**
  * Retrieves a finalized tee time schedule for a specific week,
- * dynamically merging name_first and name_last into a single 'name' field.
- */
-/**
- * Retrieves a finalized tee time schedule for a specific week,
  * dynamically calculating unassigned regular players and available substitutes.
  */
 export const getGroupingsForWeek = async (weekId) => {
@@ -114,7 +110,7 @@ export const generateRandomGroupings = async (weekId) => {
     const memberSql = `
       SELECT id, (name_first || ' ' || name_last) AS name
       FROM members 
-      WHERE status = 'Yes' and type = 'Regular'
+      WHERE status = 'Yes' and type = 'Regular' AND is_non_member != 1
     `;
     const members = await all(memberSql);
 
