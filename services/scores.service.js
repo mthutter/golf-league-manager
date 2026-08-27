@@ -345,7 +345,7 @@ export async function getRoundDetails(scoreId) {
   try {
     const scoreRecord = await dbGet(
       `
-      SELECT s.*, m.name_first, m.name_last, m.sex
+      SELECT s.*, m.name_first, m.name_last, m.sex, m.current_handicap
       FROM scores s 
       LEFT JOIN members m ON s.member_id = m.id 
       WHERE s.score_id = ?
@@ -379,7 +379,7 @@ export async function getRoundDetails(scoreId) {
         number: currentWeekNum,
         displayDate: `Week ${currentWeekNum}`,
       },
-      handicapUsed: scoreRecord.handicap_used !== null ? parseFloat(scoreRecord.handicap_used).toFixed(1) : "Provisional",
+      handicapUsed: scoreRecord.current_handicap || "Provisional",
       skinsEntered: !!scoreRecord.skins_entered,
       holes: processedHoles,
       totals: {
