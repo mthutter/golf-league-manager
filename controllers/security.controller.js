@@ -1,18 +1,17 @@
 // security/security.controller.js
 import dns from "node:dns/promises";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
-import { securityModel } from "../models/security.model.js";
 import logger from "../utilities/logger.js";
 import posthogClient from "../utilities/posthog.js";
 import cors from "cors";
+import path from "node:path";
+import { pathToFileURL } from "node:url"; // 🟢 THE FIX: Native platform-agnostic path converter
 
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
 
 class SecurityController {
   constructor() {
-    // 🔴 CRITICAL FIX: Explicitly bind the context execution layer
-    // This stops Express from losing track of "this" when running route stacks
     this.spamhausCheck = this.spamhausCheck.bind(this);
     this.firewallMiddleware = this.firewallMiddleware.bind(this);
 
@@ -21,7 +20,6 @@ class SecurityController {
       credentials: true,
     });
 
-    // Compile the rate limiter directly to an active instance property
     this.rateLimiter = rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 200,
@@ -42,16 +40,10 @@ class SecurityController {
     });
   }
 
-  /**
-   * View Presenter Helper for generic access rejection
-   */
   renderAccessDenied(res) {
     return res.status(403).send("Access Denied.");
   }
 
-  /**
-   * View Presenter Helper for path scanner drops
-   */
   renderNotFound(res) {
     return res.status(404).send("Not Found");
   }
@@ -64,8 +56,18 @@ class SecurityController {
     if (!clientIp) return next();
     const cleanIp = clientIp.replace(/^::ffff:/, "");
 
-    if (securityModel.isBanned(cleanIp)) {
-      return this.renderAccessDenied(res);
+    try {
+      // 🚀 BULLETPROOF TRANSLATION: Builds a perfectly valid file URL across all operating systems
+      const modelAbsoluteDiskPath = path.join(process.cwd(), "models", "security.model.js");
+      const modelUrlSpecToken = pathToFileURL(modelAbsoluteDiskPath).href;
+
+      const { securityModel } = await import(modelUrlSpecToken);
+
+      if (securityModel && typeof securityModel.isBanned === "function" && securityModel.isBanned(cleanIp)) {
+        return this.renderAccessDenied(res);
+      }
+    } catch (importErr) {
+      logger.error("[SECURITY] Late-binding model allocation failure: " + importErr.message);
     }
 
     if (!cleanIp.includes(".")) return next();
@@ -73,7 +75,15 @@ class SecurityController {
 
     try {
       await dns.resolve4(`${reversed}.zen.spamhaus.org`);
-      securityModel.setTransientBan(cleanIp);
+
+      const modelAbsoluteDiskPath = path.join(process.cwd(), "models", "security.model.js");
+      const modelUrlSpecToken = pathToFileURL(modelAbsoluteDiskPath).href;
+
+      const { securityModel } = await import(modelUrlSpecToken);
+      if (securityModel && typeof securityModel.setTransientBan === "function") {
+        securityModel.setTransientBan(cleanIp);
+      }
+
       logger.warn(`[SECURITY] Spamhaus ZEN blocked client: ${cleanIp}`);
       return this.renderAccessDenied(res);
     } catch (err) {
@@ -91,44 +101,56 @@ class SecurityController {
   async firewallMiddleware(req, res, next) {
     const visitorIP = req.ip;
     if (!visitorIP) return next();
+    const cleanIp = visitorIP.replace(/^::ffff:/, "");
 
-    if (securityModel.isBanned(visitorIP)) {
-      return this.renderAccessDenied(res);
+    try {
+      // 🚀 BULLETPROOF TRANSLATION: Builds a perfectly valid file URL across all operating systems
+      const modelAbsoluteDiskPath = path.join(process.cwd(), "models", "security.model.js");
+      const modelUrlSpecToken = pathToFileURL(modelAbsoluteDiskPath).href;
+
+      const { securityModel } = await import(modelUrlSpecToken);
+
+      if (securityModel && typeof securityModel.isBanned === "function" && securityModel.isBanned(cleanIp)) {
+        return this.renderAccessDenied(res);
+      }
+
+      const lowerPath = req.path.toLowerCase();
+      const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
+      const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
+
+      if (matchesPath || matchesExtension) {
+        let strikes = 1;
+        try {
+          if (securityModel && typeof securityModel.logSecurityOffenseStrike === "function") {
+            strikes = await securityModel.logSecurityOffenseStrike(cleanIp);
+          }
+        } catch (err) {
+          logger.error(`[SECURITY] Action logging broke for ${cleanIp}:`, err);
+        }
+
+        if (strikes >= 10) {
+          logger.error(`[SECURITY] PERMANENT BLOCK CONFIGURED: ${cleanIp} reached strike maximum.`);
+        } else {
+          logger.warn(`[SECURITY] Permanent accumulation logging added for ${cleanIp}. Strike ${strikes}/10.`);
+        }
+
+        if (typeof posthogClient !== "undefined") {
+          posthogClient.capture({
+            distinctId: cleanIp,
+            event: "bot_attack_blocked",
+            properties: {
+              $ip: cleanIp,
+              requested_path: req.path,
+              strike_count: strikes,
+              action_taken: strikes >= 10 ? "PERMANENT_MVC_BAN" : "ACCUMULATING_STRIKE_LOCKOUT",
+            },
+          });
+        }
+        return this.renderNotFound(res);
+      }
+    } catch (globalErr) {
+      logger.error("[SECURITY] Middleware exception intercepted: " + globalErr.message);
     }
-
-    const lowerPath = req.path.toLowerCase();
-    const matchesPath = blockedPaths.some((path) => lowerPath.includes(path));
-    const matchesExtension = blockedExtensions.some((ext) => lowerPath.endsWith(ext));
-
-    if (matchesPath || matchesExtension) {
-      let strikes = 1;
-      try {
-        strikes = await securityModel.logSecurityOffenseStrike(visitorIP);
-      } catch (err) {
-        logger.error(`[SECURITY] Action logging broke for ${visitorIP}:`, err);
-      }
-
-      if (strikes >= 10) {
-        logger.error(`[SECURITY] PERMANENT BLOCK CONFIGURED: ${visitorIP} reached strike maximum.`);
-      } else {
-        logger.warn(`[SECURITY] Permanent accumulation logging added for ${visitorIP}. Strike ${strikes}/10.`);
-      }
-
-      if (typeof posthogClient !== "undefined") {
-        posthogClient.capture({
-          distinctId: visitorIP,
-          event: "bot_attack_blocked",
-          properties: {
-            $ip: visitorIP,
-            requested_path: req.path,
-            strike_count: strikes,
-            action_taken: strikes >= 10 ? "PERMANENT_MVC_BAN" : "ACCUMULATING_STRIKE_LOCKOUT",
-          },
-        });
-      }
-      return this.renderNotFound(res);
-    }
-
     next();
   }
 }
