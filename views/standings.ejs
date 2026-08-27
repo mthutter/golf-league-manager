@@ -1,306 +1,206 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-    <%- include('./partials/header') %>
-    <style>
-        /* ===== Layout & Typography Colors from skins.ejs ===== */
-        .player-link {
-            color: #1b4332;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .player-link:hover {
-            color: #18aa24;
-            text-decoration: underline;
-        }
-
-        .gallery-header {
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-
-        .gallery-header h1 {
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .gallery-header p {
-            opacity: 0.9;
-            margin-bottom: 1rem;
-        }
-
-        /* ===== Table & Card Framework Architecture ===== */
-        .standings-table-card {
-            border: 1.5px solid rgba(27, 67, 50, 0.15);
-            border-radius: 18px;
-            overflow: hidden;
-        }
-
-        .players {
-            font-size: clamp(0.65rem, 1vw, 0.85rem);
-        }
-
-        /* ===== Week Navigation Pill Layout ===== */
-        .button-link {
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .week-results-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: .75rem;
-            margin-top: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .week-results-label {
-            font-weight: 700;
-            color: #1b4332;
-            margin-bottom: 0;
-        }
-
-        .week-nav {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .week-nav .btn {
-            min-width: 85px;
-            font-weight: 600;
-            border-radius: 50px;
-            border: none;
-            transition: all 0.2s ease;
-        }
-
-        .week-nav .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        /* ===== Trend Movement Badges ===== */
-        .trend-up {
-            color: #18aa24;
-            font-weight: bold;
-            font-size: inherit;
-        }
-
-        .trend-down {
-            color: #dc3545;
-            font-weight: bold;
-            font-size: inherit;
-        }
-
-        .trend-same {
-            color: #6c757d;
-            font-size: inherit;
-        }
-
-        /* ===== Podium Highlights ===== */
-        .gold-cell {
-            background-color: gold !important;
-            color: #664d03 !important;
-            font-weight: 700;
-        }
-
-        .silver-cell {
-            background-color: silver !important;
-            font-weight: 700;
-        }
-
-        .bronze-cell {
-            background-color: rgb(205, 127, 50) !important;
-            font-weight: 700;
-        }
-
-        /* Ensure footer looks seamless and inherits structural styling */
-        .league-table tfoot td {
-            border: 1px solid rgba(27, 67, 50, 0.1);
-            vertical-align: middle;
-            padding: 8px 12px;
-        }
-    </style>
-</head>
-
-<body>
-    <%- include('./partials/navbar') %>
-
-    <!-- Header Banner -->
-    <div class="container">
-        <div class="gallery-header">
-            <h1>2026 Season Standings</h1>
-            <p>
-                Through Week <%= latestWeek.week_number %> (<%=
-          latestWeek.displayDate %>) • Bottoms Up Golf League
-            </p>
-        </div>
-        <div class="week-results-container">
-            <label style="color: white;" for="weekSelect" class="week-results-label">
-                Jump to Weekly Results:
-            </label>
-
-            <div class="d-inline-flex align-items-center gap-2">
-                <select id="weekSelect" class="form-select" style="width: 240px;">
-                    <% weeks
-        .filter(week => week.week_number <= currentWeek.week_number)
-        .forEach(week => { %>
-
-                    <option value="<%= week.week_number %>"
-                        <%= week.week_number === currentWeek.week_number ? "selected" : "" %>>
-                        Week <%= week.week_number %> (<%= week.displayDate %>)
-                    </option>
-
-                    <% }) %>
-                </select>
-
-                <button type="button" class="btn btn-success text-nowrap"
-                    onclick="window.location.href='/scores/weekly/' + document.getElementById('weekSelect').value;">
-                    View Results
-                </button>
-            </div>
-        </div>
-
-    </div>
-    </div>
-
-    <!-- Standings Table Dashboard Layout -->
-    <div class="container my-4">
-        <div class="card shadow-sm standings-table-card">
-            <div class="table-responsive">
-                <table id="sortableTable"
-                    class="table table-bordered align-middle text-center mb-0 league-table">
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th>Player</th>
-                            <th></th>
-                            <th>Weekly Points Average</th>
-                            <th>Handicap</th>
-                            <th>Rounds Played</th>
-                            <th>Birdies</th>
-                            <th>Closest Points</th>
-                            <th>Total Points</th>
-                            <th>Gross Weekly Average</th>
-                            <th>Net Weekly Average</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% 
-    // Filter out both the specific exempt user AND any player whose status is 'NO' (inactive)
-
-    var regularPlayers = standings.filter(function(p) { 
-      return Number(p.id) !== 8 && p.status !== 'No'; 
-    }); 
+  <%- include('./partials/header') %>
+  <style>
+    /* ===== Layout & Typography Colors from skins.ejs ===== */
+    .player-link { color: #1b4332; text-decoration: none; transition: color 0.2s ease; }
+    .player-link:hover { color: #18aa24; text-decoration: underline; }
+    .gallery-header { text-align: center; margin-top: 1.5rem; }
+    .gallery-header h1 { font-weight: 700; margin-bottom: 0.5rem; }
+    .gallery-header p { opacity: 0.9; margin-bottom: 1rem; }
     
-    // Also ensure the footer player doesn't show up if they become inactive
-    var leavingPlayers = standings.filter(function(p) { 
-      return Number(p.id) === 8 && p.status !== 'No'; 
-    }); 
+    /* ===== Table & Card Framework Architecture ===== */
+    .standings-table-card { border: 1.5px solid rgba(27, 67, 50, 0.15); border-radius: 18px; overflow: hidden; }
+    .players { font-size: clamp(0.65rem, 1vw, 0.85rem); }
+    
+    /* ===== Week Navigation Pill Layout ===== */
+    .button-link { display: inline-block; text-decoration: none; }
+    .week-results-container { display: flex; align-items: center; justify-content: center; gap: .75rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    .week-results-label { font-weight: 700; color: #1b4332; margin-bottom: 0; }
+    .week-nav { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+    .week-nav .btn { min-width: 85px; font-weight: 600; border-radius: 50px; border: none; transition: all 0.2s ease; }
+    .week-nav .btn:hover { transform: translateY(-1px); }
+    
+    /* ===== Trend Movement Badges ===== */
+    .trend-up { color: #18aa24; font-weight: bold; font-size: inherit; }
+    .trend-down { color: #dc3545; font-weight: bold; font-size: inherit; }
+    .trend-same { color: #6c757d; font-size: inherit; }
+    
+    /* ===== Podium Highlights ===== */
+    .gold-cell { background-color: gold !important; color: #664d03 !important; font-weight: 700; }
+    .silver-cell { background-color: silver !important; font-weight: 700; }
+    .bronze-cell { background-color: rgb(205, 127, 50) !important; font-weight: 700; }
+    
+    /* Ensure footer looks seamless and inherits structural styling */
+    .league-table tfoot td { border: 1px solid rgba(27, 67, 50, 0.1); vertical-align: middle; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <%- include('./partials/navbar') %>
 
-    regularPlayers.forEach(function(player, idx) { 
-  %>
-                        <tr>
-                            <td class="fw-bold bg-light players">
-                                <% if (idx > 0 && player.rank === regularPlayers[idx - 1].rank) { %>
-                                <!-- Leave blank for subsequent tied players -->
-                                <% } else { %>
-                                <% if (player.standings_exempt) { %>
-                                *
-                                <% } else { %>
-                                <%= player.rank %>
-                                <% } %>
-                                <% } %>
-                            </td>
-
-                            <!-- Player details column -->
-                            <td class="text-start fw-semibold players">
-                                <a href="/scores/members/<%= player.id %>" class="player-link">
-                                    <%= player.player_name %>
-                                </a>
-                            </td>
-
-                            <!-- Trend movement column -->
-                            <td class="players">
-                                <% if (player.movement === "up") { %>
-                                <span class="trend-up">▲<%= player.delta %></span>
-                                <% } else if (player.movement === "down") { %>
-                                <span class="trend-down">▼<%= player.delta %></span>
-                                <% } else { %>
-                                <span class="trend-same">—</span>
-                                <% } %>
-                            </td>
-
-                            <!-- Average Points column -->
-                            <td
-                                class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>">
-                                <%= Number(player.avg_points).toFixed(2) %>
-                            </td>
-                            <td style="color: #1b4332" class="fw-bold bg-light players">
-                                <%= player.current_handicap %>
-                            </td>
-                            <td class="players"><%= player.weeks_played %></td>
-                            <td class="players"><%= player.birdie_points %></td>
-                            <td class="players"><%= player.ctp_points %></td>
-                            <td class="fw-bold players"><%= player.total_points %></td>
-                            <td class="players">
-                                <%= Number(player.avg_gross).toFixed(2) %>
-                            </td>
-                            <td class="players">
-                                <%= Number(player.avg_net).toFixed(2) %>
-                            </td>
-                        </tr>
-                        <% }) %>
-                    </tbody>
-
-                    <% if (leavingPlayers.length > 0) { var player = leavingPlayers[0];
-            %>
-                    <tfoot>
-                        <tr>
-                            <td class="fw-bold bg-light players">*</td>
-                            <td class="text-start fw-semibold players">
-                                <a href="/scores/members/<%= player.id %>" class="player-link">
-                                    <%= player.player_name %>
-                                </a>
-                            </td>
-                            <td class="players">
-                                <% if (player.movement === "up") { %>
-                                <span class="trend-up">▲<%= player.delta %></span>
-                                <% } else if (player.movement === "down") { %>
-                                <span class="trend-down">▼<%= player.delta %></span>
-                                <% } else { %>
-                                <span class="trend-same">—</span>
-                                <% } %>
-                            </td>
-                            <td class="players">
-                                <%= Number(player.avg_points).toFixed(2) %>
-                            </td>
-                            <td style="color: #1b4332" class="fw-bold bg-light players">
-                                <%= player.current_handicap %>
-                            </td>
-                            <td class="players"><%= player.weeks_played %></td>
-                            <td class="players"><%= player.birdie_points %></td>
-                            <td class="players"><%= player.ctp_points %></td>
-                            <td class="fw-bold players"><%= player.total_points %></td>
-                            <td class="players">
-                                <%= Number(player.avg_gross).toFixed(2) %>
-                            </td>
-                            <td class="players">
-                                <%= Number(player.avg_net).toFixed(2) %>
-                            </td>
-                        </tr>
-                    </tfoot>
-                    <% } %>
-                </table>
-            </div>
-        </div>
+  <!-- Header Banner -->
+  <div class="container">
+    <div class="gallery-header">
+      <h1>2026 Season Standings</h1>
+      <p>
+        Through Week <%= latestWeek.week_number %> (<%= latestWeek.displayDate %>) • Bottoms Up Golf League
+      </p>
     </div>
+    <div class="week-results-container">
+      <label style="color: white;" for="weekSelect" class="week-results-label"> Jump to Weekly Results: </label>
+      <div class="d-inline-flex align-items-center gap-2">
+        <select id="weekSelect" class="form-select" style="width: 240px;">
+          <% weeks
+            .filter(week => week.week_number <= currentWeek.week_number)
+            .forEach(week => { %>
+              <option value="<%= week.week_number %>" <%= week.week_number === currentWeek.week_number ? "selected" : "" %>>
+                Week <%= week.week_number %> (<%= week.displayDate %>)
+              </option>
+          <% }) %>
+        </select>
+        <button type="button" class="btn btn-success text-nowrap" onclick="window.location.href='/scores/weekly/' + document.getElementById('weekSelect').value;">
+          View Results
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <%- include('./partials/scripts') %>
-    <%- include('./partials/footer') %>
+  <!-- Standings Table Dashboard Layout -->
+  <div class="container my-4">
+    <div class="card shadow-sm standings-table-card">
+      <div class="table-responsive">
+        <table id="sortableTable" class="table table-bordered align-middle text-center mb-0 league-table">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>Player</th>
+              <th></th>
+              <th>Weekly Points Average</th>
+              <th>Handicap</th>
+              <th>Rounds Played</th>
+              <th>Birdies</th>
+              <th>Closest Points</th>
+              <th>Total Points</th>
+              <th>Gross Weekly Average</th>
+              <th>Net Weekly Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% 
+              // 🟢 HELPER UTILITY: Safe decimal enforcement to guarantee single decimal place precision
+              function formatDecimalHandicap(hcp) {
+                if (hcp === null || hcp === undefined || String(hcp).toLowerCase() === 'provisional' || String(hcp).trim() === '') {
+                  return 'Provisional';
+                }
+                var parsed = parseFloat(hcp);
+                return !isNaN(parsed) ? parsed.toFixed(1) : hcp;
+              }
+
+              // Filter out both the specific exempt user AND any player whose status is 'NO' (inactive)
+              var regularPlayers = standings.filter(function(p) { return Number(p.id) !== 8 && p.status !== 'No'; });
+              
+              // Also ensure the footer player doesn't show up if they become inactive
+              var leavingPlayers = standings.filter(function(p) { return Number(p.id) === 8 && p.status !== 'No'; });
+              
+              regularPlayers.forEach(function(player, idx) { 
+            %>
+              <tr>
+                <td class="fw-bold bg-light players">
+                  <% if (idx > 0 && player.rank === regularPlayers[idx - 1].rank) { %>
+                    <!-- Leave blank for subsequent tied players -->
+                  <% } else { %>
+                    <% if (player.standings_exempt) { %> * <% } else { %> <%= player.rank %> <% } %>
+                  <% } %>
+                </td>
+                
+                <td class="text-start fw-semibold players">
+                  <a href="/scores/members/<%= player.id %>" class="player-link">
+                    <%= player.player_name %>
+                  </a>
+                </td>
+                
+                <td class="players">
+                  <% if (player.movement === "up") { %>
+                    <span class="trend-up">▲<%= player.delta %></span>
+                  <% } else if (player.movement === "down") { %>
+                    <span class="trend-down">▼<%= player.delta %></span>
+                  <% } else { %>
+                    <span class="trend-same">—</span>
+                  <% } %>
+                </td>
+                
+                <td class="players <%= player.rank === 1 ? 'gold-cell' : '' %> <%= player.rank === 2 ? 'silver-cell' : '' %> <%= player.rank === 3 ? 'bronze-cell' : '' %>">
+                  <%= Number(player.avg_points).toFixed(2) %>
+                </td>
+                
+                <!-- 🟢 REFACTORED HANDICAP CELL: Enforces clean dynamic .1f fractional rendering formats -->
+                <td style="color: #1b4332" class="fw-bold bg-light players">
+                  <%= formatDecimalHandicap(player.current_handicap) %>
+                </td>
+                
+                <td class="players"><%= player.weeks_played %></td>
+                <td class="players"><%= player.birdie_points %></td>
+                <td class="players"><%= player.ctp_points %></td>
+                <td class="fw-bold players"><%= player.total_points %></td>
+                <td class="players">
+                  <%= Number(player.avg_gross).toFixed(2) %>
+                </td>
+                <td class="players">
+                  <%= Number(player.avg_net).toFixed(2) %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+          
+          <% if (leavingPlayers.length > 0) { 
+               var player = leavingPlayers[0]; 
+          %>
+            <!-- 🟢 FIXED SYNTAX: Re-aligned closing structure tag to match tfoot exactly -->
+            <tfoot>
+              <tr>
+                <td class="fw-bold bg-light players">*</td>
+                <td class="text-start fw-semibold players">
+                  <a href="/scores/members/<%= player.id %>" class="player-link">
+                    <%= player.player_name %>
+                  </a>
+                </td>
+                <td class="players">
+                  <% if (player.movement === "up") { %>
+                    <span class="trend-up">▲<%= player.delta %></span>
+                  <% } else if (player.movement === "down") { %>
+                    <span class="trend-down">▼<%= player.delta %></span>
+                  <% } else { %>
+                    <span class="trend-same">—</span>
+                  <% } %>
+                </td>
+                <td class="players">
+                  <%= Number(player.avg_points).toFixed(2) %>
+                </td>
+                
+                <td style="color: #1b4332" class="fw-bold bg-light players">
+                  <%= formatDecimalHandicap(player.current_handicap) %>
+                </td>
+                
+                <td class="players"><%= player.weeks_played %></td>
+                <td class="players"><%= player.birdie_points %></td>
+                <td class="players"><%= player.ctp_points %></td>
+                <td class="fw-bold players"><%= player.total_points %></td>
+                <td class="players">
+                  <%= Number(player.avg_gross).toFixed(2) %>
+                </td>
+                <td class="players">
+                  <%= Number(player.avg_net).toFixed(2) %>
+                </td>
+              </tr>
+            </tfoot>
+          <% } %>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <%- include('./partials/scripts') %>
+  <%- include('./partials/footer') %>
 </body>
-
 </html>

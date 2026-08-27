@@ -86,34 +86,60 @@ export async function getHandicapFilterMetadata() {
 /**
  * Updates the core member statistics table based on Option B cumulative logic
  */
+// Inside services/handicap.service.js
+
+// Inside services/handicap.service.js
+
 export async function calculateHandicaps(coursePar = 36) {
-  logger.info("[HANDICAP ENGINE] Running Option B season updates across the member database...");
+  logger.info("[HANDICAP ENGINE] Running administrative Option B recalculation pass...");
   try {
-    const players = await queryAll(`SELECT id FROM members`);
+    // 1. Fetch all distinct members from the roster
+    const players = await queryAll(`SELECT id, name_last, name_first FROM members`);
 
     for (const player of players) {
-      const rounds = await queryAll(`SELECT gross_total FROM scores WHERE member_id = ? AND gross_total > 0`, [player.id]);
+      const playerId = parseInt(player.id, 10); // 🟢 Safe Integer Type Extraction
+      if (isNaN(playerId)) continue;
 
+      // 2. Fetch all valid round scores for this individual player
+      const rounds = await queryAll(`SELECT gross_total FROM scores WHERE member_id = ? AND gross_total > 0`, [playerId]);
+
+      // Handle players with insufficient data (fewer than 3 rounds)
       if (rounds.length < 3) {
-        await executeRun(`UPDATE members SET current_handicap = NULL, rounds_played = ? WHERE id = ?`, [rounds.length, player.id]);
+        logger.info(`Player ${player.name_first} ${player.name_last} remains Provisional (Rounds: ${rounds.length})`);
+        await executeRun(`UPDATE members SET current_handicap = NULL, rounds_played = ? WHERE id = ?`, [rounds.length, playerId]);
         continue;
       }
 
-      const total = rounds.reduce((sum, r) => sum + r.gross_total, 0);
-      const average = total / rounds.length;
+      // 3. OPTION B REAL-TIME MATHEMATICAL COMPILATION ENGINE
+      const totalStrokes = rounds.reduce((sum, r) => sum + parseFloat(r.gross_total), 0);
+      const average = totalStrokes / rounds.length;
       const rawHandicap = average - coursePar;
-      const roundedHandicap = (Math.round(rawHandicap * 10) / 10).toFixed(1);
 
+      // 🧮 Pure Option B Precision Guard: Mirrors your working EJS history charts
+      const roundedValue = Math.round(rawHandicap * 10) / 10;
+      const finalDecimalHandicap = roundedValue.toFixed(1); // Exactly "12.1", "10.7", etc.
+
+      // 4. PERSIST DIRECTLY TO THE MEMBERS TABLE USING TEXT CAST PROTECTION
+      // 🟢 The Cast Forces SQLite to accept the literal string format bypassing column definitions
       await executeRun(
         `
-        UPDATE members SET current_handicap = ?, average_score = ?, rounds_played = ? WHERE id = ?
+        UPDATE members 
+        SET 
+          current_handicap = CAST(? AS TEXT), 
+          average_score = ?, 
+          rounds_played = ? 
+        WHERE id = ?
       `,
-        [roundedHandicap, average, rounds.length, player.id],
+        [finalDecimalHandicap, average, rounds.length, playerId],
       );
+
+      logger.info(`Successfully updated ${player.name_first} ${player.name_last}: Hcp = ${finalDecimalHandicap}`);
     }
-    logger.info("[HANDICAP ENGINE] Dynamic calculation run complete.");
+
+    logger.info("[HANDICAP ENGINE] Success: Members table synchronized with Option B true decimals.");
   } catch (error) {
     logger.error(`Failed executing background handicap recalculation step: ${error.message}`);
+    throw error;
   }
 }
 
