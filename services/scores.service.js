@@ -261,14 +261,25 @@ export async function updateScoreRecord(scoreId, data) {
 /**
  * Compiles gross and net values for weekly summary page layouts
  */
+// Inside services/scores.service.js
+
+/**
+ * Compiles gross, net, and total points values for weekly summary page layouts
+ */
 export async function getWeeklyBreakdown(weekId) {
   return await dbAll(
     `
-    SELECT s.*, (m.name_first || ' ' || m.name_last) AS player_name 
+    SELECT 
+      s.*, 
+      (m.name_first || ' ' || m.name_last) AS player_name,
+      
+      /* 🚀 THE FIX: Dynamically adds your point components together for this specific week */
+      (s.stableford_total + s.ctp_points + s.birdie_points) AS total_points
+      
     FROM scores s
     LEFT JOIN members m ON s.member_id = m.id
     WHERE CAST(s.week_id AS INTEGER) = CAST(? AS INTEGER)
-    ORDER BY s.stableford_total DESC, s.gross_total ASC
+    ORDER BY (s.stableford_total + s.ctp_points + s.birdie_points) DESC, s.gross_total ASC
   `,
     [weekId],
   );
