@@ -1,6 +1,7 @@
-// services/scores.service.js
+// services/scores.service.js (PART 1 OF 2)
 import db from "../config/db.js";
 import logger from "../utilities/logger.js";
+import { buildHoleScores } from "./golf.service.js";
 
 /**
  * Custom promise wrapper helper for db.all lookups
@@ -27,12 +28,8 @@ function dbGet(sql, params = []) {
 }
 
 /**
- * Compiles a specific week point-in-time standings matrix directly from history snapshots.
- * Employs 'calculated_handicap' to stop SQLite from overriding floats with legacy columns.
+ * Compiles a specific week point-in-time standings matrix directly from the members table.
  */
-
-// Inside services/scores.service.js
-
 async function getStandingsThroughWeek(weekNumber) {
   const sql = `
     WITH raw_standings AS (
@@ -52,8 +49,6 @@ async function getStandingsThroughWeek(weekNumber) {
         ) AS avg_points, 
         ROUND(AVG(s.gross_total), 2) AS avg_gross, 
         ROUND(AVG(s.net_total), 2) AS avg_net,
-        
-        /* 🚀 THE SOLUTION: Read your flawless decimal strings directly from the members table! */
         COALESCE(m.current_handicap, 'Provisional') AS current_handicap
          
       FROM members m 
@@ -119,10 +114,10 @@ async function getCurrentWeekPlayed() {
   const row = await dbGet(`SELECT DISTINCT week_id AS week_number FROM scores ORDER BY CAST(week_id AS INTEGER) DESC LIMIT 1`);
   return row || { week_number: 1 };
 }
+// services/scores.service.js (PART 2 OF 2)
 
 /**
  * GET SEASON STANDINGS (MVC Entrypoint)
- * Processes parameter filters, evaluates position rank trends, and locks true decimals.
  */
 export const getSeasonStandings = async (selectedWeekNumber = null) => {
   const weeks = await getAllWeeks();
@@ -147,7 +142,6 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
     });
   }
 
-  // Fetch historic standings datasets
   const standings = await getStandingsThroughWeek(currentWeekNumber);
   const previousStandings = await getStandingsThroughWeek(previousWeekPlayed.week_number);
 
@@ -176,10 +170,6 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
     }
   });
 
-  // =================================================================
-  // 🟢 FIXED RE-MAPPING PROPERTY PROTECTION OVERRIDE LOOP
-  // Prioritizes our custom virtual key to clear SQLite precedence bugs
-  // =================================================================
   if (standings && standings.length > 0) {
     standings.forEach((player) => {
       const hcp = player.current_handicap;
@@ -190,7 +180,6 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
       }
     });
   }
-  // =================================================================
 
   const biggestUp = standings
     .filter((p) => p.movement === "up")
@@ -217,7 +206,7 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
  * Metadata forms dropdown options population assistant helper
  */
 export async function getFormData() {
-  const members = await dbAll(`SELECT id, name_first, name_last, status FROM members ORDER BY name_last ASC`);
+  const members = await dbAll(`SELECT id, name_first, name_last, status, is_non_member FROM members ORDER BY name_last ASC`);
   return { members, holes: Array.from({ length: 9 }, (_, i) => i + 1) };
 }
 
@@ -270,21 +259,6 @@ export async function updateScoreRecord(scoreId, data) {
 }
 
 /**
- * Gathers hole-to-hole performance breakdown specs for matching cards
- */
-export async function getRoundDetails(scoreId) {
-  return await dbGet(
-    `
-    SELECT s.*, m.name_first, m.name_last 
-    FROM scores s 
-    LEFT JOIN members m ON s.member_id = m.id 
-    WHERE s.score_id = ?
-  `,
-    [scoreId],
-  );
-}
-
-/**
  * Compiles gross and net values for weekly summary page layouts
  */
 export async function getWeeklyBreakdown(weekId) {
@@ -301,12 +275,115 @@ export async function getWeeklyBreakdown(weekId) {
 }
 
 /**
- * Historical profile metrics gatherer for individual player cards
+ * Historical profile metrics gatherer for individual player cards.
+ * Combines full season schedules with player score cards safely.
  */
 export async function getMemberProfileData(memberId) {
   const member = await dbGet(`SELECT *, (name_first || ' ' || name_last) AS full_name FROM members WHERE id = ?`, [memberId]);
   if (!member) return null;
 
-  const rounds = await dbAll(`SELECT * FROM scores WHERE member_id = ? ORDER BY CAST(week_id AS INTEGER) DESC`, [memberId]);
-  return { member, rounds };
+  const activeWeeksRows = await dbAll(`SELECT DISTINCT CAST(week_id AS INTEGER) AS week_number FROM scores ORDER BY week_number ASC`);
+
+  const actualScores = await dbAll(`SELECT *, CAST(week_id AS INTEGER) AS parsed_week FROM scores WHERE member_id = ?`, [memberId]);
+
+  const finalProfileTimelineMatrix = activeWeeksRows.map((weekRow) => {
+    const targetWeek = weekRow.week_number;
+    const matchedCard = actualScores.find((s) => s.parsed_week === targetWeek);
+
+    if (matchedCard) {
+      const stableford = parseFloat(matchedCard.stableford_total) || 0;
+      const birdies = parseFloat(matchedCard.birdie_points) || 0;
+      const ctp = parseFloat(matchedCard.ctp_points) || 0;
+
+      return {
+        week_number: targetWeek,
+        score_id: matchedCard.score_id,
+        gross_total: matchedCard.gross_total,
+        net_total: matchedCard.net_total,
+        stableford_total: matchedCard.stableford_total,
+        birdie_points: matchedCard.birdie_points,
+        ctp_points: matchedCard.ctp_points,
+        handicap_used: matchedCard.handicap_used,
+        total_points: stableford + birdies + ctp,
+      };
+    } else {
+      return {
+        week_number: targetWeek,
+        score_id: null,
+        gross_total: null,
+        net_total: null,
+        stableford_total: null,
+        birdie_points: null,
+        ctp_points: null,
+        handicap_used: null,
+        total_points: null,
+      };
+    }
+  });
+
+  return {
+    member,
+    scores: finalProfileTimelineMatrix,
+  };
+}
+
+/**
+ * Reconstructs a complete hole-by-hole round scorecard for the detailed summary view.
+ */
+export async function getRoundDetails(scoreId) {
+  try {
+    const scoreRecord = await dbGet(
+      `
+      SELECT s.*, m.name_first, m.name_last, m.sex
+      FROM scores s 
+      LEFT JOIN members m ON s.member_id = m.id 
+      WHERE s.score_id = ?
+    `,
+      [scoreId],
+    );
+
+    if (!scoreRecord) return null;
+
+    const courseHoles = await dbAll(`SELECT * FROM holes ORDER BY hole_number ASC`);
+    const currentWeekNum = parseInt(scoreRecord.week_id, 10) || 1;
+    const startHole = currentWeekNum <= 11 ? 1 : 10;
+
+    const processedHoles = buildHoleScores(scoreRecord, courseHoles, startHole);
+
+    const totalPar = processedHoles.reduce((acc, h) => acc + (h.par || 0), 0);
+    const totalGross = processedHoles.reduce((acc, h) => acc + (h.gross || 0), 0);
+    const totalNet = processedHoles.reduce((acc, h) => acc + (h.net || 0), 0);
+    const totalPoints = processedHoles.reduce((acc, h) => acc + (h.points || 0), 0);
+
+    const birdies = parseFloat(scoreRecord.birdie_points) || 0;
+    const ctp = parseFloat(scoreRecord.ctp_points) || 0;
+    const leaguePoints = totalPoints + birdies + ctp;
+
+    return {
+      player: {
+        id: scoreRecord.member_id,
+        displayName: `${scoreRecord.name_first} ${scoreRecord.name_last}`,
+      },
+      week: {
+        number: currentWeekNum,
+        displayDate: `Week ${currentWeekNum}`,
+      },
+      handicapUsed: scoreRecord.handicap_used !== null ? parseFloat(scoreRecord.handicap_used).toFixed(1) : "Provisional",
+      skinsEntered: !!scoreRecord.skins_entered,
+      holes: processedHoles,
+      totals: {
+        par: totalPar,
+        gross: totalGross,
+        net: totalNet,
+        points: totalPoints,
+        stableford: totalPoints,
+        birdies: birdies,
+        ctp: ctp,
+        leaguePoints: leaguePoints,
+      },
+    };
+  } catch (error) {
+    logger.error(`Error inside getRoundDetails service layer for card ${scoreId}: ${error.message}`);
+    throw error;
+  }
 }

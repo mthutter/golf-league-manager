@@ -70,7 +70,9 @@ export async function getFilteredHandicapHistory({ year }) {
 export async function getHandicapFilterMetadata() {
   try {
     const weeks = await queryAll(`SELECT DISTINCT week_id FROM scores ORDER BY CAST(week_id AS INTEGER) DESC`);
-    const members = await queryAll(`SELECT id, name_last, name_first, status FROM members WHERE status != "No" AND status != "NO" ORDER BY name_last ASC`);
+    const members = await queryAll(
+      `SELECT id, name_last, name_first, status, is_non_member FROM members WHERE status != "No" AND status != "NO" AND is_non_member != 1 ORDER BY name_last ASC`,
+    );
 
     return {
       years: ["2026"],
