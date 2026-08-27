@@ -131,13 +131,12 @@
               <tr>
                 <% if (!selectedMember) { %>
                   <td class="text-start fw-semibold players nowrap-cell">
-                    <a href="/members/<%= row.member_id %>" class="player-link">
-                      <% if (row.name_last && row.name_first) { %>
-                        <%= row.name_last %>, <%= row.name_first %>
-                      <% } else { %>
-                        Member #<%= row.member_id %>
-                      <% } %>
-                    </a>
+                   <a href="handicaps?year=2026&weekId=&memberId=<%= row.member_id %>" class="player-link">
+                                    <% if (row.name_last && row.name_first) { %>
+                                    <%= row.name_last %>, <%= row.name_first %>
+                                    <% } else { %>
+                                    Member #<%= row.member_id %> <% } %>
+                                </a>
                   </td>
                 <% } else { %>
                   <td class="players nowrap-cell text-muted fw-semibold">
