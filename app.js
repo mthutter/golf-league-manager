@@ -32,7 +32,7 @@ import groupingRoutes from "./routes/grouping.routes.js";
 import devRoutes from "./routes/dev.routes.js";
 import activationRoutes from "./routes/activation.routes.js";
 import * as activationController from "./controllers/activation.controller.js";
-import handicapsRouter from "./controllers/handicaps.controller.js";
+import handicapsRouter from "./routes/handicap.routes.js";
 
 // MIDDLEWARE
 import errorHandler from "./middleware/error.middleware.js";
