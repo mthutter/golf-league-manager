@@ -205,9 +205,56 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
 /**
  * Metadata forms dropdown options population assistant helper
  */
+// Inside services/scores.service.js
+
+/**
+ * Metadata forms dropdown options population helper.
+ * 🟢 FIXED: Automatically isolates the correct 9 holes for the active week
+ * and maps player handicap properties to fix the card grids!
+ */
 export async function getFormData() {
-  const members = await dbAll(`SELECT id, name_first, name_last, status, is_non_member FROM members ORDER BY name_last ASC`);
-  return { members, holes: Array.from({ length: 9 }, (_, i) => i + 1) };
+  // 1. Fetch current active target week to determine front vs. back nine rotation splits
+  const latestWeekRow = await dbGet(`
+    SELECT DISTINCT week_id AS week_number 
+    FROM scores 
+    ORDER BY CAST(week_id AS INTEGER) DESC 
+    LIMIT 1
+  `);
+  const activeWeekNum = latestWeekRow ? parseInt(latestWeekRow.week_number, 10) : 17;
+
+  // 2. Fetch all active roster members (excluding administrative non-members)
+  const rawMembers = await dbAll(`
+    SELECT id, name_first, name_last, status, is_non_member, current_handicap 
+    FROM members 
+    WHERE status != 'No' AND status != 'NO' AND is_non_member != 1
+    ORDER BY name_last ASC
+  `);
+
+  // 🚀 FRONTEND COMPATIBILITY BRIDGE MAP:
+  // Maps 'current_handicap' onto 'handicap' so data-handicap evaluates correctly in EJS!
+  const members = rawMembers.map((m) => ({
+    id: m.id,
+    name_first: m.name_first,
+    name_last: m.name_last,
+    status: m.status,
+    handicap: m.current_handicap !== null && m.current_handicap !== "Provisional" ? parseFloat(m.current_handicap).toFixed(1) : 0, // Fallback to 0 scratch index to prevent Javascript NaN errors
+  }));
+
+  // 3. 🚀 MATCH NINES CALENDAR SPLIT FORM LAYOUT RULES:
+  // Weeks 1 to 11 pull Front 9 (Holes 1-9). Weeks 12+ pull Back 9 (Holes 10-18).
+  let holesQuery = "";
+  if (activeWeekNum <= 11) {
+    holesQuery = `SELECT * FROM holes WHERE CAST(hole_number AS INTEGER) BETWEEN 1 AND 9 ORDER BY hole_number ASC`;
+  } else {
+    holesQuery = `SELECT * FROM holes WHERE CAST(hole_number AS INTEGER) BETWEEN 10 AND 18 ORDER BY hole_number ASC`;
+  }
+
+  const holes = await dbAll(holesQuery);
+
+  return {
+    members,
+    holes,
+  };
 }
 
 /**
