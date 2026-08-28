@@ -1,5 +1,7 @@
 import express from "express";
 import * as adminController from "../controllers/admin.controller.js";
+// 🟢 ADDED: Import your updated security controller file
+import { securityController } from "../controllers/security.controller.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -20,13 +22,13 @@ router.post("/handicaps/calculate", adminController.calculateHandicaps);
 // 4. POST /admin/players/reset-password - Password Override
 router.post("/players/reset-password", adminController.forcePasswordReset);
 
-// 1. GET: Render the dedicated blacklist list page
-router.get("/security/blacklist", adminController.getBlacklistRoster);
+// 🟢 FIXED: Route the dashboard render directly to your security controller SQL module
+router.get("/security/blacklist", securityController.getBlacklist);
 
-// 2. POST: Process bans (Update your existing route redirect target inside the controller)
-router.post("/security/blacklist", adminController.processBulkIpBlacklist);
+// 🟢 FIXED: Route manual ban submission directly to your security controller logic
+router.post("/security/blacklist/add", securityController.addManualBan);
 
-// 3. POST: Remove individual IP ban
-router.post("/security/blacklist/delete", adminController.unbanIpAddress);
+// 🟢 FIXED: Route the unban action form directly to your security cache logic
+router.post("/security/blacklist/delete", securityController.liftBan);
 
 export default router;
