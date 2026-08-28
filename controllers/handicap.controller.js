@@ -3,7 +3,6 @@ import {
   getFilteredHandicapHistory,
   getHandicapFilterMetadata,
 } from "../services/handicap.service.js";
-import { getCurrentWeekPlayed } from "../services/weeks.service.js";
 
 /**
  * Compute the 100% cumulative handicap index using Option B (Standard Mathematical Rounding)
@@ -47,14 +46,14 @@ export async function getHandicapsDashboard(req, res) {
     // 1. Fetch metadata dropdown configuration arrays (includes active roster members)
     const meta = await getHandicapFilterMetadata();
 
+    // 🟢 FIXED ARRAY ACCESSIBILITY: Pulls the first string item node out cleanly
     if (!year && meta && meta.years && meta.years.length > 0) {
-      year = meta.years[0];
+      year = meta.years[0]; // Resolves cleanly to a string token like "2026"
     } else if (!year) {
       year = "2026";
     }
 
-    // 🚀 STEP 1 ALTERATION: Extract the entire year's scorecards field dataset completely open
-    // We leave weekId and memberId blank here so we have every single historical card in local memory!
+    // Force full year dataset down so local memory has historical items to count 3+ rounds
     const completeYearlyData = await getFilteredHandicapHistory({
       year,
       weekId: "",
@@ -75,6 +74,7 @@ export async function getHandicapsDashboard(req, res) {
     }
 
     // Determine target selection week context parameters
+    // 🟢 FIXED STRING ASSIGNMENT FOR DEFAULT FIELD WEEK:
     const targetWeek =
       weekId ||
       (meta && meta.weeks && meta.weeks.length > 0 ? meta.weeks[0] : "");
@@ -89,7 +89,6 @@ export async function getHandicapsDashboard(req, res) {
     if (req.query.memberId && req.query.memberId !== "") {
       const targetMemberId = String(req.query.memberId);
 
-      // Map out their rows chronologically up to the current selection point
       const masterRows = completeYearlyData.filter(
         (row) => String(row.member_id || row.id) === targetMemberId,
       );
@@ -115,7 +114,6 @@ export async function getHandicapsDashboard(req, res) {
         };
       });
 
-      // Sort timeline order top-down (Week 1 to Week XX)
       finalFilteredViewRows.sort(
         (a, b) =>
           (parseInt(a.week_number, 10) || 0) -
