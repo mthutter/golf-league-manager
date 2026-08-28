@@ -88,8 +88,6 @@ class SecurityController {
             `;
       const bannedIps = await all(query);
 
-      console.log("Banned IPs from table: ", bannedIps);
-
       // 🚀 FIXED: Render targets your nested path.
       // Removed redundant 'success' and 'error' objects since app.js supplies them globally!
       return res.render("blacklist", {
