@@ -36,27 +36,10 @@
         box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
       }
 
-      /* 🟢 HEADER LAYOUT ALIGNMENT CONSTRAINTS */
-      .header-position-wrapper {
-        min-height: 90px;
-      }
-      .header-sidebar-card {
-        border-radius: 12px;
-        border: 1.5px solid rgba(0, 0, 0, 0.08);
-        width: 340px;
-      }
-
-      @media (max-width: 991px) {
-        .header-position-wrapper {
-          min-height: auto;
-          flex-direction: column-reverse;
-          gap: 1.5rem;
-        }
-        .header-sidebar-card {
-          width: 100%;
-          position: static !important;
-          transform: none !important;
-        }
+      /* 🟢 INTEGRATED INLINE UTILITY STRIP ROW BACKGROUND */
+      .table-metric-strip-bg {
+        background-color: rgba(220, 53, 69, 0.04) !important;
+        border-bottom: 2px solid rgba(220, 53, 69, 0.1) !important;
       }
     </style>
   </head>
@@ -64,53 +47,11 @@
     <section>
       <%- include('./partials/navbar'); %>
     </section>
-
     <div class="container-fluid my-4 px-lg-5">
-      <!-- 🟢 REORGANIZED LANDSCAPE CONTROL HEADER -->
-      <div
-        class="header-position-wrapper position-relative d-flex align-items-center justify-content-center mb-4"
-      >
-        <!-- Left Side Stack: Dynamic Header IP Input Card Form -->
-        <div
-          class="position-absolute start-0 top-50 translate-middle-y header-sidebar-card card shadow-sm bg-light"
-        >
-          <div class="card-body p-2 px-3">
-            <form
-              action="/admin/security/blacklist"
-              method="POST"
-              onsubmit="
-                return confirm('Permanently block these network targets?');
-              "
-              class="d-flex align-items-center gap-2 mb-0"
-            >
-              <div class="flex-grow-1">
-                <textarea
-                  name="ipList"
-                  class="form-control form-control-custom font-monospace py-1"
-                  rows="1"
-                  placeholder="Enter IP(s)..."
-                  style="resize: none"
-                  required
-                ></textarea>
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  class="btn btn-sm btn-danger text-white shadow-sm fw-bold px-3 py-1 rounded-2"
-                  style="font-size: 0.8rem; white-space: nowrap"
-                >
-                  Ban IP
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- Centered Header Banner Title text elements -->
-        <div class="gallery-header text-center m-0">
-          <h1>Active Firewall Blacklist</h1>
-          <p>Bottoms Up Golf League</p>
-        </div>
+      <!-- Centered Header Banner Title Layout -->
+      <div class="gallery-header text-center mb-4">
+        <h1 class="fs-2 fw-bold">Active Firewall Blacklist</h1>
+        <p class="text-muted small mb-0">Bottoms Up Golf League</p>
       </div>
 
       <!-- Alert Flash Announcements -->
@@ -147,8 +88,8 @@
         </div>
       </div>
 
-      <!-- 🚀 FULL EXPANSION RENDER GRID ROW -->
-      <div class="row">
+      <!-- 🚀 100% FULL WIDTH UNIFIED EXPANSION TABLE MATRIX -->
+      <div class="row mt-2">
         <div class="col-12">
           <div class="card shadow-sm blacklist-card border-0">
             <div class="table-responsive">
@@ -167,6 +108,64 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <!-- 🟢 UNIFIED ROW STRIP: Combines metrics on the left with a quick entry form on the right! -->
+                  <tr class="table-metric-strip-bg">
+                    <td colspan="7" class="py-2 px-3">
+                      <div
+                        class="d-flex flex-wrap justify-content-between align-items-center gap-3"
+                      >
+                        <!-- Left Box: Running Overview Metric Counter -->
+                        <div
+                          class="text-danger fw-bold small text-uppercase font-monospace"
+                          style="letter-spacing: 0.5px"
+                        >
+                          Blocked IPs:
+                          <%=
+                          bannedIps.length %>
+                        </div>
+
+                        <!-- Right Box: Streamlined Inline Entry Form -->
+                        <div>
+                          <form
+                            action="/admin/security/blacklist"
+                            method="POST"
+                            onsubmit="
+                              return confirm(
+                                'Permanently block these network targets?',
+                              );
+                            "
+                            class="d-flex align-items-center gap-2 mb-0"
+                          >
+                            <span
+                              class="text-muted small fw-bold text-uppercase d-none d-sm-inline"
+                              style="font-size: 0.75rem"
+                              >Block IP:</span
+                            >
+                            <input
+                              type="text"
+                              name="ipList"
+                              class="form-control form-control-custom font-monospace py-1"
+                              placeholder="Paste IP address..."
+                              style="width: 200px; height: 31px"
+                              required
+                            />
+                            <button
+                              type="submit"
+                              class="btn btn-sm btn-danger text-white shadow-sm fw-bold px-3"
+                              style="
+                                font-size: 0.75rem;
+                                height: 31px;
+                                line-height: 1;
+                              "
+                            >
+                              Apply Block
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
                   <% if (!bannedIps || bannedIps.length === 0) { %>
                   <tr>
                     <td colspan="7" class="py-4 text-muted">
@@ -174,7 +173,8 @@
                         The IP firewall blacklist is clean
                       </h5>
                       <p class="small text-muted mb-0">
-                        No network nodes are currently blocked.
+                        No network nodes are currently blocked by the
+                        application.
                       </p>
                     </td>
                   </tr>
@@ -187,7 +187,6 @@
                         <%= target.ip %>
                       </span>
                     </td>
-
                     <!-- Offense Strikes Count Indicator -->
                     <td>
                       <span
@@ -196,7 +195,6 @@
                         <%= target.strikes %>/10
                       </span>
                     </td>
-
                     <!-- Last Source Port Cell -->
                     <td>
                       <% if (target.last_source_port) { %>
@@ -210,7 +208,6 @@
                       <span class="text-muted small">—</span>
                       <% } %>
                     </td>
-
                     <!-- Timestamps (Denver/Mountain Localization) -->
                     <td
                       class="small text-muted font-monospace"
@@ -238,7 +235,6 @@
                       Manual
                       <% } %>
                     </td>
-
                     <!-- Ban Type Badge Indicator -->
                     <td>
                       <% if (target.manual_ban && (target.manual_ban == 1 || target.manual_ban === true || target.manual_ban == "1")) { %>
@@ -255,7 +251,6 @@
                       >
                       <% } %>
                     </td>
-
                     <!-- Lift Ban Action Endpoint Form -->
                     <td>
                       <form
@@ -292,12 +287,9 @@
         </div>
       </div>
     </div>
+    <!-- Closes container fluid -->
 
-    <section>
-      <%- include('./partials/footer'); %>
-    </section>
-    <section>
-      <%- include('./partials/scripts'); %>
-    </section>
+    <section><%- include('./partials/footer'); %></section>
+    <section><%- include('./partials/scripts'); %></section>
   </body>
 </html>
