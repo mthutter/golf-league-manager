@@ -1,0 +1,16 @@
+{
+  "source": {
+    "include": ["src", "routes", "controllers", "models", "README.md"],
+    "includePattern": ".+\\.js$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "./docs"
+  }
+}

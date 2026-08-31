@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: email.controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: email.controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
+    all
+} from "../config/db.js";
+import {
+    fetchAndSendEmails
+} from "../services/email.service.js";
+import logger from "../utilities/logger.js";
+import {
+    catchAsync
+} from "../utilities/asyncHandler.js";
+import posthog from "../utilities/posthog.js";
+
+/**
+ * GET /email
+ * Renders the email.ejs form view
+ */
+export const renderEmailForm = catchAsync(async (req, res, next) => {
+    // SQLite's db.all returns the array directly.
+    const members = await all("SELECT e_mail FROM members WHERE e_mail IS NOT NULL AND e_mail != '' AND e_mail != 'tbd@tbd.com'");
+
+    // Safe structured JSON logging for Render streams
+    logger.info("Loaded active member directory for email mailing form");
+
+    // Pass the members array into EJS
+    return res.render("email", {
+        members: members
+    });
+});
+
+/**
+ * POST /email/send
+ * Handles form data submission
+ */
+export const sendBulkEmail = catchAsync(async (req, res, next) => {
+    // Explicitly pull recipients from the incoming req.body payload
+    const {
+        subject,
+        message,
+        recipients
+    } = req.body;
+
+    if (!subject || !message) {
+        logger.warn({
+            subjectHasValue: !!subject,
+            messageHasValue: !!message
+        }, "Email broadcast rejected: Missing subject or body context");
+        return res.status(400).json({
+            success: false,
+            error: "Both subject and message are required.",
+        });
+    }
+
+    // Ensure recipients is passed down as a reliable array structure
+    let selectedEmails = [];
+    if (recipients) {
+        selectedEmails = Array.isArray(recipients) ? recipients : [recipients];
+    }
+
+    logger.info("Initiating bulk email transmission sequence");
+
+    // Pass the selected emails array down into your service layer
+    const result = await fetchAndSendEmails(subject, message, selectedEmails);
+
+    logger.info("Bulk email broadcast delivered successfully");
+    posthog.capture({
+        distinctId: req.session?.id,
+        event: "email_broadcast_sent",
+        properties: {
+            recipient_count: result.count
+        },
+    });
+
+    // Sends the accurate dynamic count back to your alert box interface
+    return res.status(200).json({
+        success: true,
+        message: `Successfully broadcasted to ${result.count} member(s)!`,
+    });
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 17:56:23 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
