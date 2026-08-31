@@ -15,13 +15,13 @@
         vertical-align: middle;
         white-space: nowrap;
       }
-      .ip-badge {
+      .ip-badge {       
         font-family: var(--bs-font-monospace);
         font-weight: 600;
         letter-spacing: -0.5px;
         display: inline-block;
       }
-      .port-badge {
+      .port-badge {      
         font-family: var(--bs-font-monospace);
         font-weight: 500;
       }
@@ -199,7 +199,7 @@
                     <td>
                       <% if (target.last_source_port) { %>
                       <span
-                        class="badge bg-secondary port-badge px-2 py-0 small"
+                        class="badge bg-secondary port-badge px-2 py-1 small"
                         style="font-size: 0.75rem"
                       >
                         <%= target.last_source_port %>
@@ -239,13 +239,13 @@
                     <td>
                       <% if (target.manual_ban && (target.manual_ban == 1 || target.manual_ban === true || target.manual_ban == "1")) { %>
                       <span
-                        class="badge bg-info text-dark px-2 py-0 small"
+                        class="badge bg-info text-dark px-2 py-1 small"
                         style="font-size: 0.75rem"
                         >Manual</span
                       >
                       <% } else { %>
                       <span
-                        class="badge bg-secondary px-2 py-0 small"
+                        class="badge bg-secondary px-2 py-1 small"
                         style="font-size: 0.75rem"
                         >Auto</span
                       >
@@ -270,7 +270,7 @@
                         />
                         <button
                           type="submit"
-                          class="btn btn-xs btn-outline-success rounded px-2 py-0"
+                          class="btn btn-xs btn-outline-success rounded px-2 py-1"
                           style="font-size: 0.7rem; line-height: 1.2"
                         >
                           Lift
