@@ -2,39 +2,8 @@
 <html lang="en">
   <head>
     <%- include('./partials/header'); %>
-    <style>
-      .blacklist-card {
-        border: 1.5px solid rgba(220, 53, 69, 0.15);
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      /* MINIMALIST COMPACT CELL PADDING AND WIDTHS */
-      .table th, .table td {
-        padding: 4px 6px !important;
-        vertical-align: middle;
-        white-space: nowrap;
-      }
-      .ip-badge {
-        font-family: var(--bs-font-monospace);
-        font-weight: 600;
-        letter-spacing: -0.5px;
-        display: inline-block;
-      }
-      .port-badge {
-        font-family: var(--bs-font-monospace);
-        font-weight: 500;
-      }
-      .form-control-custom {
-        border: 1.5px solid rgba(0, 0, 0, 0.1);
-        border-radius: 6px;
-        transition: all 0.2s ease-in-out;
-        font-size: 0.85rem;
-      }
-      .form-control-custom:focus {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
-      }
-    </style>
+    <!-- Link to your consolidated static asset stylesheet file -->
+    <link rel="stylesheet" href="/assets/css/blacklist.css" />
   </head>
   <body>
     <section>
@@ -43,41 +12,45 @@
     
     <div class="container-fluid my-4 px-lg-5">
       
-      <!-- Outer wrapper creating a relative canvas for centering -->
-      <div class="d-flex align-items-center justify-content-center position-relative mb-4">
+      <!-- Balanced Row Layout Canvas -->
+      <div class="header-layout-grid mb-4">
         
-        <!-- Left-aligned wrapper for the Manual Block Form -->
-        <div class="position-absolute start-0 d-none d-md-block">
+        <!-- Left Side: Manual Block Entry Form Component -->
+        <div class="d-none d-md-block">
           <form 
             action="/admin/security/blacklist" 
             method="POST" 
             onsubmit="return confirm('Permanently block these network targets?');" 
             class="d-flex align-items-center gap-2 mb-0"
           >
-            <span class="text-muted small fw-bold text-uppercase d-none d-lg-inline" style="font-size: 0.75rem">Block IP(s):</span>
+            <span class="text-muted small fw-bold text-uppercase d-none d-lg-inline form-label-text">
+              Block IP(s):
+            </span>
             <input 
               type="text" 
               name="ipList" 
               class="form-control form-control-custom font-monospace py-1" 
               placeholder="Enter IP(s) ..." 
-              style="width: 200px; height: 31px" 
               required 
             />
             <button 
               type="submit" 
-              class="btn btn-sm btn-danger text-white shadow-sm fw-bold px-3" 
-              style="font-size: 0.75rem; height: 31px; line-height: 1;"
+              class="btn btn-sm btn-danger text-white shadow-sm fw-bold px-3 btn-submit-block"
             >
               Apply Block
             </button>
           </form>
         </div>
 
-        <!-- Centered Header Banner Title Layout with text centering -->
+        <!-- Center Column Target: Heading Titles Stack -->
         <div class="gallery-header">
           <h1>Active Firewall Blacklist (<%= bannedIps.length %>)</h1>
           <p>Bottoms Up Golf League</p>
         </div>
+        
+        <!-- Right Side: Structural Space Balancer -->
+        <div></div>
+
       </div>
 
       <!-- Alert Flash Announcements -->
@@ -106,20 +79,20 @@
               <table class="table table-sm table-striped table-hover align-middle mb-0 text-center">
                 <thead class="table-dark">
                   <tr>
-                    <th style="width: 15%">Target IP</th>
-                    <th style="width: 8%">Strikes</th>
-                    <th style="width: 8%">Port</th>
-                    <th style="width: 22%">First Seen</th>
-                    <th style="width: 22%">Latest Seen</th>
-                    <th style="width: 15%">Ban Type</th>
-                    <th style="width: 10%">Action</th>
+                    <th class="col-ip">Target IP</th>
+                    <th class="col-strikes">Strikes</th>
+                    <th class="col-port">Port</th>
+                    <th class="col-dates">First Seen</th>
+                    <th class="col-dates">Latest Seen</th>
+                    <th class="col-type">Ban Type</th>
+                    <th class="col-action">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% if (!bannedIps || bannedIps.length === 0) { %>
                     <tr>
                       <td colspan="7" class="py-4 text-muted">
-                        <h5 class="fw-bold m-0" style="font-size: 0.9rem">The IP firewall blacklist is clean</h5>
+                        <h5 class="fw-bold m-0 empty-state-title">The IP firewall blacklist is clean</h5>
                         <p class="small text-muted mb-0">No network nodes are currently blocked by the application.</p>
                       </td>
                     </tr>
@@ -127,19 +100,19 @@
                     <% bannedIps.forEach(target => { %>
                       <tr>
                         <!-- IP Node Address -->
-                        <td>
+                        <td class="col-ip">
                           <span class="text-danger ip-badge small"> <%= target.ip %> </span>
                         </td>
                         <!-- Offense Strikes Count Indicator -->
-                        <td>
+                        <td class="col-strikes">
                           <span class="badge <%= target.strikes >= 10 ? 'bg-danger' : 'bg-warning text-dark' %> px-2 py-1 small">
                             <%= target.strikes %>/10
                           </span>
                         </td>
                         <!-- Last Source Port Cell -->
-                        <td>
+                        <td class="col-port">
                           <% if (target.last_source_port) { %>
-                            <span class="badge bg-secondary port-badge px-2 py-1 small" style="font-size: 0.75rem">
+                            <span class="badge bg-secondary port-badge px-2 py-1 small badge-port">
                               <%= target.last_source_port %>
                             </span>
                           <% } else { %>
@@ -147,14 +120,14 @@
                           <% } %>
                         </td>
                         <!-- Timestamps (Denver/Mountain Localization) -->
-                        <td class="small text-muted font-monospace" style="font-size: 0.75rem">
+                        <td class="small text-muted font-monospace cell-timestamp col-dates">
                           <% if (target.first_seen) { %>
                             <%= new Date(target.first_seen).toLocaleString("en-US", { timeZone: "America/Denver", dateStyle: "short", timeStyle: "short" }) %>
                           <% } else { %>
                             Manual
                           <% } %>
                         </td>
-                        <td class="small text-muted font-monospace" style="font-size: 0.75rem">
+                        <td class="small text-muted font-monospace cell-timestamp col-dates">
                           <% if (target.last_seen) { %>
                             <%= new Date(target.last_seen).toLocaleString("en-US", { timeZone: "America/Denver", dateStyle: "short", timeStyle: "short" }) %>
                           <% } else { %>
@@ -162,15 +135,15 @@
                           <% } %>
                         </td>
                         <!-- Ban Type Badge Indicator -->
-                        <td>
+                        <td class="col-type">
                           <% if (target.manual_ban && (target.manual_ban == 1 || target.manual_ban === true || target.manual_ban == "1")) { %>
-                            <span class="badge bg-info text-dark px-2 py-1 small" style="font-size: 0.75rem">Manual</span>
+                            <span class="badge bg-info text-dark px-2 py-1 small badge-type">Manual</span>
                           <% } else { %>
-                            <span class="badge bg-secondary px-2 py-1 small" style="font-size: 0.75rem">Auto</span>
+                            <span class="badge bg-secondary px-2 py-1 small badge-type">Auto</span>
                           <% } %>
                         </td>
                         <!-- Lift Ban Action Endpoint Form -->
-                        <td>
+                        <td class="col-action">
                           <form 
                             action="/admin/security/blacklist/delete" 
                             method="POST" 
@@ -178,7 +151,7 @@
                             class="m-0"
                           >
                             <input type="hidden" name="ip" value="<%= target.ip %>" />
-                            <button type="submit" class="btn btn-xs btn-outline-success rounded px-2 py-1" style="font-size: 0.7rem; line-height: 1.2">
+                            <button type="submit" class="btn btn-xs btn-outline-success rounded px-2 py-1 btn-lift-ban">
                               Lift Ban
                             </button>
                           </form>
