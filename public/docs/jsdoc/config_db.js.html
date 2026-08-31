@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: controllers/template.controller.js</title>
+    <title>JSDoc: Source: config/db.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: controllers/template.controller.js</h1>
+    <h1 class="page-title">Source: config/db.js</h1>
 
     
 
@@ -26,101 +26,100 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>// 1. ALWAYS import services, your Pino logger, and the catchAsync utility at the top
-import * as templateService from "../services/template.service.js";
+            <pre class="prettyprint source linenums"><code>import sqlite3 from "sqlite3";
 import logger from "../utilities/logger.js";
-import {
-    catchAsync
-} from "../utilities/asyncHandler.js";
+
+const dbPath = process.env.DB_PATH;
 
 /**
- * GET /items
- * Renders an EJS list view (Standard page lookup)
+ * SQLite database connection instance configured from the DB_PATH environment variable.
+ * @type {sqlite3.Database}
  */
-export const getAllItems = catchAsync(async (req, res, next) => {
-    // Always log the action, passing context metadata as the FIRST argument object
-    logger.info("Fetching application items catalog");
-
-    const items = await templateService.getItems();
-
-    // Rule: Always use the 'return' keyword to halt execution after sending a response
-    return res.render("items-index", {
-        items
-    });
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    logger.error(err.message);
+  } else {
+    logger.info(`Connected to SQLite: ${dbPath}`);
+  }
 });
 
 /**
- * GET /items/:id
- * Renders a single resource profile or returns a 404 page
+ * Execute a SQL query that returns multiple rows.
+ *
+ * @param {string} sql - The SQL statement to run.
+ * @param {Array&lt;any>} [params=[]] - Parameter values to bind to the query.
+ * @returns {Promise&lt;Array&lt;Object>>} A promise that resolves to an array of result rows.
  */
-export const getItemById = catchAsync(async (req, res, next) => {
-    const {
-        id
-    } = req.params;
-
-    logger.info("Retrieving resource profile details");
-
-    const item = await templateService.findItem(id);
-
-    // Check if resource exists before doing anything else
-    if (!item) {
-        logger.warn({
-            itemId: id
-        }, "Resource lookup target record does not exist");
-        res.status(404);
-        return res.render("404"); // Safely drops into your 404 EJS layout
-    }
-
-    return res.render("items-show", {
-        item
+export function all(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
     });
-});
+  });
+}
 
 /**
- * POST /items
- * Handles standard multi-part or encoded text HTML form data submissions
+ * Execute a SQL statement that does not return rows, such as INSERT, UPDATE, or DELETE.
+ *
+ * @param {string} sql - The SQL statement to run.
+ * @param {Array&lt;any>} [params=[]] - Parameter values to bind to the statement.
+ * @returns {Promise&lt;Object>} A promise that resolves to the sqlite3 statement context.
  */
-export const createNewItem = catchAsync(async (req, res, next) => {
-    const {
-        name,
-        value
-    } = req.body;
-
-    // Perform parameter validations inside the handler
-    if (!name || !value) {
-        logger.warn("Payload submission rejected: Missing required form fields");
-        return res.status(400).send("Both name and value are strictly required fields.");
-    }
-
-    logger.info("Initiating transaction sequence to insert new item record");
-    const newItemId = await templateService.insertItem({
-        name,
-        value
+export function run(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) reject(err);
+      else resolve(this);
     });
-
-    logger.info("New data entity index generated successfully");
-    return res.redirect("/items");
-});
+  });
+}
 
 /**
- * POST /api/items or PUT /api/items (API Endpoint Pattern)
- * Example endpoint layout returning clean structured JSON responses instead of views
+ * Execute a SQL query and return the first matching row.
+ *
+ * @param {string} sql - The SQL statement to run.
+ * @param {Array&lt;any>} [params=[]] - Parameter values to bind to the query.
+ * @returns {Promise&lt;Object|null>} A promise that resolves to the first matching row or null.
  */
-export const updateItemApi = catchAsync(async (req, res, next) => {
-    const {
-        id
-    } = req.params;
-
-    logger.info("Executing partial API profile modification update");
-
-    const updatedData = await templateService.updateItem(id, req.body);
-
-    // Return clean JSON instead of rendering an EJS template
-    return res.status(200).json({
-        success: true,
-        data: updatedData,
+export function get(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) reject(err);
+      else resolve(row);
     });
-});</code></pre>
+  });
+}
+
+/**
+ * Start a SQL transaction.
+ *
+ * @returns {Promise&lt;Object>} A promise that resolves when the transaction begins.
+ */
+export function beginTransaction() {
+  return run("BEGIN TRANSACTION");
+}
+
+/**
+ * Commit the current database transaction.
+ *
+ * @returns {Promise&lt;Object>} A promise that resolves when the transaction is committed.
+ */
+export function commit() {
+  return run("COMMIT");
+}
+
+/**
+ * Roll back the current database transaction.
+ *
+ * @returns {Promise&lt;Object>} A promise that resolves when the transaction is rolled back.
+ */
+export function rollback() {
+  return run("ROLLBACK");
+}
+
+export default db;
+</code></pre>
         </article>
     </section>
 

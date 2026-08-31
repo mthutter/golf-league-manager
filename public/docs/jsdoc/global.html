@@ -595,6 +595,78 @@ Handles standard multi-part or encoded text HTML form data submissions</p>
 
         
             
+<h4 class="name" id="db"><span class="type-signature">(constant) </span>db<span class="type-signature"> :sqlite3.Database</span></h4>
+
+
+
+
+<div class="description">
+    <p>SQLite database connection instance configured from the DB_PATH environment variable.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">sqlite3.Database</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="config_db.js.html">config/db.js</a>, <a href="config_db.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="deleteGroupingsForWeek"><span class="type-signature">(constant) </span>deleteGroupingsForWeek<span class="type-signature"></span></h4>
 
 
@@ -3661,6 +3733,220 @@ Retrieves video assets from storage and renders the view</p>
     
 
     
+    <h4 class="name" id="all"><span class="type-signature"></span>all<span class="signature">(sql, params<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;Object>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Execute a SQL query that returns multiple rows.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sql</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The SQL statement to run.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;any></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    []
+                
+                </td>
+            
+
+            <td class="description last"><p>Parameter values to bind to the query.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="config_db.js.html">config/db.js</a>, <a href="config_db.js.html#line25">line 25</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A promise that resolves to an array of result rows.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;Object>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="assignPlayerRoles"><span class="type-signature"></span>assignPlayerRoles<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
@@ -3827,6 +4113,116 @@ Returns a sanitized user object or null.</p>
 
 
 
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="beginTransaction"><span class="type-signature"></span>beginTransaction<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Start a SQL transaction.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="config_db.js.html">config/db.js</a>, <a href="config_db.js.html#line71">line 71</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A promise that resolves when the transaction begins.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -4505,6 +4901,116 @@ for a single hole.</p>
     
 
     
+    <h4 class="name" id="commit"><span class="type-signature"></span>commit<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Commit the current database transaction.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="config_db.js.html">config/db.js</a>, <a href="config_db.js.html#line80">line 80</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A promise that resolves when the transaction is committed.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="computeCumulativeHandicap"><span class="type-signature"></span>computeCumulativeHandicap<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
@@ -5111,6 +5617,220 @@ Evaluates raw scores against a 9-hole base par of 36.</p>
 
 
 
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(sql, params<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;(Object|null)>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Execute a SQL query and return the first matching row.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sql</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The SQL statement to run.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;any></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    []
+                
+                </td>
+            
+
+            <td class="description last"><p>Parameter values to bind to the query.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="config_db.js.html">config/db.js</a>, <a href="config_db.js.html#line57">line 57</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A promise that resolves to the first matching row or null.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(Object|null)></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -6955,6 +7675,330 @@ Returns an array of raw strings, e.g., ['Member', 'Admin']</p>
     
 
     
+    <h4 class="name" id="rollback"><span class="type-signature"></span>rollback<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Roll back the current database transaction.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="config_db.js.html">config/db.js</a>, <a href="config_db.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A promise that resolves when the transaction is rolled back.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="run"><span class="type-signature"></span>run<span class="signature">(sql, params<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Execute a SQL statement that does not return rows, such as INSERT, UPDATE, or DELETE.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sql</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The SQL statement to run.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;any></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    []
+                
+                </td>
+            
+
+            <td class="description last"><p>Parameter values to bind to the statement.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="config_db.js.html">config/db.js</a>, <a href="config_db.js.html#line41">line 41</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A promise that resolves to the sqlite3 statement context.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="runRetroactiveFix"><span class="type-signature">(async) </span>runRetroactiveFix<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
@@ -7493,13 +8537,13 @@ Returns an array of raw strings, e.g., ['Member', 'Admin']</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#all">all</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#beginTransaction">beginTransaction</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#commit">commit</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#db">db</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#rollback">rollback</a></li><li><a href="global.html#run">run</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:13:14 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:33:12 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
