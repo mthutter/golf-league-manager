@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: services/grouping.service.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: services/grouping.service.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Import your database helper functions and the raw connection instance
+import dbInstance, { all, run } from "../config/db.js";
+import logger from "../utilities/logger.js";
+
+/*
+|--------------------------------------------------------------------------
+| Groupings Service (SQLite3 Driver Edition - Constraint Patched)
+|--------------------------------------------------------------------------
+*/
+
+// Helper: Fisher-Yates array shuffle algorithm
+function shuffle(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+/**
+ * Retrieves a finalized tee time schedule for a specific week,
+ * dynamically calculating unassigned regular players and available substitutes.
+ */
+export const getGroupingsForWeek = async (weekId) => {
+  try {
+    const sql = `
+            SELECT g.id, g.week_id, g.tee_time, g.group_number, g.position, g.member_id,
+                   (m.name_first || ' ' || m.name_last) AS name
+            FROM groupings g
+            LEFT JOIN members m ON g.member_id = m.id
+            WHERE g.week_id = ?
+            ORDER BY g.group_number ASC, g.position ASC
+        `;
+
+    const rows = await all(sql, [weekId]);
+
+    // Rebuild the 4 groups from the individual positional rows
+    const groupMap = {};
+    const assignedMemberIds = [];
+
+    const updateSql = `
+    SELECT updated_at
+    FROM grouping_updates
+    WHERE week_id = ?
+`;
+
+    const updateRows = await all(updateSql, [weekId]);
+    const updateRow = updateRows[0];
+
+    rows.forEach((row) => {
+      if (row.member_id &amp;&amp; row.member_id !== 0) {
+        assignedMemberIds.push(row.member_id);
+      }
+
+      if (!groupMap[row.group_number]) {
+        groupMap[row.group_number] = {
+          teeTime: row.tee_time,
+          groupNumber: row.group_number,
+          players: [],
+        };
+      }
+
+      // Only push if a valid member exists, otherwise let it render as empty/vacant
+      if (row.member_id) {
+        groupMap[row.group_number].players.push({
+          position: row.position,
+          memberId: row.member_id,
+          name: row.name || "OPEN",
+        });
+      }
+    });
+
+    // 1. Fetch ALL active members (both regulars and substitutes)
+    const allActiveSql = `
+        SELECT id, (name_first || ' ' || name_last) AS name, type 
+        FROM members 
+        WHERE status = 'Yes' AND is_non_member != 1
+    `;
+    const allActiveMembers = await all(allActiveSql);
+
+    // 2. Filter out anyone who is already assigned a tee time on the grid
+    const unassignedPool = allActiveMembers.filter((member) => !assignedMemberIds.includes(member.id));
+
+    // 3. Split the unassigned pool into Regulars (Out) and Substitutes
+    const outPlayers = null;
+    const subPlayers = unassignedPool.filter((member) => member.type === "Substitute" || "Regular");
+
+    return {
+      groupings: Object.values(groupMap),
+      outPlayers: outPlayers,
+      subPlayers: subPlayers,
+      lastUpdated: updateRow?.updated_at ?? null,
+    };
+  } catch (err) {
+    throw new Error(`Failed to retrieve groupings: ${err.message}`);
+  }
+};
+
+/**
+ * Generates completely randomized groups for a given week using your 4 time slots.
+ * Captures name strings correctly using string concatenation.
+ */
+/**
+ * Generates completely randomized groups for a given week using your 4 time slots.
+ * Enforces the Bess constraint: Ami and John Bess are always paired in the final 5:20pm slot.
+ */
+export const generateRandomGroupings = async (weekId) => {
+  try {
+    const memberSql = `
+      SELECT id, (name_first || ' ' || name_last) AS name
+      FROM members 
+      WHERE status = 'Yes' and type = 'Regular' AND is_non_member != 1
+    `;
+    const members = await all(memberSql);
+
+    if (members.length === 0) {
+      throw new Error("No active regular members found to assign.");
+    }
+
+    await deleteGroupingsForWeek(weekId);
+
+    // 1. Isolate Ami and John Bess from the pool if they are active this week
+    const bessPlayers = members.filter((m) => m.name === "Ami Bess" || m.name === "John Bess");
+    const otherPlayers = members.filter((m) => m.name !== "Ami Bess" &amp;&amp; m.name !== "John Bess");
+
+    // Shuffle only the remaining league members
+    const randomizedOthers = shuffle(otherPlayers);
+    const dbRowsToInsert = [];
+
+    // Define times slots (Note: 5:20pm is index 3 / Group 4)
+    const teeTimes = ["4:50pm", "5:00pm", "5:10pm", "5:20pm"];
+    let otherIndex = 0;
+
+    // 2. Loop through every time slot to assign positions
+    for (let gIdx = 0; gIdx &lt; teeTimes.length; gIdx++) {
+      const groupNum = gIdx + 1;
+      const timeSlot = teeTimes[gIdx];
+
+      // Handle the Special 5:20pm Slot (Group 4)
+      if (timeSlot === "5:20pm") {
+        let currentPos = 1;
+
+        // Force Ami and John into the first positions of this group
+        bessPlayers.forEach((bessMember) => {
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: bessMember.id,
+            position: currentPos,
+          });
+          currentPos++;
+        });
+
+        // Fill remaining spaces in the 5:20pm slot with random regular players
+        while (currentPos &lt;= 4 &amp;&amp; otherIndex &lt; randomizedOthers.length) {
+          const member = randomizedOthers[otherIndex];
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: member.id,
+            position: currentPos,
+          });
+          otherIndex++;
+          currentPos++;
+        }
+      }
+      // Handle normal time slots (4:50pm, 5:00pm, 5:10pm)
+      else {
+        for (let pos = 1; pos &lt;= 4; pos++) {
+          if (otherIndex >= randomizedOthers.length) break;
+
+          const member = randomizedOthers[otherIndex];
+          dbRowsToInsert.push({
+            week_id: weekId,
+            tee_time: timeSlot,
+            group_number: groupNum,
+            member_id: member.id,
+            position: pos,
+          });
+          otherIndex++;
+        }
+      }
+    }
+
+    // Bulk save calculated rows to the SQLite database
+    if (dbRowsToInsert.length > 0) {
+      await saveGroupings(weekId, dbRowsToInsert);
+      await updateGroupingTimestamp(weekId);
+    }
+
+    // Capture players left over after filling the 16 maximum spots
+    const outPlayers = randomizedOthers.slice(otherIndex);
+
+    return {
+      dbRowsToInsert,
+      outPlayers,
+    };
+  } catch (err) {
+    throw new Error(`Failed to generate random groupings: ${err.message}`);
+  }
+};
+
+/**
+ * Commits an array of individual member positions to your SQLite DB.
+ */
+export const saveGroupings = (weekId, rows) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+            INSERT INTO groupings (week_id, tee_time, group_number, member_id, position)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+
+    dbInstance.serialize(() => {
+      dbInstance.run("BEGIN TRANSACTION;");
+
+      const stmt = dbInstance.prepare(sql, (err) => {
+        if (err) {
+          dbInstance.run("ROLLBACK;");
+          return reject(new Error(`Failed to prepare insert statement: ${err.message}`));
+        }
+      });
+
+      rows.forEach((row) => {
+        stmt.run(row.week_id, row.tee_time, row.group_number, row.member_id, row.position, (err) => {
+          if (err) {
+            dbInstance.run("ROLLBACK;");
+            return reject(new Error(`Failed insertion step: ${err.message}`));
+          }
+        });
+      });
+
+      stmt.finalize((err) => {
+        if (err) {
+          dbInstance.run("ROLLBACK;");
+          return reject(new Error(`Failed to finalize insert: ${err.message}`));
+        }
+
+        dbInstance.run("COMMIT;", (commitErr) => {
+          if (commitErr) {
+            return reject(new Error(`Transaction commit failed: ${commitErr.message}`));
+          }
+          logger.info(`Successfully saved ${rows.length} rows for week ${weekId}`);
+          resolve(true);
+        });
+      });
+    });
+  });
+};
+
+/**
+ * Deletes any existing groupings for a week.
+ */
+export const deleteGroupingsForWeek = async (weekId) => {
+  try {
+    const sql = `DELETE FROM groupings WHERE week_id = ?`;
+    await run(sql, [weekId]);
+    logger.info(`Cleared old records for week ${weekId}`);
+    return true;
+  } catch (err) {
+    throw new Error(`Failed to clear old records: ${err.message}`);
+  }
+};
+
+/**
+ * Updates the "last modified" timestamp for a week's tee sheet.
+ */
+export const updateGroupingTimestamp = async (weekId) => {
+  const sql = `
+    INSERT INTO grouping_updates (week_id, updated_at)
+    VALUES (?, CURRENT_TIMESTAMP)
+    ON CONFLICT(week_id)
+    DO UPDATE SET updated_at = CURRENT_TIMESTAMP
+  `;
+
+  await run(sql, [weekId]);
+};
+/**
+ * Swaps two players' database slots for a given week safely.
+ */
+export const swapPlayerPositions = async (weekId, p1, p2) => {
+  try {
+    const updateSql = `
+            UPDATE groupings 
+            SET member_id = ? 
+            WHERE week_id = ? AND group_number = ? AND position = ?
+        `;
+
+    // Scenario A: Both players are currently on the grid (Standard Swap)
+    if (p1.groupNumber &amp;&amp; p2.groupNumber) {
+      const tempP1 = -1;
+      const tempP2 = -2;
+
+      await run(updateSql, [tempP1, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [tempP2, weekId, p2.groupNumber, p2.position]);
+
+      await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
+    }
+
+    // Scenario B1: Dragging a Sub/Out player onto an OCCUPIED grid cell
+    else if (p1.groupNumber &amp;&amp; p2.memberId &amp;&amp; !p2.groupNumber) {
+      await run(updateSql, [-99, weekId, p1.groupNumber, p1.position]);
+      await run(updateSql, [p2.memberId, weekId, p1.groupNumber, p1.position]);
+    }
+    // Scenario B2: Dragging a Sub/Out player onto an OCCUPIED grid cell (reverse direction)
+    else if (p2.groupNumber &amp;&amp; p1.memberId &amp;&amp; !p1.groupNumber) {
+      await run(updateSql, [-99, weekId, p2.groupNumber, p2.position]);
+      await run(updateSql, [p1.memberId, weekId, p2.groupNumber, p2.position]);
+    }
+
+    // 🎯 NEW SCENARIO C: Dragging a player OUT of the grid and dropping them into an unassigned Pool
+    // Sets the slot value to 0 to satisfy the database table's NOT NULL constraint!
+    else if (p1.groupNumber &amp;&amp; !p2.groupNumber &amp;&amp; !p2.memberId) {
+      // Creates a completely unique negative number (e.g., group 3, position 2 becomes -32)
+      const uniqueEmptyId = -parseInt(`${p1.groupNumber}${p1.position}`);
+      await run(updateSql, [uniqueEmptyId, weekId, p1.groupNumber, p1.position]);
+    } else if (p2.groupNumber &amp;&amp; !p1.groupNumber &amp;&amp; !p1.memberId) {
+      const uniqueEmptyId = -parseInt(`${p2.groupNumber}${p2.position}`);
+      await run(updateSql, [uniqueEmptyId, weekId, p2.groupNumber, p2.position]);
+    }
+
+    logger.info(`Successfully completed manual database grid structural sync for week ${weekId}`);
+    await updateGroupingTimestamp(weekId);
+    return true;
+  } catch (err) {
+    logger.error("Database execution error during swap:", err.message);
+    throw new Error(`Failed to execute swap: ${err.message}`);
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:03:18 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

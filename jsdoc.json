@@ -1,6 +1,6 @@
 {
   "source": {
-    "include": ["src", "routes", "controllers", "models", "README.md"],
+    "include": ["config", "utilities", "middleware", "routes", "controllers", "models", "services", "README.md"],
     "includePattern": ".+\\.js$",
     "excludePattern": "(^|\\/|\\\\)_"
   },

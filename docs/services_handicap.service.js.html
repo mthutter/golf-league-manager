@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: services/handicap.service.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,155 +17,215 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: services/handicap.service.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h1>Bottoms Up Golf League Manager</h1>
-<p>A full-stack web application designed to streamline the administration of a recreational golf league.</p>
-<p>The system automates weekly score entry, Stableford scoring, handicap calculations, dynamic skins payouts, season standings, and player performance reporting through an intuitive web interface.</p>
-<p>Originally developed to solve real-world league administration challenges, the application evolved into a comprehensive league management platform used throughout an active golf season.</p>
-<hr>
-<h2>Project Background</h2>
-<p>As an active participant in a recreational golf league, I recognized several opportunities to improve the efficiency and accuracy of league administration.</p>
-<p>Manual calculations for standings, skins payouts, and historical reporting were time-consuming and prone to error. This application was developed to automate those processes while providing league members with real-timeaccess to week-to-week scoring and standings information.</p>
-<p>The project continues to evolve through real-world usage and ongoing feedback from league participants, serving as both a practical tool and an ongoing software engineering exercise in iterative development, refactoring, and feature enhancement.</p>
-<hr>
-<h2>Features</h2>
-<h3>League Administration</h3>
-<ul>
-<li>Weekly score entry and validation</li>
-<li>Authentication-protected administrative workflows</li>
-<li>Historical score tracking</li>
-<li>Individual player profiles</li>
-</ul>
-<h3>Scoring Engine</h3>
-<ul>
-<li>Stableford point calculations</li>
-<li>Gross and net score tracking</li>
-<li>Automatic handicap stroke allocation</li>
-<li>Hole-by-hole scoring summaries</li>
-</ul>
-<h3>Dynamic Skins Competition</h3>
-<ul>
-<li>Automated skins calculations</li>
-<li>Carryover jackpot support</li>
-<li>Weekly skins reporting</li>
-<li>Participant payout tracking</li>
-<li>Historical skins result navigation</li>
-</ul>
-<h3>Reporting</h3>
-<ul>
-<li>Season standings leaderboard</li>
-<li>Weekly score summaries</li>
-<li>Player scoring history</li>
-<li>Skins payout reports</li>
-</ul>
-<hr>
-<h2>Screenshots</h2>
-<h3>Season Standings</h3>
-<p><img src="/public/docs/screenshots/standings-desktop.png" alt="Season Standings"></p>
-<h3>Weekly Score Entry</h3>
-<p>League administrators can record weekly rounds using a streamlined score-entry interface with automatic calculations and validation.</p>
-<p><img src="/public/docs/screenshots/weekly-score-entry.png" alt="Weekly Score Entry"></p>
-<h3>Weekly Skins Results</h3>
-<p>Automatic calculation of skins including hole carryovers.</p>
-<p><img src="/public/docs/screenshots/skins-results.png" alt="Weekly Score Entry"></p>
-<hr>
-<h2>Technology Stack</h2>
-<h3>Backend</h3>
-<ul>
-<li>Node.js</li>
-<li>Express.js</li>
-<li>SQLite</li>
-</ul>
-<h3>Frontend</h3>
-<ul>
-<li>EJS</li>
-<li>Bootstrap 5</li>
-<li>JavaScript</li>
-</ul>
-<h3>Architecture</h3>
-<ul>
-<li>MVC application structure</li>
-<li>Service layer for business logic</li>
-<li>Controller layer for request orchestration</li>
-<li>Reusable EJS templates and partials</li>
-</ul>
-<hr>
-<h2>Application Structure</h2>
-<pre class="prettyprint source"><code>routes/
-controllers/
-services/
-views/
-middleware/
-config/
-public/
-utilities/
-</code></pre>
-<p>The application separates business rules from presentation concerns through a service layer, enabling cleaner controllers, improved maintainability, and easier testing.</p>
-<hr>
-<h2>Getting Started</h2>
-<h3>Clone the repository</h3>
-<pre class="prettyprint source lang-bash"><code>git clone https://github.com/mthutter/golf-league-manager.git
+        <article>
+            <pre class="prettyprint source linenums"><code>// services/handicap.service.js
+import sqlite3 from "sqlite3";
+import logger from "../utilities/logger.js";
 
-cd golf-league-manager
+// 🟢 SAFE ABSOLUTE PATH RESOLUTION: Maps paths identically to your root app.js schema rules
+const dbPath =
+  process.env.NODE_ENV === "production"
+    ? "/var/data/golf-league-db-production.db"
+    : "./golf-league-db-production.db";
+
+// Initialize a dedicated, thread-safe connection instance for the handicap engine
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) logger.error("[HANDICAP SERVICE] Local SQLite linkage crash:", err);
+});
+
+/**
+ * Helper to wrap db.all safely in a standard Promise
+ */
+function queryAll(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err);
+      resolve(rows);
+    });
+  });
+}
+
+/**
+ * Helper to wrap db.run safely in a standard Promise
+ */
+function executeRun(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) return reject(err);
+      resolve(this);
+    });
+  });
+}
+
+/**
+ * Retrieves live scorecards from the primary scores schema.
+ */
+// Inside services/handicap.service.js
+
+/**
+ * Extracts raw historical scorecard rows filtered strictly by the target calendar season year.
+ * 🟢 FIXED: Actively binds the year parameter to isolate data models cleanly across seasons!
+ */
+// Inside services/handicap.service.js
+
+/**
+ * Extracts raw historical scorecard rows for the entire field.
+ * 🟢 FIXED: Removed the non-existent s.year database column to clear the SQLite error!
+ */
+export async function getFilteredHandicapHistory({ year }) {
+  try {
+    let query = `
+      SELECT 
+        s.member_id, 
+        s.week_id AS week_number, 
+        s.week_id, 
+        s.gross_total AS gross_score, 
+        m.name_last, 
+        m.name_first, 
+        m.status 
+      FROM scores s 
+      LEFT JOIN members m ON s.member_id = m.id 
+      WHERE 1=1
+    `;
+    const params = [];
+
+    // If you need to filter down roster profiles by a specific active status sequence later,
+    // you can place it here. For now, we bypass s.year entirely to clear the error!
+    if (year &amp;&amp; year !== "") {
+      // Safely logs context if tracking multi-season arrays later
+      logger.debug({ year }, "Fetching seasonal score history matrix");
+    }
+
+    // Keep data sorted chronologically so the rolling round controllers can evaluate cards in order
+    query += ` ORDER BY CAST(s.week_id AS INTEGER) ASC, m.name_last ASC `;
+
+    return await queryAll(query, params);
+  } catch (error) {
+    logger.error(
+      `Error in getFilteredHandicapHistory data stream query: ${error.message}`,
+    );
+    throw error;
+  }
+}
+
+/**
+ * Metadata query helper to populate filter dropdown select menus on load.
+ */
+export async function getHandicapFilterMetadata() {
+  try {
+    const weeks = await queryAll(
+      `SELECT DISTINCT week_id FROM scores ORDER BY CAST(week_id AS INTEGER) DESC`,
+    );
+    const members = await queryAll(
+      `SELECT id, name_last, name_first, status, is_non_member FROM members WHERE status != "No" AND status != "NO" AND is_non_member != 1 ORDER BY name_last ASC`,
+    );
+
+    return {
+      years: ["2026"],
+      weeks: weeks.map((w) => w.week_id),
+      members,
+    };
+  } catch (error) {
+    logger.error(`Error in getHandicapFilterMetadata: ${error.message}`);
+    throw error;
+  }
+}
+
+/**
+ * Updates the core member statistics table based on Option B cumulative logic
+ */
+// Inside services/handicap.service.js
+
+// Inside services/handicap.service.js
+
+export async function calculateHandicaps(coursePar = 36) {
+  logger.info(
+    "[HANDICAP ENGINE] Running administrative Option B recalculation pass...",
+  );
+  try {
+    // 1. Fetch all distinct members from the roster
+    const players = await queryAll(
+      `SELECT id, name_last, name_first FROM members`,
+    );
+
+    for (const player of players) {
+      const playerId = parseInt(player.id, 10); // 🟢 Safe Integer Type Extraction
+      if (isNaN(playerId)) continue;
+
+      // 2. Fetch all valid round scores for this individual player
+      const rounds = await queryAll(
+        `SELECT gross_total FROM scores WHERE member_id = ? AND gross_total > 0`,
+        [playerId],
+      );
+
+      // Handle players with insufficient data (fewer than 3 rounds)
+      if (rounds.length &lt; 3) {
+        logger.info(
+          `Player ${player.name_first} ${player.name_last} remains Provisional (Rounds: ${rounds.length})`,
+        );
+        await executeRun(
+          `UPDATE members SET current_handicap = NULL, rounds_played = ? WHERE id = ?`,
+          [rounds.length, playerId],
+        );
+        continue;
+      }
+
+      // 3. OPTION B REAL-TIME MATHEMATICAL COMPILATION ENGINE
+      const totalStrokes = rounds.reduce(
+        (sum, r) => sum + parseFloat(r.gross_total),
+        0,
+      );
+      const average = totalStrokes / rounds.length;
+      const rawHandicap = average - coursePar;
+
+      // 🧮 Pure Option B Precision Guard: Mirrors your working EJS history charts
+      const roundedValue = Math.round(rawHandicap * 10) / 10;
+      const finalDecimalHandicap = roundedValue.toFixed(1); // Exactly "12.1", "10.7", etc.
+
+      // 4. PERSIST DIRECTLY TO THE MEMBERS TABLE USING TEXT CAST PROTECTION
+      // 🟢 The Cast Forces SQLite to accept the literal string format bypassing column definitions
+      await executeRun(
+        `
+        UPDATE members 
+        SET 
+          current_handicap = CAST(? AS TEXT), 
+          average_score = ?, 
+          rounds_played = ? 
+        WHERE id = ?
+      `,
+        [finalDecimalHandicap, average, rounds.length, playerId],
+      );
+
+      logger.info(
+        `Successfully updated ${player.name_first} ${player.name_last}: Hcp = ${finalDecimalHandicap}`,
+      );
+    }
+
+    logger.info(
+      "[HANDICAP ENGINE] Success: Members table synchronized with Option B true decimals.",
+    );
+  } catch (error) {
+    logger.error(
+      `Failed executing background handicap recalculation step: ${error.message}`,
+    );
+    throw error;
+  }
+}
+
+export async function writeCurrentHandicaps() {
+  return true;
+}
 </code></pre>
-<h3>Configure Environment Variables</h3>
-<p>Copy the example environment file:</p>
-<pre class="prettyprint source lang-bash"><code>cp .env.example .env
-</code></pre>
-<p>Update the values in <code>.env</code> as appropriate for your local environment before starting the application.</p>
-<h3>Install dependencies</h3>
-<pre class="prettyprint source lang-bash"><code>npm install
-</code></pre>
-<h3>Start the application</h3>
-<pre class="prettyprint source lang-bash"><code>npm start
-</code></pre>
-<p>The application will be available at:</p>
-<pre class="prettyprint source"><code>http://localhost:8080
-</code></pre>
-<hr>
-<h2>Data Privacy</h2>
-<p>This repository contains database data intended solely for demonstration and portfolio purposes.</p>
-<p>All participant names, email addresses, phone numbers, and other identifying information have been replaced with fictitious data while preserving the relationships necessary to demonstrate the application's functionality.</p>
-<p>No personally identifiable information (PII) from actual league participants is included in this repository.</p>
-<hr>
-<h2>Future Enhancements</h2>
-<ul>
-<li>Enhanced player statistics and analytics</li>
-<li>Exportable reports</li>
-<li>Email notifications and reminders</li>
-<li>Mobile-first UI refinements</li>
-<li>Administrative dashboard enhancements</li>
-<li>Expanded historical reporting capabilities</li>
-</ul>
-<hr></article>
+        </article>
     </section>
-
-
 
 
 

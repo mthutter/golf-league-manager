@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: middleware/auth.middleware.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,155 +17,76 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: middleware/auth.middleware.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h1>Bottoms Up Golf League Manager</h1>
-<p>A full-stack web application designed to streamline the administration of a recreational golf league.</p>
-<p>The system automates weekly score entry, Stableford scoring, handicap calculations, dynamic skins payouts, season standings, and player performance reporting through an intuitive web interface.</p>
-<p>Originally developed to solve real-world league administration challenges, the application evolved into a comprehensive league management platform used throughout an active golf season.</p>
-<hr>
-<h2>Project Background</h2>
-<p>As an active participant in a recreational golf league, I recognized several opportunities to improve the efficiency and accuracy of league administration.</p>
-<p>Manual calculations for standings, skins payouts, and historical reporting were time-consuming and prone to error. This application was developed to automate those processes while providing league members with real-timeaccess to week-to-week scoring and standings information.</p>
-<p>The project continues to evolve through real-world usage and ongoing feedback from league participants, serving as both a practical tool and an ongoing software engineering exercise in iterative development, refactoring, and feature enhancement.</p>
-<hr>
-<h2>Features</h2>
-<h3>League Administration</h3>
-<ul>
-<li>Weekly score entry and validation</li>
-<li>Authentication-protected administrative workflows</li>
-<li>Historical score tracking</li>
-<li>Individual player profiles</li>
-</ul>
-<h3>Scoring Engine</h3>
-<ul>
-<li>Stableford point calculations</li>
-<li>Gross and net score tracking</li>
-<li>Automatic handicap stroke allocation</li>
-<li>Hole-by-hole scoring summaries</li>
-</ul>
-<h3>Dynamic Skins Competition</h3>
-<ul>
-<li>Automated skins calculations</li>
-<li>Carryover jackpot support</li>
-<li>Weekly skins reporting</li>
-<li>Participant payout tracking</li>
-<li>Historical skins result navigation</li>
-</ul>
-<h3>Reporting</h3>
-<ul>
-<li>Season standings leaderboard</li>
-<li>Weekly score summaries</li>
-<li>Player scoring history</li>
-<li>Skins payout reports</li>
-</ul>
-<hr>
-<h2>Screenshots</h2>
-<h3>Season Standings</h3>
-<p><img src="/public/docs/screenshots/standings-desktop.png" alt="Season Standings"></p>
-<h3>Weekly Score Entry</h3>
-<p>League administrators can record weekly rounds using a streamlined score-entry interface with automatic calculations and validation.</p>
-<p><img src="/public/docs/screenshots/weekly-score-entry.png" alt="Weekly Score Entry"></p>
-<h3>Weekly Skins Results</h3>
-<p>Automatic calculation of skins including hole carryovers.</p>
-<p><img src="/public/docs/screenshots/skins-results.png" alt="Weekly Score Entry"></p>
-<hr>
-<h2>Technology Stack</h2>
-<h3>Backend</h3>
-<ul>
-<li>Node.js</li>
-<li>Express.js</li>
-<li>SQLite</li>
-</ul>
-<h3>Frontend</h3>
-<ul>
-<li>EJS</li>
-<li>Bootstrap 5</li>
-<li>JavaScript</li>
-</ul>
-<h3>Architecture</h3>
-<ul>
-<li>MVC application structure</li>
-<li>Service layer for business logic</li>
-<li>Controller layer for request orchestration</li>
-<li>Reusable EJS templates and partials</li>
-</ul>
-<hr>
-<h2>Application Structure</h2>
-<pre class="prettyprint source"><code>routes/
-controllers/
-services/
-views/
-middleware/
-config/
-public/
-utilities/
-</code></pre>
-<p>The application separates business rules from presentation concerns through a service layer, enabling cleaner controllers, improved maintainability, and easier testing.</p>
-<hr>
-<h2>Getting Started</h2>
-<h3>Clone the repository</h3>
-<pre class="prettyprint source lang-bash"><code>git clone https://github.com/mthutter/golf-league-manager.git
+        <article>
+            <pre class="prettyprint source linenums"><code>import logger from "../utilities/logger.js";
+import {
+    ROLES
+} from "../services/roles.service.js";
 
-cd golf-league-manager
-</code></pre>
-<h3>Configure Environment Variables</h3>
-<p>Copy the example environment file:</p>
-<pre class="prettyprint source lang-bash"><code>cp .env.example .env
-</code></pre>
-<p>Update the values in <code>.env</code> as appropriate for your local environment before starting the application.</p>
-<h3>Install dependencies</h3>
-<pre class="prettyprint source lang-bash"><code>npm install
-</code></pre>
-<h3>Start the application</h3>
-<pre class="prettyprint source lang-bash"><code>npm start
-</code></pre>
-<p>The application will be available at:</p>
-<pre class="prettyprint source"><code>http://localhost:8080
-</code></pre>
-<hr>
-<h2>Data Privacy</h2>
-<p>This repository contains database data intended solely for demonstration and portfolio purposes.</p>
-<p>All participant names, email addresses, phone numbers, and other identifying information have been replaced with fictitious data while preserving the relationships necessary to demonstrate the application's functionality.</p>
-<p>No personally identifiable information (PII) from actual league participants is included in this repository.</p>
-<hr>
-<h2>Future Enhancements</h2>
-<ul>
-<li>Enhanced player statistics and analytics</li>
-<li>Exportable reports</li>
-<li>Email notifications and reminders</li>
-<li>Mobile-first UI refinements</li>
-<li>Administrative dashboard enhancements</li>
-<li>Expanded historical reporting capabilities</li>
-</ul>
-<hr></article>
+/**
+ * Require a logged-in user.
+ */
+export function requireAuth(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+
+    logger.warn({
+        msg: "Unauthorized access attempt",
+        method: req.method,
+        url: req.originalUrl,
+        ip: req.ip,
+    });
+
+    req.flash("error", "Please log in to continue.");
+    return res.redirect("/login");
+}
+
+/**
+ * Factory for requiring a specific role.
+ */
+export function requireRole(role) {
+    return (req, res, next) => {
+        if (!req.isAuthenticated()) {
+            req.flash("error", "Please log in to continue.");
+            return res.redirect("/login");
+        }
+
+        if (req.user?.roles?.includes(role)) {
+            return next();
+        }
+
+        logger.warn({
+            msg: "Access denied",
+            userId: req.user.id,
+            email: req.user.email,
+            requiredRole: role,
+            roles: req.user.roles,
+            method: req.method,
+            url: req.originalUrl,
+            ip: req.ip,
+        });
+
+        return res.status(403).render("errors/403", {
+            title: "Access Denied",
+        });
+    };
+}
+
+export const requireAdmin = requireRole(ROLES.ADMIN);
+export const requireMember = requireRole(ROLES.MEMBER);
+export const requireCommissioner = requireRole(ROLES.COMMISSIONER);
+export const requireTreasurer = requireRole(ROLES.TREASURER);</code></pre>
+        </article>
     </section>
-
-
 
 
 
