@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: services/email.service.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: services/email.service.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
+    all
+} from "../config/db.js";
+import "../config/env.js";
+import logger from "../utilities/logger.js";
+import {
+    EMAIL,
+    transporter
+} from "../config/email.js";
+
+/**
+ * Builds the standard Bottoms Up branded email layout.
+ */
+const buildLeagueEmail = (bodyHtml) => `
+&lt;!DOCTYPE html>
+&lt;html lang="en">
+&lt;head>
+&lt;meta charset="UTF-8">
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+&lt;style>
+body {
+  margin:0;
+  padding:0;
+  background:#f4f6f8;
+  font-family:"Segoe UI",Arial,sans-serif;
+}
+
+table {
+  border-spacing:0;
+  border-collapse:collapse;
+  width:100%;
+}
+
+.wrapper {
+  width:100%;
+  padding:30px 0;
+  background:#f4f6f8;
+}
+
+.main-table {
+  max-width:600px;
+  margin:0 auto;
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid #dce5dc;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.header {
+  background:linear-gradient(135deg,#2f8a2f,#1b4332);
+  text-align:center;
+  padding:30px 20px;
+}
+
+.header img {
+  width:90px;
+  height:auto;
+  margin-bottom:12px;
+}
+
+.header h1 {
+  margin:0;
+  color:#fff;
+  font-size:28px;
+}
+
+.header p {
+  margin:8px 0 0;
+  color:rgba(255,255,255,.9);
+}
+
+.divider {
+  height:4px;
+  background:#2f8a2f;
+}
+
+.body-content {
+  padding:40px 30px;
+  color:#333;
+  font-size:16px;
+  line-height:1.7;
+}
+
+.body-content h2,
+.body-content h3 {
+  color:#1b4332;
+}
+
+.button {
+  display:inline-block;
+  background:#2f8a2f;
+  color:#fff !important;
+  padding:14px 28px;
+  text-decoration:none;
+  border-radius:6px;
+  font-weight:bold;
+}
+
+.footer {
+  background:#f7faf7;
+  border-top:1px solid #e5ece5;
+  text-align:center;
+  padding:20px;
+  font-size:12px;
+  color:#777;
+}
+
+.footer a {
+  color:#2f8a2f;
+}
+
+@media (max-width:600px){
+  .body-content{
+    padding:25px 20px;
+  }
+}
+&lt;/style>
+&lt;/head>
+
+&lt;body>
+
+&lt;center class="wrapper">
+
+&lt;table class="main-table">
+
+&lt;tr>
+&lt;td class="header">
+
+&lt;img
+ src="${EMAIL.LOGO}"
+ alt="Bottoms Up Golf League">
+
+&lt;h1>Bottoms Up Golf League&lt;/h1>
+
+&lt;p>Colorado Springs • 2026 Season&lt;/p>
+
+&lt;/td>
+&lt;/tr>
+
+&lt;tr>
+&lt;td class="divider">&lt;/td>
+&lt;/tr>
+
+&lt;tr>
+&lt;td class="body-content">
+
+${bodyHtml}
+
+&lt;/td>
+&lt;/tr>
+
+&lt;tr>
+&lt;td class="footer">
+
+&lt;p>&lt;strong>Bottoms Up Golf League © 2026&lt;/strong>&lt;/p>
+
+&lt;p>
+&lt;a href="${EMAIL.HOME_URL}">
+Visit League Home Page →
+&lt;/a>
+&lt;/p>
+
+&lt;p style="font-size:11px;">
+You are receiving this email because you are a league member.
+&lt;/p>
+
+&lt;/td>
+&lt;/tr>
+
+&lt;/table>
+
+&lt;/center>
+
+&lt;/body>
+&lt;/html>
+`;
+
+/**
+ * Generic email sender used by all email functions.
+ */
+const sendEmail = async ({
+    to,
+    bcc,
+    subject,
+    bodyHtml
+}) => {
+    return transporter.sendMail({
+        from: `"Bottoms Up Golf League" &lt;${process.env.SMTP_USER}>`,
+        to,
+        bcc,
+        subject,
+        html: buildLeagueEmail(bodyHtml),
+    });
+};
+
+/**
+ * Existing league broadcast email.
+ * (Backwards compatible.)
+ */
+export const fetchAndSendEmails = async (
+    subject,
+    rawBodyContent,
+    recipients = [],
+) => {
+    try {
+        let emailList = [];
+
+        if (recipients.length > 0) {
+            emailList = recipients;
+
+            logger.info(
+                `Targeted Mode Activated. Sending only to: ${emailList.join(", ")}`,
+            );
+        } else {
+            logger.info("Global Broadcast Mode Activated.");
+
+            const members = await all(`
+        SELECT e_mail
+        FROM members
+        WHERE e_mail IS NOT NULL
+          AND e_mail &lt;> ''
+          AND e_mail &lt;> 'tbd@tbd.com'
+      `);
+
+            emailList = members.map((m) => m.e_mail);
+        }
+
+        if (emailList.length === 0) {
+            return {
+                success: true,
+                count: 0,
+            };
+        }
+
+        const bodyHtml = rawBodyContent.replace(/(?:\r\n|\r|\n)/g, "&lt;br>");
+
+        const info = await sendEmail({
+            to: process.env.SMTP_USER,
+            bcc: emailList,
+            subject,
+            bodyHtml,
+        });
+
+        return {
+            success: true,
+            count: emailList.length,
+            messageId: info.messageId,
+        };
+    } catch (error) {
+        logger.error("Email service execution failed", error);
+        throw error;
+    }
+};
+
+/**
+ * Sends an activation email to a new member.
+ */
+export const sendActivationEmail = async ({
+    member,
+    activationUrl
+}) => {
+    const bodyHtml = `
+&lt;h2>Welcome to Bottoms Up Golf League!&lt;/h2>
+
+&lt;p>
+Hi ${member.name_first},
+&lt;/p>
+
+&lt;p>
+Your member account has been created.
+To activate your account and choose your password,
+click the button below.
+&lt;/p>
+
+&lt;p style="text-align:center;margin:35px 0;">
+
+&lt;a
+ class="button"
+ href="${activationUrl}">
+
+Activate My Account
+
+&lt;/a>
+
+&lt;/p>
+
+&lt;p>
+If the button doesn't work, copy and paste this link into your browser:
+&lt;/p>
+
+&lt;p>
+
+&lt;a href="${activationUrl}">
+${activationUrl}
+&lt;/a>
+
+&lt;/p>
+
+&lt;p>
+This activation link expires in 48 hours.
+&lt;/p>
+
+&lt;p>
+We look forward to seeing you on the course!
+&lt;/p>
+`;
+
+    const info = await sendEmail({
+        to: member.e_mail,
+        subject: "Activate Your Bottoms Up Golf League Account",
+        bodyHtml,
+    });
+
+    logger.info(`Activation email sent to ${member.e_mail}`);
+
+    return info;
+};
+
+export const sendPasswordResetEmail = async ({
+    member,
+    resetUrl
+}) => {
+    const bodyHtml = `
+&lt;h2>Password Reset Request&lt;/h2>
+
+&lt;p>
+Hi ${member.name_first},
+&lt;/p>
+
+&lt;p>
+We received a request to reset the password for your Bottoms Up Golf account.
+&lt;/p>
+
+&lt;p>
+Click the button below to choose a new password.
+&lt;/p>
+
+&lt;p style="text-align:center;margin:35px 0;">
+
+&lt;a
+ class="button"
+ href="${resetUrl}">
+
+Reset Password
+
+&lt;/a> &lt;/p>
+&lt;p>
+If the button doesn't work, copy and paste this link into your browser:
+&lt;/p>
+
+&lt;p>
+
+&lt;a href="${resetUrl}">
+${resetUrl}
+&lt;/a>
+
+&lt;/p>
+
+
+&lt;/p>
+
+&lt;p>
+This link expires in one hour.
+&lt;/p>
+
+&lt;p>
+If you didn't request this password reset, you can safely ignore this email.
+Your existing password will remain unchanged.
+&lt;/p>
+`;
+
+    const info = await sendEmail({
+        to: member.e_mail,
+        subject: "Bottoms Up Golf - Password Reset",
+        bodyHtml,
+    });
+
+    logger.info(`Password reset email sent to ${member.e_mail}`);
+
+    return info;
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:13:14 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

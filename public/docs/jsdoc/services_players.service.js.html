@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: services/players.service.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: services/players.service.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import db from "../config/db.js";
+
+// -----------------------------------------------------------------------------
+// Promise Helpers
+// -----------------------------------------------------------------------------
+const dbAll = (sql, params = []) => new Promise((resolve, reject) => db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows))));
+
+const dbGet = (sql, params = []) => new Promise((resolve, reject) => db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row))));
+
+const dbRun = (sql, params = []) =>
+  new Promise((resolve, reject) =>
+    db.run(sql, params, function (err) {
+      if (err) return reject(err);
+      resolve({
+        lastID: this.lastID,
+        changes: this.changes,
+      });
+    }),
+  );
+
+// -----------------------------------------------------------------------------
+// Queries
+// -----------------------------------------------------------------------------
+export async function getAllPlayers() {
+  const sql = `
+    SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex
+    FROM members
+    WHERE is_non_member = 0
+    ORDER BY name_last, name_first
+  `;
+  return dbAll(sql);
+}
+
+export async function getSystemUsers() {
+  const sql = `
+    SELECT 
+      m.id, 
+      m.name_first || ' ' || m.name_last AS user, 
+      m.e_mail, 
+      m.is_non_member,
+      COALESCE(GROUP_CONCAT(r.role, ', '), 'No Role') AS roles
+    FROM members m
+    LEFT JOIN member_roles r ON m.id = r.member_id
+    WHERE m.is_non_member = 1 
+    GROUP BY m.id
+    ORDER BY m.name_last, m.name_first
+  `;
+  return dbAll(sql);
+}
+
+export async function getPlayerById(id) {
+  const sql = `
+    SELECT id, name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex
+    FROM members
+    WHERE id = ?
+  `;
+  return dbGet(sql, [id]);
+}
+
+// -----------------------------------------------------------------------------
+// Create Player
+// -----------------------------------------------------------------------------
+export async function createNewPlayer({ name_last, name_first, phone, handicap = null, e_mail, year_joined, status, type, sex }) {
+  const sql = `
+    INSERT INTO members (
+      name_last, name_first, phone, handicap, e_mail, year_joined, status, type, sex,
+      password_hash, is_active, activated_at
+    ) VALUES (
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 0, NULL
+    )
+  `;
+
+  // Sanitize text parameters cleanly for long-term consistency
+  const cleanPhone = phone ? phone.replace(/\D/g, "") : "";
+  const cleanEmail = e_mail ? e_mail.trim().toLowerCase() : "";
+
+  const result = await dbRun(sql, [name_last?.trim(), name_first?.trim(), cleanPhone, handicap, cleanEmail, parseInt(year_joined, 10) || 2026, status, type, sex]);
+  return result.lastID;
+}
+
+// -----------------------------------------------------------------------------
+// Update Player
+// -----------------------------------------------------------------------------
+export async function updatePlayerById(id, { name_last, name_first, phone, e_mail, year_joined, status, type, sex }) {
+  const sql = `
+    UPDATE members
+    SET name_last = ?, name_first = ?, phone = ?, e_mail = ?, year_joined = ?, status = ?, type = ?, sex = ?
+    WHERE id = ?
+  `;
+
+  const cleanPhone = phone ? phone.replace(/\D/g, "") : "";
+  const cleanEmail = e_mail ? e_mail.trim().toLowerCase() : "";
+
+  return dbRun(sql, [name_last?.trim(), name_first?.trim(), cleanPhone, cleanEmail, parseInt(year_joined, 10) || 2026, status, type, sex, id]);
+}
+
+// -----------------------------------------------------------------------------
+// Member Roles Actions
+// -----------------------------------------------------------------------------
+
+/**
+ * Fetch all roles assigned to a member.
+ * Returns an array of raw strings, e.g., ['Member', 'Admin']
+ */
+export async function getPlayerRoles(memberId) {
+  const sql = `SELECT role FROM member_roles WHERE member_id = ?`;
+  const rows = await dbAll(sql, [memberId]);
+  return rows.map((row) => row.role);
+}
+
+/**
+ * Bulk insert selected roles for a targeted member profile
+ */
+export async function assignPlayerRoles(memberId, rolesArray) {
+  if (!rolesArray || rolesArray.length === 0) return;
+
+  const sql = `INSERT INTO member_roles (member_id, role) VALUES (?, ?)`;
+  for (const role of rolesArray) {
+    await dbRun(sql, [memberId, role]);
+  }
+}
+
+/**
+ * Sync roles by clearing old allocations and re-writing checked forms
+ */
+export async function syncPlayerRoles(memberId, rolesArray) {
+  const clearSql = `DELETE FROM member_roles WHERE member_id = ?`;
+  await dbRun(clearSql, [memberId]);
+  await assignPlayerRoles(memberId, rolesArray);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:13:14 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

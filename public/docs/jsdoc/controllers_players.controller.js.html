@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/players.controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/players.controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as playersService from "../services/players.service.js";
+// Near the top of controllers/players.controller.js
+import * as authService from "../services/auth.service.js"; // 👈 Add this line
+
+import logger from "../utilities/logger.js";
+import { catchAsync } from "../utilities/asyncHandler.js";
+import posthog from "../utilities/posthog.js";
+import * as accountService from "../services/account.service.js";
+import { ROLES } from "../services/roles.service.js";
+
+/**
+ * GET /players - Display active players
+ */
+export const getPlayers = catchAsync(async (req, res, next) => {
+  logger.info("Retrieving active league roster directory");
+  const rows = await playersService.getAllPlayers();
+  return res.render("players", {
+    players: rows,
+  });
+});
+
+export const getSystemUsers = catchAsync(async (req, res, next) => {
+  logger.info("Retrieving system users");
+  const rows = await playersService.getSystemUsers();
+  return res.render("system-users", {
+    players: rows,
+  });
+});
+
+/**
+ * GET /players/inactive - Display inactive players
+ */
+export const getPlayersInactive = catchAsync(async (req, res, next) => {
+  logger.info("Retrieving inactive league roster directory");
+
+  // FIX: If you have an explicit service method like 'getInactivePlayers', swap it here.
+  // Otherwise, filter the full roster array reactively to separate status properties.
+  const allRows = await playersService.getAllPlayers();
+  const inactiveRows = allRows.filter((player) => player.status === "No" || player.is_active === 0);
+
+  return res.render("inactive", {
+    players: inactiveRows,
+  });
+});
+
+/**
+ * GET /players/new - Show creation form
+ */
+export const showAddPlayerForm = (req, res) => {
+  return res.render("add-player-form");
+};
+
+/**
+ * POST /players - Create player record
+ */
+export const createPlayer = catchAsync(async (req, res, next) => {
+  const { name_first, name_last } = req.body;
+
+  if (!name_first || !name_last) {
+    logger.warn("Player registration rejected: Missing name identity fields");
+    res.status(400);
+    return res.render("error", {
+      message: "First and last name are required.",
+    });
+  }
+
+  const roles = Array.isArray(req.body.roles) ? req.body.roles : req.body.roles ? [req.body.roles] : [ROLES.MEMBER];
+
+  const lastID = await playersService.createNewPlayer(req.body);
+
+  await accountService.initializeAccount(lastID, {
+    roles,
+    sendActivationEmail: req.body.sendActivationEmail === "on",
+    email: req.body.e_mail,
+    firstName: req.body.name_first,
+  });
+
+  logger.info(
+    {
+      playerId: lastID,
+      name: `${name_first} ${name_last}`,
+      roles,
+      activationEmail: req.body.sendActivationEmail === "on",
+    },
+    "New league player account created",
+  );
+
+  posthog.capture({
+    distinctId: req.session?.id || "anonymous",
+    event: "player_created",
+    properties: {
+      player_id: lastID,
+      roles,
+      activation_email: req.body.sendActivationEmail === "on",
+    },
+  });
+
+  return res.redirect("/players");
+});
+
+/**
+ * GET /players/:id/edit - Show modification form with existing player data
+ */
+export const showEditPlayerForm = catchAsync(async (req, res, next) => {
+  const playerId = req.params.id;
+  const player = await playersService.getPlayerById(playerId);
+
+  if (!player) {
+    logger.warn(
+      {
+        playerId,
+      },
+      "Requested player modifier form target record not found",
+    );
+    res.status(404);
+    return res.render("error", {
+      message: "Player not found.",
+    });
+  }
+
+  // FIX: Explicitly fetch the database role strings array and bind it to the object
+  // For id: 12, this will assign player.roles = ['Admin', 'Member']
+  player.roles = await playersService.getPlayerRoles(playerId);
+
+  return res.render("modify-player", {
+    player: player,
+  });
+});
+
+/**
+ * POST /players/:id - Update existing player record
+ */
+/**
+ * POST /players/:id - Update existing player record
+ */
+export const updatePlayer = catchAsync(async (req, res, next) => {
+  const playerId = req.params.id;
+  const { name_first, name_last } = req.body;
+
+  if (!name_first || !name_last) {
+    logger.warn(
+      {
+        playerId,
+      },
+      "Player profile update rejected: Missing identity parameters",
+    );
+    res.status(400);
+    return res.render("error", {
+      message: "First and last name are required.",
+    });
+  }
+
+  // 1. EXTRACT ROLES: Capture the checkbox states safely into an array
+  const roles = Array.isArray(req.body.roles) ? req.body.roles : req.body.roles ? [req.body.roles] : []; // If empty, defaults to an empty array so all roles get removed
+
+  // 2. UPDATE BASE DETAILS: Keeps your current logic updating the 'members' table
+  await playersService.updatePlayerById(playerId, req.body);
+
+  // 3. SYNC ROLES IN SQLITE: Wipes out old rows for this player and re-inserts current checkbox values
+  if (playersService.syncPlayerRoles) {
+    await playersService.syncPlayerRoles(playerId, roles);
+  }
+
+  logger.info("League player profile details and roles updated successfully");
+
+  posthog.capture({
+    distinctId: req.session?.id || "anonymous",
+    event: "player_updated",
+    properties: {
+      player_id: playerId,
+      roles,
+    },
+  });
+
+  return res.redirect("/players");
+});
+
+/**
+ * GET /profile - Show the logged-in member their own profile
+ */
+/**
+ * GET /profile - Show the logged-in member their own profile
+ */
+export const showOwnProfileForm = catchAsync(async (req, res, next) => {
+  const playerId = req.user.id || req.user.player_id;
+
+  logger.info({ playerId }, "Member accessing their own profile form");
+
+  const player = await playersService.getPlayerById(playerId);
+  if (!player) {
+    logger.warn({ playerId }, "Authenticated member data record not found");
+    res.status(404);
+    return res.render("error", { message: "Profile record not found." });
+  }
+
+  // 1. Fetch the roles for this player
+  player.roles = await playersService.getPlayerRoles(playerId);
+
+  // 2. DYNAMIC CHECK: Check if the logged-in user has 'Admin' privileges
+  // This ensures the global navbar variable 'isAdmin' stays true for admins
+  const userIsAdmin = player.roles.includes("Admin");
+
+  return res.render("modify-player", {
+    player: player,
+    isAdmin: userIsAdmin, // 👈 Fixes the navbar dropdown disappearing!
+    isSelfProfile: true, // 👈 New flag: tells the form body to stay locked down
+    query: req.query,
+  });
+});
+
+/**
+ * POST /profile - Handle self-service profile changes safely
+ */
+export const updateOwnProfile = catchAsync(async (req, res, next) => {
+  const playerId = req.user.id || req.user.player_id;
+  const { name_first, name_last, e_mail, phone } = req.body;
+
+  if (!name_first || !name_last) {
+    logger.warn({ playerId }, "Profile update rejected: Missing identity parameters");
+    res.status(400);
+    return res.render("error", { message: "First and last name are required." });
+  }
+
+  // 1. Fetch current database record to preserve uneditable admin data properties
+  const currentDetails = await playersService.getPlayerById(playerId);
+  if (!currentDetails) {
+    res.status(404);
+    return res.render("error", { message: "Profile record match failure." });
+  }
+
+  // 2. Mix user input safely with preserved administrative constraints
+  const profilePayload = {
+    name_first: name_first,
+    name_last: name_last,
+    e_mail: e_mail,
+    phone: phone,
+    year_joined: currentDetails.year_joined, // Preserved
+    status: currentDetails.status, // Preserved
+    type: currentDetails.type, // Preserved
+    sex: currentDetails.sex, // Preserved
+  };
+
+  // 3. Execute update using your existing service architecture
+  await playersService.updatePlayerById(playerId, profilePayload);
+
+  logger.info({ playerId }, "Member profile updated successfully by account owner");
+
+  posthog.capture({
+    distinctId: req.session?.id || "anonymous",
+    event: "member_profile_self_updated",
+    properties: { player_id: playerId },
+  });
+
+  return res.redirect("/players/profile?success=true");
+});
+/**
+ * POST /players/:id/reset-password - Admin secure password reset bypass
+ */
+/**
+ * POST /players/:id/reset-password - Admin secure password reset bypass
+ */
+/**
+ * POST /players/:id/reset-password - Admin manual password overwrite
+ */
+export const adminResetPassword = catchAsync(async (req, res, next) => {
+  const playerId = req.params.id;
+  const { manual_password } = req.body; // 👈 1. Extract the manually typed password
+
+  // Validation fallback boundary check
+  if (!manual_password || manual_password.trim() === "") {
+    logger.warn({ playerId }, "Password override rejected: Input password string field is blank");
+    res.status(400);
+    return res.render("error", { message: "A valid custom password is required." });
+  }
+
+  // 2. Pass the custom string directly to your auth hash service
+  await authService.updateMemberPassword(playerId, manual_password.trim());
+
+  logger.info({ playerId }, "Administrative manual password overwrite executed successfully");
+
+  // 3. Redirect back to the form view passing the custom text block value to display in the alert banner
+  return res.redirect(`/players/${playerId}/edit?pwdReset=true&amp;tempPwd=${encodeURIComponent(manual_password.trim())}`);
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:13:14 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

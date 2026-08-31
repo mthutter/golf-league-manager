@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utilities/apply-retroactive-scores.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utilities/apply-retroactive-scores.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// apply-retroactive-scores.js
+import sqlite3 from "sqlite3";
+import path from "path";
+import { fileURLToPath } from "url";
+import { buildHoleScores } from "../services/golf.service.js";
+
+// 🟢 PATH RESOLUTION: Resolves database location cleanly from any active folder depth
+
+const dbPath = "../golf-league-db-production.db"; // Adjust to your production path name if different
+
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) console.error("Direct connection failed:", err);
+  else console.log(`Connected directly to local database at: ${dbPath}`);
+});
+
+// 🟢 TARGETS: Set the exact member IDs of your newly established players here
+const TARGET_PLAYER_IDS = [30]; // 👈 Replace these integers with your actual target member IDs
+const COURSE_PAR = 36;
+
+/**
+ * Promise wrapper helper for database row lookups
+ */
+function queryAll(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err);
+      resolve(rows);
+    });
+  });
+}
+
+/**
+ * Promise wrapper helper for database mutations
+ */
+function executeRun(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) return reject(err);
+      resolve(this);
+    });
+  });
+}
+
+/**
+ * Main calculation orchestration script pipeline
+ */
+// Inside apply-retroactive-scores.js — Replace the inner loop section:
+
+async function runRetroactiveFix() {
+  console.log("⛳ Starting retroactive Stableford scoring pass...");
+  try {
+    const courseHoles = await queryAll(`SELECT * FROM holes ORDER BY hole_number ASC`);
+    if (courseHoles.length === 0) {
+      throw new Error("No course holes found in database.");
+    }
+
+    for (const id of TARGET_PLAYER_IDS) {
+      const rows = await queryAll(`SELECT id, name_first, name_last, sex, current_handicap FROM members WHERE id = ?`, [id]);
+      if (rows.length === 0) {
+        console.log(`⚠️ Player ID ${id} not found. Skipping.`);
+        continue;
+      }
+      const p = rows[0];
+
+      const numericalHandicap = parseFloat(p.current_handicap);
+      if (isNaN(numericalHandicap)) {
+        console.log(`⚠️ Player ${p.name_first} does not have an established decimal handicap yet. Skipping.`);
+        continue;
+      }
+
+      console.log(`\n👤 Processing ${p.name_first} ${p.name_last} (Handicap: ${numericalHandicap})`);
+
+      const rounds = await queryAll(
+        `
+        SELECT * FROM scores 
+        WHERE member_id = ? AND gross_total > 0 
+        ORDER BY CAST(week_id AS INTEGER) ASC 
+        LIMIT 3
+      `,
+        [id],
+      );
+
+      for (const round of rounds) {
+        const currentWeekNum = parseInt(round.week_id, 10);
+        const startHole = currentWeekNum &lt;= 11 ? 1 : 10;
+        const currentNineLabel = startHole === 1 ? "Front 9 (1-9)" : "Back 9 (10-18)";
+
+        let newNetTotal = 0;
+        let newStablefordTotal = 0;
+
+        // =================================================================
+        // 🛡️ PLUS-HANDICAP PROTECTION LAYER (FOR SCRATCH &amp; PLUS PLAYERS)
+        // =================================================================
+        if (numericalHandicap &lt; 0) {
+          // 1. Isolate absolute index value for stroke calculation
+          const absHandicap = Math.abs(numericalHandicap);
+          const emulated18Handicap = absHandicap * 2; // e.g. 1.3 * 2 = 2.6
+
+          // Determine baseline plus strokes to add back to the round
+          let basePlusStrokes = Math.floor(emulated18Handicap / 18); // 0
+          const remainder = emulated18Handicap % 18;
+
+          const sex = (p.sex || "M").toUpperCase();
+          const currentNineHoles = courseHoles.filter((h) => h.hole_number >= startHole &amp;&amp; h.hole_number &lt; startHole + 9);
+
+          currentNineHoles.forEach((hole) => {
+            const gross = parseInt(round[`gross${hole.hole_number}`], 10) || 0;
+            if (gross &lt;= 0) return;
+
+            const holeHandicap = sex === "F" ? hole.handicap_women : hole.handicap_men;
+            let holeStrokes = basePlusStrokes;
+
+            // Plus golfers owe strokes to the hardest holes first (stroke index 1, 2, 3...)
+            if (remainder >= holeHandicap) {
+              holeStrokes++;
+            }
+
+            // Net score increases for plus handicaps (Gross + Owed Strokes)
+            const holeNet = gross + holeStrokes;
+            const par = sex === "F" ? hole.par_women : hole.par_men;
+
+            // Calculate Stableford points based on your native stableford matrix rules
+            const diff = holeNet - par;
+            let holePoints = 0;
+            if (diff >= 2) holePoints = 0;
+            else if (diff === 1) holePoints = 1;
+            else if (diff === 0) holePoints = 2;
+            else if (diff === -1) holePoints = 3;
+            else if (diff === -2) holePoints = 4;
+            else holePoints = 5;
+
+            newNetTotal += holeNet;
+            newStablefordTotal += holePoints;
+          });
+        } else {
+          // 🟢 STANDARD PROCESSOR: Runs veteran players through native engine normal rules
+          const payload = { ...round, sex: p.sex || "M", handicap_used: numericalHandicap };
+          const calculatedHoles = buildHoleScores(payload, courseHoles, startHole);
+          newStablefordTotal = calculatedHoles.reduce((acc, h) => acc + (h.points || 0), 0);
+          newNetTotal = calculatedHoles.reduce((acc, h) => acc + (h.net || 0), 0);
+        }
+        // =================================================================
+
+        // Commit the high-precision calculations back to SQLite
+        await executeRun(
+          `
+          UPDATE scores 
+          SET 
+            handicap_used = ?,
+            net_total = ?,
+            stableford_total = ?
+          WHERE score_id = ?
+        `,
+          [numericalHandicap, newNetTotal, newStablefordTotal, round.score_id],
+        );
+
+        console.log(`   ✅ Week ${round.week_id} [${currentNineLabel}] Adjusted: Gross ${round.gross_total} ➔ Net ${newNetTotal} | Stableford Points: ${newStablefordTotal}`);
+      }
+    }
+
+    console.log("\n🎯 RETROACTIVE UPDATE COMPLETE! Run your standings generator tool to refresh ranks.");
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ CRITICAL ERROR RUNNING ADJUSTMENT SCRIPT:", error);
+    process.exit(1);
+  }
+}
+
+runRetroactiveFix();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:13:14 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

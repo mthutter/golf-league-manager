@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/grouping.controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/grouping.controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
+    getGroupingsForWeek,
+    generateRandomGroupings,
+    swapPlayerPositions
+} from "../services/grouping.service.js";
+import {
+    getAllWeeks,
+    getWeek,
+    getUpcomingWeek,
+    formatDateTime
+} from "../services/weeks.service.js";
+import logger from "../utilities/logger.js";
+import {
+    catchAsync
+} from "../utilities/asyncHandler.js";
+import posthog from "../utilities/posthog.js";
+
+/**
+ * GET /tee-times?week=1
+ * Renders the tee times page for a specific week.
+ */
+export const showTeeTimes = catchAsync(async (req, res, next) => {
+    let weekId = Number(req.query.week);
+
+    if (!weekId) {
+        const upcomingWeek = await getUpcomingWeek();
+        weekId = upcomingWeek.week_number;
+    }
+
+    logger.info("Fetching league pairings and tee times");
+
+    // Extended to match your complete 22-week league season calendar
+    const weeks = await getAllWeeks();
+    const currentWeek = await getWeek(weekId);
+
+    // Destructure the groupings array and outPlayers array from the service
+    const {
+        groupings,
+        outPlayers,
+        subPlayers,
+        lastUpdated
+    } = await getGroupingsForWeek(weekId);
+    const formattedLastUpdated = formatDateTime(lastUpdated);
+
+    return res.render("tee-times", {
+        groupings,
+        outPlayers,
+        subPlayers,
+        lastUpdated: formattedLastUpdated,
+        currentWeek,
+        weeks,
+        weekId,
+    });
+});
+
+/**
+ * POST /tee-times/generate/:weekId
+ * Generates random groups for the week and redirects back to the viewer.
+ */
+export const generateGroupings = catchAsync(async (req, res, next) => {
+    const weekId = Number(req.params.weekId);
+
+    if (isNaN(weekId)) {
+        logger.warn({
+            rawParam: req.params.weekId
+        }, "Rejected grouping generation: Invalid week ID input");
+        return res.status(400).send("Invalid week ID provided.");
+    }
+
+    logger.info("Triggering automatic grouping generation engine");
+    await generateRandomGroupings(weekId);
+
+    posthog.capture({
+        distinctId: req.user?.id || req.sessionID,
+        event: "groupings_generated",
+        properties: {
+            week_id: weekId
+        },
+    });
+
+    // Redirect back to the view page for this specific week
+    return res.redirect(`/tee-times?week=${weekId}`);
+});
+
+/**
+ * PUT /groupings/swap
+ * Handles shifting player positions via Drag &amp; Drop interface payloads.
+ */
+export const swapPlayers = catchAsync(async (req, res, next) => {
+    const {
+        weekId,
+        player1,
+        player2
+    } = req.body;
+
+    if (!weekId || !player1 || !player2) {
+        logger.warn({
+            hasWeekId: !!weekId,
+            hasP1: !!player1,
+            hasP2: !!player2
+        }, "Player position swap validation rejected: Missing payload fields");
+        return res.status(400).json({
+            success: false,
+            error: "Missing required swap parameters.",
+        });
+    }
+
+    // 2. Parse incoming payload properties safely into numbers
+    const targetWeek = Number(weekId);
+    const p1 = {
+        memberId: Number(player1.memberId),
+        groupNumber: player1.groupNumber ? Number(player1.groupNumber) : null,
+        position: player1.position ? Number(player1.position) : null,
+    };
+    const p2 = {
+        memberId: Number(player2.memberId),
+        groupNumber: player2.groupNumber ? Number(player2.groupNumber) : null,
+        position: player2.position ? Number(player2.position) : null,
+    };
+
+    logger.info("Executing database player position swap transaction");
+
+    // 3. Execute the transactional SQLite update query block
+    await swapPlayerPositions(targetWeek, p1, p2);
+
+    posthog.capture({
+        distinctId: req.session?.id || "anonymous",
+        event: "players_swapped",
+        properties: {
+            week_id: targetWeek,
+            player1_id: p1.memberId,
+            player2_id: p2.memberId,
+        },
+    });
+
+    return res.json({
+        success: true,
+        message: "Positions swapped successfully!",
+    });
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#adminResetPassword">adminResetPassword</a></li><li><a href="global.html#assignPlayerRoles">assignPlayerRoles</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#buildHoleScores">buildHoleScores</a></li><li><a href="global.html#buildLeagueEmail">buildLeagueEmail</a></li><li><a href="global.html#buildUser">buildUser</a></li><li><a href="global.html#calculateHandicaps">calculateHandicaps</a></li><li><a href="global.html#calculateHoleScore">calculateHoleScore</a></li><li><a href="global.html#calculateSkinsApi">calculateSkinsApi</a></li><li><a href="global.html#calculateSkinsMetrics">calculateSkinsMetrics</a></li><li><a href="global.html#computeCumulativeHandicap">computeCumulativeHandicap</a></li><li><a href="global.html#course">course</a></li><li><a href="global.html#createNewItem">createNewItem</a></li><li><a href="global.html#createPlayer">createPlayer</a></li><li><a href="global.html#createPost">createPost</a></li><li><a href="global.html#createScoreRecord">createScoreRecord</a></li><li><a href="global.html#dbAll">dbAll</a></li><li><a href="global.html#dbGet">dbGet</a></li><li><a href="global.html#deleteGroupingsForWeek">deleteGroupingsForWeek</a></li><li><a href="global.html#deletePost">deletePost</a></li><li><a href="global.html#executeRun">executeRun</a></li><li><a href="global.html#fetchAndSendEmails">fetchAndSendEmails</a></li><li><a href="global.html#findMemberById">findMemberById</a></li><li><a href="global.html#forcePasswordReset">forcePasswordReset</a></li><li><a href="global.html#generateGroupings">generateGroupings</a></li><li><a href="global.html#generateRandomGroupings">generateRandomGroupings</a></li><li><a href="global.html#getAllItems">getAllItems</a></li><li><a href="global.html#getAllSystemUsers">getAllSystemUsers</a></li><li><a href="global.html#getAllWeeks">getAllWeeks</a></li><li><a href="global.html#getBlacklistRoster">getBlacklistRoster</a></li><li><a href="global.html#getCurrentWeekPlayed">getCurrentWeekPlayed</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFilteredHandicapHistory">getFilteredHandicapHistory</a></li><li><a href="global.html#getFormData">getFormData</a></li><li><a href="global.html#getGroupingsForWeek">getGroupingsForWeek</a></li><li><a href="global.html#getHandicapFilterMetadata">getHandicapFilterMetadata</a></li><li><a href="global.html#getHandicapsDashboard">getHandicapsDashboard</a></li><li><a href="global.html#getItemById">getItemById</a></li><li><a href="global.html#getMemberProfile">getMemberProfile</a></li><li><a href="global.html#getMemberProfileData">getMemberProfileData</a></li><li><a href="global.html#getModifyScoresForm">getModifyScoresForm</a></li><li><a href="global.html#getNewScoresForm">getNewScoresForm</a></li><li><a href="global.html#getPlayerRoles">getPlayerRoles</a></li><li><a href="global.html#getPlayers">getPlayers</a></li><li><a href="global.html#getPlayersInactive">getPlayersInactive</a></li><li><a href="global.html#getPreviousWeekPlayed">getPreviousWeekPlayed</a></li><li><a href="global.html#getRoles">getRoles</a></li><li><a href="global.html#getRoundDetails">getRoundDetails</a></li><li><a href="global.html#getScoresLegacy">getScoresLegacy</a></li><li><a href="global.html#getSeasonStandings">getSeasonStandings</a></li><li><a href="global.html#getSkinsReport">getSkinsReport</a></li><li><a href="global.html#getStandings">getStandings</a></li><li><a href="global.html#getStandingsThroughWeek">getStandingsThroughWeek</a></li><li><a href="global.html#getWeek">getWeek</a></li><li><a href="global.html#getWeekHoleRange">getWeekHoleRange</a></li><li><a href="global.html#getWeeklyBreakdown">getWeeklyBreakdown</a></li><li><a href="global.html#getWeeklyScores">getWeeklyScores</a></li><li><a href="global.html#handleLogin">handleLogin</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#imagesByYear">imagesByYear</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#processSkinsForWeek">processSkinsForWeek</a></li><li><a href="global.html#queryAll">queryAll</a></li><li><a href="global.html#renderEmailForm">renderEmailForm</a></li><li><a href="global.html#renderIndex">renderIndex</a></li><li><a href="global.html#renderNewForm">renderNewForm</a></li><li><a href="global.html#renderPost">renderPost</a></li><li><a href="global.html#requireAuth">requireAuth</a></li><li><a href="global.html#requireRole">requireRole</a></li><li><a href="global.html#runHandicapEngine">runHandicapEngine</a></li><li><a href="global.html#runRetroactiveFix">runRetroactiveFix</a></li><li><a href="global.html#saveGroupings">saveGroupings</a></li><li><a href="global.html#saveScore">saveScore</a></li><li><a href="global.html#sendActivationEmail">sendActivationEmail</a></li><li><a href="global.html#sendBulkEmail">sendBulkEmail</a></li><li><a href="global.html#sendEmail">sendEmail</a></li><li><a href="global.html#showAddPlayerForm">showAddPlayerForm</a></li><li><a href="global.html#showEditPlayerForm">showEditPlayerForm</a></li><li><a href="global.html#showLoginForm">showLoginForm</a></li><li><a href="global.html#showOwnProfileForm">showOwnProfileForm</a></li><li><a href="global.html#showTeeTimes">showTeeTimes</a></li><li><a href="global.html#swapPlayerPositions">swapPlayerPositions</a></li><li><a href="global.html#swapPlayers">swapPlayers</a></li><li><a href="global.html#syncPlayerRoles">syncPlayerRoles</a></li><li><a href="global.html#unbanIpAddress">unbanIpAddress</a></li><li><a href="global.html#updateGroupingTimestamp">updateGroupingTimestamp</a></li><li><a href="global.html#updateItemApi">updateItemApi</a></li><li><a href="global.html#updateMemberPassword">updateMemberPassword</a></li><li><a href="global.html#updateOwnProfile">updateOwnProfile</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updateScore">updateScore</a></li><li><a href="global.html#updateScoreRecord">updateScoreRecord</a></li><li><a href="global.html#videosByYear">videosByYear</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Aug 31 2026 18:13:14 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
