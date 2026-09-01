@@ -262,8 +262,8 @@ export async function getFormData() {
  */
 export async function createScoreRecord(data) {
   const sql = `
-    INSERT INTO scores (member_id, week_id, gross_total, stableford_total, ctp_points, birdie_points, year)
-    VALUES (?, ?, ?, ?, ?, ?, '2026')
+    INSERT INTO scores (member_id, week_id, gross_total, stableford_total, ctp_points, birdie_points)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
   return new Promise((resolve, reject) => {
     db.run(
