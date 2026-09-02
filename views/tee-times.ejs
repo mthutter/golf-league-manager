@@ -129,8 +129,8 @@
                     <span>🏌️‍♂️</span> Available for Week <%= weekId %>
                 </h3>
                 <div class="badge-container" style="pointer-events: none;">
-                    <% if (locals.subPlayers && subPlayers.length > 0) { %>
-                    <% subPlayers.forEach(function(player) { %>
+                    <% if (locals.subPlayers && subPlayers.some(player => player.id !== 21)) { %>
+                    <% subPlayers.filter(player => player.id !== 21).forEach(function(player) { %>
                     <span class="player-badge <%= locals.isAdmin ? 'draggable-badge' : '' %>" <%- locals.isAdmin ? `draggable="true" ondragstart="handleDragStart(event)"` : '' %> data-member-id="<%= player.id %>" data-group="" data-position="" style="background-color: #f7fafc; color: #2d3748; border-color: #cbd5e0; pointer-events: auto;">
                         <%= player.name %>
                     </span>
