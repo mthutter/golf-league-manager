@@ -22,7 +22,7 @@
           <% weeks
             .filter(week => week.week_number <= currentWeek.week_number)
             .forEach(week => { %>
-              <option value="<%= week.week_number %>" <%= week.week_number === currentWeek.week_number ? "selected" : "" %>>
+              <option value="<%= week.week_number %>" <%= week.week_number === currentWeek.displayDate ? "selected" : "" %>>
                 Week <%= week.week_number %> (<%= week.displayDate %>)
               </option>
           <% }) %>
