@@ -7,6 +7,9 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
+    ignores: ["public/docs/**", "package-lock.json"],
+  },
+  {
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js },
     extends: ["js/recommended"],
@@ -27,6 +30,9 @@ export default defineConfig([
     extends: ["css/recommended"],
     rules: {
       "css/no-important": "off", // Silences !important warnings
+      "css/no-invalid-properties": "off",
+      "css/no-empty-blocks": "off",
+      "css/use-baseline": "off",
     },
   },
   {
@@ -36,6 +42,7 @@ export default defineConfig([
         {
           vars: "local",
           args: "after-used",
+          argsIgnorePattern: "^(next|_)$",
           caughtErrors: "none", // 👈 Silences the unused (err) notifications project-wide
           ignoreRestSiblings: false,
           ignoreUsingDeclarations: false,

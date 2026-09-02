@@ -231,12 +231,10 @@ export async function getFormData() {
 
   // 3. 🚀 MATCH NINES CALENDAR SPLIT FORM LAYOUT RULES:
   // Weeks 1 to 11 pull Front 9 (Holes 1-9). Weeks 12+ pull Back 9 (Holes 10-18).
-  let holesQuery = "";
-  if (activeWeekNum <= 11) {
-    holesQuery = `SELECT * FROM holes WHERE CAST(hole_number AS INTEGER) BETWEEN 1 AND 9 ORDER BY hole_number ASC`;
-  } else {
-    holesQuery = `SELECT * FROM holes WHERE CAST(hole_number AS INTEGER) BETWEEN 10 AND 18 ORDER BY hole_number ASC`;
-  }
+  const holesQuery =
+    activeWeekNum <= 11
+      ? `SELECT * FROM holes WHERE CAST(hole_number AS INTEGER) BETWEEN 1 AND 9 ORDER BY hole_number ASC`
+      : `SELECT * FROM holes WHERE CAST(hole_number AS INTEGER) BETWEEN 10 AND 18 ORDER BY hole_number ASC`;
 
   const holes = await dbAll(holesQuery);
 

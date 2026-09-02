@@ -93,7 +93,7 @@ export const getGroupingsForWeek = async (weekId) => {
       lastUpdated: updateRow?.updated_at ?? null,
     };
   } catch (err) {
-    throw new Error(`Failed to retrieve groupings: ${err.message}`);
+    throw new Error(`Failed to retrieve groupings: ${err.message}`, { cause: err });
   }
 };
 
@@ -199,7 +199,7 @@ export const generateRandomGroupings = async (weekId) => {
       outPlayers,
     };
   } catch (err) {
-    throw new Error(`Failed to generate random groupings: ${err.message}`);
+    throw new Error(`Failed to generate random groupings: ${err.message}`, { cause: err });
   }
 };
 
@@ -260,7 +260,7 @@ export const deleteGroupingsForWeek = async (weekId) => {
     logger.info(`Cleared old records for week ${weekId}`);
     return true;
   } catch (err) {
-    throw new Error(`Failed to clear old records: ${err.message}`);
+    throw new Error(`Failed to clear old records: ${err.message}`, { cause: err });
   }
 };
 
@@ -327,6 +327,6 @@ export const swapPlayerPositions = async (weekId, p1, p2) => {
     return true;
   } catch (err) {
     logger.error("Database execution error during swap:", err.message);
-    throw new Error(`Failed to execute swap: ${err.message}`);
+    throw new Error(`Failed to execute swap: ${err.message}`, { cause: err });
   }
 };

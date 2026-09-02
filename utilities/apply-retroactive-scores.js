@@ -1,7 +1,5 @@
 // apply-retroactive-scores.js
 import sqlite3 from "sqlite3";
-import path from "path";
-import { fileURLToPath } from "url";
 import { buildHoleScores } from "../services/golf.service.js";
 
 // 🟢 PATH RESOLUTION: Resolves database location cleanly from any active folder depth
@@ -15,7 +13,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // 🟢 TARGETS: Set the exact member IDs of your newly established players here
 const TARGET_PLAYER_IDS = [30]; // 👈 Replace these integers with your actual target member IDs
-const COURSE_PAR = 36;
 
 /**
  * Promise wrapper helper for database row lookups
@@ -121,13 +118,7 @@ async function runRetroactiveFix() {
 
             // Calculate Stableford points based on your native stableford matrix rules
             const diff = holeNet - par;
-            let holePoints = 0;
-            if (diff >= 2) holePoints = 0;
-            else if (diff === 1) holePoints = 1;
-            else if (diff === 0) holePoints = 2;
-            else if (diff === -1) holePoints = 3;
-            else if (diff === -2) holePoints = 4;
-            else holePoints = 5;
+            const holePoints = Math.max(0, Math.min(5, 2 - diff));
 
             newNetTotal += holeNet;
             newStablefordTotal += holePoints;

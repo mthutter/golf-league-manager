@@ -1,6 +1,5 @@
 import passport from "passport";
 import logger from "../utilities/logger.js";
-import { catchAsync } from "../utilities/asyncHandler.js";
 import posthog from "../utilities/posthog.js";
 
 /**

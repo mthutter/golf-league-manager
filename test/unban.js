@@ -1,4 +1,4 @@
-# utilities/unban.js
+// utilities/unban.js
 import { run, get } from "../config/db.js";
 import { securityModel } from "./security.model.js";
 import logger from "../utilities/logger.js";
@@ -6,7 +6,7 @@ import logger from "../utilities/logger.js";
 /**
  * Administrative utility to safely lift a ban from an IP address.
  * Removes the persistent database record and purges active memory caches.
- * 
+ *
  * @param {string} targetIp - The exact IP address to unban.
  * @returns {Promise<boolean>} True if successfully unbanned, false otherwise.
  */
@@ -21,10 +21,10 @@ export const liftIpBan = async (targetIp) => {
   try {
     // 1. Check if the IP actually exists in the database
     const row = await get("SELECT strikes FROM permanent_bans WHERE ip = ?", [cleanIp]);
-    
+
     if (!row) {
       logger.info(`[SECURITY ADMIN] IP ${cleanIp} was not found in the persistent database.`);
-      
+
       // Secondary check: Ensure it's cleared from live RAM caches even if missing from DB
       let cacheCleared = false;
       if (securityModel.permanentBanCache.has(cleanIp)) {
@@ -64,7 +64,7 @@ export const liftIpBan = async (targetIp) => {
 const args = process.argv.slice(2);
 if (args.length > 0) {
   const inputIp = args[0];
-  
+
   // Delay slightly to ensure DB connection layers pool correctly depending on architecture setup
   setTimeout(async () => {
     logger.info(`[SECURITY ADMIN] Initializing CLI unban utility for: ${inputIp}...`);

@@ -1,7 +1,6 @@
 import express from "express";
 import * as publicController from "../controllers/public.controller.js";
 import * as authController from "../controllers/auth.controller.js";
-import { requireAuth } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 

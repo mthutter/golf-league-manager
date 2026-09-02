@@ -1,5 +1,4 @@
 import { getSeasonStandings } from "../services/scores.service.js";
-import { getGroupingsForWeek } from "../services/grouping.service.js";
 import logger from "../utilities/logger.js";
 import { catchAsync } from "../utilities/asyncHandler.js";
 
