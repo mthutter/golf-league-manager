@@ -20,11 +20,11 @@
       <div class="d-inline-flex align-items-center gap-2">
         <select id="weekSelect" class="form-select" style="width: 240px;">
           <% weeks
-            .filter(week => week.week_number <= currentWeek.week_number)
-            .forEach(week => { %>
-              <option value="<%= week.week_number %>" <%= week.week_number === currentWeek.displayDate ? "selected" : "" %>>
-                Week <%= week.week_number %> (<%= week.displayDate %>)
-              </option>
+            .filter(w => w.week_number <= currentWeek.week_number)
+            .forEach(w => { %>
+          <option value="<%= w.week_number %>" <%= w.week_number === selectedWeekId ? "selected" : "" %>>
+            Week <%= w.week_number %> (<%= w.displayDate %>)
+          </option>
           <% }) %>
         </select>
         <button type="button" class="btn btn-success text-nowrap" onclick="window.location.href='/scores/weekly/' + document.getElementById('weekSelect').value;">
