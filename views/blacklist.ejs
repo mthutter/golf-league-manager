@@ -9,62 +9,78 @@
     <section>
       <%- include('./partials/navbar'); %>
     </section>
-    
+
     <div class="container-fluid my-4 px-lg-5">
-      
       <!-- Balanced Row Layout Canvas -->
       <div class="header-layout-grid mb-4">
-        
-        <!-- Left Side: Manual Block Entry Form Component -->
-        <div class="d-none d-md-block">
-          <form 
-            action="/admin/security/blacklist" 
-            method="POST" 
-            onsubmit="return confirm('Permanently block these network targets?');" 
-            class="d-flex align-items-center gap-2 mb-0"
-          >
-            <span class="text-muted small fw-bold text-uppercase d-none d-lg-inline form-label-text">
-              Block IP(s):
-            </span>
-            <input 
-              type="text" 
-              name="ipList" 
-              class="form-control form-control-custom font-monospace py-1" 
-              placeholder="Enter IP(s) ..." 
-              required 
-            />
-            <button 
-              type="submit" 
-              class="btn btn-sm btn-danger text-white shadow-sm fw-bold px-3 btn-submit-block"
-            >Apply</button>
-          </form>
-        </div>
-
-        <!-- Center Column Target: Heading Titles Stack -->
         <div class="gallery-header">
-          <h1>Firewall Blacklist (<%= bannedIps.length %> Total)</h1>
+          <h1>
+            Firewall Blacklist (<%= bannedIps.length %>
+            Total)
+          </h1>
           <p>Bottoms Up Golf League</p>
         </div>
-        
-        <!-- Right Side: Structural Space Balancer -->
         <div></div>
+      </div>
 
+      <div class="ban-ip-entry mb-3 d-none d-md-flex justify-content-center">
+        <form
+          action="/admin/security/blacklist"
+          method="POST"
+          onsubmit="return confirm('Permanently block these network targets?');"
+          class="ban-ip-form d-flex align-items-center gap-2 mb-0"
+        >
+          <span
+            class="text-muted small fw-bold text-uppercase d-none d-lg-inline form-label-text"
+          >
+            Block IP(s):
+          </span>
+          <input
+            type="text"
+            name="ipList"
+            class="form-control form-control-custom font-monospace py-1"
+            placeholder="Enter IP(s) ..."
+            required
+          />
+          <button
+            type="submit"
+            class="btn btn-sm btn-danger text-white shadow-sm fw-bold px-3 btn-submit-block"
+          >
+            Apply
+          </button>
+        </form>
       </div>
 
       <!-- Alert Flash Announcements -->
       <div class="row justify-content-center">
         <div class="col-12">
           <% if (typeof success !== 'undefined' && success.length > 0) { %>
-            <div class="alert alert-success alert-dismissible fade show shadow-sm py-2 px-3 small" role="alert">
-              <strong>Success!</strong> <%= success %>
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+          <div
+            class="alert alert-success alert-dismissible fade show shadow-sm py-2 px-3 small"
+            role="alert"
+          >
+            <strong>Success!</strong>
+            <%= success %>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+            ></button>
+          </div>
           <% } %>
           <% if (typeof error !== 'undefined' && error.length > 0) { %>
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm py-2 px-3 small" role="alert">
-              <strong>Error!</strong> <%= error %>
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+          <div
+            class="alert alert-danger alert-dismissible fade show shadow-sm py-2 px-3 small"
+            role="alert"
+          >
+            <strong>Error!</strong>
+            <%= error %>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+            ></button>
+          </div>
           <% } %>
         </div>
       </div>
@@ -74,7 +90,9 @@
         <div class="col-12">
           <div class="card shadow-sm blacklist-card border-0">
             <div class="table-responsive">
-              <table class="table table-sm table-striped table-hover align-middle mb-0 text-center">
+              <table
+                class="table table-sm table-striped table-hover align-middle mb-0 text-center"
+              >
                 <thead class="table-dark">
                   <tr>
                     <th class="col-ip">Target IP</th>
@@ -88,74 +106,106 @@
                 </thead>
                 <tbody>
                   <% if (!bannedIps || bannedIps.length === 0) { %>
-                    <tr>
-                      <td colspan="7" class="py-4 text-muted">
-                        <h5 class="fw-bold m-0 empty-state-title">The IP firewall blacklist is clean</h5>
-                        <p class="small text-muted mb-0">No network nodes are currently blocked by the application.</p>
-                      </td>
-                    </tr>
+                  <tr>
+                    <td colspan="7" class="py-4 text-muted">
+                      <h5 class="fw-bold m-0 empty-state-title">
+                        The IP firewall blacklist is clean
+                      </h5>
+                      <p class="small text-muted mb-0">
+                        No network nodes are currently blocked by the
+                        application.
+                      </p>
+                    </td>
+                  </tr>
                   <% } else { %>
-                    <% bannedIps.forEach(target => { %>
-                      <tr>
-                        <!-- IP Node Address -->
-                        <td class="col-ip">
-                          <span class="text-danger ip-badge small"> <%= target.ip %> </span>
-                        </td>
-                        <!-- Offense Strikes Count Indicator -->
-                        <td class="col-strikes">
-                          <span class="badge <%= target.strikes >= 10 ? 'bg-danger' : 'bg-warning text-dark' %> px-2 py-1 small">
-                            <%= target.strikes %>/10
-                          </span>
-                        </td>
-                        <!-- Last Source Port Cell -->
-                        <td class="col-port">
-                          <% if (target.last_source_port) { %>
-                            <span class="badge bg-secondary port-badge px-2 py-1 small badge-port">
-                              <%= target.last_source_port %>
-                            </span>
-                          <% } else { %>
-                            <span class="text-muted small">—</span>
-                          <% } %>
-                        </td>
-                        <!-- Timestamps (Denver/Mountain Localization) -->
-                        <td class="small text-muted font-monospace cell-timestamp col-dates">
-                          <% if (target.first_seen) { %>
-                            <%= new Date(target.first_seen).toLocaleString("en-US", { timeZone: "America/Denver", dateStyle: "short", timeStyle: "short" }) %>
-                          <% } else { %>
-                            Manual
-                          <% } %>
-                        </td>
-                        <td class="small text-muted font-monospace cell-timestamp col-dates">
-                          <% if (target.last_seen) { %>
-                            <%= new Date(target.last_seen).toLocaleString("en-US", { timeZone: "America/Denver", dateStyle: "short", timeStyle: "short" }) %>
-                          <% } else { %>
-                            Manual
-                          <% } %>
-                        </td>
-                        <!-- Ban Type Badge Indicator -->
-                        <td class="col-type">
-                          <% if (target.manual_ban && (target.manual_ban == 1 || target.manual_ban === true || target.manual_ban == "1")) { %>
-                            <span class="badge bg-info text-dark px-2 py-1 small badge-type">Manual</span>
-                          <% } else { %>
-                            <span class="badge bg-secondary px-2 py-1 small badge-type">Auto</span>
-                          <% } %>
-                        </td>
-                        <!-- Lift Ban Action Endpoint Form -->
-                        <td class="col-action">
-                          <form 
-                            action="/admin/security/blacklist/delete" 
-                            method="POST" 
-                            onsubmit="return confirm('Restore structural access for <%= target.ip %>?');" 
-                            class="m-0"
-                          >
-                            <input type="hidden" name="ip" value="<%= target.ip %>" />
-                            <button type="submit" class="btn btn-xs btn-outline-success rounded px-2 py-1 btn-lift-ban">
-                              Lift Ban
-                            </button>
-                          </form>
-                        </td>
-                      </tr>
-                    <% }); %>
+                  <% bannedIps.forEach(target => { %>
+                  <tr>
+                    <!-- IP Node Address -->
+                    <td class="col-ip">
+                      <span class="text-danger ip-badge small">
+                        <%= target.ip %>
+                      </span>
+                    </td>
+                    <!-- Offense Strikes Count Indicator -->
+                    <td class="col-strikes">
+                      <span
+                        class="badge <%= target.strikes >= 10 ? 'bg-danger' : 'bg-warning text-dark' %> px-2 py-1 small"
+                      >
+                        <%= target.strikes %>/10
+                      </span>
+                    </td>
+                    <!-- Last Source Port Cell -->
+                    <td class="col-port">
+                      <% if (target.last_source_port) { %>
+                      <span
+                        class="badge bg-secondary port-badge px-2 py-1 small badge-port"
+                      >
+                        <%= target.last_source_port %>
+                      </span>
+                      <% } else { %>
+                      <span class="text-muted small">—</span>
+                      <% } %>
+                    </td>
+                    <!-- Timestamps (Denver/Mountain Localization) -->
+                    <td
+                      class="small text-muted font-monospace cell-timestamp col-dates"
+                    >
+                      <% if (target.first_seen) { %> <%= new
+                      Date(target.first_seen).toLocaleString("en-US", {
+                      timeZone: "America/Denver", dateStyle: "short", timeStyle:
+                      "short" }) %> <% } else { %> Manual <% } %>
+                    </td>
+                    <td
+                      class="small text-muted font-monospace cell-timestamp col-dates"
+                    >
+                      <% if (target.last_seen) { %> <%= new
+                      Date(target.last_seen).toLocaleString("en-US", { timeZone:
+                      "America/Denver", dateStyle: "short", timeStyle: "short"
+                      }) %> <% } else { %> Manual <% } %>
+                    </td>
+                    <!-- Ban Type Badge Indicator -->
+                    <td class="col-type">
+                      <% if (target.manual_ban && (target.manual_ban == 1 ||
+                      target.manual_ban === true || target.manual_ban == "1")) {
+                      %>
+                      <span
+                        class="badge bg-info text-dark px-2 py-1 small badge-type"
+                        >Manual</span
+                      >
+                      <% } else { %>
+                      <span
+                        class="badge bg-secondary px-2 py-1 small badge-type"
+                        >Auto</span
+                      >
+                      <% } %>
+                    </td>
+                    <!-- Lift Ban Action Endpoint Form -->
+                    <td class="col-action">
+                      <form
+                        action="/admin/security/blacklist/delete"
+                        method="POST"
+                        onsubmit="
+                          return confirm(
+                            'Restore structural access for <%= target.ip %>?',
+                          );
+                        "
+                        class="m-0"
+                      >
+                        <input
+                          type="hidden"
+                          name="ip"
+                          value="<%= target.ip %>"
+                        />
+                        <button
+                          type="submit"
+                          class="btn btn-xs btn-outline-success rounded px-2 py-1 btn-lift-ban"
+                        >
+                          Lift Ban
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  <% }); %>
                   <% } %>
                 </tbody>
               </table>
@@ -163,7 +213,8 @@
           </div>
         </div>
       </div>
-    </div> <!-- Closes container fluid -->
+    </div>
+    <!-- Closes container fluid -->
 
     <section><%- include('./partials/footer'); %></section>
     <section><%- include('./partials/scripts'); %></section>

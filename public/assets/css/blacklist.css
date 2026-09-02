@@ -88,13 +88,32 @@
   font-size: 0.9rem;
 }
 
-/* 🎯 3-COLUMN LAYOUT SYSTEM FOR EXACT CENTERING */
+/* 🎯 HEADER CENTERING */
 .header-layout-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  margin-bottom: 0.75rem;
 }
 .gallery-header {
   grid-column: 2;
   text-align: center;
+  margin-bottom: 0;
+}
+
+.ban-ip-entry {
+  display: flex;
+  justify-content: center;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.ban-ip-form {
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.row.mt-2 {
+  margin-top: 0 !important;
 }
