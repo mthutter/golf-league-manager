@@ -164,6 +164,33 @@ th.sort-desc::after {
   font-size: clamp(14px, 2vw, 18px);
 }
 
+.resizable-table thead th {
+  position: relative;
+  min-width: 72px;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+.resizable-table thead th:not(:last-child)::after {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  width: 8px;
+  content: "";
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.resizable-table.resizing-column,
+.resizable-table.resizing-column * {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
 .table-date th {
   background: rgba(0, 0, 0, 0.2);
   color: white;
@@ -445,12 +472,7 @@ th.sort-desc::after {
   width: 40px;
   height: 1px;
   margin: 10px auto 0;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 /*=============== STANDINGS SECTION =================*/

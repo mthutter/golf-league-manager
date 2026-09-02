@@ -73,6 +73,58 @@
   });
 </script>
 <script>
+  document.querySelectorAll("table").forEach((tableElement) => {
+    const headerCells = tableElement.querySelectorAll("thead th");
+    if (headerCells.length < 2) return;
+
+    tableElement.classList.add("resizable-table");
+    tableElement.addEventListener(
+      "click",
+      (event) => {
+        if (!tableElement.classList.contains("suppress-header-click")) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        tableElement.classList.remove("suppress-header-click");
+      },
+      true,
+    );
+
+    headerCells.forEach((headerCell) => {
+      headerCell.addEventListener("pointerdown", (event) => {
+        const cellBounds = headerCell.getBoundingClientRect();
+        if (cellBounds.right - event.clientX > 10 || headerCell.cellIndex === headerCells.length - 1) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        tableElement.classList.add("resizing-column");
+
+        const startingWidth = cellBounds.width;
+        const startingX = event.clientX;
+        const minimumWidth = 72;
+
+        const resizeColumn = (moveEvent) => {
+          const nextWidth = Math.max(minimumWidth, startingWidth + moveEvent.clientX - startingX);
+          headerCell.style.width = `${nextWidth}px`;
+          tableElement.querySelectorAll(`tr > *:nth-child(${headerCell.cellIndex + 1})`).forEach((cell) => {
+            cell.style.width = `${nextWidth}px`;
+          });
+        };
+
+        const stopResize = () => {
+          tableElement.classList.remove("resizing-column");
+          tableElement.classList.add("suppress-header-click");
+          document.removeEventListener("pointermove", resizeColumn);
+          document.removeEventListener("pointerup", stopResize);
+        };
+
+        document.addEventListener("pointermove", resizeColumn);
+        document.addEventListener("pointerup", stopResize, { once: true });
+      });
+    });
+  });
+</script>
+<script>
   window.addEventListener("DOMContentLoaded", () => {
     const scrollTarget = document.getElementById("auto-scroll");
     if (scrollTarget) {
