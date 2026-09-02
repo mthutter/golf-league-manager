@@ -16,11 +16,6 @@
         <div class="gallery-header">
             <h1>Tee Times</h1>
             <p>Bottoms Up Golf League • 2026 Season</p>
-            <h6>
-                <span class="tees-blue">Blue</span> /
-                <span class="tees-gold">Gold</span>
-                Tees
-            </h6>
         </div>
         <!-- Action Panel Dashboard Controls (Only Visible if Admin is Authenticated) -->
         <% if (locals.isAdmin) { %>
@@ -54,14 +49,22 @@
         <!-- Card Container -->
         <div class="tee-card">
 
-            <!-- Card Header -->
-            <div class="tee-card-header">
-                <div>
+            <div class="tee-card-topbar">
+                <div class="tee-card-subheader">
+                    <h6>
+                        <span class="tees-blue">Blue</span> /
+                        <span class="tees-gold">Gold</span>
+                        Tees
+                    </h6>
+                </div>
+
+                <div class="tee-card-date">
                     <h2 style="color:white" class="tee-sheet-title">
                         <strong>Week <%= currentWeek.week_number %>
                             (<%= currentWeek.displayDate %>) </strong>
                     </h2>
                 </div>
+
                 <div class="update-chip">
                     <span class="update-label">Updated</span>
                     <span class="update-value"><%= lastUpdated %></span>

@@ -2,39 +2,7 @@
 <html lang="en">
 <head>
   <%- include('./partials/header') %>
-  <style>
-    /* ===== Layout & Typography Colors from skins.ejs ===== */
-    .player-link { color: #1b4332; text-decoration: none; transition: color 0.2s ease; }
-    .player-link:hover { color: #18aa24; text-decoration: underline; }
-    .gallery-header { text-align: center; margin-top: 1.5rem; }
-    .gallery-header h1 { font-weight: 700; margin-bottom: 0.5rem; }
-    .gallery-header p { opacity: 0.9; margin-bottom: 1rem; }
-    
-    /* ===== Table & Card Framework Architecture ===== */
-    .standings-table-card { border: 1.5px solid rgba(27, 67, 50, 0.15); border-radius: 18px; overflow: hidden; }
-    .players { font-size: clamp(0.65rem, 1vw, 0.85rem); }
-    
-    /* ===== Week Navigation Pill Layout ===== */
-    .button-link { display: inline-block; text-decoration: none; }
-    .week-results-container { display: flex; align-items: center; justify-content: center; gap: .75rem; margin-top: 0.75rem; flex-wrap: wrap; }
-    .week-results-label { font-weight: 700; color: #1b4332; margin-bottom: 0; }
-    .week-nav { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
-    .week-nav .btn { min-width: 85px; font-weight: 600; border-radius: 50px; border: none; transition: all 0.2s ease; }
-    .week-nav .btn:hover { transform: translateY(-1px); }
-    
-    /* ===== Trend Movement Badges ===== */
-    .trend-up { color: #18aa24; font-weight: bold; font-size: inherit; }
-    .trend-down { color: #dc3545; font-weight: bold; font-size: inherit; }
-    .trend-same { color: #6c757d; font-size: inherit; }
-    
-    /* ===== Podium Highlights ===== */
-    .gold-cell { background-color: gold !important; color: #664d03 !important; font-weight: 700; }
-    .silver-cell { background-color: silver !important; font-weight: 700; }
-    .bronze-cell { background-color: rgb(205, 127, 50) !important; font-weight: 700; }
-    
-    /* Ensure footer looks seamless and inherits structural styling */
-    .league-table tfoot td { border: 1px solid rgba(27, 67, 50, 0.1); vertical-align: middle; padding: 8px 12px; }
-  </style>
+  
 </head>
 <body>
   <%- include('./partials/navbar') %>
