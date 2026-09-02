@@ -216,9 +216,9 @@
 }
 
 .tee-card-topbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 18px;
   margin-bottom: 12px;
 }
@@ -249,7 +249,7 @@
 }
 
 .update-chip {
-  flex: 0 0 auto;
+  justify-self: end;
   width: 120px;
   justify-content: center;
   background: white;
