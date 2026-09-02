@@ -8,11 +8,15 @@ import posthog from "../utilities/posthog.js";
  * GET /scores/new
  */
 export const getNewScoresForm = catchAsync(async (req, res, next) => {
-  logger.info("Loading metadata configuration parameters for the weekly score entry form");
+  logger.info(
+    "Loading metadata configuration parameters for the weekly score entry form",
+  );
   // 1. Fetch raw data from the scores service
   const { members, holes } = await scoresService.getFormData();
   // 2. Filter the members list to remove inactive players (status = 'NO')
-  const activeMembers = Array.isArray(members) ? members.filter((member) => member.status !== "No") : [];
+  const activeMembers = Array.isArray(members)
+    ? members.filter((member) => member.status !== "No")
+    : [];
   // 3. Render the form with only active league members
   return res.render("weekly-scores-form", {
     members: activeMembers,
@@ -48,7 +52,9 @@ export const saveScore = catchAsync(async (req, res, next) => {
         },
         "Score card entry rejected: Unique database index conflict",
       );
-      return res.status(400).send("Scores already entered for this player/week.");
+      return res
+        .status(400)
+        .send("Scores already entered for this player/week.");
     }
     // Forward unexpected errors (like disk lock or network timeout) to centralized handler
     throw err;
@@ -59,7 +65,9 @@ export const saveScore = catchAsync(async (req, res, next) => {
  * GET /scores/standings
  */
 export const getStandings = catchAsync(async (req, res, next) => {
-  logger.info("Computing global season point totals and league handicaps for standings table");
+  logger.info(
+    "Computing global season point totals and league handicaps for standings table",
+  );
   const selectedWeek = Number(req.query.week) || null;
   const data = await scoresService.getSeasonStandings(selectedWeek);
   return res.render("standings", data);
@@ -70,7 +78,9 @@ export const getStandings = catchAsync(async (req, res, next) => {
  */
 export const getWeeklyScores = catchAsync(async (req, res, next) => {
   const weekId = req.params.weekId;
-  logger.info("Aggregating individual stroke scores and points for week breakdown");
+  logger.info(
+    "Aggregating individual stroke scores and points for week breakdown",
+  );
   const results = await scoresService.getWeeklyBreakdown(weekId);
   const weekDate = await weeksService.getWeek(weekId);
   return res.render("weekly", {
@@ -104,7 +114,9 @@ export const getMemberProfile = catchAsync(async (req, res, next) => {
  * Legacy redirect wrapper handler
  */
 export const getScoresLegacy = catchAsync(async (req, res, next) => {
-  logger.info("Rerouting legacy leaderboard endpoint request to standard standings layout");
+  logger.info(
+    "Rerouting legacy leaderboard endpoint request to standard standings layout",
+  );
   return res.redirect("/scores/standings");
 });
 
