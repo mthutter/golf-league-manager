@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap");
-
 /* ======================== NAVBAR MAIN ======================== */
 .navbar {
   margin-top: 0px;
@@ -11,20 +9,38 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Added a subtle modern shadow layer */
 }
 
-/* Updated Branding - Clean Contemporary White */
+/* Updated Branding - Synchronized Clean Contemporary Font Stack */
+/* Updated Branding - Anchored Luxury Sans-Serif Layout */
 .navbar-brand {
-  font-family: "Merriweather", serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  font-size: 1.25rem; /* Balances perfectly with the padding of menu boxes */
+  letter-spacing: 0.02em;
+  padding-left: 14px; /* Clear breathing room between the gold bar and text */
+  margin-right: 15px; /* Structural gap before the first menu item begins */
+  display: inline-flex;
+  align-items: center;
+
+  /* 🟢 THE ANCHOR: Premium gold structural boundary line matching your gradient */
+  border-left: 3px solid #d4af37 !important;
+  border-radius: 2px; /* Micro-radius to soften the hard edges of the accent bar */
 
   /* Modern text gradient fill */
   background: linear-gradient(135deg, #f4e0a5 0%, #d4af37 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  transition:
+    transform 0.2s ease-in-out,
+    opacity 0.2s ease-in-out;
 }
 
 .navbar-brand:hover {
-  opacity: 0.9;
+  opacity: 0.95;
+  transform: scale(1.01); /* Premium micro-expansion matching the menu links */
 }
 
 /* Target the standard Bootstrap navbar menu navigation links */
@@ -35,7 +51,6 @@
   border-radius: 6px; /* Smooth modern rounded edges */
   padding: 6px 14px !important; /* Balanced internal breathing room */
   margin: 0 5px; /* Clean spacing between individual menu buttons */
-
   color: #ffffff !important; /* Changed the dark green text to crisp white */
   font-weight: 500;
   font-family:
@@ -64,14 +79,11 @@
 }
 
 /* ======================== NAVBAR DROPDOWN ======================== */
-
 .navbar .dropdown-menu {
   /* Increased from 0.85 to 0.96 for a solid, highly-readable masking effect over tables */
   background: rgba(30, 90, 30, 0.96) !important;
-
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 12px;
   overflow: hidden;
@@ -82,6 +94,7 @@
   left: 50% !important;
   right: auto !important;
 }
+
 .navbar .dropdown-item {
   color: rgba(255, 255, 255, 0.85) !important; /* Soft white text by default */
   font-family:
@@ -98,7 +111,7 @@
   text-align: center;
 }
 
-/* 3. A premium, distinct hover tile inside the folder */
+/* A premium, distinct hover tile inside the folder */
 .navbar .dropdown-item:hover,
 .navbar .dropdown-item:focus {
   background-color: rgba(255, 255, 255, 0.15) !important;
@@ -117,7 +130,6 @@
     margin-left: auto;
     margin-right: auto;
   }
-
   /* Retained your clean mobile overrides */
   .navbar-nav .nav-link {
     padding: 10px 0 !important;
@@ -127,7 +139,6 @@
     margin: 4px 0;
     text-align: center;
   }
-
   .navbar .dropdown-menu {
     inset: auto !important;
     transform: none !important;
@@ -150,7 +161,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Desktop Tight-Fit Padding (1200px up to 1425px) */
+/* Desktop Tight-Fit Padding (1200px up to 1525px) */
 @media (min-width: 1200px) and (max-width: 1525px) {
   .navbar-nav {
     flex-wrap: nowrap !important;
