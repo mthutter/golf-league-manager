@@ -13,5 +13,6 @@
 @import url("./components/rules.css");
 @import url("./components/handicap.css");
 @import url("./components/weather.css");
+@import url("./components/auth.css");
 @import url("./components/media.css");
 @import url("./layout/responsive.css");
