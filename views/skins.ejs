@@ -64,7 +64,7 @@
             <table class="table table-bordered align-middle text-center mb-0 league-table">
               <thead class="scorecard-header">
                 <tr>
-                  <th rowspan="2" class="text-start" style="min-width: 110px"> Player </th>
+                  <th rowspan="2" style="min-width: 110px"> Player </th>
                   <th rowspan="2" style="width: 70px">HCP</th>
                   <% if (week.week_number > 11 ) { %>
                   <% for (let h = 10; h <= 18; h++) { %>
@@ -119,7 +119,7 @@
                   <td class="fw-bold text-center players">
                     <%= player.skinsWon %>
                   </td>
-                  <td class="fw-bold text-end text-success bg-light pe-3">
+                  <td class="fw-bold text-center text-success bg-light">
                     $<%= player.payout.toFixed(2) %>
                   </td>
                 </tr>
@@ -158,7 +158,7 @@
                   <td class="text-center players">
                     <%= (typeof reportTotals !== 'undefined' && reportTotals.skins) ? reportTotals.skins : 0 %>
                   </td>
-                  <td class="text-end pe-3">
+                  <td class="text-center">
                     $<%= (typeof reportTotals !== 'undefined' && reportTotals.payout) ? reportTotals.payout.toFixed(2) : '0.00' %>
                   </td>
                 </tr>

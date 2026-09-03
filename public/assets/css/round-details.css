@@ -59,24 +59,24 @@
    SCORE COLORS
    ========================================== */
 
-.scorecard td.eagle {
-  background-color: #ffd54f !important;
+body .main-wrapper table.scorecard td.eagle {
+  background-color: #ffd54f;
 }
 
-.scorecard td.par {
-  background-color: #ffffff !important;
+body .main-wrapper table.scorecard td.par {
+  background-color: #ffffff;
 }
 
-.scorecard td.bogey {
-  background-color: #ffe0b2 !important;
+body .main-wrapper table.scorecard td.bogey {
+  background-color: #ffe0b2;
 }
 
-.scorecard td.double-plus {
-  background-color: #ffcdd2 !important;
+body .main-wrapper table.scorecard td.double-plus {
+  background-color: #ffcdd2;
 }
 
-.scorecard td.birdie {
-  background-color: rgba(47, 138, 47, 0.18) !important;
+body .main-wrapper table.scorecard td.birdie {
+  background-color: rgba(47, 138, 47, 0.18);
 }
 
 /* ==========================================
@@ -100,9 +100,9 @@
   font-size: 0.84rem;
 }
 
-.summary-card th,
-.summary-card td {
-  padding: 0.3rem 0.75rem !important;
+body .main-wrapper table.summary-card th,
+body .main-wrapper table.summary-card td {
+  padding: 0.3rem 0.75rem;
   vertical-align: middle;
 }
 
@@ -136,52 +136,26 @@
   border-radius: 12px;
 }
 
-/* ==========================================
-   MOBILE
-   ========================================== */
-
-@media (max-width: 768px) {
-  .scorecard {
-    font-size: 0.72rem;
-  }
-
-  .scorecard th,
-  .scorecard td {
-    width: 30px;
-    min-width: 30px;
-    padding: 0.18rem;
-  }
-
-  .scorecard tbody th {
-    width: 72px;
-    min-width: 72px;
-  }
-
-  .info-value {
-    font-size: 0.95rem;
-  }
-}
-
-.scorecard td:last-child {
-  background: rgba(47, 138, 47, 0.14) !important;
+body .main-wrapper table.scorecard td:last-child {
+  background: rgba(47, 138, 47, 0.14);
   font-weight: 700;
-  color: var(--green-dark) !important;
-  border-left: 3px solid var(--green-main) !important;
+  color: var(--green-dark);
+  border-left: 3px solid var(--green-main);
 }
 
-.score-total-header {
-  background: var(--green-main) !important;
-  color: #fff !important;
-  border-left: 3px solid #1f5f1f !important;
+body .main-wrapper table.scorecard th.score-total-header {
+  background: var(--green-main);
+  color: #fff;
+  border-left: 3px solid #1f5f1f;
 }
 
-.score-total {
-  background: #e8f5e9 !important;
-  color: var(--green-dark) !important;
+body .main-wrapper table.scorecard td.score-total {
+  background: #e8f5e9;
+  color: var(--green-dark);
   font-weight: 700;
   font-size: 0.92rem;
-  border-left: 3px solid var(--green-main) !important;
-  text-align: center !important;
+  border-left: 3px solid var(--green-main);
+  text-align: center;
 }
 .score-label {
   font-weight: 700;
@@ -206,6 +180,28 @@
   margin-right: 0.35rem;
 }
 
+@media (max-width: 768px) {
+  .scorecard {
+    font-size: 0.72rem;
+  }
+
+  .scorecard th,
+  .scorecard td {
+    width: 30px;
+    min-width: 30px;
+    padding: 0.18rem;
+  }
+
+  .scorecard tbody th {
+    width: 72px;
+    min-width: 72px;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 600px) {
   .scorecard .hole-col {
     width: 30px;
@@ -221,6 +217,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
+
   .scorecard th,
   .scorecard td {
     padding: 0.2rem;

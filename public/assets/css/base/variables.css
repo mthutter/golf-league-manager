@@ -1,0 +1,23 @@
+/* public/assets/css/base/variables.css */
+
+:root {
+  /* Green Brand Palette */
+  --green-main: rgb(47, 138, 47);
+  --green-dark: rgb(30, 110, 30);
+  --green-light: rgba(144, 238, 144, 0.95);
+  --green-hover: rgb(89, 195, 62);
+
+  /* Administration Modules */
+  --admin-primary: #1b4332;
+  --admin-accent: #2d6a4f;
+  --admin-success: #40916c;
+  --admin-danger: #e63946;
+  --admin-bg-soft: #f8f9fa;
+
+  /* Layout Semantics */
+  --text-dark: #1e4d1e;
+  --light-gray: #f5f5f5;
+  --card-bg: #ffffff;
+  --border-gray: #e2e8f0;
+  --text-muted: #718096;
+}

@@ -157,18 +157,18 @@
 }
 
 /* ===== Podium Colors ===== */
-.gold-cell {
-  background-color: #ffd700 !important;
+body .main-wrapper table.standings-table td.gold-cell {
+  background-color: #ffd700;
   font-weight: bold;
 }
 
-.silver-cell {
-  background-color: #c0c0c0 !important;
+body .main-wrapper table.standings-table td.silver-cell {
+  background-color: #c0c0c0;
   font-weight: bold;
 }
 
-.bronze-cell {
-  background-color: #cd7f32 !important;
+body .main-wrapper table.standings-table td.bronze-cell {
+  background-color: #cd7f32;
   color: white;
   font-weight: bold;
 }
@@ -178,9 +178,9 @@
   font-weight: 700;
 }
 
-.active-week {
-  background-color: #1b4332 !important;
-  color: white !important;
+body .main-wrapper .week-nav .active-week {
+  background-color: #1b4332;
+  color: white;
   font-weight: 700;
   transform: scale(1.05);
 }

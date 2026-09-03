@@ -1,0 +1,39 @@
+/* public/assets/css/layout/footer.css */
+
+/* =========================================================================
+   SYSTEM FOOTER COHESIVE WRAPPERS (FORCE REBOOT COMPLIANCE)
+   ========================================================================= */
+html body footer.site-footer,
+body .site-footer[class] {
+  margin-top: auto;
+  padding: 16px 20px;
+  background: #90ee90;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+html body div.footer-content,
+body .footer-content[class] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* 🟢 THE TRIPLE-HIT OVERRIDE: Targets via tag, class, and layout hierarchies simultaneously */
+html body .site-footer .footer-content a,
+.site-footer div a[href],
+footer.site-footer a {
+  color: var(--text-dark);
+  text-decoration: none !important; /* 🌟 Temporarily using !important ONLY here as an absolute diagnostic anchor */
+}
+
+html body .site-footer .footer-content a:hover,
+footer.site-footer a:hover {
+  text-decoration: none !important;
+}

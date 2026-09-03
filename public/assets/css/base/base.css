@@ -1,0 +1,42 @@
+html,
+body {
+  min-height: 100%;
+  background-color: var(--green-dark);
+}
+
+a {
+  text-decoration: none;
+}
+
+/* =========================================================================
+   3. SITE HERO LOGO BANNER (REINFORCED CENTERING & SPECIFICITY)
+   ========================================================================= */
+/* Chaining parent structural selectors guarantees the box centers and clips correctly */
+html body .main-wrapper .hero-wrapper,
+div.hero-wrapper[class] {
+  display: block;
+  width: 100%;
+  max-width: 1260px; /* Hardlocks container box expansion on massive widescreen monitors */
+  margin: 15px auto 25px; /* 🟢 CENTERS CONTAINER: Auto margins force it dead center in the lane */
+  height: clamp(240px, 32vw, 420px); /* 🟢 LOCKS RATIO: Golden aspect scale prevents cropping distortion */
+  flex-shrink: 0;
+
+  /* 🟢 CLIPS EDGES: Prevents the inner WebP graphic layers from bleeding past the curves */
+  overflow: hidden;
+  position: relative;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  background: var(--green-dark);
+}
+
+html body .main-wrapper .hero-wrapper .hero-image,
+img.hero-image[class] {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  /* 🟢 ZERO STRETCH: Forces the graphic to fill the bounding box naturally without compression */
+  object-fit: cover;
+  object-position: center 42%; /* Pinpoints the perfect focal composition crop on the mountains */
+}

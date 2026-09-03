@@ -1,0 +1,78 @@
+.player-form-card {
+  max-width: 800px;
+  margin: 1.5rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: var(--card-bg);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-section {
+  margin-bottom: 1.8rem;
+}
+
+.form-section h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--green-dark);
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.form-control,
+.form-control-custom {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 2px solid #d8e8d8;
+  font-size: 1rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.form-control:focus,
+.form-control-custom:focus {
+  border-color: var(--green-main);
+  box-shadow: 0 0 0 4px rgba(47, 138, 47, 0.15);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.btn-submit-player,
+.btn-save,
+.btn-admin-submit {
+  display: inline-block;
+  font-weight: 600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  background-color: var(--green-main);
+  border-radius: 10px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-submit-player:hover,
+.btn-save:hover {
+  background-color: var(--green-dark);
+  transform: translateY(-1px);
+}
+
+.btn-submit-player:disabled {
+  background-color: #a3cfa3;
+  cursor: not-allowed;
+  transform: none;
+}

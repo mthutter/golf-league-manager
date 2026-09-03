@@ -1,0 +1,404 @@
+/* public/assets/css/components/league-tables.css */
+
+/* =========================================================================
+   5. UNIFIED CORE LEAGUE TABLES & DATA MATRIX
+   ========================================================================= */
+table {
+  margin-bottom: 0;
+}
+
+th,
+td {
+  border: 2px solid #dddddd;
+}
+
+th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+td {
+  text-align: center;
+  vertical-align: middle;
+  margin: 0 auto;
+}
+
+/* Visual Sort Flags */
+th.sort-asc::after {
+  content: " ▲";
+  position: absolute;
+  right: 8px;
+}
+th.sort-desc::after {
+  content: " ▼";
+  position: absolute;
+  right: 8px;
+}
+
+/* Standardized Dynamic League Table Profiles */
+.league-table {
+  table-layout: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse;
+}
+
+.league-table th {
+  background-color: #1b4332 !important;
+  color: white !important;
+  font-weight: 700;
+  font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  white-space: nowrap !important;
+  padding: 8px 12px !important;
+  height: auto !important;
+  line-height: 1.4 !important;
+}
+
+.league-table td {
+  vertical-align: middle !important;
+  border: 1px solid rgba(27, 67, 50, 0.1);
+  white-space: nowrap !important;
+  padding: 6px 12px !important;
+  height: auto !important;
+  line-height: 1.4 !important;
+}
+
+.league-table a {
+  color: #1b4332;
+  transition: color 0.2s ease;
+}
+.league-table a:hover {
+  color: #18aa24;
+  text-decoration: underline;
+}
+
+.league-table tfoot td {
+  border: 1px solid rgba(27, 67, 50, 0.1);
+  vertical-align: middle;
+  padding: 8px 12px;
+}
+
+.skins-table-card {
+  border: 1.5px solid rgba(27, 67, 50, 0.15);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.skins-table-card .league-table {
+  font-size: 0.88rem;
+}
+
+.scorecard-header th {
+  font-size: clamp(0.55rem, 1vw, 0.8rem);
+  padding: clamp(2px, 0.4vw, 5px) clamp(3px, 0.6vw, 8px);
+  font-weight: 700;
+}
+
+.week-results-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.week-results-label {
+  font-weight: 700;
+  color: #1b4332;
+  margin-bottom: 0;
+}
+
+/* Core Functional Tee-Tables */
+.table-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 10px 0 14px;
+  padding: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+}
+
+.tee-table {
+  width: auto;
+  margin: 0 auto;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.tee-table th,
+.tee-table td {
+  border: 2px solid black;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: clamp(14px, 2vw, 18px);
+}
+
+.table-date th {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.table-times th {
+  background: rgba(0, 0, 0, 0.1);
+  color: white;
+  font-weight: 600;
+}
+
+.tee-table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Dynamic Table Resizer Mechanics */
+.resizable-table thead th {
+  position: relative;
+  min-width: 72px;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+.resizable-table thead th:not(:last-child)::after {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  width: 8px;
+  content: "";
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.resizable-table.resizing-column,
+.resizable-table.resizing-column * {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
+/* Structurally Dense Typography Layout Modifiers */
+.compact-pixel-table {
+  width: max-content !important;
+  max-width: 100%;
+  margin: 0 auto;
+  table-layout: auto !important;
+}
+
+.nowrap-cell {
+  white-space: nowrap !important;
+}
+
+.players,
+.players-text {
+  font-size: clamp(0.65rem, 1vw, 0.85rem);
+}
+
+.player-link {
+  color: #1b4332;
+  transition: color 0.2s ease;
+}
+.player-link:hover {
+  color: #18aa24;
+  text-decoration: underline;
+}
+
+/* Podiums & Placement Highlights */
+.gold-cell {
+  background-color: gold !important;
+  color: #664d03 !important;
+  font-weight: 700;
+}
+.silver-cell {
+  background-color: silver !important;
+  font-weight: 700;
+}
+.bronze-cell {
+  background-color: rgb(205, 127, 50) !important;
+  font-weight: 700;
+}
+
+/* =========================================================================
+   REINFORCED SKINS MATCH INDICATORS & GOLF SCORING MATRIX
+   ========================================================================= */
+.skins-table-card .league-table tbody td.skin-winner-card,
+.skins-table-card .league-table tbody td.skin-carryover-winner-card {
+  background-color: #d1e7dd;
+  border: 3px solid #18aa24;
+  font-weight: 700;
+}
+
+.skins-table-card .league-table tbody td.skin-carryover-winner-card .net-score {
+  color: #664d03;
+  font-weight: 700;
+}
+
+.skins-table-card .league-table tbody td.skin-tie-pushed-cell {
+  background-color: #fff3cd;
+  border: 3px solid #d4af37;
+}
+
+.skins-table-card .league-table tbody td.skin-carryover-feeder-cell {
+  border: 3px dotted #d4af37;
+  background-color: rgba(255, 243, 205, 0.75);
+}
+
+body .main-wrapper table.league-table tr td.border-dashed {
+  border: 1.5px dashed rgba(27, 67, 50, 0.25);
+}
+
+body .main-wrapper table.league-table tr td .stroke-marker {
+  color: #dc3545;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+body .main-wrapper table.league-table tr td .score-cell {
+  line-height: 1.05;
+}
+
+body .main-wrapper table.league-table tr td .gross-score {
+  font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+}
+
+body .main-wrapper table.league-table tr td .net-score {
+  font-size: clamp(0.45rem, 0.8vw, 0.65rem);
+}
+
+/* 🟢 HIGH-PRECEDENCE HOLE ELEMENT CELLS OVERWRITE BOOTSTRAP BG OVERLAYS */
+body .main-wrapper table.league-table tbody tr td.eagle,
+table.league-table tbody tr td.eagle {
+  background-color: #ffd54f !important;
+}
+
+body .main-wrapper table.league-table tbody tr td.par,
+table.league-table tbody tr td.par {
+  background-color: #ffffff !important;
+  color: #111111;
+}
+
+body .main-wrapper table.league-table tbody tr td.bogey,
+table.league-table tbody tr td.bogey {
+  background-color: #ffe0b2 !important;
+}
+
+body .main-wrapper table.league-table tbody tr td.double-plus,
+table.league-table tbody tr td.double-plus {
+  background-color: #ffcdd2 !important;
+}
+
+body .main-wrapper table.league-table tbody tr td.birdie,
+table.league-table tbody tr td.birdie {
+  background-color: rgba(47, 138, 47, 0.18) !important;
+}
+
+/* Premium Glassmorphic Badge Layout for Header Hole Value Metrics */
+body .main-wrapper .hole-value-badge {
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50px;
+  padding: 4px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+body .main-wrapper .hole-value-badge .badge-label {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+body .main-wrapper .hole-value-badge .badge-price {
+  color: #fff3cd;
+  font-weight: 700;
+}
+
+/* =========================================================================
+   WEEK MOVERS BOARD COMPONENT
+   ========================================================================= */
+.movers-container {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  background: #ffffff;
+  border: 2px solid #1b4332;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.movers-header {
+  background: linear-gradient(135deg, #1b4332, #2d6a4f);
+  color: #ffffff;
+  text-align: center;
+  padding: 0.85rem 1rem;
+}
+
+.movers-title {
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.movers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.mover-panel {
+  background: #f8faf8;
+  border: 1px solid #d7e6d7;
+  border-radius: 10px;
+  padding: 0.85rem;
+}
+
+.panel-title {
+  text-align: center;
+  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #1b4332;
+}
+
+.mover-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(0.35rem, 1vw, 0.6rem) 0;
+  border-bottom: 1px solid #ececec;
+}
+
+.mover-row:last-child {
+  border-bottom: none;
+}
+
+.mover-name {
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1e4d1e;
+}
+
+.trend-up,
+.trend-down {
+  font-size: clamp(1rem, 1.1rem, 1.25rem);
+  font-weight: 700;
+  min-width: 3rem;
+  text-align: right;
+}
+
+.trend-up {
+  color: #198754;
+}
+.trend-down {
+  color: #dc3545;
+}

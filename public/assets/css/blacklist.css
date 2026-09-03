@@ -6,9 +6,9 @@
 }
 
 /* MINIMALIST COMPACT CELL PADDING AND WIDTHS */
-.table th,
-.table td {
-  padding: 4px 6px !important;
+body .main-wrapper table.table th,
+body .main-wrapper table.table td {
+  padding: 4px 6px;
   vertical-align: middle;
   white-space: nowrap;
 }

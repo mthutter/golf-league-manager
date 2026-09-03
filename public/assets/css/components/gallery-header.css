@@ -1,0 +1,45 @@
+.gallery-header {
+  display: block;
+  width: auto;
+  max-width: 700px;
+  text-align: center;
+  padding: 24px 20px;
+  margin: 30px auto 20px;
+  height: auto;
+}
+
+.gallery-header h1 {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  word-wrap: break-word;
+}
+
+.gallery-header p {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.08em;
+}
+
+.gallery-header::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 2px;
+  margin: 12px auto 0;
+  background: linear-gradient(to right, transparent, #d4af37, transparent);
+}
