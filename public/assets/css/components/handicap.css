@@ -1,0 +1,37 @@
+.filter-card {
+  max-width: 650px;
+  margin: 0 auto 1.5rem;
+  background-color: #ffffff;
+  border: 1px solid rgba(27, 67, 50, 0.15);
+  border-radius: 12px;
+}
+
+.form-select-custom {
+  border: 1.5px solid rgba(27, 67, 50, 0.2);
+  border-radius: 8px;
+  color: var(--green-dark);
+  font-weight: 500;
+}
+
+.form-select-custom:focus {
+  border-color: var(--green-main);
+  box-shadow: 0 0 0 0.25rem rgba(47, 138, 47, 0.25);
+}
+
+.results-table-card {
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  border: 1.5px solid rgba(27, 67, 50, 0.15);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.results-table-card .card-header h5 {
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.results-table-card .card-header h5 > .badge {
+  margin-left: auto;
+}

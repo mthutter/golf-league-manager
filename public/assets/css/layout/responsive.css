@@ -391,6 +391,22 @@
   }
 }
 
+/* --- Handicap History --- */
+@media (max-width: 768px) {
+  .filter-card,
+  .results-table-card {
+    width: calc(100% - 1rem);
+  }
+
+  .results-table-card {
+    max-width: calc(100% - 1rem);
+  }
+
+  .results-table-card .card-header h5 {
+    gap: 0.75rem;
+  }
+}
+
 /* --- Rules Document --- */
 @media (max-width: 768px) {
   .rules-desktop {
