@@ -6,7 +6,7 @@ import posthogClient from "../utilities/posthog.js";
 import cors from "cors";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { all, run } from "../config/db.js"; // ➕ ADDED: Native raw database connection driver imports
+import { all, run } from "../config/db.js";
 
 const blockedPaths = ["wlwmanifest.xml", "xmlrpc.php", "wp-admin", "wp-config", "wp-content", ".git"];
 const blockedExtensions = [".php", ".asp", ".aspx", ".env"];
@@ -15,15 +15,13 @@ class SecurityController {
   constructor() {
     this.spamhausCheck = this.spamhausCheck.bind(this);
     this.firewallMiddleware = this.firewallMiddleware.bind(this);
-    this.getBlacklist = this.getBlacklist.bind(this); // ➕ ADDED
-    this.addManualBan = this.addManualBan.bind(this); // ➕ ADDED
-    this.liftBan = this.liftBan.bind(this); // ➕ ADDED
-
+    this.getBlacklist = this.getBlacklist.bind(this);
+    this.addManualBan = this.addManualBan.bind(this);
+    this.liftBan = this.liftBan.bind(this);
     this.corsMiddleware = cors({
       origin: ["http://localhost:8080", "https://bottoms-up-cos.org"],
       credentials: true,
     });
-
     this.rateLimiter = rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 200,
@@ -65,31 +63,17 @@ class SecurityController {
   }
 
   /**
-   * ➕ ADDED: GET /admin/security/blacklist
-   * Renders the administrative active blacklist panel layout template context
-   */
-  /**
    * GET /admin/security/blacklist
    * Renders the administrative active blacklist panel layout template context
    */
   async getBlacklist(req, res) {
     try {
-      // 🚀 FIXED: Unified column extraction matches your exact table configuration
       const query = `
-                SELECT 
-                    ip, 
-                    strikes, 
-                    COALESCE(last_source_port, trigger_source_port) AS last_source_port, 
-                    first_seen, 
-                    last_seen, 
-                    manual_ban 
-                FROM permanent_bans 
-                ORDER BY last_seen DESC
-            `;
+        SELECT ip, strikes, COALESCE(last_source_port, trigger_source_port) AS last_source_port, first_seen, last_seen, manual_ban
+        FROM permanent_bans
+        ORDER BY last_seen DESC
+      `;
       const bannedIps = await all(query);
-
-      // 🚀 FIXED: Render targets your nested path.
-      // Removed redundant 'success' and 'error' objects since app.js supplies them globally!
       return res.render("blacklist", {
         bannedIps,
       });
@@ -100,7 +84,7 @@ class SecurityController {
   }
 
   /**
-   * ➕ ADDED: POST /admin/security/blacklist/add
+   * POST /admin/security/blacklist/add
    * Manually inserts an IP target override boundary directly into security operations
    */
   async addManualBan(req, res) {
@@ -109,7 +93,6 @@ class SecurityController {
       if (req.flash) req.flash("error", "A valid target IP address parameter must be supplied.");
       return res.redirect("/admin/security/blacklist");
     }
-
     try {
       const securityModel = await this._getSecurityModel();
       await securityModel.manuallyBanIP(ip);
@@ -120,8 +103,9 @@ class SecurityController {
     }
     return res.redirect("/admin/security/blacklist");
   }
+
   /**
-   * ➕ ADDED: POST /admin/security/blacklist/delete
+   * POST /admin/security/blacklist/delete
    * Purges database records and drops hot runtime memory cache restrictions
    */
   async liftBan(req, res) {
@@ -130,17 +114,14 @@ class SecurityController {
       if (req.flash) req.flash("error", "Target parameter node verification failed.");
       return res.redirect("/admin/security/blacklist");
     }
-
     try {
       const cleanIp = ip.trim();
       await run("DELETE FROM permanent_bans WHERE ip = ?", [cleanIp]);
-
       const securityModel = await this._getSecurityModel();
       if (securityModel) {
         securityModel.permanentBanCache.delete(cleanIp);
         securityModel.transientBanCache.del(cleanIp);
       }
-
       logger.info(`[SECURITY MANUAL DELETION] Authorized access clearance granted back to IP node: ${cleanIp}`);
       if (req.flash) req.flash("success", `Access rules restored. Successfully lifted restrictions for IP: ${cleanIp}`);
     } catch (err) {
@@ -224,11 +205,18 @@ class SecurityController {
         }
 
         if (typeof posthogClient !== "undefined") {
+          // Check if the IP is an internal loopback signature (common on Render container networks)
+          const isLoopback = cleanIp === "::1" || cleanIp === "127.0.0.1" || cleanIp === "localhost";
+
+          // Map local requests to 0.0.0.0 to prevent PostHog from defaulting to Render's host routing interface
+          const telemetryIp = isLoopback ? "0.0.0.0" : cleanIp;
+
           posthogClient.capture({
-            distinctId: cleanIp,
+            distinctId: `bot_${telemetryIp}`,
             event: "bot_attack_blocked",
             properties: {
-              $ip: cleanIp,
+              $ip: telemetryIp,
+              real_raw_ip: cleanIp, // Preserved explicitly for internal log transparency
               requested_path: req.path,
               source_port: sourcePort,
               strike_count: strikes,
