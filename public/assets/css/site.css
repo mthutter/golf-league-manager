@@ -443,29 +443,29 @@ th.sort-desc::after {
 }
 
 /* ======================== GALLERY HEADER ======================== */
-/* Reinforced the base selector to force precedence over Bootstrap wrappers */
+
+/* --- 1. Global / Desktop Rules (Screens 769px and wider) --- */
 div.gallery-header,
 .gallery-header[class] {
   display: block !important;
   width: auto !important;
-  max-width: 92% !important; /* Leaves a safe fluid margin gap on narrow mobile screens */
+  max-width: 700px !important; /* Elegant container width for large monitors */
   text-align: center !important;
-  padding: 16px 10px !important; /* Forces breathing room for wrapped multi-line text */
-  margin: 15px auto 10px !important;
-  height: auto !important; /* Overrides structural parent locks to expand down dynamically */
+  padding: 24px 20px !important; /* Generous breathing room on desktop */
+  margin: 30px auto 20px !important;
+  height: auto !important;
 }
 
-/* Targeted explicitly to ensure Bootstrap headings bow to your clamp values */
 .gallery-header h1,
 div.gallery-header h1 {
   font-family:
     system-ui,
     -apple-system,
     sans-serif !important;
-  font-size: clamp(20px, 5.5vw, 32px) !important; /* 🟢 Dynamic view scaling prioritized */
+  font-size: 32px !important; /* Clean, crisp size for desktop screens */
   font-weight: 800 !important;
   color: #ffffff !important;
-  line-height: 1.3 !important; /* 🟢 CRITICAL: Gives vertical space between text rows when wrapping */
+  line-height: 1.25 !important;
   margin-bottom: 6px !important;
   letter-spacing: -0.01em !important;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
@@ -478,13 +478,37 @@ div.gallery-header p {
     system-ui,
     -apple-system,
     sans-serif !important;
-  font-size: clamp(11px, 2.5vw, 13px) !important;
+  font-size: 13px !important;
   text-transform: uppercase !important;
   font-weight: 600 !important;
   color: rgba(255, 255, 255, 0.6) !important;
   letter-spacing: 0.08em !important;
 }
 
+/* --- 2. Mobile Media Breakpoint (Phones/Tablets 768px and under) --- */
+@media (max-width: 768px) {
+  div.gallery-header,
+  .gallery-header[class] {
+    max-width: 95% !important; /* Utilizes maximum horizontal screen space */
+    padding: 10px 5px !important; /* 🟢 Trims vertical padding so content sits closer to navbar */
+    margin: 12px auto 6px !important; /* 🟢 Tightens margin spacing to save vertical screen space */
+  }
+
+  .gallery-header h1,
+  div.gallery-header h1 {
+    font-size: 22px !important; /* 🟢 Explicitly drops font size to prevent overlapping */
+    line-height: 1.35 !important; /* 🟢 Expands line-height to make two-line wraps highly readable */
+    margin-bottom: 4px !important;
+  }
+
+  .gallery-header p,
+  div.gallery-header p {
+    font-size: 11px !important; /* 🟢 Slightly scales down the league subtext */
+    letter-spacing: 0.05em !important;
+  }
+}
+
+/* --- 3. Decorative Underline Asset --- */
 .gallery-header::after {
   content: "" !important;
   display: block !important;
