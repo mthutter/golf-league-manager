@@ -100,7 +100,9 @@ async function getPreviousWeekPlayed(currentWeekNumber) {
  * Locates the current active target week identification integer
  */
 async function getCurrentWeekPlayed() {
-  const row = await dbGet(`SELECT DISTINCT week_id AS week_number FROM scores ORDER BY CAST(week_id AS INTEGER) DESC LIMIT 1`);
+  const row = await dbGet(
+    `SELECT DISTINCT week_id AS week_number FROM scores ORDER BY CAST(week_id AS INTEGER) DESC LIMIT 1`,
+  );
   return row || { week_number: 1 };
 }
 // services/scores.service.js (PART 2 OF 2)
@@ -114,7 +116,9 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
   const latestWeek = await getWeek(latestWeekPlayed.week_number);
 
   if (latestWeek?.date) {
-    latestWeek.displayDate = new Date(latestWeek.date + "T12:00:00").toLocaleDateString("en-US", {
+    latestWeek.displayDate = new Date(
+      latestWeek.date + "T12:00:00",
+    ).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
@@ -125,14 +129,18 @@ export const getSeasonStandings = async (selectedWeekNumber = null) => {
   const currentWeek = await getWeek(currentWeekNumber);
 
   if (currentWeek && currentWeek.date) {
-    currentWeek.displayDate = new Date(currentWeek.date + "T12:00:00").toLocaleDateString("en-US", {
+    currentWeek.displayDate = new Date(
+      currentWeek.date + "T12:00:00",
+    ).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
   }
 
   const standings = await getStandingsThroughWeek(currentWeekNumber);
-  const previousStandings = await getStandingsThroughWeek(previousWeekPlayed.week_number);
+  const previousStandings = await getStandingsThroughWeek(
+    previousWeekPlayed.week_number,
+  );
 
   const previousRanks = {};
   previousStandings.forEach((player) => {
@@ -209,7 +217,9 @@ export async function getFormData() {
     ORDER BY CAST(week_id AS INTEGER) DESC 
     LIMIT 1
   `);
-  const activeWeekNum = latestWeekRow ? parseInt(latestWeekRow.week_number, 10) : 17;
+  const activeWeekNum = latestWeekRow
+    ? parseInt(latestWeekRow.week_number, 10)
+    : 17;
 
   // 2. Fetch all active roster members (excluding administrative non-members)
   const rawMembers = await dbAll(`
@@ -226,7 +236,10 @@ export async function getFormData() {
     name_first: m.name_first,
     name_last: m.name_last,
     status: m.status,
-    handicap: m.current_handicap !== null && m.current_handicap !== "Provisional" ? parseFloat(m.current_handicap).toFixed(1) : 0, // Fallback to 0 scratch index to prevent Javascript NaN errors
+    handicap:
+      m.current_handicap !== null && m.current_handicap !== "Provisional"
+        ? parseFloat(m.current_handicap).toFixed(1)
+        : 0, // Fallback to 0 scratch index to prevent Javascript NaN errors
   }));
 
   // 3. 🚀 MATCH NINES CALENDAR SPLIT FORM LAYOUT RULES:
@@ -290,13 +303,44 @@ export async function createScoreRecord(data) {
 export async function updateScoreRecord(scoreId, data) {
   const sql = `
     UPDATE scores 
-    SET gross_total = ?, stableford_total = ?, ctp_points = ?, birdie_points = ?
+    SET gross_total = ?,
+        net_total = ?,
+        stableford_total = ?,
+        ctp_points = ?,
+        birdie_points = ?,
+        skins_entered = ?,
+        gross10 = COALESCE(?, gross10),
+        gross11 = COALESCE(?, gross11),
+        gross12 = COALESCE(?, gross12),
+        gross13 = COALESCE(?, gross13),
+        gross14 = COALESCE(?, gross14),
+        gross15 = COALESCE(?, gross15),
+        gross16 = COALESCE(?, gross16),
+        gross17 = COALESCE(?, gross17),
+        gross18 = COALESCE(?, gross18)
     WHERE score_id = ?
   `;
   return new Promise((resolve, reject) => {
     db.run(
       sql,
-      [parseInt(data.gross_total, 10), parseInt(data.stableford_total, 10), parseInt(data.ctp_points, 10) || 0, parseInt(data.birdie_points, 10) || 0, parseInt(scoreId, 10)],
+      [
+        parseInt(data.gross_total, 10),
+        parseInt(data.net_total, 10) || 0,
+        parseInt(data.stableford_total, 10),
+        parseInt(data.ctp_points, 10) || 0,
+        parseInt(data.birdie_points, 10) || 0,
+        data.skins_entered ? 1 : 0,
+        data.gross10 || null,
+        data.gross11 || null,
+        data.gross12 || null,
+        data.gross13 || null,
+        data.gross14 || null,
+        data.gross15 || null,
+        data.gross16 || null,
+        data.gross17 || null,
+        data.gross18 || null,
+        parseInt(scoreId, 10),
+      ],
       (err) => {
         if (err) return reject(err);
         resolve();
@@ -337,12 +381,20 @@ export async function getWeeklyBreakdown(weekId) {
  * Combines full season schedules with player score cards safely.
  */
 export async function getMemberProfileData(memberId) {
-  const member = await dbGet(`SELECT *, (name_first || ' ' || name_last) AS full_name FROM members WHERE id = ?`, [memberId]);
+  const member = await dbGet(
+    `SELECT *, (name_first || ' ' || name_last) AS full_name FROM members WHERE id = ?`,
+    [memberId],
+  );
   if (!member) return null;
 
-  const activeWeeksRows = await dbAll(`SELECT DISTINCT CAST(week_id AS INTEGER) AS week_number FROM scores ORDER BY week_number ASC`);
+  const activeWeeksRows = await dbAll(
+    `SELECT DISTINCT CAST(week_id AS INTEGER) AS week_number FROM scores ORDER BY week_number ASC`,
+  );
 
-  const actualScores = await dbAll(`SELECT *, CAST(week_id AS INTEGER) AS parsed_week FROM scores WHERE member_id = ?`, [memberId]);
+  const actualScores = await dbAll(
+    `SELECT *, CAST(week_id AS INTEGER) AS parsed_week FROM scores WHERE member_id = ?`,
+    [memberId],
+  );
 
   const finalProfileTimelineMatrix = activeWeeksRows.map((weekRow) => {
     const targetWeek = weekRow.week_number;
@@ -402,22 +454,41 @@ export async function getRoundDetails(scoreId) {
 
     if (!scoreRecord) return null;
 
-    const courseHoles = await dbAll(`SELECT * FROM holes ORDER BY hole_number ASC`);
+    const courseHoles = await dbAll(
+      `SELECT * FROM holes ORDER BY hole_number ASC`,
+    );
     const currentWeekNum = parseInt(scoreRecord.week_id, 10) || 1;
     const startHole = currentWeekNum <= 11 ? 1 : 10;
 
     const processedHoles = buildHoleScores(scoreRecord, courseHoles, startHole);
 
     const totalPar = processedHoles.reduce((acc, h) => acc + (h.par || 0), 0);
-    const totalGross = processedHoles.reduce((acc, h) => acc + (h.gross || 0), 0);
+    const totalGross = processedHoles.reduce(
+      (acc, h) => acc + (h.gross || 0),
+      0,
+    );
     const totalNet = processedHoles.reduce((acc, h) => acc + (h.net || 0), 0);
-    const totalPoints = processedHoles.reduce((acc, h) => acc + (h.points || 0), 0);
+    const totalPoints = processedHoles.reduce(
+      (acc, h) => acc + (h.points || 0),
+      0,
+    );
 
     const birdies = parseFloat(scoreRecord.birdie_points) || 0;
     const ctp = parseFloat(scoreRecord.ctp_points) || 0;
     const leaguePoints = totalPoints + birdies + ctp;
 
     return {
+      score_id: scoreRecord.score_id,
+      member_id: scoreRecord.member_id,
+      week_id: scoreRecord.week_id,
+      week_number: currentWeekNum,
+      name_first: scoreRecord.name_first,
+      name_last: scoreRecord.name_last,
+      ctp_points: scoreRecord.ctp_points,
+      birdie_points: scoreRecord.birdie_points,
+      handicap_used: scoreRecord.handicap_used,
+      skins_entered: scoreRecord.skins_entered,
+      ...scoreRecord,
       player: {
         id: scoreRecord.member_id,
         displayName: `${scoreRecord.name_first} ${scoreRecord.name_last}`,
@@ -426,7 +497,10 @@ export async function getRoundDetails(scoreId) {
         number: currentWeekNum,
         displayDate: `Week ${currentWeekNum}`,
       },
-      handicapUsed: scoreRecord.current_handicap || "Provisional",
+      handicapUsed:
+        scoreRecord.handicap_used ??
+        scoreRecord.current_handicap ??
+        "Provisional",
       skinsEntered: !!scoreRecord.skins_entered,
       holes: processedHoles,
       totals: {
@@ -441,7 +515,9 @@ export async function getRoundDetails(scoreId) {
       },
     };
   } catch (error) {
-    logger.error(`Error inside getRoundDetails service layer for card ${scoreId}: ${error.message}`);
+    logger.error(
+      `Error inside getRoundDetails service layer for card ${scoreId}: ${error.message}`,
+    );
     throw error;
   }
 }

@@ -2,8 +2,6 @@
 <html lang="en">
   <head>
     <%- include('partials/header'); %>
-
-    
   </head>
 
   <body>
@@ -28,7 +26,7 @@
                   <label class="form-label fw-semibold"
                     >Week <span style="color: red">*</span></label
                   >
-                  <select class="form-select" name="weekId" required>                   
+                  <select class="form-select" name="weekId" required>
                     <option value="19">Week 19 - September 7</option>
                     <option value="20">Week 20 - September 14</option>
                     <option value="21">Week 21 - September 21</option>
@@ -241,11 +239,12 @@
     <%- include('partials/scripts'); %>
     <script>
       function handicapStrokes(playerHandicap, holeHandicap) {
-        const playingHandicap = playerHandicap * 2;
-        const base = Math.floor(playingHandicap / 18);
-        const extra = playingHandicap % 18;
+        const nineHoleHandicap = Math.max(0, Number(playerHandicap) || 0);
+        const holeStrokeIndex = ((Number(holeHandicap) - 1) % 9) + 1;
+        const baseStrokes = Math.floor(nineHoleHandicap / 9);
+        const remainingStrokes = nineHoleHandicap % 9;
 
-        return base + (holeHandicap <= extra ? 1 : 0);
+        return baseStrokes + (holeStrokeIndex <= remainingStrokes ? 1 : 0);
       }
 
       function stablefordPoints(net, par) {

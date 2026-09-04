@@ -18,13 +18,13 @@
             <div class="card score-card">
                 <div class="card-header">Modify League Score Record</div>
                 <div class="card-body">
-                    <form method="POST" action="/scores/update/<%= scoreRecord.id %>">
+                    <form method="POST" action="/scores/update/<%= scoreRecord.score_id %>">
 
                         <!-- League / Player Info -->
                         <div class="row mb-4">
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold">Week</label>
-                                <input type="text" class="form-control" value="Week <%= scoreRecord.week_number %> - <%= scoreRecord.week_date %>" disabled />
+                                <input type="text" class="form-control" value="Week <%= scoreRecord.week_number %>" disabled />
                                 <input type="hidden" name="weekId" value="<%= scoreRecord.week_id %>" />
                             </div>
                             <div class="col-md-3">
@@ -56,8 +56,8 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold">Player Handicap</label>
-                                <input type="number" id="handicap" class="form-control" name="handicap" value="<%= scoreRecord.handicap %>" disabled />
-                                <input type="hidden" name="handicap" value="<%= scoreRecord.handicap %>" />
+                                <input type="number" id="handicap" class="form-control" name="handicap" value="<%= scoreRecord.handicap_used %>" disabled />
+                                <input type="hidden" name="handicap" value="<%= scoreRecord.handicap_used %>" />
                             </div>
                         </div>
                         <!-- Score Table -->
@@ -96,7 +96,7 @@
                                         <th class="table-light">Score (Gross)</th>
                                         <% holes.forEach((hole, index) => { %>
                                         <td>
-                                            <input type="number" min="1" max="15" name="gross_hole_<%= hole.hole_number %>" class="form-control score-input" data-index="<%= index + 1 %>" data-holehcp="<%= hole.handicap_men %>" data-par="<%= hole.par_men %>" value="<%= scoreRecord['gross_hole_' + hole.hole_number] || '' %>" required />
+                                            <input type="number" min="1" max="15" name="gross<%= hole.hole_number %>" class="form-control score-input" data-index="<%= index + 1 %>" data-holehcp="<%= hole.handicap_men %>" data-par="<%= hole.par_men %>" value="<%= scoreRecord['gross' + hole.hole_number] || '' %>" required />
                                         </td>
                                         <% }) %>
                                         <td class="total-box">
@@ -144,10 +144,11 @@
 
     <script>
         function handicapStrokes(playerHandicap, holeHandicap) {
-            if (playerHandicap <= 0) return 0;
-            const base = Math.floor(playerHandicap / 9);
-            const remainingStrokes = playerHandicap % 9;
-            return base + (holeHandicap <= remainingStrokes ? 1 : 0);
+            const nineHoleHandicap = Math.max(0, Number(playerHandicap) || 0);
+            const holeStrokeIndex = ((Number(holeHandicap) - 1) % 9) + 1;
+            const baseStrokes = Math.floor(nineHoleHandicap / 9);
+            const remainingStrokes = nineHoleHandicap % 9;
+            return baseStrokes + (holeStrokeIndex <= remainingStrokes ? 1 : 0);
         }
 
         function stablefordPoints(net, par) {
