@@ -36,6 +36,7 @@ a:hover {
   border-radius: 2px;
   background: linear-gradient(135deg, #f4e0a5 0%, #d4af37 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   transition:
     transform 0.2s ease-in-out,
