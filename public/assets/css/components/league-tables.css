@@ -71,7 +71,6 @@ th.sort-desc::after {
 }
 .league-table a:hover {
   color: #18aa24;
-  text-decoration: underline;
 }
 
 .league-table tfoot td {
@@ -204,7 +203,6 @@ th.sort-desc::after {
 }
 .player-link:hover {
   color: #18aa24;
-  text-decoration: underline;
 }
 
 /* Podiums & Placement Highlights */

@@ -1,6 +1,4 @@
 /* public/assets/css/site.css */
-
-/* 🌟 CRITICAL REPAIR: All @import statements MUST occupy the absolute top lines of a CSS file! */
 @import url("./base/variables.css");
 @import url("./base/base.css");
 @import url("./layout/navbar.css");

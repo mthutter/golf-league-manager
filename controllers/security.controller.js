@@ -27,6 +27,10 @@ class SecurityController {
       max: 200,
       standardHeaders: true,
       legacyHeaders: false,
+      // 👇 BYPASS THE RATE LIMIT FOR LOCAL TRAFFIC
+      skip: (req) => {
+        return req.hostname === "localhost" || req.ip === "127.0.0.1" || req.ip === "::1";
+      },
       keyGenerator: (req) => {
         const ip = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
         return ipKeyGenerator(ip);
