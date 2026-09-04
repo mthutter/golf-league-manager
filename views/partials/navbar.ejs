@@ -1,129 +1,298 @@
 <div class="hero-wrapper">
-  <img src="/images/bottoms-up-header.webp" alt="Bottoms Up Golf League" class="hero-image" loading="eager" fetchpriority="high" />
+  <img
+    src="/images/bottoms-up-header.webp"
+    alt="Bottoms Up Golf League"
+    class="hero-image"
+    loading="eager"
+    fetchpriority="high"
+  />
 </div>
 
-<nav id="auto-scroll" class="navbar navbar-expand-lg<%= typeof isAdmin !== 'undefined' && isAdmin ? ' admin-authenticated' : '' %>" >
+<nav
+  id="auto-scroll"
+  class="navbar navbar-expand-lg<%= typeof isAdmin !== 'undefined' && isAdmin ? ' admin-authenticated' : '' %>"
+>
   <div class="container-fluid">
     <a class="navbar-brand d-flex align-items-center" href="/">
-      <img src="/images/bottoms-up-logo.png" alt="Bottoms Up Logo" class="nav-logo" />
+      <img
+        src="/images/bottoms-up-logo.png"
+        alt="Bottoms Up Logo"
+        class="nav-logo"
+      />
       <span class="ms-2">Bottoms Up Golf</span>
     </a>
-    
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" >
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
-    
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <!-- ==========================================================================
          MENU 1: STANDARD USER / MEMBER NAVBAR (isAdmin is false or undefined)
          ========================================================================== -->
       <% if (typeof isAdmin === 'undefined' || !isAdmin) { %>
-        <!-- LEFT SIDE (Shared Public & Member Links) -->
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link px-3" href="/rules">Info/Rules</a></li>
-          <li class="nav-item"><a class="nav-link px-3" href="/tee-times">Tee Times</a></li>
-          
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Results</a>
-            <ul class="dropdown-menu">
-              <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">League Analytics</h6></li>
-              <li><a class="dropdown-item" href="/scores/standings">Standings</a></li>
-              <li><a class="dropdown-item" href="/skins">Skins</a></li>
-              <li><a class="dropdown-item" href="/handicaps">Handicap History</a></li>
-            </ul>
-          </li>
-          
-          <li class="nav-item"><a class="nav-link px-3" href="/course">Course</a></li>
-          <li class="nav-item"><a class="nav-link px-3" href="/weather">Weather</a></li>
-          
-          <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
-            <li class="nav-item"><a class="nav-link px-3" href="/blog">Blog Page</a></li>
-            <li class="nav-item"><a class="nav-link px-3" href="/players">Members</a></li>
-            
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Media</a>
-              <ul class="dropdown-menu">
-                <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">Photo Galleries</h6></li>
-                <li><a class="dropdown-item" href="/images/2024">📷 2024 Images</a></li>
-                <li><a class="dropdown-item" href="/images/2025">📷 2025 Images</a></li>
-                <li><a class="dropdown-item" href="/images/2026">📷 2026 Images</a></li>
-                <li><hr class="dropdown-divider" /></li>
-                <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">Video "Highlights"</h6></li>
-                <li><a class="dropdown-item" href="/videos/2024">📹 2024 Videos</a></li>
-                <li><a class="dropdown-item" href="/videos/2025">📹 2025 Videos</a></li>
-                <li><a class="dropdown-item" href="/videos/2026">📹 2026 Videos</a></li>
-              </ul>
+      <!-- LEFT SIDE (Shared Public & Member Links) -->
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/rules">Info/Rules</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/tee-times">Tee Times</a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle px-3"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            >Results</a
+          >
+          <ul class="dropdown-menu">
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                League Analytics
+              </h6>
             </li>
-          <% } %>
-        </ul>
+            <li>
+              <a class="dropdown-item" href="/scores/standings">Standings</a>
+            </li>
+            <li><a class="dropdown-item" href="/skins">Skins</a></li>
+            <li>
+              <a class="dropdown-item" href="/handicaps">Handicap History</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/course">Course</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/weather">Weather</a>
+        </li>
+
+        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/blog">Blog Page</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/players">Members</a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle px-3"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            >Media</a
+          >
+          <ul class="dropdown-menu">
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                Photo Galleries
+              </h6>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/images/2024">📷 2024 Images</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/images/2025">📷 2025 Images</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/images/2026">📷 2026 Images</a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                Video "Highlights"
+              </h6>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/videos/2024">📹 2024 Videos</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/videos/2025">📹 2025 Videos</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/videos/2026">📹 2026 Videos</a>
+            </li>
+          </ul>
+        </li>
+        <% } %>
+      </ul>
 
       <!-- ==========================================================================
          MENU 2: ADMIN ONLY NAVBAR (isAdmin is true)
          ========================================================================== -->
       <% } else { %>
-        <ul class="navbar-nav me-auto">
-          <!-- LEAGUE VIEWS DROPDOWN (Matches standard layout typography) -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              League Views
-            </a>
-            <ul class="dropdown-menu">
-              <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">Public Dashboard</h6></li>
-              <li><a class="dropdown-item" href="/rules">Info / Rules</a></li>
-              <li><a class="dropdown-item" href="/tee-times">Tee Times</a></li>
-              <li><a class="dropdown-item" href="/course">Course</a></li>
-              <li><a class="dropdown-item" href="/weather">Weather</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">Player Portal</h6></li>
-              <li><a class="dropdown-item" href="/scores/standings">Standings</a></li>
-              <li><a class="dropdown-item" href="/blog">Blog Page</a></li>
-              <li><a class="dropdown-item" href="/players">Members</a></li>
-            </ul>
-          </li>
-        </ul>
+      <ul class="navbar-nav me-auto">
+        <!-- LEAGUE VIEWS DROPDOWN (Matches standard layout typography) -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle px-3"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            League Views
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                Public Dashboard
+              </h6>
+            </li>
+            <li><a class="dropdown-item" href="/rules">Info / Rules</a></li>
+            <li><a class="dropdown-item" href="/tee-times">Tee Times</a></li>
+            <li><a class="dropdown-item" href="/course">Course</a></li>
+            <li><a class="dropdown-item" href="/weather">Weather</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                Player Portal
+              </h6>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/scores/standings">Standings</a>
+            </li>
+            <li><a class="dropdown-item" href="/skins">Skins</a></li>
+            <li>
+              <a class="dropdown-item" href="/handicaps">Handicap History</a>
+            </li>
+            <li><a class="dropdown-item" href="/blog">Blog Page</a></li>
+            <li><a class="dropdown-item" href="/players">Members</a></li>
+          </ul>
+        </li>
+      </ul>
       <% } %>
 
       <!-- RIGHT SIDE (Shared Authentication & Admin Portal Placements) -->
       <ul class="navbar-nav ms-auto align-items-lg-center">
         <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
-          <!-- ADMIN PORTAL DROPDOWN (Matches standard text color) -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">
-              Admin Portal
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end admin-scrollable">
-              <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">Weekly Scoring</h6></li>
-              <li><a class="dropdown-item" href="/scores/new">Enter Scores</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              
-              <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">Roster Management</h6></li>
-              <li><a class="dropdown-item" href="/players/new">Add Player</a></li>
-              <li><a class="dropdown-item" href="/players">Active Members</a></li>
-              <li><a class="dropdown-item" href="/players/inactive">Inactive Members</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              
-              <li><h6 class="dropdown-header text-uppercase fw-bold text-success text-center">Communications</h6></li>
-              <li><a class="dropdown-item" href="/email/admin">E-Mail Form</a></li>
-              <li><a class="dropdown-item" href="/blog/new">Blog Post</a></li>
-              <li><a class="dropdown-item" href="/text/admin">Text Form <span class="badge bg-light text-dark">Future</span></a></li>
-              <li><hr class="dropdown-divider" /></li>
-              
-              <li><h6 class="dropdown-header text-uppercase fw-bold text-muted text-center">System & Settings</h6></li>
-              <li><a class="dropdown-item" href="/admin">Admin Tools</a></li>
-              <li><a class="dropdown-item" href="/players/system-users">System Users</a></li>
-              <li><a class="dropdown-item" href="/admin/security/blacklist">IP Blacklist</a></li>
-              <li><a class="dropdown-item" href="https://posthog.com" target="_blank">Posthog Analytics</a></li>
-              <li><a class="dropdown-item disabled" href="#">Finance Tools <span class="badge bg-light text-dark">Future</span></a></li>
-            </ul>
-          </li>
+        <!-- ADMIN PORTAL DROPDOWN (Matches standard text color) -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle px-3"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+          >
+            Admin Portal
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end admin-scrollable">
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                Weekly Scoring
+              </h6>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/scores/new">Enter Scores</a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                Roster Management
+              </h6>
+            </li>
+            <li><a class="dropdown-item" href="/players/new">Add Player</a></li>
+            <li><a class="dropdown-item" href="/players">Active Members</a></li>
+            <li>
+              <a class="dropdown-item" href="/players/inactive"
+                >Inactive Members</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-success text-center"
+              >
+                Communications
+              </h6>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/email/admin">E-Mail Form</a>
+            </li>
+            <li><a class="dropdown-item" href="/blog/new">Blog Post</a></li>
+            <li>
+              <a class="dropdown-item" href="/text/admin"
+                >Text Form
+                <span class="badge bg-light text-dark">Future</span></a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+
+            <li>
+              <h6
+                class="dropdown-header text-uppercase fw-bold text-muted text-center"
+              >
+                System & Settings
+              </h6>
+            </li>
+            <li><a class="dropdown-item" href="/admin">Admin Tools</a></li>
+            <li>
+              <a class="dropdown-item" href="/players/system-users"
+                >System Users</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="/admin/security/blacklist"
+                >IP Blacklist</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                href="https://posthog.com"
+                target="_blank"
+                >Posthog Analytics</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="#"
+                >Finance Tools
+                <span class="badge bg-light text-dark">Future</span></a
+              >
+            </li>
+          </ul>
+        </li>
         <% } %>
-        
+
         <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
-          <li class="nav-item"><a class="nav-link px-3" href="/players/profile">My Profile</a></li>
-          <li class="nav-item"><a class="nav-link px-3 text-danger" href="/logout">Sign Out</a></li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/players/profile">My Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 text-danger" href="/logout">Sign Out</a>
+        </li>
         <% } else { %>
-          <li class="nav-item"><a class="nav-link px-3" href="/login">Sign In</a></li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/login">Sign In</a>
+        </li>
         <% } %>
       </ul>
     </div>
