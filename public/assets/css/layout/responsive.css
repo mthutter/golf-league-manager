@@ -12,9 +12,6 @@ body .navbar .dropdown-menu .dropdown-item {
    Aggressively shrinks text and margins to eliminate the horizontal scroll.
    ========================================================================== */
 @media (max-width: 1450px) {
-  body .navbar .navbar-brand span {
-    font-size: 0.95rem;
-  }
   body .navbar .navbar-nav .nav-link {
     padding-left: 0.4rem !important;
     padding-right: 0.4rem !important;
@@ -23,9 +20,6 @@ body .navbar .dropdown-menu .dropdown-item {
 }
 
 @media (max-width: 1330px) {
-  body .navbar .navbar-brand span {
-    font-size: 0.85rem;
-  }
   body .navbar .navbar-nav .nav-link {
     padding-left: 0.25rem !important;
     padding-right: 0.25rem !important;
