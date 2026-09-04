@@ -1,6 +1,5 @@
 /* public/assets/css/layout/footer.css */
-html body footer.site-footer,
-body .site-footer[class] {
+.site-footer {
   margin-top: auto;
   padding: 16px 20px;
   background: #90ee90;
@@ -9,8 +8,7 @@ body .site-footer[class] {
   box-sizing: border-box;
 }
 
-html body div.footer-content,
-body .footer-content[class] {
+.footer-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,8 +19,6 @@ body .footer-content[class] {
   color: var(--text-dark);
 }
 
-html body .site-footer .footer-content a,
-.site-footer div a[href],
-footer.site-footer a {
+.footer-content a {
   color: var(--text-dark);
 }

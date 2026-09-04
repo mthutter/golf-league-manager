@@ -37,32 +37,32 @@ th.sort-desc::after {
 
 /* Standardized Dynamic League Table Profiles */
 .league-table {
-  table-layout: auto !important;
-  width: 100% !important;
-  max-width: 100% !important;
+  table-layout: auto;
+  width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
 }
 
 .league-table th {
-  background-color: #1b4332 !important;
-  color: white !important;
+  background-color: #1b4332;
+  color: white;
   font-weight: 700;
   font-size: clamp(0.55rem, 0.9vw, 0.8rem);
   letter-spacing: 0.5px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  white-space: nowrap !important;
-  padding: 8px 12px !important;
-  height: auto !important;
-  line-height: 1.4 !important;
+  white-space: nowrap;
+  padding: 8px 12px;
+  height: auto;
+  line-height: 1.4;
 }
 
 .league-table td {
-  vertical-align: middle !important;
+  vertical-align: middle;
   border: 1px solid rgba(27, 67, 50, 0.1);
-  white-space: nowrap !important;
-  padding: 6px 12px !important;
-  height: auto !important;
-  line-height: 1.4 !important;
+  white-space: nowrap;
+  padding: 6px 12px;
+  height: auto;
+  line-height: 1.4;
 }
 
 .league-table a {
@@ -176,20 +176,20 @@ th.sort-desc::after {
 
 .resizable-table.resizing-column,
 .resizable-table.resizing-column * {
-  cursor: col-resize !important;
+  cursor: col-resize;
   user-select: none;
 }
 
 /* Structurally Dense Typography Layout Modifiers */
 .compact-pixel-table {
-  width: max-content !important;
+  width: max-content;
   max-width: 100%;
   margin: 0 auto;
-  table-layout: auto !important;
+  table-layout: auto;
 }
 
 .nowrap-cell {
-  white-space: nowrap !important;
+  white-space: nowrap;
 }
 
 .players,
@@ -207,16 +207,16 @@ th.sort-desc::after {
 
 /* Podiums & Placement Highlights */
 .gold-cell {
-  background-color: gold !important;
-  color: #664d03 !important;
+  background-color: gold;
+  color: #664d03;
   font-weight: 700;
 }
 .silver-cell {
-  background-color: silver !important;
+  background-color: silver;
   font-weight: 700;
 }
 .bronze-cell {
-  background-color: rgb(205, 127, 50) !important;
+  background-color: rgb(205, 127, 50);
   font-weight: 700;
 }
 
@@ -270,28 +270,28 @@ body .main-wrapper table.league-table tr td .net-score {
 /* 🟢 HIGH-PRECEDENCE HOLE ELEMENT CELLS OVERWRITE BOOTSTRAP BG OVERLAYS */
 body .main-wrapper table.league-table tbody tr td.eagle,
 table.league-table tbody tr td.eagle {
-  background-color: #ffd54f !important;
+  background-color: #ffd54f;
 }
 
 body .main-wrapper table.league-table tbody tr td.par,
 table.league-table tbody tr td.par {
-  background-color: #ffffff !important;
+  background-color: #ffffff;
   color: #111111;
 }
 
 body .main-wrapper table.league-table tbody tr td.bogey,
 table.league-table tbody tr td.bogey {
-  background-color: #ffe0b2 !important;
+  background-color: #ffe0b2;
 }
 
 body .main-wrapper table.league-table tbody tr td.double-plus,
 table.league-table tbody tr td.double-plus {
-  background-color: #ffcdd2 !important;
+  background-color: #ffcdd2;
 }
 
 body .main-wrapper table.league-table tbody tr td.birdie,
 table.league-table tbody tr td.birdie {
-  background-color: rgba(47, 138, 47, 0.18) !important;
+  background-color: rgba(47, 138, 47, 0.18);
 }
 
 /* Premium Glassmorphic Badge Layout for Header Hole Value Metrics */

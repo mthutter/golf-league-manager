@@ -1,9 +1,11 @@
 /* public/assets/css/layout/navbar.css */
-
+a:hover {
+  text-decoration: none;
+}
 /* =========================================================================
    12. NAVBAR MAIN STRUCTURAL CONTAINERS
    ========================================================================= */
-body .navbar {
+.navbar {
   margin-top: 0px;
   border: none;
   font-weight: 700;
@@ -18,7 +20,7 @@ body .navbar {
 }
 
 /* Updated Branding - Anchored Luxury Sans-Serif Layout */
-body .navbar .navbar-brand {
+.navbar .navbar-brand {
   font-family:
     system-ui,
     -apple-system,
@@ -40,13 +42,13 @@ body .navbar .navbar-brand {
     opacity 0.2s ease-in-out;
 }
 
-body .navbar .navbar-brand:hover {
+.navbar .navbar-brand:hover {
   opacity: 0.95;
   transform: scale(1.01);
 }
 
 /* Target the standard Bootstrap navbar menu navigation links */
-body .navbar .navbar-nav .nav-link {
+.nav-link {
   border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 6px;
@@ -63,18 +65,18 @@ body .navbar .navbar-nav .nav-link {
 }
 
 /* Hover state interaction for contemporary translucent items */
-body .navbar .navbar-nav .nav-link:hover {
+.nav-link:hover {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.35);
   color: #ffffff;
   transform: translateY(-1px);
 }
 
-body .navbar .navbar-collapse {
+.navbar-collapse {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-body .navbar .nav-logo {
+.nav-logo {
   height: 46px;
   border-radius: 50%;
 }
@@ -82,7 +84,7 @@ body .navbar .nav-logo {
 /* =========================================================================
    13. NAVBAR DROPDOWN LAYER BLOCKS
    ========================================================================= */
-body .navbar .dropdown-menu {
+.dropdown-menu {
   background: rgba(30, 90, 30, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -97,7 +99,7 @@ body .navbar .dropdown-menu {
   right: auto;
 }
 
-body .navbar .dropdown-item {
+.dropdown-item {
   color: rgba(255, 255, 255, 0.85);
   font-family:
     system-ui,
@@ -114,13 +116,13 @@ body .navbar .dropdown-item {
 }
 
 /* A premium, distinct hover tile inside the block */
-body .navbar .dropdown-menu .dropdown-item:hover,
-body .navbar .dropdown-menu .dropdown-item:focus {
+.dropdown-item:hover,
+.dropdown-item:focus {
   background-color: rgba(255, 255, 255, 0.15);
   color: #ffffff;
 }
 
-body .navbar .dropdown-divider {
+.dropdown-divider {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -128,7 +130,7 @@ body .navbar .dropdown-divider {
    14. EXTENDED LAYOUTS - LONG CONTAINER VERTICAL SCROLL CAP
    ========================================================================= */
 /* Overrides 'overflow: hidden' strictly on your chosen long menu element */
-body .navbar .dropdown-menu.admin-scrollable {
+.dropdown-menu.admin-scrollable {
   max-height: 70vh; /* caps height at 70% of viewport screen */
   overflow-y: auto; /* reveals y-axis scrollbar when needed */
   overflow-x: hidden; /* completely prevents wide text shifts */
@@ -136,16 +138,16 @@ body .navbar .dropdown-menu.admin-scrollable {
 }
 
 /* Unified luxury layout custom scrollbar config */
-body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar {
+.dropdown-menu.admin-scrollable::-webkit-scrollbar {
   width: 6px;
 }
-body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar-track {
+.dropdown-menu.admin-scrollable::-webkit-scrollbar-track {
   background: transparent;
 }
-body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar-thumb {
+.dropdown-menu.admin-scrollable::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
-body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar-thumb:hover {
+.dropdown-menu.admin-scrollable::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.4);
 }

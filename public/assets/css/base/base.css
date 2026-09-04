@@ -7,11 +7,8 @@ body {
 a {
   text-decoration: none;
 }
-a:hover {
-  text-decoration: underline;
-}
 
-html body .main-wrapper .hero-wrapper,
+.hero-wrapper,
 div.hero-wrapper[class] {
   display: block;
   width: 100%;
@@ -26,7 +23,7 @@ div.hero-wrapper[class] {
   box-sizing: border-box;
   background: var(--green-dark);
 }
-html body .main-wrapper .hero-wrapper .hero-image,
+.hero-image,
 img.hero-image[class] {
   display: block;
   width: 100%;
