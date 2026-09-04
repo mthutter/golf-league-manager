@@ -123,17 +123,17 @@ body .navbar .dropdown-menu .dropdown-item {
     border-radius: 10px;
   }
 
-  .gallery-header {
+  .page-header {
     max-width: 95%;
     padding: 10px 5px;
     margin: 12px auto 6px;
   }
-  .gallery-header h1 {
+  .page-header h1 {
     font-size: 22px;
     line-height: 1.35;
     margin-bottom: 4px;
   }
-  .gallery-header p {
+  .page-header p {
     font-size: 11px;
     letter-spacing: 0.05em;
   }

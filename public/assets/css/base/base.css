@@ -7,11 +7,10 @@ body {
 a {
   text-decoration: none;
 }
+a:hover {
+  text-decoration: underline;
+}
 
-/* =========================================================================
-   3. SITE HERO LOGO BANNER (REINFORCED CENTERING & SPECIFICITY)
-   ========================================================================= */
-/* Chaining parent structural selectors guarantees the box centers and clips correctly */
 html body .main-wrapper .hero-wrapper,
 div.hero-wrapper[class] {
   display: block;
@@ -20,8 +19,6 @@ div.hero-wrapper[class] {
   margin: 15px auto 25px; /* 🟢 CENTERS CONTAINER: Auto margins force it dead center in the lane */
   height: clamp(240px, 32vw, 420px); /* 🟢 LOCKS RATIO: Golden aspect scale prevents cropping distortion */
   flex-shrink: 0;
-
-  /* 🟢 CLIPS EDGES: Prevents the inner WebP graphic layers from bleeding past the curves */
   overflow: hidden;
   position: relative;
   border-radius: 14px;
@@ -29,18 +26,16 @@ div.hero-wrapper[class] {
   box-sizing: border-box;
   background: var(--green-dark);
 }
-
 html body .main-wrapper .hero-wrapper .hero-image,
 img.hero-image[class] {
   display: block;
   width: 100%;
   height: 100%;
-
-  /* 🟢 ZERO STRETCH: Forces the graphic to fill the bounding box naturally without compression */
   object-fit: cover;
   object-position: center 42%; /* Pinpoints the perfect focal composition crop on the mountains */
 }
-.gallery-header {
+
+.page-header {
   display: block;
   width: auto;
   max-width: 700px;
@@ -49,8 +44,7 @@ img.hero-image[class] {
   margin: 30px auto 20px;
   height: auto;
 }
-
-.gallery-header h1 {
+.page-header h1 {
   font-family:
     system-ui,
     -apple-system,
@@ -64,8 +58,7 @@ img.hero-image[class] {
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   word-wrap: break-word;
 }
-
-.gallery-header p {
+.page-header p {
   font-family:
     system-ui,
     -apple-system,
@@ -76,8 +69,7 @@ img.hero-image[class] {
   color: rgba(255, 255, 255, 0.6);
   letter-spacing: 0.08em;
 }
-
-.gallery-header::after {
+.page-header::after {
   content: "";
   display: block;
   width: 50px;
