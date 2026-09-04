@@ -123,3 +123,29 @@ body .navbar .dropdown-menu .dropdown-item:focus {
 body .navbar .dropdown-divider {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+/* =========================================================================
+   14. EXTENDED LAYOUTS - LONG CONTAINER VERTICAL SCROLL CAP
+   ========================================================================= */
+/* Overrides 'overflow: hidden' strictly on your chosen long menu element */
+body .navbar .dropdown-menu.admin-scrollable {
+  max-height: 70vh; /* caps height at 70% of viewport screen */
+  overflow-y: auto; /* reveals y-axis scrollbar when needed */
+  overflow-x: hidden; /* completely prevents wide text shifts */
+  -webkit-overflow-scrolling: touch; /* buttery smooth dragging for mobiles */
+}
+
+/* Unified luxury layout custom scrollbar config */
+body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+body .navbar .dropdown-menu.admin-scrollable::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
