@@ -1,33 +1,47 @@
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <%- include ('./partials/header'); %>
-</head>
+  </head>
 
-<body>
+  <body>
     <%- include ('./partials/navbar'); %>
 
-    <div class="main-wrapper" style="padding-top: 80px; text-align: center;">
-        <div class="error-box">
-
-            <% if (status === 404) { %>
-            <!-- 404 Content Block -->
-            <h1 style="font-size: 3rem; color: #253b10;">PAGE NOT FOUND (404)</h1>
-            <p style="font-size: 1.2rem;">The page or asset you requested does not exist.</p>
-            <a href="/" class="btn btn-success" style="margin-top: 15px; display: inline-block;">Return to Home</a>
-            <% } else { %>
-            <!-- 500/General Error Content Block -->
-            <h1 style="font-size: 3rem; color: #253b10;">Something Went Wrong (500)</h1>
-            <p style="font-size: 1.2rem;">An internal system error occurred.</p>
-            <a href="/" class="btn btn-success" style="margin-top: 15px; display: inline-block; background-color: green;">Return to Home</a>
-            <% } %>
-
-        </div>
+    <div class="main-wrapper py-4" style="text-align: center">
+      <div class="error-box">
+        <% if (status === 404) { %>
+        <!-- 404 Content Block -->
+        <h1 style="font-size: 3rem; color: #253b10">PAGE NOT FOUND (404)</h1>
+        <p style="font-size: 1.2rem">
+          The page or asset you requested does not exist.
+        </p>
+        <a
+          href="/"
+          class="btn btn-success"
+          style="margin-top: 15px; display: inline-block"
+          >Return to Home</a
+        >
+        <% } else { %>
+        <!-- 500/General Error Content Block -->
+        <h1 style="font-size: 3rem; color: #253b10">
+          Something Went Wrong (500)
+        </h1>
+        <p style="font-size: 1.2rem">An internal system error occurred.</p>
+        <a
+          href="/"
+          class="btn btn-success"
+          style="
+            margin-top: 15px;
+            display: inline-block;
+            background-color: green;
+          "
+          >Return to Home</a
+        >
+        <% } %>
+      </div>
     </div>
 
     <%- include('partials/footer'); %>
     <%- include('partials/scripts'); %>
-</body>
-
+  </body>
 </html>
