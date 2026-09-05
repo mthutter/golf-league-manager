@@ -1,204 +1,238 @@
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <script>
-        window.logger = window.logger || console;
+      window.logger = window.logger || console;
     </script>
     <%- include('partials/header'); %>
-</head>
+  </head>
 
-<body>
+  <body>
     <%- include('partials/navbar'); %>
     <div class="main-wrapper container-fluid px-md-5">
-        <!-- HERO -->
-        <div class="page-header">
-            <h1>E-Mail League Members</h1>
-            <p>Bottoms Up Golf League</p>
+      <!-- HERO -->
+      <div class="page-header">
+        <h1>E-Mail League Members</h1>
+        <p>Bottoms Up Golf League</p>
+      </div>
+      <!-- MAIN CONTENT STACK -->
+      <div
+        class="row max-width-wrapper mx-auto g-4"
+        style="max-width: 1000px; margin-bottom: 3rem"
+      >
+        <div class="col-12">
+          <div id="alertBox" class="alert d-none mb-3" role="alert"></div>
         </div>
-        <!-- MAIN CONTENT STACK -->
-        <div class="row max-width-wrapper mx-auto g-4" style="max-width: 1000px; margin-bottom: 3rem">
-            <div class="col-12">
-                <div id="alertBox" class="alert d-none mb-3" role="alert"></div>
-            </div>
 
-            <!-- MAIN FORM WINDOW -->
-            <div class="col-12">
-                <form id="broadcastForm">
-                    <div class="row g-4">
-                        <!-- TOP SECTION: Message Text Area Container -->
-                        <div class="col-12">
-                            <div class="player-form-card">
-                                <div class="form-section">
-                                    <h3>Compose Message</h3>
-                                    <div class="mb-3">
-                                        <label for="subject" class="form-label">Email Subject <span style="color: red">*</span></label>
-                                        <input type="text" id="subject" class="form-control" placeholder="Enter the email topic" required />
-                                    </div>
-                                    <div class="mb-2">
-                                        <label for="message" class="form-label">Message Content
-                                            <span style="color: red">*</span></label>
-                                        <textarea id="message" class="form-control" rows="6" placeholder="Type your announcement details here..." required></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- BOTTOM SECTION: Multi-Select Recipients Directory Layout -->
-                        <div class="col-12">
-                            <div class="player-form-card">
-                                <div class="form-section mb-0">
-                                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                                        <h3 style="border-bottom: none; margin: 0; padding: 0">
-                                            Target Recipients (<%= members.length %>)
-                                        </h3>
-                                        <span id="selectionBadge" class="badge bg-secondary text-white p-2" style="border-radius: 8px; font-size: 0.85rem">Global Broadcast Mode</span>
-                                    </div>
-                                    <p class="text-muted small mb-3">
-                                        Optional: Click on individual player cards to highlight
-                                        them for a targeted email. Leave all cards unselected to
-                                        email the entire league.
-                                    </p>
-
-                                    <div class="recipient-list-container">
-                                        <% if (members.length === 0) { %>
-                                        <div class="p-3 text-muted text-center italic">
-                                            No available email addresses found in the system.
-                                        </div>
-                                        <% } else { %>
-                                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
-                                            <% members.forEach(function(member) { %>
-                                            <div class="col">
-                                                <div class="recipient-grid-item email-selectable-card" data-email="<%= member.e_mail %>">
-                                                    <span><%= member.e_mail %></span>
-                                                </div>
-                                            </div>
-                                            <% }); %>
-                                        </div>
-                                        <% } %>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SUBMIT BUTTON -->
-                        <div class="col-12 text-center mt-3">
-                            <button type="submit" id="submitBtn" class="btn-submit-player">
-                                <span id="btnText">Send Broadcast</span>
-                                <span id="btnSpinner" class="spinner-border spinner-border-sm d-none ms-2" role="status"></span>
-                            </button>
-                        </div>
+        <!-- MAIN FORM WINDOW -->
+        <div class="col-12">
+          <form id="broadcastForm">
+            <div class="row g-4">
+              <!-- TOP SECTION: Message Text Area Container -->
+              <div class="col-12">
+                <div class="player-form-card">
+                  <div class="form-section">
+                    <h3>Compose Message</h3>
+                    <div class="mb-3">
+                      <label for="subject" class="form-label"
+                        >Email Subject <span style="color: red">*</span></label
+                      >
+                      <input
+                        type="text"
+                        id="subject"
+                        class="form-control"
+                        placeholder="Enter the email topic"
+                        required
+                      />
                     </div>
-                </form>
+                    <div class="mb-2">
+                      <label for="message" class="form-label"
+                        >Message Content
+                        <span style="color: red">*</span></label
+                      >
+                      <textarea
+                        id="message"
+                        class="form-control"
+                        rows="6"
+                        placeholder="Type your announcement details here..."
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BOTTOM SECTION: Multi-Select Recipients Directory Layout -->
+              <div class="col-12">
+                <div class="player-form-card">
+                  <div class="form-section mb-0">
+                    <div
+                      class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3"
+                    >
+                      <h3 style="border-bottom: none; margin: 0; padding: 0">
+                        Target Recipients (<%= members.length %>)
+                      </h3>
+                      <span
+                        id="selectionBadge"
+                        class="badge bg-secondary text-white p-2"
+                        style="border-radius: 8px; font-size: 0.85rem"
+                        >Global Broadcast Mode</span
+                      >
+                    </div>
+                    <p class="text-muted small mb-3">
+                      Optional: Click on individual player cards to highlight
+                      them for a targeted email. Leave all cards unselected to
+                      email the entire league.
+                    </p>
+
+                    <div class="recipient-list-container">
+                      <% if (members.length === 0) { %>
+                      <div class="p-3 text-muted text-center italic">
+                        No available email addresses found in the system.
+                      </div>
+                      <% } else { %>
+                      <div
+                        class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2"
+                      >
+                        <% members.forEach(function(member) { %>
+                        <div class="col">
+                          <div
+                            class="recipient-grid-item email-selectable-card"
+                            data-email="<%= member.e_mail %>"
+                            title="<%= member.e_mail %>"
+                            aria-label="Select <%= member.e_mail %>"
+                          >
+                            <span><%= member.e_mail %></span>
+                          </div>
+                        </div>
+                        <% }); %>
+                      </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SUBMIT BUTTON -->
+              <div class="col-12 text-center mt-3">
+                <button type="submit" id="submitBtn" class="btn-submit-player">
+                  <span id="btnText">Send Broadcast</span>
+                  <span
+                    id="btnSpinner"
+                    class="spinner-border spinner-border-sm d-none ms-2"
+                    role="status"
+                  ></span>
+                </button>
+              </div>
             </div>
+          </form>
         </div>
+      </div>
     </div>
     <%- include('partials/scripts'); %>
     <script>
-        const selectedEmails = [];
-        const cards = document.querySelectorAll(".email-selectable-card");
-        const badge = document.getElementById("selectionBadge");
+      const selectedEmails = [];
+      const cards = document.querySelectorAll(".email-selectable-card");
+      const badge = document.getElementById("selectionBadge");
 
-        // Handle click selections on individual grid element cards
-        cards.forEach((card) => {
-            card.addEventListener("click", () => {
-                const email = card.getAttribute("data-email");
-                if (card.classList.contains("selected")) {
-                    card.classList.remove("selected");
-                    const index = selectedEmails.indexOf(email);
-                    if (index > -1) selectedEmails.splice(index, 1);
-                } else {
-                    card.classList.add("selected");
-                    selectedEmails.push(email);
-                }
+      // Handle click selections on individual grid element cards
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          const email = card.getAttribute("data-email");
+          if (card.classList.contains("selected")) {
+            card.classList.remove("selected");
+            const index = selectedEmails.indexOf(email);
+            if (index > -1) selectedEmails.splice(index, 1);
+          } else {
+            card.classList.add("selected");
+            selectedEmails.push(email);
+          }
 
-                // Refresh UI Selection Display Mode Indicators
-                if (selectedEmails.length > 0) {
-                    badge.className = "badge bg-success text-white p-2";
-                    badge.textContent = `${selectedEmails.length} Player(s) Selected`;
-                } else {
-                    badge.className = "badge bg-secondary text-white p-2";
-                    badge.textContent = "Global Broadcast Mode";
-                }
-            });
+          // Refresh UI Selection Display Mode Indicators
+          if (selectedEmails.length > 0) {
+            badge.className = "badge bg-success text-white p-2";
+            badge.textContent = `${selectedEmails.length} Player(s) Selected`;
+          } else {
+            badge.className = "badge bg-secondary text-white p-2";
+            badge.textContent = "Global Broadcast Mode";
+          }
         });
+      });
 
-        // Broadcast Form Submission Dispatch Interface Broker
-        document
-            .getElementById("broadcastForm")
-            .addEventListener("submit", async (e) => {
-                e.preventDefault();
+      // Broadcast Form Submission Dispatch Interface Broker
+      document
+        .getElementById("broadcastForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-                const subject = document.getElementById("subject").value;
-                const message = document.getElementById("message").value;
-                const alertBox = document.getElementById("alertBox");
-                const submitBtn = document.getElementById("submitBtn");
-                const btnText = document.getElementById("btnText");
-                const btnSpinner = document.getElementById("btnSpinner");
+          const subject = document.getElementById("subject").value;
+          const message = document.getElementById("message").value;
+          const alertBox = document.getElementById("alertBox");
+          const submitBtn = document.getElementById("submitBtn");
+          const btnText = document.getElementById("btnText");
+          const btnSpinner = document.getElementById("btnSpinner");
 
-                alertBox.className = "alert d-none";
-                submitBtn.disabled = true;
-                btnText.textContent = "Sending...";
-                btnSpinner.classList.remove("d-none");
+          alertBox.className = "alert d-none";
+          submitBtn.disabled = true;
+          btnText.textContent = "Sending...";
+          btnSpinner.classList.remove("d-none");
 
-                logger.info(
-                    "Submitting payload containing targeted recipients array:",
-                    selectedEmails,
-                );
+          logger.info(
+            "Submitting payload containing targeted recipients array:",
+            selectedEmails,
+          );
 
-                try {
-                    // 💡 ADJUSTED PATH: Fallback query parameters setup to trace your endpoint layout configuration paths.
-                    // If your original route was "/admin/send-email" instead of "/email/admin/send", modify this target URL line.
-                    const response = await fetch("/email/admin/send", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            subject: subject,
-                            message: message, // 💡 CHANGED from htmlBody to message to fix the backend requirement error
-                            recipients: selectedEmails,
-                        }),
-                    });
-
-                    const data = await response.json();
-                    logger.info("Server application execution response payload:", data);
-
-                    if (response.ok) {
-                        alertBox.className =
-                            "alert alert-success bg-success text-white border-0";
-                        alertBox.textContent =
-                            data.message || "Broadcast deployed successfully!";
-
-                        // Complete cleanup reset routines
-                        document.getElementById("broadcastForm").reset();
-                        cards.forEach((c) => c.classList.remove("selected"));
-                        selectedEmails.length = 0;
-                        badge.className = "badge bg-secondary text-white p-2";
-                        badge.textContent = "Global Broadcast Mode";
-                    } else {
-                        alertBox.className =
-                            "alert alert-danger bg-danger text-white border-0";
-                        alertBox.textContent =
-                            data.error || `Error status response code: ${response.status}`;
-                    }
-                } catch (err) {
-                    logger.error(
-                        "Critical client fetch pipeline execution exception:",
-                        err,
-                    );
-                    alertBox.className =
-                        "alert alert-danger bg-danger text-white border-0";
-                    alertBox.textContent =
-                        "A critical communication exception occurred. Verify your console panels.";
-                } finally {
-                    submitBtn.disabled = false;
-                    btnText.textContent = "Send Broadcast";
-                    btnSpinner.classList.add("d-none");
-                }
+          try {
+            // 💡 ADJUSTED PATH: Fallback query parameters setup to trace your endpoint layout configuration paths.
+            // If your original route was "/admin/send-email" instead of "/email/admin/send", modify this target URL line.
+            const response = await fetch("/email/admin/send", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                subject: subject,
+                message: message, // 💡 CHANGED from htmlBody to message to fix the backend requirement error
+                recipients: selectedEmails,
+              }),
             });
+
+            const data = await response.json();
+            logger.info("Server application execution response payload:", data);
+
+            if (response.ok) {
+              alertBox.className =
+                "alert alert-success bg-success text-white border-0";
+              alertBox.textContent =
+                data.message || "Broadcast deployed successfully!";
+
+              // Complete cleanup reset routines
+              document.getElementById("broadcastForm").reset();
+              cards.forEach((c) => c.classList.remove("selected"));
+              selectedEmails.length = 0;
+              badge.className = "badge bg-secondary text-white p-2";
+              badge.textContent = "Global Broadcast Mode";
+            } else {
+              alertBox.className =
+                "alert alert-danger bg-danger text-white border-0";
+              alertBox.textContent =
+                data.error || `Error status response code: ${response.status}`;
+            }
+          } catch (err) {
+            logger.error(
+              "Critical client fetch pipeline execution exception:",
+              err,
+            );
+            alertBox.className =
+              "alert alert-danger bg-danger text-white border-0";
+            alertBox.textContent =
+              "A critical communication exception occurred. Verify your console panels.";
+          } finally {
+            submitBtn.disabled = false;
+            btnText.textContent = "Send Broadcast";
+            btnSpinner.classList.add("d-none");
+          }
+        });
     </script>
-
-</body>
-
+  </body>
 </html>
