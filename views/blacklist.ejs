@@ -23,7 +23,7 @@
         <div></div>
       </div>
 
-      <div class="ban-ip-entry mb-3 d-none d-md-flex justify-content-center">
+      <div class="ban-ip-entry mb-3 d-none d-lg-flex justify-content-center">
         <form
           action="/admin/security/blacklist"
           method="POST"
@@ -31,7 +31,7 @@
           class="ban-ip-form d-flex align-items-center gap-2 mb-0"
         >
           <span
-            class="text-muted small fw-bold text-uppercase d-none d-lg-inline form-label-text"
+            class="text-muted small fw-bold text-uppercase text-nowrap d-none d-lg-inline form-label-text"
           >
             Block IP(s):
           </span>
@@ -150,18 +150,26 @@
                     <td
                       class="small text-muted font-monospace cell-timestamp col-dates"
                     >
-                      <% if (target.first_seen) { %> <%= new
+                      <% if (target.first_seen) { %>
+                      <%= new
                       Date(target.first_seen).toLocaleString("en-US", {
                       timeZone: "America/Denver", dateStyle: "short", timeStyle:
-                      "short" }) %> <% } else { %> Manual <% } %>
+                      "short" }) %>
+                      <% } else { %>
+                      Manual
+                      <% } %>
                     </td>
                     <td
                       class="small text-muted font-monospace cell-timestamp col-dates"
                     >
-                      <% if (target.last_seen) { %> <%= new
+                      <% if (target.last_seen) { %>
+                      <%= new
                       Date(target.last_seen).toLocaleString("en-US", { timeZone:
                       "America/Denver", dateStyle: "short", timeStyle: "short"
-                      }) %> <% } else { %> Manual <% } %>
+                      }) %>
+                      <% } else { %>
+                      Manual
+                      <% } %>
                     </td>
                     <!-- Ban Type Badge Indicator -->
                     <td class="col-type">
